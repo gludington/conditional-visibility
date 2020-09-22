@@ -1,0 +1,13 @@
+<form class="visible-conditions">
+    <fieldset class="thwildcard-default {{#if available}}active{{/if}}">
+        <legend>{{localize 'SENSES.visibleTo'}}</legend>
+        <div class="form-group">
+                {{#tests}}
+                <label for="SENSES.{{code}}">{{name}}</label>
+                <input type="checkbox" name="{{code}}"/>
+                {{/tests}}
+            <p class="hint">{{localize 'SENSES.description'}}</p>
+            </button>
+        </div>
+    </fieldset>
+    </form>

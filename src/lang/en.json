@@ -1,0 +1,6 @@
+{
+    "SENSES.visibleTo": "Visible To",
+    "SENSES.description": "If any selection is made, a token must match one or more of the checked abilities to see this token.",
+    "SENSES.turnLength": "Turn length (seconds)",
+    "SENSES.autoSkip": "Automatically skip turn at 0"
+}

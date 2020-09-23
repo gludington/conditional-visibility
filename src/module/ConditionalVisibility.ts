@@ -7,12 +7,10 @@ interface SenseTest {
 export class OwnedItemTest {
     
     private _code: string
-    private _name: string
     private _ownedItemName: string
 
-    constructor(code: string, name: string, ownedItemName:string) {
+    constructor(code: string, ownedItemName:string) {
         this._code = code;
-        this._name = name;
         this._ownedItemName = ownedItemName;
     }
 
@@ -21,7 +19,7 @@ export class OwnedItemTest {
     }
 
     public get name() {
-        return this._name;
+        return this._ownedItemName;
     }
 
     public get ownedItemName() {
@@ -40,45 +38,69 @@ class ConditionalVisibilityHud extends FormApplication {
         options.template = "/modules/conditional-visibility/templates/visible_conditions.html";
         options.width = 600;
         options.height = "auto";
-        options.title = game.i18n.format("SENSES.visibleTo", {});
+        options.title = game.i18n.format("CONVIS.visibilityConditions", {});
         options.submitOnClose = true;
         options.id = "senses-visible-container";
         return options;
     }
 
-    private _tests:[];
-    private _sightLayer: any;
+    private _ownedItemTests:[];
     private _tokenId:string;
+    private _current: any;
 
     constructor(tokenId, options) {
         super(tokenId, {});
         this._tokenId = tokenId;
-        this._tests = options.senses.testArray;
-        this._sightLayer = options.senses.sightLayer;
+        this._current = options.current;
+        this._ownedItemTests = options.ownedItemTests;
     }
 
     async getData() {
 
+        const actors:any = [];
+        for (let actor of game.actors.values()) {
+            //@ts-ignore
+            if (actor.data.type === 'character') {
+                actors.push({
+                    //@ts-ignore
+                    code: actor._id,
+                    //@ts-ignore
+                    name: actor.data.name
+                })
+            }
+        }
         return {
-            tests: this._tests
+            ownedItemTests: this._ownedItemTests,
+            characters: actors
         }
     }
 
     async _updateObject(event, formData) {
-        const requires = [];
+        const requires = {
+            ownedItems: [],
+            characters: []
+        };
+
         Object.keys(formData).forEach((key => {
             if (formData[key] === true) {
                 //@ts-ignore
-                requires.push(key);
+                if (key.startsWith("characters.")) {
+                    if (formData[key] === true) {
+                        requires.characters.push(key.substring("characters.".length));
+                    }
+                } else {
+                    requires.ownedItems.push(key);
+                }
             }
-        }))
+        }));
+
+
         const toChange:Token = canvas.tokens.get(this._tokenId);
-        if (requires.length > 0) {
+        if (requires.ownedItems.length > 0 || requires.characters.length > 0) {
             await toChange.setFlag(ConditionalVisibilty.MODULE_NAME, "reqs", requires);
         } else {
             await toChange.unsetFlag(ConditionalVisibilty.MODULE_NAME, "reqs");
         }
-       this._sightLayer.update(); 
         return;
     }
 
@@ -103,16 +125,18 @@ export class ConditionalVisibilty {
     static MODULE_NAME:string = "conditional-visibility";
     sightLayer: any;
     tests: Map<string, SenseTest>;
-    testArray: any;
+    ownedItemTests: any;
+    tokenVisionTests: any;
 
     constructor(sightLayer: any) {
         this.sightLayer = sightLayer;
         this.tests = new Map();
-        const ds: OwnedItemTest = new OwnedItemTest("devilssight", "Devil's Sight", "Invocation: Devil's Sight");
+        const ds: OwnedItemTest = new OwnedItemTest("devilssight", "Invocation: Devil's Sight");
         this.tests.set(ds.code, ds);
-        this.testArray = [];
+        this.ownedItemTests = [];
+        this.tokenVisionTests = [];
         this.tests.forEach((value: SenseTest, key: string) => {
-            this.testArray.push({
+            this.ownedItemTests.push({
                 code: value.code,
                 name: value.name
             })
@@ -142,8 +166,8 @@ export class ConditionalVisibilty {
 
         new ConditionalVisibilityHud(data._id, {
             html:html,
-            requires: data.flags.senses && data.flags.senses.reqs ? data.flags.senses.reqs : [],
-            senses: this
+            current: data.flags[ConditionalVisibilty.MODULE_NAME],
+            ownedItemTests: this.ownedItemTests
         }).render(true)
     }
 }

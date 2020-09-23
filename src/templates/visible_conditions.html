@@ -1,13 +1,44 @@
 <form class="visible-conditions">
+    <p class="hint">{{localize 'CONVIS.description'}}</p>
+    <button>{{localize 'CONVIS.clearAll'}}s</button>
     <fieldset class="thwildcard-default {{#if available}}active{{/if}}">
-        <legend>{{localize 'SENSES.visibleTo'}}</legend>
+        <legend>{{localize 'CONVIS.characterFeatures'}}</legend>
         <div class="form-group">
-                {{#tests}}
-                <label for="SENSES.{{code}}">{{name}}</label>
-                <input type="checkbox" name="{{code}}"/>
-                {{/tests}}
-            <p class="hint">{{localize 'SENSES.description'}}</p>
-            </button>
+            {{#ownedItemTests}}
+            <label for="{{code}}">{{name}}</label>
+            <input type="checkbox" name="{{code}}"/>
+            {{/ownedItemTests}}
         </div>
+        <p class="hint">{{localize 'CONVIS.characterFeaturesHint'}}</p>
     </fieldset>
+    <fieldset class="thwildcard-default {{#if available}}active{{/if}}">
+        <legend>{{localize 'CONVIS.customVision'}}</legend>
+        <div class="form-group">
+            {{#tests}}
+            <label for="{{code}}">{{name}}</label>
+            <input type="checkbox" name="{{code}}"/>
+            {{/tests}}
+        </div>
+        <p class="hint">{{localize 'CONVIS.customVisionHint'}}</p>
+    </fieldset>
+    <fieldset class="thwildcard-default {{#if available}}active{{/if}}">
+        <legend>{{localize 'CONVIS.skillCheck'}}</legend>
+        <div class="form-group">
+            {{#tests}}
+            <label for="{{code}}">{{name}}</label>
+            <input type="checkbox" name="{{code}}"/>
+            {{/tests}}
+        </div>
+        <p class="hint">{{localize 'CONVIS.skillCheckHint'}}</p>
+    </fieldset>   
+    <fieldset class="thwildcard-default {{#if available}}active{{/if}}">
+        <legend>{{localize 'CONVIS.characters'}}</legend>
+        <div class="form-group">
+            {{#characters}}
+            <label for="characters.{{code}}">{{name}}</label>
+            <input type="checkbox" value="{{code}}" name="characters.{{code}}"/>
+            {{/characters}}
+        </div>
+        <p class="hint">{{localize 'CONVIS.charactersHint'}}</p>
+    </fieldset>       
     </form>

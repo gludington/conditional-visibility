@@ -1,34 +1,6 @@
-interface SenseTest {
+interface StatusCondition {
     code: string,
-    name: string,
-    has: (viewer:Token, viewee:Token) => boolean;
-}
-
-export class OwnedItemTest {
-    
-    private _code: string
-    private _ownedItemName: string
-
-    constructor(code: string, ownedItemName:string) {
-        this._code = code;
-        this._ownedItemName = ownedItemName;
-    }
-
-    public get code() {
-        return this._code;
-    }
-
-    public get name() {
-        return this._ownedItemName;
-    }
-
-    public get ownedItemName() {
-        return this._ownedItemName;
-    }
-
-    has(viewer:Token, viewee:Token): boolean {
-        return viewer && viewer.actor && viewer.actor.getEmbeddedCollection('OwnedItem').some(oe => oe.name === this.ownedItemName);
-    }
+    name: string
 }
 
 class ConditionalVisibilityHud extends FormApplication {
@@ -44,7 +16,7 @@ class ConditionalVisibilityHud extends FormApplication {
         return options;
     }
 
-    private _ownedItemTests:[];
+    private _statusConditions: Array<StatusCondition>[];
     private _tokenId:string;
     private _current: any;
 
@@ -52,7 +24,7 @@ class ConditionalVisibilityHud extends FormApplication {
         super(tokenId, {});
         this._tokenId = tokenId;
         this._current = options.current;
-        this._ownedItemTests = options.ownedItemTests;
+        this._statusConditions = options.statusConditions;
     }
 
     async getData() {
@@ -70,37 +42,41 @@ class ConditionalVisibilityHud extends FormApplication {
             }
         }
         return {
-            ownedItemTests: this._ownedItemTests,
+            statusConditions: this._statusConditions,
             characters: actors
         }
     }
 
     async _updateObject(event, formData) {
-        const requires = {
-            ownedItems: [],
-            characters: []
-        };
+        const statusConditions = [];
+        const characters = [];
 
         Object.keys(formData).forEach((key => {
             if (formData[key] === true) {
                 //@ts-ignore
                 if (key.startsWith("characters.")) {
                     if (formData[key] === true) {
-                        requires.characters.push(key.substring("characters.".length));
+                        characters.push(key.substring("characters.".length));
                     }
                 } else {
-                    requires.ownedItems.push(key);
+                  statusConditions.push(key);
                 }
             }
         }));
 
 
         const toChange:Token = canvas.tokens.get(this._tokenId);
-        if (requires.ownedItems.length > 0 || requires.characters.length > 0) {
-            await toChange.setFlag(ConditionalVisibilty.MODULE_NAME, "reqs", requires);
+
+        if (statusConditions.length > 0) {
+            await toChange.setFlag(ConditionalVisibilty.MODULE_NAME, "statusConditions", statusConditions);
         } else {
-            await toChange.unsetFlag(ConditionalVisibilty.MODULE_NAME, "reqs");
+            await toChange.unsetFlag(ConditionalVisibilty.MODULE_NAME, "statusConditions");
         }
+        if (characters.length > 0) {
+          await toChange.setFlag(ConditionalVisibilty.MODULE_NAME, "characters", characters);
+      } else {
+          await toChange.unsetFlag(ConditionalVisibilty.MODULE_NAME, "characters");
+      }
         return;
     }
 
@@ -123,24 +99,19 @@ class ConditionalVisibilityHud extends FormApplication {
 export class ConditionalVisibilty {
 
     static MODULE_NAME:string = "conditional-visibility";
+
     sightLayer: any;
-    tests: Map<string, SenseTest>;
-    ownedItemTests: any;
-    tokenVisionTests: any;
+
+    _statusConditions:Array<StatusCondition>;
 
     constructor(sightLayer: any) {
         this.sightLayer = sightLayer;
-        this.tests = new Map();
-        const ds: OwnedItemTest = new OwnedItemTest("devilssight", "Invocation: Devil's Sight");
-        this.tests.set(ds.code, ds);
-        this.ownedItemTests = [];
-        this.tokenVisionTests = [];
-        this.tests.forEach((value: SenseTest, key: string) => {
-            this.ownedItemTests.push({
-                code: value.code,
-                name: value.name
-            })
-        });
+        this._statusConditions = new Array();
+        this._statusConditions.push({ code: "invisible", name:"Invisibility"});
+        this._statusConditions.push({ code: "ethereal", name:"Ethereal"});
+        this._statusConditions.push({ code: "obscured", name:"Obscured"});
+        this._statusConditions.push({ code: "indarkness", name:"In Magical Darkness"});
+        this._statusConditions.push({ code: "hiding", name:"Hiding"});
     }
 
     public test(viewer:Token, viewee:Token):boolean {
@@ -151,9 +122,7 @@ export class ConditionalVisibilty {
         if (!conditions || conditions.length == 0) {
             return true;
         }
-        return conditions.some(condition => {
-            return this.tests.get(condition) && this.tests.get(condition)?.has(viewer, viewee);
-        })
+        return true;
     }
 
     public async showHud(tokenHUD:any, html:JQuery, data:any) {
@@ -166,8 +135,8 @@ export class ConditionalVisibilty {
 
         new ConditionalVisibilityHud(data._id, {
             html:html,
-            current: data.flags[ConditionalVisibilty.MODULE_NAME],
-            ownedItemTests: this.ownedItemTests
+            statusConditions: this._statusConditions,
+            current: data.flags[ConditionalVisibilty.MODULE_NAME]
         }).render(true)
     }
 }

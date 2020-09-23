@@ -2,12 +2,10 @@
     "CONVIS.visibilityConditions": "Visibility Conditions",
     "CONVIS.description": "If any selection is made, a player's token must match one or more of the checks to see this token.",
     "CONVIS.clearAll":"Clear All Conditions",
-    "CONVIS.characterFeatures": "Character Features",
-    "CONVIS.characterFeaturesHint": "A token's actor must have a feature with a matching name",
-    "CONVIS.customVision": "Custom Token Vision",
-    "CONVIS.customVisionHint": "A token must have this ability granted on the Token Vision panel",
+    "CONVIS.statuses": "Status Conditions",
+    "CONVIS.statusesHint": "Conditions that can impact visibility",
     "CONVIS.skillCheck": "Skill Check",
     "CONVIS.skillCheckHint": "A token's actor must beat the SKILL CHECK TBD",
     "CONVIS.characters": "Charcters",
-    "CONVIS.charactersHint": "These characters can see the the target"
+    "CONVIS.charactersHint": "These characters can see the the target regardless of status"
 }

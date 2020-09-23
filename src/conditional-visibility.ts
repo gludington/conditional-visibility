@@ -61,12 +61,21 @@ Hooks.once('ready', function() {
     const sightLayer = canvas.layers.find(layer => {
         return layer.__proto__.constructor.name === 'SightLayer'
     });
-    const tokenLayer = canvas.layers.find(layer => {
-        return layer.__proto__.constructor.name === 'TokenLayer'
-    });
+
     const realRestrictVisibility = sightLayer.restrictVisibility;
 
     const senses:ConditionalVisibilty = new ConditionalVisibilty(sightLayer);
+    const compare = (values, container) => {
+        if (values.length === 0 || container.length === 0) {
+            return false;
+        }
+        for (let val in values) {
+            if (container.indexOf(val) >= 0) {
+                return true;
+            }
+        }
+        return false;
+    }
     sightLayer.restrictVisibility = () => {
         
         realRestrictVisibility.call(sightLayer);
@@ -83,14 +92,31 @@ Hooks.once('ready', function() {
                     }
                 }
             } else {
-                debugger;
                 if (game.user.isGM === false) {
                     srcTokens = game.user.character.getActiveTokens();
                 }
             }
             if (srcTokens.length > 0) {
+                const srcActorIds = srcTokens.map(sTok => sTok.data.actorId);
                 for (let t of restricted) {
-                    t.visible = srcTokens.some(viewer => senses.test(viewer, t));
+                    if (srcTokens.indexOf(t) < 0) {
+                        let newVis = true;
+                        if (t.data.flags[ConditionalVisibilty.MODULE_NAME]) {
+                            if (t.data.flags[ConditionalVisibilty.MODULE_NAME].characters) {
+                                newVis = compare(srcActorIds, t.data.flags[ConditionalVisibilty.MODULE_NAME].characters);
+                            } else {
+                                newVis = false;
+                            }
+                            if (!newVis) {
+                                if (t.data.flags[ConditionalVisibilty.MODULE_NAME].statusConditions) {
+                                    
+                                } else {
+                                    newVis = true;
+                                }
+                            }
+                        }
+                        t.visible = newVis;
+                    }
                 }
             }
         }

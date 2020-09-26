@@ -7,5 +7,12 @@
     "CONVIS.skillCheck": "Skill Check",
     "CONVIS.skillCheckHint": "A token's actor must beat the SKILL CHECK TBD",
     "CONVIS.characters": "Charcters",
-    "CONVIS.charactersHint": "These characters can see the the target regardless of status"
+    "CONVIS.charactersHint": "These characters can see the the target regardless of status",
+    "CONVIS.ExtraSenseInstructions": "Additional senses that may enhance vision",
+    "CONVIS.seeinvisible":"Sees Invisible",
+    "CONVIS.seeethereal":"Sees Ethereal",
+    "CONVIS.blindsight": "Blindsight",
+    "CONVIS.tremorsense":"Tremorsense",
+    "CONVIS.devilssight":"Devil's Sight",
+    "CONVIS.truesight":"Truesight"
 }

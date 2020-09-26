@@ -65,7 +65,7 @@ class ConditionalVisibilityHud extends FormApplication {
         }));
 
 
-        const toChange:Token = canvas.tokens.get(this._tokenId);
+    const toChange:Token = canvas.tokens.get(this._tokenId);
 
         if (statusConditions.length > 0) {
             await toChange.setFlag(ConditionalVisibilty.MODULE_NAME, "statusConditions", statusConditions);
@@ -119,6 +119,8 @@ export class ConditionalVisibilty {
             return true;
         }
         const conditions = viewee.getFlag(ConditionalVisibilty.MODULE_NAME, "reqs");
+        console.error(conditions);
+        debugger;
         if (!conditions || conditions.length == 0) {
             return true;
         }

@@ -40,16 +40,7 @@ Hooks.once('init', async function() {
 /* Setup module							*/
 /* ------------------------------------ */
 Hooks.once('setup', function() {
-	// Do anything after initialization but before
-	// ready
-	game.settings.register("senses", "devilssight", {
-        name: game.i18n.localize("senses.ConsumeCharge.Name"),
-        hint: game.i18n.localize("dynamiceffects.ConsumeCharge.Hint"),
-        scope: "world",
-        default: true,
-        config: true,
-        type: Boolean
-    });
+
 });
 
 /* ------------------------------------ */
@@ -80,6 +71,7 @@ Hooks.once('ready', function() {
         
         realRestrictVisibility.call(sightLayer);
         const restricted = canvas.tokens.placeables.filter(token => token.visible);
+        debugger;
         if (restricted && restricted.length > 0) {
             let srcTokens = new Array<Token>();
             if (sightLayer.sources && sightLayer.sources.vision) {
@@ -101,6 +93,10 @@ Hooks.once('ready', function() {
                 for (let t of restricted) {
                     if (srcTokens.indexOf(t) < 0) {
                         let newVis = true;
+                        const effects = t.data.effects;
+                        if (effects.length > 0) {
+                            console.error(effects);
+                        }
                         if (t.data.flags[ConditionalVisibilty.MODULE_NAME]) {
                             if (t.data.flags[ConditionalVisibilty.MODULE_NAME].characters) {
                                 newVis = compare(srcActorIds, t.data.flags[ConditionalVisibilty.MODULE_NAME].characters);
@@ -129,8 +125,14 @@ Hooks.once('ready', function() {
 });
 
 // Add any additional hooks if necessary
-Hooks.on("renderTokenHUD", (tokenHUD, html, data) => {
+Hooks.on("renderTokenHUD", (tokenHUD, jQuery, data) => {
     if (game.user.isGM === true) {
-        window.Senses.showHud(tokenHUD, html, data);
+        //window.Senses.showHud(tokenHUD, jQuery, data);
     }
+});
+
+Hooks.on("renderTokenConfig", async (tokenConfig, jQuery, data) => {
+    const visionTab = $('div.tab[data-tab="vision"]');
+    const extraSenses = await renderTemplate("modules/conditional-visibility/templates/extra_senses.html", tokenConfig.object.data.flags['conditional-visibility'] || {});
+    visionTab.append(extraSenses);
 });

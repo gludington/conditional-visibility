@@ -22,7 +22,7 @@ declare global {
 /* Initialize module					*/
 /* ------------------------------------ */
 Hooks.once('init', async function() {
-	console.log('senses | Initializing conditional-visibility');
+	console.log('conditional-visibility | Initializing conditional-visibility');
 
 	// Assign custom classes and constants here
 	
@@ -71,7 +71,7 @@ Hooks.once('ready', function() {
         
         realRestrictVisibility.call(sightLayer);
         const restricted = canvas.tokens.placeables.filter(token => token.visible);
-        debugger;
+        
         if (restricted && restricted.length > 0) {
             let srcTokens = new Array<Token>();
             if (sightLayer.sources && sightLayer.sources.vision) {
@@ -89,25 +89,45 @@ Hooks.once('ready', function() {
                 }
             }
             if (srcTokens.length > 0) {
-                const srcActorIds = srcTokens.map(sTok => sTok.data.actorId);
+                const flags:any = {};
+                flags.seeinvisible = srcTokens.some(sTok => {
+                    return sTok.data.flags['conditional-visibility'] && 
+                        (sTok.data.flags['conditional-visibility'].seeinvisible === true
+                        || sTok.data.flags['conditional-visibility'].blindsight === true
+                        || sTok.data.flags['conditional-visibility'].tremorsense === true
+                        || sTok.data.flags['conditional-visibility'].truesight === true);
+                });
+                flags.seeobscured = srcTokens.some(sTok => {
+                    return sTok.data.flags['conditional-visibility'] && 
+                        (sTok.data.flags['conditional-visibility'].blindsight === true
+                        || sTok.data.flags['conditional-visibility'].tremorsense === true);
+                });
+                flags.seeindarkness = srcTokens.some(sTok => {
+                    return sTok.data.flags['conditional-visibility'] && 
+                    (sTok.data.flags['conditional-visibility'].blindsight === true
+                    || sTok.data.flags['conditional-visibility'].devilssight === true
+                    || sTok.data.flags['conditional-visibility'].tremorsense === true
+                    || sTok.data.flags['conditional-visibility'].truesight === true);
+                });
                 for (let t of restricted) {
                     if (srcTokens.indexOf(t) < 0) {
                         let newVis = true;
                         const effects = t.data.effects;
                         if (effects.length > 0) {
-                            console.error(effects);
-                        }
-                        if (t.data.flags[ConditionalVisibilty.MODULE_NAME]) {
-                            if (t.data.flags[ConditionalVisibilty.MODULE_NAME].characters) {
-                                newVis = compare(srcActorIds, t.data.flags[ConditionalVisibilty.MODULE_NAME].characters);
-                            } else {
-                                newVis = false;
+                            const invisible = effects.some(eff => eff.endsWith('invisible.svg'));
+                            if (invisible === true) {
+                                newVis = flags.seeinvisible === true;
                             }
-                            if (!newVis) {
-                                if (t.data.flags[ConditionalVisibilty.MODULE_NAME].statusConditions) {
-                                    
-                                } else {
-                                    newVis = true;
+                            if (newVis === false) {
+                                const obscured = effects.some(eff => eff.endsWith('obscured.svg'));
+                                if (obscured === true) {
+                                    newVis = flags.seeobscured === true;
+                                }
+                            }
+                            if (newVis === false) {
+                                const indarkness = effects.some(eff => eff.endsWith('indarkness.svg'));
+                                if (indarkness === true) {
+                                    newVis = flags.seeindarkness === true;
                                 }
                             }
                         }
@@ -125,7 +145,7 @@ Hooks.once('ready', function() {
 });
 
 // Add any additional hooks if necessary
-Hooks.on("renderTokenHUD", (tokenHUD, jQuery, data) => {
+Hooks.on("renderTokenHUD", (tokenHUD, html, data) => {
     if (game.user.isGM === true) {
         //window.Senses.showHud(tokenHUD, jQuery, data);
     }

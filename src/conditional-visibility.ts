@@ -54,19 +54,7 @@ Hooks.once('ready', function() {
     });
 
     const realRestrictVisibility = sightLayer.restrictVisibility;
-
-    const senses:ConditionalVisibilty = new ConditionalVisibilty(sightLayer);
-    const compare = (values, container) => {
-        if (values.length === 0 || container.length === 0) {
-            return false;
-        }
-        for (let val in values) {
-            if (container.indexOf(val) >= 0) {
-                return true;
-            }
-        }
-        return false;
-    }
+    
     sightLayer.restrictVisibility = () => {
         
         realRestrictVisibility.call(sightLayer);
@@ -111,38 +99,47 @@ Hooks.once('ready', function() {
                 });
                 for (let t of restricted) {
                     if (srcTokens.indexOf(t) < 0) {
-                        let newVis = true;
-                        const effects = t.data.effects;
-                        if (effects.length > 0) {
-                            const invisible = effects.some(eff => eff.endsWith('invisible.svg'));
-                            if (invisible === true) {
-                                newVis = flags.seeinvisible === true;
-                            }
-                            if (newVis === false) {
-                                const obscured = effects.some(eff => eff.endsWith('obscured.svg'));
-                                if (obscured === true) {
-                                    newVis = flags.seeobscured === true;
-                                }
-                            }
-                            if (newVis === false) {
-                                const indarkness = effects.some(eff => eff.endsWith('indarkness.svg'));
-                                if (indarkness === true) {
-                                    newVis = flags.seeindarkness === true;
-                                }
-                            }
-                        }
-                        t.visible = newVis;
+                        t.visible = compare(t.data.effects, flags);
                     }
                 }
             }
         }
     }
-    window.Senses = senses;
+
     // update sight layer, as custom decisons will not be executed the
     // first time through, and cannot be forced in setup
    sightLayer.update(); 	
 	
 });
+
+function compare(effects:any, flags:any): boolean {
+    if (effects.length > 0) {
+        const invisible = effects.some(eff => eff.endsWith('detective.svg'));
+        if (invisible === true) {
+            if (flags.seeinvisible === true) {
+                return true;
+            }
+        }
+        
+        const obscured = effects.some(eff => eff.endsWith('foggy.svg'));
+        if (obscured === true) {
+            if (flags.seeobscured === true) {
+                return true;
+            }
+        }
+        const indarkness = effects.some(eff => eff.endsWith('moon.svg'));
+        if (indarkness === true) {
+            if (flags.seeindarkness === true) {
+                return true;
+            }
+        }
+        return false;
+    } else {
+        return true;
+    }
+
+}
+
 
 // Add any additional hooks if necessary
 Hooks.on("renderTokenHUD", (tokenHUD, html, data) => {
@@ -156,3 +153,11 @@ Hooks.on("renderTokenConfig", async (tokenConfig, jQuery, data) => {
     const extraSenses = await renderTemplate("modules/conditional-visibility/templates/extra_senses.html", tokenConfig.object.data.flags['conditional-visibility'] || {});
     visionTab.append(extraSenses);
 });
+
+Hooks.on("modifyDocument", (a,b,c,d) => {
+    console.error(a, b, c, d);
+});
+
+Hooks.on("preUpdateToken", (a, b, c, d) => {
+    console.error("PRE", a, b, c, d);
+})

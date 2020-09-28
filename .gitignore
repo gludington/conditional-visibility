@@ -6,3 +6,4 @@ dist/lang
 dist/**/*.js
 dist/**/*.json
 .vscode
+.DS_STORE

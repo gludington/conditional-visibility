@@ -1,7 +1,7 @@
 {
   "name": "conditional-visibility",
   "title": "Conditional Visibility",
-  "description": "Yup, what it says",
+  "description": "Set conditions that only tokens with specific enhanced senses can see. Invisible and foggy icons made by <a href=\"https://www.flaticon.com/authors/freepik\" title=\"Freepik\">Freepik</a>, from <a href=\"https://www.flaticon.com/\" title=\"Flaticon\"> www.flaticon.com</a>. Moon icon made by <a href=\"https://www.flaticon.com/authors/iconixar\" title=\"iconixar\">iconixar</a> from <a href=\"https://www.flaticon.com/\" title=\"Flaticon\"> www.flaticon.com</a>",
   "version": "0.0.1",
   "author": "Greg Ludington",
   "scripts": [],

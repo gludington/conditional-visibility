@@ -32,7 +32,6 @@ Hooks.once('init', async function() {
 	// Preload Handlebars templates
 	await preloadTemplates();
 
-	ack: FormApplication ;
 	// Register custom sheets (if any)
 });
 
@@ -48,63 +47,12 @@ Hooks.once('setup', function() {
 /* ------------------------------------ */
 Hooks.once('ready', function() {
 	// Do anything once the module is ready
-	console.error("Ready");
+	console.log('conditional-visibility | Ready conditional-visibility');
     const sightLayer = canvas.layers.find(layer => {
         return layer.__proto__.constructor.name === 'SightLayer'
     });
 
-    const realRestrictVisibility = sightLayer.restrictVisibility;
-    
-    sightLayer.restrictVisibility = () => {
-        
-        realRestrictVisibility.call(sightLayer);
-        const restricted = canvas.tokens.placeables.filter(token => token.visible);
-        
-        if (restricted && restricted.length > 0) {
-            let srcTokens = new Array<Token>();
-            if (sightLayer.sources && sightLayer.sources.vision) {
-                for (const [key, source] of sightLayer.sources.vision) {
-                    if (key.startsWith("Token.")) {
-                        const tok = canvas.tokens.placeables.find(tok => tok.id === key.substring("Token.".length))
-                        if (tok) {
-                            srcTokens.push(tok);
-                        }
-                    }
-                }
-            } else {
-                if (game.user.isGM === false) {
-                    srcTokens = game.user.character.getActiveTokens();
-                }
-            }
-            if (srcTokens.length > 0) {
-                const flags:any = {};
-                flags.seeinvisible = srcTokens.some(sTok => {
-                    return sTok.data.flags['conditional-visibility'] && 
-                        (sTok.data.flags['conditional-visibility'].seeinvisible === true
-                        || sTok.data.flags['conditional-visibility'].blindsight === true
-                        || sTok.data.flags['conditional-visibility'].tremorsense === true
-                        || sTok.data.flags['conditional-visibility'].truesight === true);
-                });
-                flags.seeobscured = srcTokens.some(sTok => {
-                    return sTok.data.flags['conditional-visibility'] && 
-                        (sTok.data.flags['conditional-visibility'].blindsight === true
-                        || sTok.data.flags['conditional-visibility'].tremorsense === true);
-                });
-                flags.seeindarkness = srcTokens.some(sTok => {
-                    return sTok.data.flags['conditional-visibility'] && 
-                    (sTok.data.flags['conditional-visibility'].blindsight === true
-                    || sTok.data.flags['conditional-visibility'].devilssight === true
-                    || sTok.data.flags['conditional-visibility'].tremorsense === true
-                    || sTok.data.flags['conditional-visibility'].truesight === true);
-                });
-                for (let t of restricted) {
-                    if (srcTokens.indexOf(t) < 0) {
-                        t.visible = compare(t.data.effects, flags);
-                    }
-                }
-            }
-        }
-    }
+    ConditionalVisibilty.initialize(sightLayer);
 
     // update sight layer, as custom decisons will not be executed the
     // first time through, and cannot be forced in setup
@@ -112,52 +60,14 @@ Hooks.once('ready', function() {
 	
 });
 
-function compare(effects:any, flags:any): boolean {
-    if (effects.length > 0) {
-        const invisible = effects.some(eff => eff.endsWith('detective.svg'));
-        if (invisible === true) {
-            if (flags.seeinvisible === true) {
-                return true;
-            }
-        }
-        
-        const obscured = effects.some(eff => eff.endsWith('foggy.svg'));
-        if (obscured === true) {
-            if (flags.seeobscured === true) {
-                return true;
-            }
-        }
-        const indarkness = effects.some(eff => eff.endsWith('moon.svg'));
-        if (indarkness === true) {
-            if (flags.seeindarkness === true) {
-                return true;
-            }
-        }
-        return false;
-    } else {
-        return true;
-    }
-
-}
-
 
 // Add any additional hooks if necessary
-Hooks.on("renderTokenHUD", (tokenHUD, html, data) => {
-    if (game.user.isGM === true) {
-        //window.Senses.showHud(tokenHUD, jQuery, data);
-    }
-});
-
 Hooks.on("renderTokenConfig", async (tokenConfig, jQuery, data) => {
     const visionTab = $('div.tab[data-tab="vision"]');
-    const extraSenses = await renderTemplate("modules/conditional-visibility/templates/extra_senses.html", tokenConfig.object.data.flags['conditional-visibility'] || {});
+    const extraSenses = await renderTemplate("modules/conditional-visibility/templates/extra_senses.html", tokenConfig.object.data.flags[ConditionalVisibilty.MODULE_NAME] || {});
     visionTab.append(extraSenses);
 });
 
-Hooks.on("modifyDocument", (a,b,c,d) => {
-    console.error(a, b, c, d);
-});
-
-Hooks.on("preUpdateToken", (a, b, c, d) => {
-    console.error("PRE", a, b, c, d);
+Hooks.on("preUpdateToken", (thing, d, update, options, userId) => {
+    ConditionalVisibilty.INSTANCE.checkRedraw(update);
 })

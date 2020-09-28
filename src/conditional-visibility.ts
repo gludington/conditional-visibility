@@ -45,7 +45,7 @@ Hooks.once('setup', function() {
 /* ------------------------------------ */
 /* When ready							*/
 /* ------------------------------------ */
-Hooks.once('ready', function() {
+Hooks.once('ready', async function() {
 	// Do anything once the module is ready
 	console.log('conditional-visibility | Ready conditional-visibility');
     const sightLayer = canvas.layers.find(layer => {
@@ -56,7 +56,7 @@ Hooks.once('ready', function() {
 
     // update sight layer, as custom decisons will not be executed the
     // first time through, and cannot be forced in setup
-   sightLayer.update(); 	
+   await sightLayer.update(); 	
 	
 });
 

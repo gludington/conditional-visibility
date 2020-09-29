@@ -17,11 +17,11 @@
   ],
   "minimumCoreVersion": "0.6.6",
   "compatibleCoreVersion": "0.6.6",
-  "url": "https://github.com/gludington/foundryutils/tree/master/shotclock",
-    "manifest": "https://raw.githubusercontent.com/gludington/foundryutils/master/shotclock/module.json",
-    "download": "https://github.com/tonifisler/foundry-group-initiative/archive/1.3.1.zip",
-    "changelog": "https://github.com/tonifisler/foundry-group-initiative/blob/master/CHANGELOG.md",
-    "readme": "https://github.com/tonifisler/foundry-group-initiative/blob/master/README.md",
+  "url": "https://github.com/gludington/conditional-visibility/",
+    "manifest": "https://raw.githubusercontent.com/gludington/conditional-visibility/master/module.json",
+    "download": "https://github.com/gludington/conditional-visibility/package/conditional-visibility-v0.0.1.zip",
+    "changelog": "https://raw.githubusercontent.com/gludington/conditional-visibility/master/CHANGELOG.md",
+    "readme": "https://raw.githubusercontent.com/gludington/conditional-visibility/master/README.md",
   "license": "",
   "bugs": ""
 }

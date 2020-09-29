@@ -16,16 +16,18 @@ Hide some things from some players, but not others!
 
 ### Conditions
 **Conditional Visibility** works by adding new conditions to the conditions panel, for Invisible, Obscured, and In Magical Darkness    
-![Conditions Panel](https://i.imgur.com/E9zLMch.png)
+![Conditions Panel](https://raw.githubusercontent.com/gludington/conditional-visibility/master/src/support/conditions.png)
 
 When a token has one of these conditions, it can only be seen by a token with the proper senses configured in their Vision panel
-![Vision Panel](https://i.imgur.com/nhgEbVJ.png))
+![Vision Panel](https://raw.githubusercontent.com/gludington/conditional-visibility/master/src/support/visionControls.png)
 
-Put it together, it looks like this:
-![Quick Sample](https://i.imgur.com/qUQxv93.mp4)
+Put it together, it looks like this (click to play on YouTube):
 
-## Combat Track
-Set a playlist or track to play when the Combat encounter begins.
+[![Watch the video](https://img.youtube.com/vi/IlgjHmSAsww/hqdefault.jpg)](https://youtu.be/IlgjHmSAsww)
+
+And communicates to player screens (click to play on YouTube):
+
+[![Watch the video](https://img.youtube.com/vi/U308ksxblZU/hqdefault.jpg)](https://youtu.be/U308ksxblZU)
 
 ## Installation
 
@@ -34,9 +36,13 @@ Set a playlist or track to play when the Combat encounter begins.
 3. Once the **conditional-visibility** module is installed, open your desired world and navigate to the `Game Settings` > `Configure Settings` > `Module Settings` and enable the module
 
 ## Issues/Feedback
+
 You can create an issue here: [Issue Log](https://github.com/gludington/conditional-visibility/issues)
+
+# Known Issues
+* Not compatible with Combat Utility Belt's Enhanced Conditions
 
 ## Attributions
 **Icons by**
-* unknown.svg and foggy.svg icons made by <a href=\"https://www.flaticon.com/authors/freepik\" title=\"Freepik\">Freepik</a>, from <a href=\"https://www.flaticon.com/\" title=\"Flaticon\"> www.flaticon.com</a>
-* moon.svg icon made by <a href=\"https://www.flaticon.com/authors/iconixar\" title=\"iconixar\">iconixar</a> from <a href=\"https://www.flaticon.com/\" title=\"Flaticon\"> www.flaticon.com</a>
+* unknown.svg and foggy.svg icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a>, from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>
+* moon.svg icon made by <a href="https://www.flaticon.com/authors/iconixar" title="iconixar">iconixar</a> from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>

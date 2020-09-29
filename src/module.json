@@ -19,7 +19,7 @@
   "compatibleCoreVersion": "0.6.6",
   "url": "https://github.com/gludington/conditional-visibility/",
     "manifest": "https://raw.githubusercontent.com/gludington/conditional-visibility/master/src/module.json",
-    "download": "https://github.com/gludington/conditional-visibility/blob/master/package/conditional-visibility-v0.0.1.zip",
+    "download": "https://github.com/gludington/conditional-visibility/raw/master/package/conditional-visibility-v0.0.1.zip",
     "changelog": "https://raw.githubusercontent.com/gludington/conditional-visibility/master/CHANGELOG.md",
     "readme": "https://raw.githubusercontent.com/gludington/conditional-visibility/master/README.md",
   "license": "",

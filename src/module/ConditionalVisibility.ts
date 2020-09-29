@@ -99,7 +99,7 @@ export class ConditionalVisibilty {
 
     private compare(effects:any, flags:any): boolean {
         if (effects.length > 0) {
-            const invisible = effects.some(eff => eff.endsWith('detective.svg'));
+            const invisible = effects.some(eff => eff.endsWith('unknown.svg'));
             if (invisible === true) {
                 if (flags.seeinvisible !== true) {
                     return false;

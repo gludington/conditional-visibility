@@ -1,9 +1,12 @@
 node_modules
 foundryconfig.json
+dist
 dist/module
 dist/templates
 dist/lang
+dist/icons
 dist/**/*.js
 dist/**/*.json
 .vscode
-.DS_STORE
+.DS_Store
+**/.DS_Store

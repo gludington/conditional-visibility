@@ -1,18 +1,15 @@
 {
     "CONVIS.visibilityConditions": "Visibility Conditions",
-    "CONVIS.description": "If any selection is made, a player's token must match one or more of the checks to see this token.",
-    "CONVIS.clearAll":"Clear All Conditions",
-    "CONVIS.statuses": "Status Conditions",
-    "CONVIS.statusesHint": "Conditions that can impact visibility",
-    "CONVIS.skillCheck": "Skill Check",
-    "CONVIS.skillCheckHint": "A token's actor must beat the SKILL CHECK TBD",
-    "CONVIS.characters": "Charcters",
-    "CONVIS.charactersHint": "These characters can see the the target regardless of status",
     "CONVIS.ExtraSenseInstructions": "Additional senses that may enhance vision",
     "CONVIS.seeinvisible":"Sees Invisible",
     "CONVIS.seeethereal":"Sees Ethereal",
     "CONVIS.blindsight": "Blindsight",
     "CONVIS.tremorsense":"Tremorsense",
     "CONVIS.devilssight":"Devil's Sight",
-    "CONVIS.truesight":"Truesight"
+    "CONVIS.truesight":"Truesight",
+    "CONVIS.invisible":"Invisible",
+    "CONVIS.obscured":"Obscured",
+    "CONVIS.indarkness":"In Darkness",
+    "CONVIS.hidden":"Hidden",
+    "CONVIS.currentstealth":"Current Stealth"
 }

@@ -62,10 +62,12 @@ Hooks.once('ready', async function() {
 
 
 // Add any additional hooks if necessary
-Hooks.on("renderTokenConfig", async (tokenConfig, jQuery, data) => {
-    const visionTab = $('div.tab[data-tab="vision"]');
-    const extraSenses = await renderTemplate("modules/conditional-visibility/templates/extra_senses.html", tokenConfig.object.data.flags[ConditionalVisibilty.MODULE_NAME] || {});
-    visionTab.append(extraSenses);
+Hooks.on("renderTokenConfig", async (tokenConfig, html, data) => {
+    ConditionalVisibilty.INSTANCE.onRenderTokenConfig(tokenConfig, html, data);
+});
+
+Hooks.on("renderTokenHUD", async (app, html, data) => {
+    ConditionalVisibilty.INSTANCE.onRenderTokenHUD(app, html, data);
 });
 
 Hooks.on("preUpdateToken", (thing, token, update, options, userId) => {

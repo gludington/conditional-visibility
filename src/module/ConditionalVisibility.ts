@@ -116,7 +116,7 @@ export class ConditionalVisibilty {
                     if (ConditionalVisibilty.EFFECTS.get(src) === 'hidden') {
                         //@ts-ignore
                         title = game.i18n.format('CONVIS.' + ConditionalVisibilty.EFFECTS.get(src), "{}");
-                        if (data.flags[ConditionalVisibilty.MODULE_NAME]._ste) {
+                        if (data.flags[ConditionalVisibilty.MODULE_NAME]._ste && !isNaN(parseInt(data.flags[ConditionalVisibilty.MODULE_NAME]._ste))) {
                             //@ts-ignore
                             title += ' ' + game.i18n.format('CONVIS.currentstealth') + ': ' + data.flags[ConditionalVisibilty.MODULE_NAME]._ste;
                         }
@@ -140,7 +140,7 @@ export class ConditionalVisibilty {
                     
                 }
 
-                if (currentStealth === undefined || currentStealth === -10) {
+                if (currentStealth === undefined || isNaN(parseInt(currentStealth))) {
                     const actor = game.actors.entities.find(a => a.id);
                     if (actor) {
                         const roll = new Roll("1d20 " + actor.data.data.skills.ste.total).roll();
@@ -167,7 +167,7 @@ export class ConditionalVisibilty {
                 if (!update.flags[ConditionalVisibilty.MODULE_NAME]) {
                     update.flags[ConditionalVisibilty.MODULE_NAME] = {};
                 }
-                update.flags[ConditionalVisibilty.MODULE_NAME]._ste = -10;
+                update.flags[ConditionalVisibilty.MODULE_NAME]._ste = "";
             }
             await this.draw();
         } else if (update.flags && update.flags[ConditionalVisibilty.MODULE_NAME]) {

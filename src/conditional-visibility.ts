@@ -68,6 +68,6 @@ Hooks.on("renderTokenConfig", async (tokenConfig, jQuery, data) => {
     visionTab.append(extraSenses);
 });
 
-Hooks.on("preUpdateToken", (thing, d, update, options, userId) => {
-    ConditionalVisibilty.INSTANCE.checkRedraw(update);
+Hooks.on("preUpdateToken", (thing, token, update, options, userId) => {
+    ConditionalVisibilty.INSTANCE.onPreUpdateToken(token, update);
 })

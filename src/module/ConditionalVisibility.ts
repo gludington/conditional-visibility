@@ -140,7 +140,7 @@ export class ConditionalVisibilty {
                     
                 }
 
-                if (currentStealth === undefined) {
+                if (currentStealth === undefined || currentStealth === -10) {
                     const actor = game.actors.entities.find(a => a.id);
                     if (actor) {
                         const roll = new Roll("1d20 " + actor.data.data.skills.ste.total).roll();
@@ -167,7 +167,7 @@ export class ConditionalVisibilty {
                 if (!update.flags[ConditionalVisibilty.MODULE_NAME]) {
                     update.flags[ConditionalVisibilty.MODULE_NAME] = {};
                 }
-                update.flags[ConditionalVisibilty.MODULE_NAME]._ste = undefined;
+                update.flags[ConditionalVisibilty.MODULE_NAME]._ste = -10;
             }
             await this.draw();
         } else if (update.flags && update.flags[ConditionalVisibilty.MODULE_NAME]) {

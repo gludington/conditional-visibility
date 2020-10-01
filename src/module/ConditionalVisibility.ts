@@ -152,7 +152,7 @@ export class ConditionalVisibilty {
                             update.flags[ConditionalVisibilty.MODULE_NAME] = {};
                         }
                         
-                        const pr:number = parseInt(prompt("Stealth Roll", result));
+                        const pr:number = parseInt(prompt(game.i18n.format("CONVIS.stealthroll", {}), result));
                         if (isNaN(pr)) {
                             update.flags[ConditionalVisibilty.MODULE_NAME]._ste = roll._result;    
                         } else {

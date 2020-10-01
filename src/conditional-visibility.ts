@@ -52,7 +52,7 @@ Hooks.once('ready', async function() {
         return layer.__proto__.constructor.name === 'SightLayer'
     });
 
-    ConditionalVisibilty.initialize(sightLayer);
+    ConditionalVisibilty.initialize(sightLayer, canvas.hud.token);
 
     // update sight layer, as custom decisons will not be executed the
     // first time through, and cannot be forced in setup
@@ -62,11 +62,19 @@ Hooks.once('ready', async function() {
 
 
 // Add any additional hooks if necessary
-Hooks.on("renderTokenConfig", async (tokenConfig, html, data) => {
+Hooks.on('preCreateTokenConfig', () => {
+    console.error("pc");
+    debugger;
+});
+Hooks.on('createTokenConfig', () => {
+    console.error("pcc");
+    debugger;
+});
+Hooks.on("renderTokenConfig", (tokenConfig, html, data) => {
     ConditionalVisibilty.INSTANCE.onRenderTokenConfig(tokenConfig, html, data);
 });
 
-Hooks.on("renderTokenHUD", async (app, html, data) => {
+Hooks.on("renderTokenHUD", (app, html, data) => {
     ConditionalVisibilty.INSTANCE.onRenderTokenHUD(app, html, data);
 });
 

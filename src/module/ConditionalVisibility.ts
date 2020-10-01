@@ -16,15 +16,15 @@ export class ConditionalVisibilty {
     );
     
     private _sightLayer: any;
+    private _tokenHud: any;
 
-    static initialize(sightlayer: any) {
-        ConditionalVisibilty.INSTANCE = new ConditionalVisibilty(sightlayer);
+    static initialize(sightLayer: any, tokenHud: TokenHUD) {
+        ConditionalVisibilty.INSTANCE = new ConditionalVisibilty(sightLayer, tokenHud);
     }
 
-    private constructor(sightLayer: any) {
+    private constructor(sightLayer: any, tokenHud: TokenHUD) {
         this._sightLayer = sightLayer;
-        const realRestrictVisibility = sightLayer.restrictVisibility;
-    
+        const realRestrictVisibility = sightLayer.restrictVisibility;    
         this._sightLayer.restrictVisibility = () => {
             
             realRestrictVisibility.call(this._sightLayer);
@@ -84,6 +84,29 @@ export class ConditionalVisibilty {
             }
         }
 
+        this._tokenHud = tokenHud;
+        const realOnToggleEffect = this._tokenHud._onToggleEffect.bind(this._tokenHud);
+        this._tokenHud._onToggleEffect = (event) => {
+                event.preventDefault();
+                const icon = event.currentTarget;
+                if (icon.src.endsWith('newspaper.svg') && icon.className.indexOf('active') < 0) {
+                    const object = this._tokenHud.object;
+                    this.stealthHud(object).then(result => {
+                        if (!object.data.flags) {
+                            object.data.flags = {};
+                        }
+                        if (!object.data.flags[ConditionalVisibilty.MODULE_NAME]) {
+                            object.data.flags[ConditionalVisibilty.MODULE_NAME] = {};
+                        }
+                        object.data.flags[ConditionalVisibilty.MODULE_NAME]._ste = result;
+                        realOnToggleEffect(event);
+                    });
+                    return false;
+                } else {
+                    realOnToggleEffect(event);
+                }
+        }
+
         game.socket.on("modifyEmbeddedDocument", async (message) => {
             const result = message.result.find(result => {
                 return result.effects || (result.flags && result.flags[ConditionalVisibilty.MODULE_NAME]);
@@ -106,7 +129,56 @@ export class ConditionalVisibilty {
         visionTab.append(extraSenses);
     }
 
-    public async onRenderTokenHUD(app, html, data) {
+    private async stealthHud(token:any):Promise<number> {
+        let initialValue;
+        try {
+            initialValue = parseInt(token.data.flags[ConditionalVisibilty.MODULE_NAME]._ste);
+        } catch (err) {
+            
+        }
+        let result = initialValue;
+        if (initialValue === undefined || isNaN(parseInt(initialValue))) {
+            const actor = token.actor;
+            if (actor) {
+                const roll = new Roll("1d20 " + actor.data.data.skills.ste.total).roll();
+                result = roll._result;
+            }
+        }
+        const content = await renderTemplate("modules/conditional-visibility/templates/stealth_hud.html", { initialValue: result });
+        return new Promise((resolve, reject) => {   
+            let hud = new Dialog({
+                title: game.i18n.format('CONVIS.hidden', {}),
+                content: content,
+                buttons: {
+                    one: {
+                        icon: '<i class="fas fa-check"></i>',
+                        label: 'OK',
+                        callback: (html) => {
+                            //@ts-ignore
+                            const val = parseInt(html.find('div.form-group').children()[1].value);
+                            if (isNaN(val)) {
+                                resolve(-1);
+                            } else {
+                                resolve(val);
+                            }
+                        }
+                    }
+                },
+                close: (html) => {
+                    //@ts-ignore
+                    const val = parseInt(html.find('div.form-group').children()[1].value);
+                        if (isNaN(val)) {
+                            resolve(-1);
+                        } else {
+                            resolve(val);
+                        }
+                }
+            });
+            hud.render(true);
+        });
+    }
+
+    public onRenderTokenHUD(app, html, data) {
         const effects = ConditionalVisibilty.EFFECTS.keys();
         const effectIcons = html.find("img.effect-control")
             .each((idx, icon) => {
@@ -132,7 +204,6 @@ export class ConditionalVisibilty {
     public async onPreUpdateToken(token:any, update:any) {
         if (update.effects) {
             if (update.effects.some(eff => eff.endsWith('newspaper.svg'))) {
-                
                 let currentStealth;
                 try {
                     currentStealth = parseInt(token.flags[ConditionalVisibilty.MODULE_NAME]._ste);
@@ -141,24 +212,14 @@ export class ConditionalVisibilty {
                 }
 
                 if (currentStealth === undefined || isNaN(parseInt(currentStealth))) {
-                    const actor = game.actors.entities.find(a => a.id);
-                    if (actor) {
-                        const roll = new Roll("1d20 " + actor.data.data.skills.ste.total).roll();
-                        const result = roll._result;
-                        if (!update.flags) {
-                            update.flags = {};
-                        }
-                        if (!update.flags[ConditionalVisibilty.MODULE_NAME]) {
-                            update.flags[ConditionalVisibilty.MODULE_NAME] = {};
-                        }
-                        
-                        const pr:number = parseInt(prompt(game.i18n.format("CONVIS.stealthroll", {}), result));
-                        if (isNaN(pr)) {
-                            update.flags[ConditionalVisibilty.MODULE_NAME]._ste = roll._result;    
-                        } else {
-                            update.flags[ConditionalVisibilty.MODULE_NAME]._ste = pr;    
-                        }
+                } else {
+                    if (!update.flags) {
+                        update.flags = {};
                     }
+                    if (!update.flags[ConditionalVisibilty.MODULE_NAME]) {
+                        update.flags[ConditionalVisibilty.MODULE_NAME] = {};
+                    }
+                    update.flags[ConditionalVisibilty.MODULE_NAME]._ste = currentStealth;
                 }
             } else {
                 if (!update.flags) {

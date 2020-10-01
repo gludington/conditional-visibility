@@ -1,5 +1,8 @@
 # Changelog
 
+## [0.0.3]
+- Updated Hidden to not require javascript prompt
+
 ## [0.0.2]
 - Added Hidden, with an automatic stealth roll checked against passive perception
 

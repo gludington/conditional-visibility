@@ -18,7 +18,7 @@ Hide some things from some players, but not others!
 **Conditional Visibility** works by adding new conditions to the conditions panel, for Invisible, Obscured, In Magical Darkness, and Hidden (not shown here)
 ![Conditions Panel](https://raw.githubusercontent.com/gludington/conditional-visibility/master/src/support/conditions.png)
 
-If a token is Hidden, a stealth roll will be automatically made, and a currently ugly prompt will allow you to change the value before closing.
+If a token is Hidden, a stealth roll will be automatically made, with a prompt to allow you to change it if desired before closing.
 
 When a token has one of these conditions, it can only be seen by a token with the proper senses configured in their Vision panel, or, in the case of Hidden, if their
 passive perception exceeds that of the stealth roll.
@@ -28,6 +28,9 @@ passive perception exceeds that of the stealth roll.
 Put it together, it looks like this (click to play on YouTube):
 
 [![Watch the video](https://img.youtube.com/vi/IlgjHmSAsww/hqdefault.jpg)](https://youtu.be/IlgjHmSAsww)
+
+Hidden looks like this (click to play on YouTube):
+[![Watch the video](https://img.youtube.com/vi/pYay4fRlnu4/hqdefault.jpg)](https://youtu.be/pYay4fRlnu4)
 
 And communicates to player screens (click to play on YouTube):
 

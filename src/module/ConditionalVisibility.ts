@@ -188,7 +188,8 @@ export class ConditionalVisibilty {
                     if (ConditionalVisibilty.EFFECTS.get(src) === 'hidden') {
                         //@ts-ignore
                         title = game.i18n.format('CONVIS.' + ConditionalVisibilty.EFFECTS.get(src), "{}");
-                        if (data.flags[ConditionalVisibilty.MODULE_NAME]._ste && !isNaN(parseInt(data.flags[ConditionalVisibilty.MODULE_NAME]._ste))) {
+                        if (data.flags && data.flags[ConditionalVisibilty.MODULE_NAME] 
+                            && data.flags[ConditionalVisibilty.MODULE_NAME]._ste && !isNaN(parseInt(data.flags[ConditionalVisibilty.MODULE_NAME]._ste))) {
                             //@ts-ignore
                             title += ' ' + game.i18n.format('CONVIS.currentstealth') + ': ' + data.flags[ConditionalVisibilty.MODULE_NAME]._ste;
                         }

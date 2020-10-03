@@ -8,7 +8,7 @@ dist/icons
 dist/**/*.js
 dist/**/*.json
 package
-pacakage/*.zip
+package/*.zip
 .vscode
 .DS_Store
 **/.DS_Store

@@ -52,12 +52,7 @@ Hooks.once('ready', async function() {
         return layer.__proto__.constructor.name === 'SightLayer'
     });
 
-    ConditionalVisibilty.initialize(sightLayer, canvas.hud.token);
-
-    // update sight layer, as custom decisons will not be executed the
-    // first time through, and cannot be forced in setup
-   await sightLayer.update(); 	
-	
+    ConditionalVisibilty.initialize(sightLayer, canvas.hud.token);	
 });
 
 

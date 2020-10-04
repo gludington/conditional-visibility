@@ -1,5 +1,8 @@
 # Changelog
 
+## [0.0.5]
+- Move releases to artifact areas
+
 ## [0.0.3]
 - Updated Hidden to not require javascript prompt
 

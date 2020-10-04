@@ -22,6 +22,7 @@ export class ConditionalVisibilty {
 
     private _getSrcTokens: () => Array<Token>;
     private _rollStealth: (actor: Actor) => number;
+    private _draw: () => void;
 
     static initialize(sightLayer: any, tokenHud: TokenHUD) {
         ConditionalVisibilty.INSTANCE = new ConditionalVisibilty(sightLayer, tokenHud);
@@ -60,6 +61,10 @@ export class ConditionalVisibilty {
                 }
                 return result;
             }
+            this._draw = async() => {
+                await this._sightLayer.initialize();
+                await this._sightLayer.refresh();
+            }
         } else {
             console.log(ConditionalVisibilty.MODULE_NAME + " | starting against v6 instance " + game.data.version);
             this._getSrcTokens = () => {
@@ -89,6 +94,10 @@ export class ConditionalVisibilty {
                     result = ConditionalVisibilty.DEFAULT_STEALTH;
                 }
                 return result;
+            }
+            this._draw = async() => {
+                await this._sightLayer.initialize();
+                await this._sightLayer.update();
             }
         }
         this._sightLayer = sightLayer;
@@ -170,7 +179,10 @@ export class ConditionalVisibilty {
             if (this.shouldRedraw(result)) {
                 await this.draw();
             }
-        })
+        });
+        // update sight layer, as custom decisons will not be executed the
+        // first time through, and cannot be forced in setup
+        this.draw();
     }
 
     public shouldRedraw(toTest: any) {
@@ -289,8 +301,7 @@ export class ConditionalVisibilty {
     }
 
     private async draw() {
-        await this._sightLayer.initialize();
-        await this._sightLayer.update();
+        this._draw();
     }
 
     private compare(tokenToSee:any, flags:any): boolean {

@@ -14,27 +14,27 @@ export class ConditionalVisibilty {
         ['modules/conditional-visibility/icons/moon.svg', 'indarkness'],
         ['modules/conditional-visibility/icons/newspaper.svg', 'hidden']]
     );
-    
+    static DEFAULT_STEALTH:number = 10;
+
     private _sightLayer: any;
     private _tokenHud: any;
+    private _isV7:boolean;
+
+    private _getSrcTokens: () => Array<Token>;
+    private _rollStealth: (actor: Actor) => number;
 
     static initialize(sightLayer: any, tokenHud: TokenHUD) {
         ConditionalVisibilty.INSTANCE = new ConditionalVisibilty(sightLayer, tokenHud);
     }
 
     private constructor(sightLayer: any, tokenHud: TokenHUD) {
-        this._sightLayer = sightLayer;
-        const realRestrictVisibility = sightLayer.restrictVisibility;    
-        this._sightLayer.restrictVisibility = () => {
-            
-            realRestrictVisibility.call(this._sightLayer);
-
-            const restricted = canvas.tokens.placeables.filter(token => token.visible);
-            
-            if (restricted && restricted.length > 0) {
+        this._isV7 = game.data.version.startsWith("0.7");
+        if (this._isV7) {
+            console.log(ConditionalVisibilty.MODULE_NAME + " | starting against v7 instance " + game.data.version);
+            this._getSrcTokens = () => {
                 let srcTokens = new Array<Token>();
-                if (sightLayer.sources && sightLayer.sources.vision) {
-                    for (const [key, source] of sightLayer.sources.vision) {
+                if (this._sightLayer.sources) {
+                    for (const key of this._sightLayer.sources.keys()) {
                         if (key.startsWith("Token.")) {
                             const tok = canvas.tokens.placeables.find(tok => tok.id === key.substring("Token.".length))
                             if (tok) {
@@ -47,6 +47,61 @@ export class ConditionalVisibilty {
                         srcTokens = game.user.character.getActiveTokens();
                     }
                 }
+                return srcTokens;
+            }
+            this._rollStealth = (actor:Actor) => {
+                let result;
+                if (actor) {
+                    const roll = new Roll("1d20 " + actor.data.data.skills.ste.total).roll();
+                    //@ts-ignore
+                    result = roll.results[0];
+                } else {
+                    result = ConditionalVisibilty.DEFAULT_STEALTH;
+                }
+                return result;
+            }
+        } else {
+            console.log(ConditionalVisibilty.MODULE_NAME + " | starting against v6 instance " + game.data.version);
+            this._getSrcTokens = () => {
+                let srcTokens = new Array<Token>();
+                if (this._sightLayer.sources && this._sightLayer.sources.vision) {
+                    for (const [key, source] of this._sightLayer.sources.vision) {
+                        if (key.startsWith("Token.")) {
+                            const tok = canvas.tokens.placeables.find(tok => tok.id === key.substring("Token.".length))
+                            if (tok) {
+                                srcTokens.push(tok);
+                            }
+                        }
+                    }
+                } else {
+                    if (game.user.isGM === false) {
+                        srcTokens = game.user.character.getActiveTokens();
+                    }
+                }
+                return srcTokens;
+            }
+            this._rollStealth = (actor:Actor) => {
+                let result;
+                if (actor) {
+                    const roll = new Roll("1d20 " + actor.data.data.skills.ste.total).roll();
+                    result = roll._result;
+                } else {
+                    result = ConditionalVisibilty.DEFAULT_STEALTH;
+                }
+                return result;
+            }
+        }
+        this._sightLayer = sightLayer;
+        const realRestrictVisibility = sightLayer.restrictVisibility;    
+        this._sightLayer.restrictVisibility = () => {
+            
+            realRestrictVisibility.call(this._sightLayer);
+
+            const restricted = canvas.tokens.placeables.filter(token => token.visible);
+            
+            if (restricted && restricted.length > 0) {
+                let srcTokens = this._getSrcTokens();
+                
                 if (srcTokens.length > 0) {
                     const flags:any = {};
                     flags.seeinvisible = srcTokens.some(sTok => {
@@ -138,11 +193,7 @@ export class ConditionalVisibilty {
         }
         let result = initialValue;
         if (initialValue === undefined || isNaN(parseInt(initialValue))) {
-            const actor = token.actor;
-            if (actor) {
-                const roll = new Roll("1d20 " + actor.data.data.skills.ste.total).roll();
-                result = roll._result;
-            }
+            result = this._rollStealth(token.actor);
         }
         const content = await renderTemplate("modules/conditional-visibility/templates/stealth_hud.html", { initialValue: result });
         return new Promise((resolve, reject) => {   

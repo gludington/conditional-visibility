@@ -185,7 +185,8 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
     }
 
     /**
-     * Renders a dialog window pre-filled with the result of a system-dependent roll, which can be changed in ainput
+     * Renders a dialog window pre-filled with the result of a system-dependent roll, which can be changed in an input field.  Subclasses can use this
+     * as is, see ConditionalVisibilitySystem5e for an example
      * @param token the actor to whom this dialog refers
      * @returns a Promise<number> containing the value of the result, or -1 if unintelligble
      */
@@ -198,7 +199,12 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
         }
         let result = initialValue;
         if (initialValue === undefined || isNaN(parseInt(initialValue))) {
-            result = this.rollStealth(token).roll().total;
+             try {
+                 result = this.rollStealth(token).roll().total;
+             } catch (err) {
+                 console.warn("Error rolling stealth, check formula for system");
+                 result = ConditionalVisibilty.DEFAULT_STEALTH;
+             }
         }
 
         const content = await renderTemplate("modules/conditional-visibility/templates/stealth_hud.html", { initialValue: result });

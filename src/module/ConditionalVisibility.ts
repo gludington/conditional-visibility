@@ -1,34 +1,65 @@
-interface StatusCondition {
-    code: string,
-    name: string
-}
+import { ConditionalVisibilitySystem5e } from "./systems/ConditionalVisibilitySystem5e";
+import { ConditionalVisibilitySystem, DefaultConditionalVisibilitySystem } from "./systems/ConditionalVisibilitySystem";
+
 export class ConditionalVisibilty {
 
     static MODULE_NAME:string = "conditional-visibility";
 
     static INSTANCE: ConditionalVisibilty;
-
-    static EFFECTS: Map<String, String> = new Map<String, String>(
-        [['modules/conditional-visibility/icons/unknown.svg', 'invisible'],
-        ['modules/conditional-visibility/icons/foggy.svg', 'obscured'],
-        ['modules/conditional-visibility/icons/moon.svg', 'indarkness'],
-        ['modules/conditional-visibility/icons/newspaper.svg', 'hidden']]
-    );
     static DEFAULT_STEALTH:number = 10;
 
     private _sightLayer: any;
     private _tokenHud: any;
+    private _conditionalVisibilitySystem: ConditionalVisibilitySystem
     private _isV7:boolean;
 
     private _getSrcTokens: () => Array<Token>;
-    private _rollStealth: (actor: Actor) => number;
     private _draw: () => void;
 
+    /**
+     * Called from init hook to establish the extra status effects in the main list before full game initialization.
+     */
+    static onInit() {
+        const system = ConditionalVisibilty.newSystem();
+        console.log(ConditionalVisibilty.MODULE_NAME + " | Initializing visibility system effects " + system.gameSystemId() + " for game system " + game.system.id);
+        for (const effect of system.effects().keys()) {
+            //@ts-ignore
+            CONFIG.statusEffects.push(effect);	
+        }
+    }
+
+    /**
+     * Create a new ConditionalVisibilitySystem appropriate to the game system
+     * @returns ConditionalVisibilitySystem
+     */
+    private static newSystem():ConditionalVisibilitySystem {
+        let system;
+        if (game.system.id === 'dnd5e') {
+            system = new ConditionalVisibilitySystem5e();
+        } else {
+            system = new DefaultConditionalVisibilitySystem();
+        }
+        return system;
+    }
+
+    /**
+     * Initializes the ConditionalVisibilitySystem.  Called from ready Hook.
+     * @param sightLayer the slightlayer from the game system.
+     * @param tokenHud the tokenHud to use.
+     */
     static initialize(sightLayer: any, tokenHud: TokenHUD) {
         ConditionalVisibilty.INSTANCE = new ConditionalVisibilty(sightLayer, tokenHud);
     }
 
+    /**
+     * Create a ConditionalVisibility with a given sightLayer and tokenHud.
+     * @param sightLayer the sightLayer to use
+     * @param tokenHud the tokenHud to use
+     */
     private constructor(sightLayer: any, tokenHud: TokenHUD) {
+        this._conditionalVisibilitySystem = ConditionalVisibilty.newSystem();
+
+        // v0.6 and v0.7 inspect the tokens in a sightLayer differently, so switch based on version
         this._isV7 = game.data.version.startsWith("0.7");
         if (this._isV7) {
             console.log(ConditionalVisibilty.MODULE_NAME + " | starting against v7 instance " + game.data.version);
@@ -49,17 +80,6 @@ export class ConditionalVisibilty {
                     }
                 }
                 return srcTokens;
-            }
-            this._rollStealth = (actor:Actor) => {
-                let result;
-                if (actor) {
-                    const roll = new Roll("1d20 " + actor.data.data.skills.ste.total).roll();
-                    //@ts-ignore
-                    result = roll.results[0];
-                } else {
-                    result = ConditionalVisibilty.DEFAULT_STEALTH;
-                }
-                return result;
             }
             this._draw = async() => {
                 await this._sightLayer.initialize();
@@ -85,16 +105,6 @@ export class ConditionalVisibilty {
                 }
                 return srcTokens;
             }
-            this._rollStealth = (actor:Actor) => {
-                let result;
-                if (actor) {
-                    const roll = new Roll("1d20 " + actor.data.data.skills.ste.total).roll();
-                    result = roll._result;
-                } else {
-                    result = ConditionalVisibilty.DEFAULT_STEALTH;
-                }
-                return result;
-            }
             this._draw = async() => {
                 await this._sightLayer.initialize();
                 await this._sightLayer.update();
@@ -112,36 +122,10 @@ export class ConditionalVisibilty {
                 let srcTokens = this._getSrcTokens();
                 
                 if (srcTokens.length > 0) {
-                    const flags:any = {};
-                    flags.seeinvisible = srcTokens.some(sTok => {
-                        return sTok.data.flags['conditional-visibility'] && 
-                            (sTok.data.flags['conditional-visibility'].seeinvisible === true
-                            || sTok.data.flags['conditional-visibility'].blindsight === true
-                            || sTok.data.flags['conditional-visibility'].tremorsense === true
-                            || sTok.data.flags['conditional-visibility'].truesight === true);
-                    });
-                    flags.seeobscured = srcTokens.some(sTok => {
-                        return sTok.data.flags['conditional-visibility'] && 
-                            (sTok.data.flags['conditional-visibility'].blindsight === true
-                            || sTok.data.flags['conditional-visibility'].tremorsense === true);
-                    });
-                    flags.seeindarkness = srcTokens.some(sTok => {
-                        return sTok.data.flags['conditional-visibility'] && 
-                        (sTok.data.flags['conditional-visibility'].blindsight === true
-                        || sTok.data.flags['conditional-visibility'].devilssight === true
-                        || sTok.data.flags['conditional-visibility'].tremorsense === true
-                        || sTok.data.flags['conditional-visibility'].truesight === true);
-                    });
-                    //@ts-ignore
-                    flags.prc = Math.max(srcTokens.map(sTok => {
-                        if (sTok.actor && sTok.actor.data && sTok.actor.data.data.skills.prc.passive) {
-                            return sTok.actor.data.data.skills.prc.passive;
-                        }
-                        return -1;
-                    }));
+                    const flags: any = this._conditionalVisibilitySystem.getVisionCapabilities(srcTokens);
                     for (let t of restricted) {
                         if (srcTokens.indexOf(t) < 0) {
-                            t.visible = this.compare(t, flags);
+                            t.visible = this._conditionalVisibilitySystem.canSee(t, flags);
                         }
                     }
                 }
@@ -149,27 +133,7 @@ export class ConditionalVisibilty {
         }
 
         this._tokenHud = tokenHud;
-        const realOnToggleEffect = this._tokenHud._onToggleEffect.bind(this._tokenHud);
-        this._tokenHud._onToggleEffect = (event) => {
-                event.preventDefault();
-                const icon = event.currentTarget;
-                if (icon.src.endsWith('newspaper.svg') && icon.className.indexOf('active') < 0) {
-                    const object = this._tokenHud.object;
-                    this.stealthHud(object).then(result => {
-                        if (!object.data.flags) {
-                            object.data.flags = {};
-                        }
-                        if (!object.data.flags[ConditionalVisibilty.MODULE_NAME]) {
-                            object.data.flags[ConditionalVisibilty.MODULE_NAME] = {};
-                        }
-                        object.data.flags[ConditionalVisibilty.MODULE_NAME]._ste = result;
-                        realOnToggleEffect(event);
-                    });
-                    return false;
-                } else {
-                    realOnToggleEffect(event);
-                }
-        }
+        this._conditionalVisibilitySystem.initializeOnToggleEffect(this._tokenHud);
 
         game.socket.on("modifyEmbeddedDocument", async (message) => {
             const result = message.result.find(result => {
@@ -196,69 +160,25 @@ export class ConditionalVisibilty {
         visionTab.append(extraSenses);
     }
 
-    private async stealthHud(token:any):Promise<number> {
-        let initialValue;
-        try {
-            initialValue = parseInt(token.data.flags[ConditionalVisibilty.MODULE_NAME]._ste);
-        } catch (err) {
-            
-        }
-        let result = initialValue;
-        if (initialValue === undefined || isNaN(parseInt(initialValue))) {
-            result = this._rollStealth(token.actor);
-        }
-        const content = await renderTemplate("modules/conditional-visibility/templates/stealth_hud.html", { initialValue: result });
-        return new Promise((resolve, reject) => {   
-            let hud = new Dialog({
-                title: game.i18n.format('CONVIS.hidden', {}),
-                content: content,
-                buttons: {
-                    one: {
-                        icon: '<i class="fas fa-check"></i>',
-                        label: 'OK',
-                        callback: (html) => {
-                            //@ts-ignore
-                            const val = parseInt(html.find('div.form-group').children()[1].value);
-                            if (isNaN(val)) {
-                                resolve(-1);
-                            } else {
-                                resolve(val);
-                            }
-                        }
-                    }
-                },
-                close: (html) => {
-                    //@ts-ignore
-                    const val = parseInt(html.find('div.form-group').children()[1].value);
-                        if (isNaN(val)) {
-                            resolve(-1);
-                        } else {
-                            resolve(val);
-                        }
-                }
-            });
-            hud.render(true);
-        });
-    }
-
     public onRenderTokenHUD(app, html, data) {
-        const effects = ConditionalVisibilty.EFFECTS.keys();
+        const systemEffects = this._conditionalVisibilitySystem.effects();
+        const effects = systemEffects.keys();
         const effectIcons = html.find("img.effect-control")
             .each((idx, icon) => {
                 const src = icon.attributes.src.value;
-                if (ConditionalVisibilty.EFFECTS.has(src)) {
+                if (systemEffects.has(src)) {
                     let title;
-                    if (ConditionalVisibilty.EFFECTS.get(src) === 'hidden') {
+                    if (systemEffects.get(src) === 'hidden') {
                         //@ts-ignore
-                        title = game.i18n.format('CONVIS.' + ConditionalVisibilty.EFFECTS.get(src), "{}");
+                        title = game.i18n.localize('CONVIS.' + systemEffects.get(src));
                         if (data.flags && data.flags[ConditionalVisibilty.MODULE_NAME] 
                             && data.flags[ConditionalVisibilty.MODULE_NAME]._ste && !isNaN(parseInt(data.flags[ConditionalVisibilty.MODULE_NAME]._ste))) {
                             //@ts-ignore
-                            title += ' ' + game.i18n.format('CONVIS.currentstealth') + ': ' + data.flags[ConditionalVisibilty.MODULE_NAME]._ste;
+                            title += ' ' + game.i18n.localize('CONVIS.currentstealth') + ': ' + data.flags[ConditionalVisibilty.MODULE_NAME]._ste;
                         }
                     } else {
                         //@ts-ignore
-                        title = game.i18n.format('CONVIS.' + ConditionalVisibilty.EFFECTS.get(src), "{}");
+                        title = game.i18n.localize('CONVIS.' + systemEffects.get(src));
                     }
                     icon.setAttribute("title", title);
                 }
@@ -302,43 +222,5 @@ export class ConditionalVisibilty {
 
     private async draw() {
         this._draw();
-    }
-
-    private compare(tokenToSee:any, flags:any): boolean {
-        const effects = tokenToSee.data.effects;
-        if (effects.length > 0) {
-            const invisible = effects.some(eff => eff.endsWith('unknown.svg'));
-            if (invisible === true) {
-                if (flags.seeinvisible !== true) {
-                    return false;
-                }
-            }
-            
-            const obscured = effects.some(eff => eff.endsWith('foggy.svg'));
-            if (obscured === true) {
-                if (flags.seeobscured !== true) {
-                    return false;
-                }
-            }
-            const indarkness = effects.some(eff => eff.endsWith('moon.svg'));
-            if (indarkness === true) {
-                if (flags.seeindarkness !== true) {
-                    return false;
-                }
-            }
-            const hidden = effects.some(eff => eff.endsWith('newspaper.svg'));
-            if (hidden === true) {
-                if (tokenToSee.data.flags[ConditionalVisibilty.MODULE_NAME] && tokenToSee.data.flags[ConditionalVisibilty.MODULE_NAME]._ste) {
-                    const stealth = tokenToSee.data.flags[ConditionalVisibilty.MODULE_NAME]._ste;
-                    if (flags.prc < stealth) {
-                        return false;
-                    }
-                }
-            }
-            return true;
-        } else {
-            return true;
-        }
-    
     }
 }

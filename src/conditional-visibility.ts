@@ -57,14 +57,6 @@ Hooks.once('ready', async function() {
 
 
 // Add any additional hooks if necessary
-Hooks.on('preCreateTokenConfig', () => {
-    console.error("pc");
-    debugger;
-});
-Hooks.on('createTokenConfig', () => {
-    console.error("pcc");
-    debugger;
-});
 Hooks.on("renderTokenConfig", (tokenConfig, html, data) => {
     ConditionalVisibilty.INSTANCE.onRenderTokenConfig(tokenConfig, html, data);
 });

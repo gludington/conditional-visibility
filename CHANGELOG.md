@@ -17,4 +17,4 @@
 - Initial commit with Invisible, Obscured, and Devil's Sight
 
 ## [Known Issues]
-- Conflicts with Combat Utility Belt Advanced Conditions
+- Does not work with systems that use their own Conditions mechanism, e.g. Pathfinder 2e

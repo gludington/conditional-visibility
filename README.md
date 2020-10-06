@@ -5,9 +5,9 @@
 
 [Installation](#Installation)
 
-[Module Manifest](https://raw.githubusercontent.com/death-save/maestro/master/module.json)
+[Module Manifest](https://github.com/gludington/conditional-visibility/releases/download/v0.0.6/module.json)
 
-[Changelog](https://github.com/death-save/maestro/blob/master/CHANGELOG.md)
+[Changelog](https://raw.githubusercontent.com/gludington/conditional-visibility/master/CHANGELOG.md)
 
 Invisible Stalkers should only be seen by players that have cast See Invisibility.  Stealthy Goblins should only be seen by players with high perception.
 And when that Drow casts Darkness, players should need Devil's Sight to see any tokens inside.

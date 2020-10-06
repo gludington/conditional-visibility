@@ -56,9 +56,9 @@ export class ConditionalVisibilty {
         this._conditionalVisibilitySystem = ConditionalVisibilty.newSystem();
 
         // v0.6 and v0.7 inspect the tokens in a sightLayer differently, so switch based on version
-        this._isV7 = game.data.version.startsWith("0.7");
+        this._isV7 = isNewerVersion(game.data.version, "0.7");
         if (this._isV7) {
-            console.log(ConditionalVisibilty.MODULE_NAME + " | starting against v7 instance " + game.data.version);
+            console.log(ConditionalVisibilty.MODULE_NAME + " | starting against v0.7 or greater instance " + game.data.version);
             this._getSrcTokens = () => {
                 let srcTokens = new Array<Token>();
                 if (this._sightLayer.sources) {
@@ -82,7 +82,7 @@ export class ConditionalVisibilty {
                 await this._sightLayer.refresh();
             }
         } else {
-            console.log(ConditionalVisibilty.MODULE_NAME + " | starting against v6 instance " + game.data.version);
+            console.log(ConditionalVisibilty.MODULE_NAME + " | starting against v0.6 instance " + game.data.version);
             this._getSrcTokens = () => {
                 let srcTokens = new Array<Token>();
                 if (this._sightLayer.sources && this._sightLayer.sources.vision) {

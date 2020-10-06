@@ -9,19 +9,23 @@
 
 [Changelog](https://github.com/death-save/maestro/blob/master/CHANGELOG.md)
 
+Invisible Stalkers should only be seen by players that have cast See Invisibility.  Stealthy Goblins should only be seen by players with high perception.
+And when that Drow casts Darkness, players should need Devil's Sight to see any tokens inside.
 
-Hide some things from some players, but not others!
+Conditional Visibility allows you to set conditions on tokens that will display them only to players whose senses meet the conditions necessary to see
+the token.
 
 ## Usage
 
 ### Conditions
-**Conditional Visibility** works by adding new conditions to the conditions panel, for Invisible, Obscured, In Magical Darkness, and Hidden (not shown here)
+**Conditional Visibility** works by adding new conditions to the conditions panel, for Invisible, Obscured, In Magical Darkness, and Hidden (currently 5e Only).
+It does not work for game systems that use their own condition systems (notably Pathfinder 2e), though discussion (and pull requests!) are certainly welcomed
+from those more familiar with those systems.
+
 ![Conditions Panel](https://raw.githubusercontent.com/gludington/conditional-visibility/master/src/support/conditions.png)
 
-If a token is Hidden, a stealth roll will be automatically made, with a prompt to allow you to change it if desired before closing.
-
-When a token has one of these conditions, it can only be seen by a token with the proper senses configured in their Vision panel, or, in the case of Hidden, if their
-passive perception exceeds that of the stealth roll.
+### Invisible, Obscured, or Magical Darkness
+When a token has one of these conditions, it can only be seen by a token with the proper senses configured in their Vision panel.
 
 ![Vision Panel](https://raw.githubusercontent.com/gludington/conditional-visibility/master/src/support/visionControls.png)
 
@@ -29,17 +33,20 @@ Put it together, it looks like this (click to play on YouTube):
 
 [![Watch the video](https://img.youtube.com/vi/IlgjHmSAsww/hqdefault.jpg)](https://youtu.be/IlgjHmSAsww)
 
-Hidden looks like this (click to play on YouTube):
+### Hidden (currently 5e only)
+When the hidden condition is selected, a stealth roll is automatically made, which can be customized before closing.  The token will only be seen by a token whose passive perception
+exceeds that stealth roll. (click to play on YouTube):
+
 [![Watch the video](https://img.youtube.com/vi/pYay4fRlnu4/hqdefault.jpg)](https://youtu.be/pYay4fRlnu4)
 
-And communicates to player screens (click to play on YouTube):
+Condition and capability updates are communicatedto player screens (click to play on YouTube):
 
 [![Watch the video](https://img.youtube.com/vi/U308ksxblZU/hqdefault.jpg)](https://youtu.be/U308ksxblZU)
 
 ## Installation
 
 1. Navigate to the Foundry Setup screen and click on the Modules tab
-2. Click Install Module and paste the module.json link into the box in the following link: https://raw.githubusercontent.com/gludington/conditional-visibility/master/src/module.json
+2. Click Install Module and paste the module.json link from the latest release into the box.  (Currently, https://github.com/gludington/conditional-visibility/releases/download/v0.0.6/module.json )
 3. Once the **conditional-visibility** module is installed, open your desired world and navigate to the `Game Settings` > `Configure Settings` > `Module Settings` and enable the module
 
 ## Issues/Feedback
@@ -47,7 +54,7 @@ And communicates to player screens (click to play on YouTube):
 You can create an issue here: [Issue Log](https://github.com/gludington/conditional-visibility/issues)
 
 # Known Issues
-* Not compatible with Combat Utility Belt's Enhanced Conditions
+* Will not work with Pathfinder2e or other systems that use their own condition systems
 
 ## Attributions
 **Icons by**

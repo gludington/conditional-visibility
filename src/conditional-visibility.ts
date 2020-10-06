@@ -23,7 +23,6 @@ declare global {
 /* ------------------------------------ */
 Hooks.once('init', async function() {
 	console.log('conditional-visibility | Initializing conditional-visibility');
-
 	// Assign custom classes and constants here
 	
 	// Register custom module settings
@@ -46,6 +45,9 @@ Hooks.once('setup', function() {
 /* When ready							*/
 /* ------------------------------------ */
 Hooks.once('ready', async function() {
+	if (game.system.id === 'pf2e') {
+		ui.notifications.error(game.i18n.format("CONVIS.unsupportedsystem", {system: game.system.id}))
+	}
 	// Do anything once the module is ready
 	console.log('conditional-visibility | Ready conditional-visibility');
     const sightLayer = canvas.layers.find(layer => {
@@ -57,14 +59,6 @@ Hooks.once('ready', async function() {
 
 
 // Add any additional hooks if necessary
-Hooks.on('preCreateTokenConfig', () => {
-    console.error("pc");
-    debugger;
-});
-Hooks.on('createTokenConfig', () => {
-    console.error("pcc");
-    debugger;
-});
 Hooks.on("renderTokenConfig", (tokenConfig, html, data) => {
     ConditionalVisibilty.INSTANCE.onRenderTokenConfig(tokenConfig, html, data);
 });

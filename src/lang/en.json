@@ -1,16 +1,18 @@
 {
-    "CONVIS.visibilityConditions": "Visibility Conditions",
+
+    "CONVIS.unsupportedsystem":"Conditional Visibility does not support the system {system}, as it has its own condition mechanism.  Issues (especially pull requests) are welcomed",
     "CONVIS.ExtraSenseInstructions": "Additional senses that may enhance vision",
     "CONVIS.seeinvisible":"Sees Invisible",
-    "CONVIS.seeethereal":"Sees Ethereal",
     "CONVIS.blindsight": "Blindsight",
     "CONVIS.tremorsense":"Tremorsense",
     "CONVIS.devilssight":"Devil's Sight",
     "CONVIS.truesight":"Truesight",
+
     "CONVIS.invisible":"Invisible",
     "CONVIS.obscured":"Obscured",
     "CONVIS.indarkness":"In Darkness",
     "CONVIS.hidden":"Hidden",
+    
     "CONVIS.currentstealth":"Current Stealth",
     "CONVIS.stealthroll":"Stealh Roll",
     "CONVIS.stealthrolldescription":"This value will be compared with passive perception as long is the token is hiding.  Non-numeric entries will result in the initial value being taken"

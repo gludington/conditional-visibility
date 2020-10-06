@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.0.6]
+- Support other systems with default three conditions, with hide 5e only
+- Systems that use their own statusEffects (e.g. pf2e) not supported
+  
 ## [0.0.5]
 - Move releases to artifact areas
 

@@ -61,7 +61,6 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
     }
 
     public initializeStatusEffects():void {
-        debugger;
         console.log(ConditionalVisibilty.MODULE_NAME + " | Initializing visibility system effects " + this.gameSystemId() + " for game system " + game.system.id);
         for (const effect of this.effects().keys()) {
             //@ts-ignore

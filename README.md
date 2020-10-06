@@ -9,13 +9,19 @@
 
 [Changelog](https://github.com/death-save/maestro/blob/master/CHANGELOG.md)
 
+Invisible Stalkers should only be seen by players that have cast See Invisibility.  Stealthy Goblins should only be seen by players with high perception.
+And when that Drow casts Darkness, players should need Devil's Sight to see any tokens inside.
 
-Hide some things from some players, but not others!
+Conditional Visibility allows you to set conditions on tokens that will display them only to players whose senses meet the conditions necessary to see
+the token.
 
 ## Usage
 
 ### Conditions
-**Conditional Visibility** works by adding new conditions to the conditions panel, for Invisible, Obscured, In Magical Darkness, and Hidden (currently 5e Only)
+**Conditional Visibility** works by adding new conditions to the conditions panel, for Invisible, Obscured, In Magical Darkness, and Hidden (currently 5e Only).
+It does not work for game systems that use their own condition systems (notably Pathfinder 2e), though discussion (and pull requests!) are certainly welcomed
+from those more familiar with those systems.
+
 ![Conditions Panel](https://raw.githubusercontent.com/gludington/conditional-visibility/master/src/support/conditions.png)
 
 ### Invisible, Obscured, or Magical Darkness

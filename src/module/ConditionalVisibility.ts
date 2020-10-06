@@ -21,11 +21,7 @@ export class ConditionalVisibilty {
      */
     static onInit() {
         const system = ConditionalVisibilty.newSystem();
-        console.log(ConditionalVisibilty.MODULE_NAME + " | Initializing visibility system effects " + system.gameSystemId() + " for game system " + game.system.id);
-        for (const effect of system.effects().keys()) {
-            //@ts-ignore
-            CONFIG.statusEffects.push(effect);	
-        }
+        system.initializeStatusEffects();
     }
 
     /**
@@ -113,7 +109,6 @@ export class ConditionalVisibilty {
         this._sightLayer = sightLayer;
         const realRestrictVisibility = sightLayer.restrictVisibility;    
         this._sightLayer.restrictVisibility = () => {
-            
             realRestrictVisibility.call(this._sightLayer);
 
             const restricted = canvas.tokens.placeables.filter(token => token.visible);

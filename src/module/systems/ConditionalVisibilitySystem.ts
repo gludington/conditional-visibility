@@ -14,7 +14,12 @@ export interface ConditionalVisibilitySystem {
     /**
      * A map of icon urls to a condition name.
      */
-    effects(): Map<String, String>
+    effects(): Map<String, String>;
+
+    /**
+     * Initizialize status effects for the system.
+     */
+    initializeStatusEffects(): void;
 
     /**
      * Get the vision capabilities of the combined list of tokens provided.
@@ -26,10 +31,10 @@ export interface ConditionalVisibilitySystem {
     /**
      * Check to see if a target token can be seen by an object containing sight capabilities.
      * @param target the token to be seen
-     * @param flags the capabilities of the observing sightLayer
+     * @param visionCapabilities the capabilities of the observing sightLayer
      * @returns true if the token can be seen on the sightLayer, false otherwise
      */
-    canSee(target:Token, flags: any):boolean;
+    canSee(target:Token, visionCapabilities: any):boolean;
 
     /**
      * Initialize any behaviors to occur when an effect is toggled.
@@ -53,6 +58,15 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
         return new Map<String, String> ([['modules/conditional-visibility/icons/unknown.svg', 'invisible'],
         ['modules/conditional-visibility/icons/foggy.svg', 'obscured'],
         ['modules/conditional-visibility/icons/moon.svg', 'indarkness']]);
+    }
+
+    public initializeStatusEffects():void {
+        debugger;
+        console.log(ConditionalVisibilty.MODULE_NAME + " | Initializing visibility system effects " + this.gameSystemId() + " for game system " + game.system.id);
+        for (const effect of this.effects().keys()) {
+            //@ts-ignore
+            CONFIG.statusEffects.push(effect);	
+        }
     }
 
     /**
@@ -92,22 +106,22 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
      * @param target the token whose visibility is being checked
      * @param flags the capabilities established by the sight layer
      */
-    public canSee(target: Token, flags: any): boolean {
+    public canSee(target: Token, visionCapabilities: any): boolean {
         const effects = target.data.effects;
         if (effects.length > 0) {
-            if (this.seeInvisible(target, effects, flags) === false) {
+            if (this.seeInvisible(target, effects, visionCapabilities) === false) {
                 return false;
             }
 
-            if (this.seeObscured(target, effects, flags) === false) {
+            if (this.seeObscured(target, effects, visionCapabilities) === false) {
                 return false;
             }
 
-            if (this.seeInDarkness(target, effects, flags) === false) {
+            if (this.seeInDarkness(target, effects, visionCapabilities) === false) {
                 return false;
             }
 
-            if (this.seeContested(target, effects, flags) === false) {
+            if (this.seeContested(target, effects, visionCapabilities) === false) {
                 return false;
             }
             return true;
@@ -120,12 +134,12 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
      * Tests whether a token is invisible, and if it can be seen.
      * @param target the token being seen (or not)
      * @param effects the effects of that token
-     * @param flags the sight capabilities of the sight layer
+     * @param visionCapabilities the sight capabilities of the sight layer
      */
-    protected seeInvisible(target:Token, effects:any, flags:any): boolean {
+    protected seeInvisible(target:Token, effects:any, visionCapabilities:any): boolean {
         const invisible = effects.some(eff => eff.endsWith('unknown.svg'));
         if (invisible === true) {
-            if (flags.seeinvisible !== true) {
+            if (visionCapabilities.seeinvisible !== true) {
                 return false;
             }
         }
@@ -136,12 +150,12 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
      * Tests whether a token is obscured, and if it can be seen.
      * @param target the token being seen (or not)
      * @param effects the effects of that token
-     * @param flags the sight capabilities of the sight layer
+     * @param visionCapabilities the sight capabilities of the sight layer
      */
-    protected seeObscured(target:Token, effects:any, flags:any): boolean {
+    protected seeObscured(target:Token, effects:any, visionCapabilities:any): boolean {
         const obscured = effects.some(eff => eff.endsWith('foggy.svg'));
         if (obscured === true) {
-            if (flags.seeobscured !== true) {
+            if (visionCapabilities.seeobscured !== true) {
                 return false;
             }
         }
@@ -154,10 +168,10 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
      * @param effects the effects of that token
      * @param flags the sight capabilities of the sight layer
      */
-    protected seeInDarkness(target:Token, effects:any, flags:any): boolean {
+    protected seeInDarkness(target:Token, effects:any, visionCapabilities:any): boolean {
         const indarkness = effects.some(eff => eff.endsWith('moon.svg'));
         if (indarkness === true) {
-            if (flags.seeindarkness !== true) {
+            if (visionCapabilities.seeindarkness !== true) {
                 return false;
             }
         }
@@ -169,7 +183,7 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
      * candidate to be overridden by sublass systems.
      * @param target the token being seen (or not)
      * @param effects the effects of that token
-     * @param flags the sight capabilities of the sight layer
+     * @param visionCapabilities the sight capabilities of the sight layer
      */
     protected seeContested(target:Token, effects:any, flags:any): boolean {
         return true;

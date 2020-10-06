@@ -42,12 +42,12 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
      * @param effects the effects on the token
      * @param flags the flags calculated from getVisionCapabilities
      */
-    protected seeContested(target: Token, effects: any, flags: any): boolean {
+    protected seeContested(target: Token, effects: any, visionCapabilities: any): boolean {
         const hidden = effects.some(eff => eff.endsWith('newspaper.svg'));
         if (hidden === true) {
             if (target.data.flags[ConditionalVisibilty.MODULE_NAME] && target.data.flags[ConditionalVisibilty.MODULE_NAME]._ste) {
                 const stealth = target.data.flags[ConditionalVisibilty.MODULE_NAME]._ste;
-                if (flags.prc < stealth) {
+                if (visionCapabilities.prc < stealth) {
                     return false;
                 }
             }

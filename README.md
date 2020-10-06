@@ -15,13 +15,11 @@ Hide some things from some players, but not others!
 ## Usage
 
 ### Conditions
-**Conditional Visibility** works by adding new conditions to the conditions panel, for Invisible, Obscured, In Magical Darkness, and Hidden (not shown here)
+**Conditional Visibility** works by adding new conditions to the conditions panel, for Invisible, Obscured, In Magical Darkness, and Hidden (currently 5e Only)
 ![Conditions Panel](https://raw.githubusercontent.com/gludington/conditional-visibility/master/src/support/conditions.png)
 
-If a token is Hidden, a stealth roll will be automatically made, with a prompt to allow you to change it if desired before closing.
-
-When a token has one of these conditions, it can only be seen by a token with the proper senses configured in their Vision panel, or, in the case of Hidden, if their
-passive perception exceeds that of the stealth roll.
+### Invisible, Obscured, or Magical Darkness
+When a token has one of these conditions, it can only be seen by a token with the proper senses configured in their Vision panel.
 
 ![Vision Panel](https://raw.githubusercontent.com/gludington/conditional-visibility/master/src/support/visionControls.png)
 
@@ -29,7 +27,9 @@ Put it together, it looks like this (click to play on YouTube):
 
 [![Watch the video](https://img.youtube.com/vi/IlgjHmSAsww/hqdefault.jpg)](https://youtu.be/IlgjHmSAsww)
 
-Hidden looks like this (click to play on YouTube):
+### Hidden
+When hidden is selected, a stealth roll is automatically made, which can be customized.  The token will only be seen by a token whose passive perception
+exceeds that stealth roll. (click to play on YouTube):
 [![Watch the video](https://img.youtube.com/vi/pYay4fRlnu4/hqdefault.jpg)](https://youtu.be/pYay4fRlnu4)
 
 And communicates to player screens (click to play on YouTube):
@@ -47,7 +47,7 @@ And communicates to player screens (click to play on YouTube):
 You can create an issue here: [Issue Log](https://github.com/gludington/conditional-visibility/issues)
 
 # Known Issues
-* Not compatible with Combat Utility Belt's Enhanced Conditions
+* Not with Pathfinder2e or other systems that use their own condition systems
 
 ## Attributions
 **Icons by**

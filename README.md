@@ -33,19 +33,20 @@ Put it together, it looks like this (click to play on YouTube):
 
 [![Watch the video](https://img.youtube.com/vi/IlgjHmSAsww/hqdefault.jpg)](https://youtu.be/IlgjHmSAsww)
 
-### Hidden
-When hidden is selected, a stealth roll is automatically made, which can be customized.  The token will only be seen by a token whose passive perception
+### Hidden (currently 5e only)
+When the hidden condition is selected, a stealth roll is automatically made, which can be customized before closing.  The token will only be seen by a token whose passive perception
 exceeds that stealth roll. (click to play on YouTube):
+
 [![Watch the video](https://img.youtube.com/vi/pYay4fRlnu4/hqdefault.jpg)](https://youtu.be/pYay4fRlnu4)
 
-And communicates to player screens (click to play on YouTube):
+Condition and capability updates are communicatedto player screens (click to play on YouTube):
 
 [![Watch the video](https://img.youtube.com/vi/U308ksxblZU/hqdefault.jpg)](https://youtu.be/U308ksxblZU)
 
 ## Installation
 
 1. Navigate to the Foundry Setup screen and click on the Modules tab
-2. Click Install Module and paste the module.json link into the box in the following link: https://raw.githubusercontent.com/gludington/conditional-visibility/master/src/module.json
+2. Click Install Module and paste the module.json link from the latest release into the box.  (Currently, https://github.com/gludington/conditional-visibility/releases/download/v0.0.6/module.json )
 3. Once the **conditional-visibility** module is installed, open your desired world and navigate to the `Game Settings` > `Configure Settings` > `Module Settings` and enable the module
 
 ## Issues/Feedback
@@ -53,7 +54,7 @@ And communicates to player screens (click to play on YouTube):
 You can create an issue here: [Issue Log](https://github.com/gludington/conditional-visibility/issues)
 
 # Known Issues
-* Not with Pathfinder2e or other systems that use their own condition systems
+* Will not work with Pathfinder2e or other systems that use their own condition systems
 
 ## Attributions
 **Icons by**

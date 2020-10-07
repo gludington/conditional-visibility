@@ -1,4 +1,5 @@
 import { ConditionalVisibilitySystem5e } from "./systems/ConditionalVisibilitySystem5e";
+import { ConditionalVisibilitySystemPf2e } from "./systems/ConditionalVisibilitySystemPf2e";
 import { ConditionalVisibilitySystem, DefaultConditionalVisibilitySystem } from "./systems/ConditionalVisibilitySystem";
 
 export class ConditionalVisibilty {
@@ -30,11 +31,16 @@ export class ConditionalVisibilty {
      */
     private static newSystem():ConditionalVisibilitySystem {
         let system;
-        if (game.system.id === 'dnd5e') {
-            system = new ConditionalVisibilitySystem5e();
-        } else {
-            system = new DefaultConditionalVisibilitySystem();
-        }
+        switch (game.system.id) {
+            case 'dnd5e':
+                system = new ConditionalVisibilitySystem5e();
+                break;    
+            case 'pf2e':
+                system = new ConditionalVisibilitySystemPf2e();
+                break;
+            default:
+                system = new DefaultConditionalVisibilitySystem();
+        }        
         return system;
     }
 

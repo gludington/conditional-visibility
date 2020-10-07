@@ -45,9 +45,6 @@ Hooks.once('setup', function() {
 /* When ready							*/
 /* ------------------------------------ */
 Hooks.once('ready', async function() {
-	if (game.system.id === 'pf2e') {
-		ui.notifications.error(game.i18n.format("CONVIS.unsupportedsystem", {system: game.system.id}))
-	}
 	// Do anything once the module is ready
 	console.log('conditional-visibility | Ready conditional-visibility');
     const sightLayer = canvas.layers.find(layer => {

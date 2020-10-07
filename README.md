@@ -55,6 +55,7 @@ You can create an issue here: [Issue Log](https://github.com/gludington/conditio
 
 # Known Issues
 * Will not work with Pathfinder2e or other systems that use their own condition systems
+* Will not work if the hide regular conditions options of Combat Utility Belt is checked, as it hides the required Conditional Visibility conditions
 
 ## Attributions
 **Icons by**

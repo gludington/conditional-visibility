@@ -1,4 +1,4 @@
-import {ConditionalVisibilty } from '../src/module/ConditionalVisibility';
+import {ConditionalVisibility } from '../src/module/ConditionalVisibility';
 
 //@ts-ignore
 (global as any).game = {
@@ -26,7 +26,7 @@ describe('Setup - onInit', () => {
     });
 
     it('Establish three conditions for an unrecognized game system', () => {
-        ConditionalVisibilty.onInit();
+        ConditionalVisibility.onInit();
         expect(CONFIG.statusEffects.length).toBe(3);
         expect(CONFIG.statusEffects[0]).toBe('modules/conditional-visibility/icons/unknown.svg');
         expect(CONFIG.statusEffects[1]).toBe('modules/conditional-visibility/icons/foggy.svg');
@@ -35,7 +35,7 @@ describe('Setup - onInit', () => {
 
     it('Establish four conditions for dnd5e', () => {
         game.system.id = "dnd5e";
-        ConditionalVisibilty.onInit();
+        ConditionalVisibility.onInit();
         expect(CONFIG.statusEffects.length).toBe(4);
         expect(CONFIG.statusEffects[0]).toBe('modules/conditional-visibility/icons/unknown.svg');
         expect(CONFIG.statusEffects[1]).toBe('modules/conditional-visibility/icons/foggy.svg');
@@ -45,7 +45,7 @@ describe('Setup - onInit', () => {
 
     it('Establish one condition for pf2e', () => {
         game.system.id = "pf2e";
-        ConditionalVisibilty.onInit();
+        ConditionalVisibility.onInit();
         expect(CONFIG.statusEffects.length).toBe(1);
         expect(CONFIG.statusEffects[0]).toBe('systems/pf2e/icons/conditions-2/invisible.png');
     });
@@ -59,9 +59,9 @@ describe('Ready - initialize', () => {
     };
     const tokenHud:any = {};
     it('it should set up a listener for modifyEmbeddedDocument and redraw', () => {
-        ConditionalVisibilty.initialize(sightLayer, tokenHud);
+        ConditionalVisibility.initialize(sightLayer, tokenHud);
         //@ts-ignore
-        expect(ConditionalVisibilty.INSTANCE._isV7).toBe(false);
+        expect(ConditionalVisibility.INSTANCE._isV7).toBe(false);
         expect(game.socket.on).toHaveBeenCalledWith("modifyEmbeddedDocument", expect.any(Function));
         expect(sightLayer.initialize).toHaveBeenCalled();
         expect(sightLayer.refresh).not.toHaveBeenCalled();
@@ -79,26 +79,26 @@ describe("shouldRedraw", () => {
             update: jest.fn().mockResolvedValue(43)
         };
         const tokenHud:any = {};
-        ConditionalVisibilty.initialize(sightLayer, tokenHud);
+        ConditionalVisibility.initialize(sightLayer, tokenHud);
     });
 
     it ("Should not redraw on a null change", () => {
         const toTest = {};
-        expect(ConditionalVisibilty.INSTANCE.shouldRedraw(toTest)).toBe(false);
+        expect(ConditionalVisibility.INSTANCE.shouldRedraw(toTest)).toBe(false);
     });
 
     it ("Should redraw on adding an effects change", () => {
         const toTest = { effects: []};
-        expect(ConditionalVisibilty.INSTANCE.shouldRedraw(toTest)).toBe(true);
+        expect(ConditionalVisibility.INSTANCE.shouldRedraw(toTest)).toBe(true);
     });
 
     it ("Should not redraw on adding with no module flags change", () => {
         const toTest = { flags: {}};
-        expect(ConditionalVisibilty.INSTANCE.shouldRedraw(toTest)).toBe(false);
+        expect(ConditionalVisibility.INSTANCE.shouldRedraw(toTest)).toBe(false);
     });
 
     it ("Should redraw on adding with module flags change", () => {
         const toTest = { flags: {'conditional-visibility': {}}};
-        expect(ConditionalVisibilty.INSTANCE.shouldRedraw(toTest)).toBe(true);
+        expect(ConditionalVisibility.INSTANCE.shouldRedraw(toTest)).toBe(true);
     });
 });

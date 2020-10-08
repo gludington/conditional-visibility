@@ -1,5 +1,5 @@
-import { ConditionalVisibilty } from "../ConditionalVisibility";
-import { DefaultConditionalVisibilitySystem } from "./ConditionalVisibilitySystem";
+import * as Constants from '../Constants';
+import { DefaultConditionalVisibilitySystem } from "./DefaultConditionalVisibilitySystem";
 
 /**
  * Conditional visibility system for dnd5e.  Uses the same base conditions, plus adds hidden, which compares
@@ -45,8 +45,8 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
     protected seeContested(target: Token, effects: any, visionCapabilities: any): boolean {
         const hidden = effects.some(eff => eff.endsWith('newspaper.svg'));
         if (hidden === true) {
-            if (target.data.flags[ConditionalVisibilty.MODULE_NAME] && target.data.flags[ConditionalVisibilty.MODULE_NAME]._ste) {
-                const stealth = target.data.flags[ConditionalVisibilty.MODULE_NAME]._ste;
+            if (target.data.flags[Constants.MODULE_NAME] && target.data.flags[Constants.MODULE_NAME]._ste) {
+                const stealth = target.data.flags[Constants.MODULE_NAME]._ste;
                 if (visionCapabilities.prc < stealth) {
                     return false;
                 }
@@ -68,10 +68,10 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
                     if (!object.data.flags) {
                         object.data.flags = {};
                     }
-                    if (!object.data.flags[ConditionalVisibilty.MODULE_NAME]) {
-                        object.data.flags[ConditionalVisibilty.MODULE_NAME] = {};
+                    if (!object.data.flags[Constants.MODULE_NAME]) {
+                        object.data.flags[Constants.MODULE_NAME] = {};
                     }
-                    object.data.flags[ConditionalVisibilty.MODULE_NAME]._ste = result;
+                    object.data.flags[Constants.MODULE_NAME]._ste = result;
                     realOnToggleEffect(event);
                 });
                 return false;

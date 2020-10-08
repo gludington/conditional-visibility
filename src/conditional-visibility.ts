@@ -13,10 +13,10 @@
 // Import TypeScript modules
 import { registerSettings } from './module/settings.js';
 import { preloadTemplates } from './module/preloadTemplates.js';
-import { ConditionalVisibilty } from './module/ConditionalVisibility';
+import { ConditionalVisibility } from './module/ConditionalVisibility';
 
 declare global {
-    interface Window { Senses: ConditionalVisibilty }
+    interface Window { Senses: ConditionalVisibility }
 }
 /* ------------------------------------ */
 /* Initialize module					*/
@@ -51,19 +51,19 @@ Hooks.once('ready', async function() {
         return layer.__proto__.constructor.name === 'SightLayer'
     });
 
-    ConditionalVisibilty.initialize(sightLayer, canvas.hud.token);	
+    ConditionalVisibility.initialize(sightLayer, canvas.hud.token);	
 });
 
 
 // Add any additional hooks if necessary
 Hooks.on("renderTokenConfig", (tokenConfig, html, data) => {
-    ConditionalVisibilty.INSTANCE.onRenderTokenConfig(tokenConfig, html, data);
+    ConditionalVisibility.INSTANCE.onRenderTokenConfig(tokenConfig, html, data);
 });
 
 Hooks.on("renderTokenHUD", (app, html, data) => {
-    ConditionalVisibilty.INSTANCE.onRenderTokenHUD(app, html, data);
+    ConditionalVisibility.INSTANCE.onRenderTokenHUD(app, html, data);
 });
 
 Hooks.on("preUpdateToken", (thing, token, update, options, userId) => {
-    ConditionalVisibilty.INSTANCE.onPreUpdateToken(token, update);
+    ConditionalVisibility.INSTANCE.onPreUpdateToken(token, update);
 })

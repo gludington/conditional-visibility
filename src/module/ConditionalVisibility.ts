@@ -150,9 +150,9 @@ export class ConditionalVisibilty {
         this.draw();
     }
 
-    public shouldRedraw(toTest: any) {
-        return toTest && ((toTest.effects) // && toTest.effects.some(effect => effect.indexOf(ConditionalVisibilty.MODULE_NAME) > -1)) //TODO optimize, perhaps with flag dummy value?
-        || (toTest.flags && toTest.flags[ConditionalVisibilty.MODULE_NAME]));
+    public shouldRedraw(toTest: any):boolean {            
+        return toTest != undefined && ((toTest.effects !== undefined) // && toTest.effects.some(effect => effect.indexOf(ConditionalVisibilty.MODULE_NAME) > -1)) //TODO optimize, perhaps with flag dummy value?
+            || (toTest.flags != undefined && toTest.flags[ConditionalVisibilty.MODULE_NAME] != undefined));
     }
 
     public async onRenderTokenConfig(tokenConfig: any, jQuery:JQuery, data: any) {

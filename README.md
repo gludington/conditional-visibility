@@ -50,22 +50,27 @@ Condition and capability updates are communicatedto player screens (click to pla
 3. Once the **conditional-visibility** module is installed, open your desired world and navigate to the `Game Settings` > `Configure Settings` > `Module Settings` and enable the module
 
 ## Note for Combat Utility Belt Users
-If you use Combat Utility Belt and check "Remove Default Status Effects," it will remove those Status Effects necessary for this module to function.  They can be re-added using the condition lab.
+If you use Combat Utility Belt and check "Remove Default Status Effects," it will remove those Status Effects necessary for this module to function.  They can be re-added using Combat Utility Belt's Condition Lab:
 
-[Adding Unknown](https://user-images.githubusercontent.com/87745/95407444-06d6a880-08eb-11eb-9478-6401fc1d02f8.png)
+![Example: Adding Unknown](https://user-images.githubusercontent.com/87745/95407444-06d6a880-08eb-11eb-9478-6401fc1d02f8.png)
 
-The pairs would be
+If each condition is added to the CUB set, Conditional Visibility will again function, even if CUB has removed the default set.  The pairs would be:
+
 Invisible
-modules/conditional-visibility/icons/unknown.svg
+
+* modules/conditional-visibility/icons/unknown.svg
 
 Obscured
-modules/conditional-visibility/icons/foggy.svg
+
+* modules/conditional-visibility/icons/foggy.svg
 
 In Darkness
-modules/conditional-visibility/icons/moon.svg
+
+* modules/conditional-visibility/icons/moon.svg
 
 Hidden (5e only)
-modules/conditional-visibility/icons/newspaper.svg
+
+* modules/conditional-visibility/icons/newspaper.svg
 
 ## Issues/Feedback
 

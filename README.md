@@ -19,8 +19,8 @@ the token.
 
 ### Conditions
 **Conditional Visibility** works by adding new conditions to the conditions panel, for Invisible, Obscured, In Magical Darkness, and Hidden (currently 5e Only).
-It does not work for game systems that use their own condition systems (notably Pathfinder 2e), though discussion (and pull requests!) are certainly welcomed
-from those more familiar with those systems.
+It does not work for game systems that use their own condition systems, though discussion (and pull requests!) are certainly welcomed
+from those more familiar with those systems.  Pathfinder 2e has partial support now, using the system's default Invisible condition.
 
 ![Conditions Panel](https://raw.githubusercontent.com/gludington/conditional-visibility/master/src/support/conditions.png)
 
@@ -54,7 +54,7 @@ Condition and capability updates are communicatedto player screens (click to pla
 You can create an issue here: [Issue Log](https://github.com/gludington/conditional-visibility/issues)
 
 # Known Issues
-* Will not work with Pathfinder2e or other systems that use their own condition systems
+* Pathfinder 2e supports only the "Invisible" condition.
 * Will not work if the hide regular conditions options of Combat Utility Belt is checked, as it hides the required Conditional Visibility conditions
 
 ## Attributions

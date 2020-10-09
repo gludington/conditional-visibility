@@ -20,6 +20,36 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
         return "dnd5e";
     }
 
+    protected internalRecalculateVisibleStatus(token:any, update:any) {
+        if (update.effects.some(eff => eff.endsWith('newspaper.svg'))) {
+            let currentStealth;
+            try {
+                currentStealth = parseInt(token.flags[Constants.MODULE_NAME]._ste);
+            } catch (err) {
+                
+            }
+
+            if (currentStealth === undefined || isNaN(parseInt(currentStealth))) {
+            } else {
+                if (!update.flags) {
+                    update.flags = {};
+                }
+                if (!update.flags[Constants.MODULE_NAME]) {
+                    update.flags[Constants.MODULE_NAME] = {};
+                }
+                update.flags[Constants.MODULE_NAME]._ste = currentStealth;
+            }
+        } else {
+            if (!update.flags) {
+                update.flags = {};
+            }
+            if (!update.flags[Constants.MODULE_NAME]) {
+                update.flags[Constants.MODULE_NAME] = {};
+            }
+            update.flags[Constants.MODULE_NAME]._ste = "";
+        }
+    }
+        
     /**
      * Get the base vision capabilities, and add the maximum passive perception for any token in the list.
      * @param srcTokens tokens whos abilities to test
@@ -39,14 +69,16 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
     /**
      * Override seeContested to compare any available stealth with the passive perception calculated in getVisionCapabilities
      * @param target the toekn to try and see
-     * @param effects the effects on the token
+     * @param visibleStatus the effects on the token
      * @param flags the flags calculated from getVisionCapabilities
      */
-    protected seeContested(target: Token, effects: any, visionCapabilities: any): boolean {
-        const hidden = effects.some(eff => eff.endsWith('newspaper.svg'));
+    protected seeContested(target: Token, visibleStatus: any, visionCapabilities: any): boolean {
+        const hidden = visibleStatus &&  visibleStatus.hidden === true;
         if (hidden === true) {
-            if (target.data.flags[Constants.MODULE_NAME] && target.data.flags[Constants.MODULE_NAME]._ste) {
-                const stealth = target.data.flags[Constants.MODULE_NAME]._ste;
+            if (target.data.flags[Constants.MODULE_NAME] && target.data.flags[Constants.MODULE_NAME]
+                    && target.data.flags[Constants.MODULE_NAME][Constants.VISIBLE_STATUS_FIELD]
+                    && target.data.flags[Constants.MODULE_NAME][Constants.VISIBLE_STATUS_FIELD]._ste) {
+                const stealth = target.data.flags[Constants.MODULE_NAME][Constants.VISIBLE_STATUS_FIELD]._ste;
                 if (visionCapabilities.prc < stealth) {
                     return false;
                 }
@@ -73,7 +105,13 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
                     if (!object.data.flags[Constants.MODULE_NAME]) {
                         object.data.flags[Constants.MODULE_NAME] = {};
                     }
-                    object.data.flags[Constants.MODULE_NAME]._ste = result;
+                    if (!object.data.flags[Constants.MODULE_NAME]) {
+                        object.data.flags[Constants.MODULE_NAME] = {};
+                    }
+                    if (!object.data.flags[Constants.MODULE_NAME][Constants.VISIBLE_STATUS_FIELD]) {
+                        object.data.flags[Constants.MODULE_NAME][Constants.VISIBLE_STATUS_FIELD] = {};
+                    }
+                    object.data.flags[Constants.MODULE_NAME][Constants.VISIBLE_STATUS_FIELD]._ste = result;
                     realOnToggleEffect(event);
                 });
                 return false;

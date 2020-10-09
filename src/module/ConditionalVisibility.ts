@@ -185,38 +185,12 @@ export class ConditionalVisibility {
             });
     }
 
-    public async onPreUpdateToken(token:any, update:any) {
+    public onPreUpdateToken(token:any, update:any) {
         if (update.effects) {
-            if (update.effects.some(eff => eff.endsWith('newspaper.svg'))) {
-                let currentStealth;
-                try {
-                    currentStealth = parseInt(token.flags[Constants.MODULE_NAME]._ste);
-                } catch (err) {
-                    
-                }
-
-                if (currentStealth === undefined || isNaN(parseInt(currentStealth))) {
-                } else {
-                    if (!update.flags) {
-                        update.flags = {};
-                    }
-                    if (!update.flags[Constants.MODULE_NAME]) {
-                        update.flags[Constants.MODULE_NAME] = {};
-                    }
-                    update.flags[Constants.MODULE_NAME]._ste = currentStealth;
-                }
-            } else {
-                if (!update.flags) {
-                    update.flags = {};
-                }
-                if (!update.flags[Constants.MODULE_NAME]) {
-                    update.flags[Constants.MODULE_NAME] = {};
-                }
-                update.flags[Constants.MODULE_NAME]._ste = "";
-            }
-            await this.draw();
+            this._conditionalVisibilitySystem.recalculateVisibleStatus(token, update);
+            this.draw().then(() => {});
         } else if (update.flags && update.flags[Constants.MODULE_NAME]) {
-            await this.draw();
+            this.draw().then(() => {});
         }
     }
 

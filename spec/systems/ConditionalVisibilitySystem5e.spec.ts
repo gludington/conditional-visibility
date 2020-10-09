@@ -1,3 +1,4 @@
+import * as Constants from '../../src/module/Constants';
 import {ConditionalVisibilitySystem5e } from '../../src/module/systems/ConditionalVisibilitySystem5e';
 //@ts-ignore
 (global as any).game = {
@@ -74,26 +75,30 @@ describe('ConditionalVisibilitySystem5e', () => {
 
     describe('Contested Test', () => {
         let flags:any = { prc: 12};
-        let token:any = { data: { effects:['modules/conditional-visibility/icons/newspaper.svg']}};
-
+        let token:any = { 
+            data: { flags: {}},
+            getFlag:(scope, key) => {
+                return token.data.flags[scope][key];
+            }
+        };
         it('stealth higher than the prc cannot be seen', () => {
-            token.data.flags = { 'conditional-visibility': { _ste: 15}}
+            token.data.flags = { 'conditional-visibility': { 'visiblestatus': { hidden:true, _ste: 15}}};
             //@ts-ignore
-            expect(system.seeContested(token, token.data.effects, flags)).toBe(false);
+            expect(system.seeContested(token, token.getFlag(Constants.MODULE_NAME, Constants.VISIBLE_STATUS_FIELD), flags)).toBe(false);
             expect(system.canSee(token, flags)).toBe(false);
         });
 
         it('stealth equal to the prc can be seen', () => {
-            token.data.flags = { 'conditional-visibility': { _ste: 12}}
+            token.data.flags = { 'conditional-visibility': { 'visiblestatus': { hidden:true, _ste: 12}}};
             //@ts-ignore
-            expect(system.seeContested(token, token.data.effects, flags)).toBe(true);
+            expect(system.seeContested(token, token.getFlag(Constants.MODULE_NAME, Constants.VISIBLE_STATUS_FIELD), flags)).toBe(true);
             expect(system.canSee(token, flags)).toBe(true);
         });
 
         it('stealth lower than the prc can be seen', () => {
-            token.data.flags = { 'conditional-visibility': { _ste: 10}}
+            token.data.flags = { 'conditional-visibility': { 'visiblestatus': { hidden:true, _ste: 10}}};
             //@ts-ignore
-            expect(system.seeContested(token, token.data.effects, flags)).toBe(true);
+            expect(system.seeContested(token, token.getFlag(Constants.MODULE_NAME, Constants.VISIBLE_STATUS_FIELD), flags)).toBe(true);
             expect(system.canSee(token, flags)).toBe(true);
         });
        

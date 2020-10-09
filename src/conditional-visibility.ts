@@ -54,7 +54,6 @@ Hooks.once('ready', async function() {
     ConditionalVisibility.initialize(sightLayer, canvas.hud.token);	
 });
 
-
 // Add any additional hooks if necessary
 Hooks.on("renderTokenConfig", (tokenConfig, html, data) => {
     ConditionalVisibility.INSTANCE.onRenderTokenConfig(tokenConfig, html, data);

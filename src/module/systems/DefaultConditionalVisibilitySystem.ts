@@ -6,6 +6,14 @@ import { ConditionalVisibilitySystem } from "./ConditionalVisibilitySystem";
  */
 export class DefaultConditionalVisibilitySystem implements ConditionalVisibilitySystem {
     
+    _effects:Map<String, String>;
+
+    constructor() {
+        this._effects = new Map<String, String> ([['modules/conditional-visibility/icons/unknown.svg', 'invisible'],
+        ['modules/conditional-visibility/icons/foggy.svg', 'obscured'],
+        ['modules/conditional-visibility/icons/moon.svg', 'indarkness']]);
+    }
+
     gameSystemId(): string {
         return "default";
     }
@@ -14,9 +22,7 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
      * Base effects are invisible, obscured, and indarkness
      */
     public effects():Map<String, String> {
-        return new Map<String, String> ([['modules/conditional-visibility/icons/unknown.svg', 'invisible'],
-        ['modules/conditional-visibility/icons/foggy.svg', 'obscured'],
-        ['modules/conditional-visibility/icons/moon.svg', 'indarkness']]);
+        return this._effects;
     }
 
     public initializeStatusEffects():void {
@@ -32,6 +38,29 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
      * @param tokenHud the tokenHud to use
      */
     public initializeOnToggleEffect(tokenHud: any) {
+
+    }
+
+    public recalculateVisibleStatus(token: any, update: any) {
+        if (update.effects) {
+            this._effects.forEach((value, key, map) => {
+                if (!update.flags) {
+                    update.flags = {};
+                }
+                if (!update.flags[Constants.MODULE_NAME]) {
+                    update.flags[Constants.MODULE_NAME] = {};
+                }
+                if (!update.flags[Constants.MODULE_NAME][Constants.VISIBLE_STATUS_FIELD]) {
+                    update.flags[Constants.MODULE_NAME][Constants.VISIBLE_STATUS_FIELD] = {};
+                }
+                //@ts-ignore
+                update.flags[Constants.MODULE_NAME][Constants.VISIBLE_STATUS_FIELD][value] = update.effects.some(eff => eff === key);   
+            });
+            this.internalRecalculateVisibleStatus(token, update);
+        }
+    }
+
+    protected internalRecalculateVisibleStatus(token, update) {
 
     }
 
@@ -65,27 +94,24 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
      * @param flags the capabilities established by the sight layer
      */
     public canSee(target: Token, visionCapabilities: any): boolean {
-        const effects = target.data.effects;
-        if (effects.length > 0) {
-            if (this.seeInvisible(target, effects, visionCapabilities) === false) {
-                return false;
-            }
-
-            if (this.seeObscured(target, effects, visionCapabilities) === false) {
-                return false;
-            }
-
-            if (this.seeInDarkness(target, effects, visionCapabilities) === false) {
-                return false;
-            }
-
-            if (this.seeContested(target, effects, visionCapabilities) === false) {
-                return false;
-            }
-            return true;
-        } else {
-            return true;
+        const visibleStatus = target.getFlag(Constants.MODULE_NAME, Constants.VISIBLE_STATUS_FIELD);
+        if (this.seeInvisible(target, visibleStatus, visionCapabilities) === false) {
+            return false;
         }
+
+        if (this.seeObscured(target, visibleStatus, visionCapabilities) === false) {
+            return false;
+        }
+
+        if (this.seeInDarkness(target, visibleStatus, visionCapabilities) === false) {
+            return false;
+        }
+
+        if (this.seeContested(target, visibleStatus, visionCapabilities) === false) {
+            return false;
+        }
+        return true;
+        
     }
 
     /**
@@ -94,8 +120,8 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
      * @param effects the effects of that token
      * @param visionCapabilities the sight capabilities of the sight layer
      */
-    protected seeInvisible(target:Token, effects:any, visionCapabilities:any): boolean {
-        const invisible = effects.some(eff => eff.endsWith('unknown.svg'));
+    protected seeInvisible(target:Token, visibleStatus:any, visionCapabilities:any): boolean {
+        const invisible = visibleStatus && visibleStatus.invisible === true;
         if (invisible === true) {
             if (visionCapabilities.seeinvisible !== true) {
                 return false;
@@ -110,8 +136,8 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
      * @param effects the effects of that token
      * @param visionCapabilities the sight capabilities of the sight layer
      */
-    protected seeObscured(target:Token, effects:any, visionCapabilities:any): boolean {
-        const obscured = effects.some(eff => eff.endsWith('foggy.svg'));
+    protected seeObscured(target:Token, visibleStatus:any, visionCapabilities:any): boolean {
+        const obscured = visibleStatus && visibleStatus.obscured === true;
         if (obscured === true) {
             if (visionCapabilities.seeobscured !== true) {
                 return false;
@@ -126,8 +152,8 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
      * @param effects the effects of that token
      * @param flags the sight capabilities of the sight layer
      */
-    protected seeInDarkness(target:Token, effects:any, visionCapabilities:any): boolean {
-        const indarkness = effects.some(eff => eff.endsWith('moon.svg'));
+    protected seeInDarkness(target:Token, visibleStatus:any, visionCapabilities:any): boolean {
+        const indarkness = visibleStatus && visibleStatus.indarkness === true;
         if (indarkness === true) {
             if (visionCapabilities.seeindarkness !== true) {
                 return false;
@@ -143,7 +169,7 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
      * @param effects the effects of that token
      * @param visionCapabilities the sight capabilities of the sight layer
      */
-    protected seeContested(target:Token, effects:any, flags:any): boolean {
+    protected seeContested(target:Token, visibleStatus:any, flags:any): boolean {
         return true;
     }
 

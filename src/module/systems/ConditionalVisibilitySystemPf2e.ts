@@ -16,20 +16,4 @@ export class ConditionalVisibilitySystemPf2e extends DefaultConditionalVisibilit
     public gameSystemId() {
         return "pf2e";
     }
-
-    /**
-     * Tests whether a token is invisible, and if it can be seen.
-     * @param target the token being seen (or not)
-     * @param effects the effects of that token
-     * @param visionCapabilities the sight capabilities of the sight layer
-     */
-    protected seeInvisible(target:Token, effects:any, visionCapabilities:any): boolean {
-        const invisible = effects.some(eff => eff.endsWith('invisible.png'));
-        if (invisible === true) {
-            if (visionCapabilities.seeinvisible !== true) {
-                return false;
-            }
-        }
-        return true;
-    }
 }

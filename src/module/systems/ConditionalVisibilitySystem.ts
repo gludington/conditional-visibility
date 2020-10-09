@@ -5,7 +5,7 @@ import { ConditionalVisibility } from "../ConditionalVisibility";
  * and passive perception, whereas starfinder may use another setup.
  */
 export interface ConditionalVisibilitySystem {
-
+    
     /**
      * The game system id this visiblity system should be used for
      */
@@ -22,8 +22,16 @@ export interface ConditionalVisibilitySystem {
     initializeStatusEffects(): void;
 
     /**
+     * Recalculate the visible status from the token.  Called in response to a token update, this
+     * should set flags in the proper namespace for quick comparison when drawing the sightLayer.
+     * @param token the token whose status to modify
+     * @param update the update being made
+     */
+    recalculateVisibleStatus(token: any, update: any);
+
+    /**
      * Get the vision capabilities of the combined list of tokens provided.
-     * @param srcTokens 
+     * @param srcTokens the tokens whose vision is tested
      * @return an object containing flags for conditions that will be passed to canSee
      */
     getVisionCapabilities(srcTokens: Token[]):any

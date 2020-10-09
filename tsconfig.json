@@ -6,6 +6,7 @@
 			"ES6",
 			"ES2017"
 		],
-		"types": ["foundry-pc-types"]
+		"moduleResolution": "node",
+		"types": ["foundry-pc-types", "jest"]
 	}
 }

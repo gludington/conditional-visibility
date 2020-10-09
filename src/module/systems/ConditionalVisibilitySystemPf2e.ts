@@ -1,5 +1,5 @@
-import { ConditionalVisibilty } from "../ConditionalVisibility";
-import { DefaultConditionalVisibilitySystem } from "./ConditionalVisibilitySystem";
+import * as Constants from '../Constants';
+import { DefaultConditionalVisibilitySystem } from "./DefaultConditionalVisibilitySystem";
 
 /**
  * Conditional visibility system for pf2e.  Uses only the built in pf2e invisibility.

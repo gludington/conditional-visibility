@@ -1,13 +1,12 @@
 import { ConditionalVisibilitySystem5e } from "./systems/ConditionalVisibilitySystem5e";
 import { ConditionalVisibilitySystemPf2e } from "./systems/ConditionalVisibilitySystemPf2e";
-import { ConditionalVisibilitySystem, DefaultConditionalVisibilitySystem } from "./systems/ConditionalVisibilitySystem";
+import { ConditionalVisibilitySystem } from "./systems/ConditionalVisibilitySystem";
+import { DefaultConditionalVisibilitySystem } from "./systems/DefaultConditionalVisibilitySystem";
+import * as Constants from './Constants';
 
-export class ConditionalVisibilty {
+export class ConditionalVisibility {
 
-    static MODULE_NAME:string = "conditional-visibility";
-
-    static INSTANCE: ConditionalVisibilty;
-    static DEFAULT_STEALTH:number = 10;
+    static INSTANCE: ConditionalVisibility;
 
     private _sightLayer: any;
     private _tokenHud: any;
@@ -21,7 +20,7 @@ export class ConditionalVisibilty {
      * Called from init hook to establish the extra status effects in the main list before full game initialization.
      */
     static onInit() {
-        const system = ConditionalVisibilty.newSystem();
+        const system = ConditionalVisibility.newSystem();
         system.initializeStatusEffects();
     }
 
@@ -50,7 +49,7 @@ export class ConditionalVisibilty {
      * @param tokenHud the tokenHud to use.
      */
     static initialize(sightLayer: any, tokenHud: TokenHUD) {
-        ConditionalVisibilty.INSTANCE = new ConditionalVisibilty(sightLayer, tokenHud);
+        ConditionalVisibility.INSTANCE = new ConditionalVisibility(sightLayer, tokenHud);
     }
 
     /**
@@ -59,12 +58,12 @@ export class ConditionalVisibilty {
      * @param tokenHud the tokenHud to use
      */
     private constructor(sightLayer: any, tokenHud: TokenHUD) {
-        this._conditionalVisibilitySystem = ConditionalVisibilty.newSystem();
+        this._conditionalVisibilitySystem = ConditionalVisibility.newSystem();
 
         // v0.6 and v0.7 inspect the tokens in a sightLayer differently, so switch based on version
         this._isV7 = isNewerVersion(game.data.version, "0.7");
         if (this._isV7) {
-            console.log(ConditionalVisibilty.MODULE_NAME + " | starting against v0.7 or greater instance " + game.data.version);
+            console.log(Constants.MODULE_NAME + " | starting against v0.7 or greater instance " + game.data.version);
             this._getSrcTokens = () => {
                 let srcTokens = new Array<Token>();
                 if (this._sightLayer.sources) {
@@ -88,7 +87,7 @@ export class ConditionalVisibilty {
                 await this._sightLayer.refresh();
             }
         } else {
-            console.log(ConditionalVisibilty.MODULE_NAME + " | starting against v0.6 instance " + game.data.version);
+            console.log(Constants.MODULE_NAME + " | starting against v0.6 instance " + game.data.version);
             this._getSrcTokens = () => {
                 let srcTokens = new Array<Token>();
                 if (this._sightLayer.sources && this._sightLayer.sources.vision) {
@@ -138,7 +137,7 @@ export class ConditionalVisibilty {
 
         game.socket.on("modifyEmbeddedDocument", async (message) => {
             const result = message.result.find(result => {
-                return result.effects || (result.flags && result.flags[ConditionalVisibilty.MODULE_NAME]);
+                return result.effects || (result.flags && result.flags[Constants.MODULE_NAME]);
             });
 
             if (this.shouldRedraw(result)) {
@@ -150,14 +149,14 @@ export class ConditionalVisibilty {
         this.draw();
     }
 
-    public shouldRedraw(toTest: any) {
-        return toTest && ((toTest.effects) // && toTest.effects.some(effect => effect.indexOf(ConditionalVisibilty.MODULE_NAME) > -1)) //TODO optimize, perhaps with flag dummy value?
-        || (toTest.flags && toTest.flags[ConditionalVisibilty.MODULE_NAME]));
+    public shouldRedraw(toTest: any):boolean {            
+        return toTest != undefined && ((toTest.effects !== undefined) // && toTest.effects.some(effect => effect.indexOf(Constants.MODULE_NAME) > -1)) //TODO optimize, perhaps with flag dummy value?
+            || (toTest.flags != undefined && toTest.flags[Constants.MODULE_NAME] != undefined));
     }
 
     public async onRenderTokenConfig(tokenConfig: any, jQuery:JQuery, data: any) {
         const visionTab = $('div.tab[data-tab="vision"]');
-        const extraSenses = await renderTemplate("modules/conditional-visibility/templates/extra_senses.html", tokenConfig.object.data.flags[ConditionalVisibilty.MODULE_NAME] || {});
+        const extraSenses = await renderTemplate("modules/conditional-visibility/templates/extra_senses.html", tokenConfig.object.data.flags[Constants.MODULE_NAME] || {});
         visionTab.append(extraSenses);
     }
 
@@ -172,10 +171,10 @@ export class ConditionalVisibilty {
                     if (systemEffects.get(src) === 'hidden') {
                         //@ts-ignore
                         title = game.i18n.localize('CONVIS.' + systemEffects.get(src));
-                        if (data.flags && data.flags[ConditionalVisibilty.MODULE_NAME] 
-                            && data.flags[ConditionalVisibilty.MODULE_NAME]._ste && !isNaN(parseInt(data.flags[ConditionalVisibilty.MODULE_NAME]._ste))) {
+                        if (data.flags && data.flags[Constants.MODULE_NAME] 
+                            && data.flags[Constants.MODULE_NAME]._ste && !isNaN(parseInt(data.flags[Constants.MODULE_NAME]._ste))) {
                             //@ts-ignore
-                            title += ' ' + game.i18n.localize('CONVIS.currentstealth') + ': ' + data.flags[ConditionalVisibilty.MODULE_NAME]._ste;
+                            title += ' ' + game.i18n.localize('CONVIS.currentstealth') + ': ' + data.flags[Constants.MODULE_NAME]._ste;
                         }
                     } else {
                         //@ts-ignore
@@ -191,7 +190,7 @@ export class ConditionalVisibilty {
             if (update.effects.some(eff => eff.endsWith('newspaper.svg'))) {
                 let currentStealth;
                 try {
-                    currentStealth = parseInt(token.flags[ConditionalVisibilty.MODULE_NAME]._ste);
+                    currentStealth = parseInt(token.flags[Constants.MODULE_NAME]._ste);
                 } catch (err) {
                     
                 }
@@ -201,22 +200,22 @@ export class ConditionalVisibilty {
                     if (!update.flags) {
                         update.flags = {};
                     }
-                    if (!update.flags[ConditionalVisibilty.MODULE_NAME]) {
-                        update.flags[ConditionalVisibilty.MODULE_NAME] = {};
+                    if (!update.flags[Constants.MODULE_NAME]) {
+                        update.flags[Constants.MODULE_NAME] = {};
                     }
-                    update.flags[ConditionalVisibilty.MODULE_NAME]._ste = currentStealth;
+                    update.flags[Constants.MODULE_NAME]._ste = currentStealth;
                 }
             } else {
                 if (!update.flags) {
                     update.flags = {};
                 }
-                if (!update.flags[ConditionalVisibilty.MODULE_NAME]) {
-                    update.flags[ConditionalVisibilty.MODULE_NAME] = {};
+                if (!update.flags[Constants.MODULE_NAME]) {
+                    update.flags[Constants.MODULE_NAME] = {};
                 }
-                update.flags[ConditionalVisibilty.MODULE_NAME]._ste = "";
+                update.flags[Constants.MODULE_NAME]._ste = "";
             }
             await this.draw();
-        } else if (update.flags && update.flags[ConditionalVisibilty.MODULE_NAME]) {
+        } else if (update.flags && update.flags[Constants.MODULE_NAME]) {
             await this.draw();
         }
     }

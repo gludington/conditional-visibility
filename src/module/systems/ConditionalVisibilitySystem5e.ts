@@ -50,6 +50,8 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
                 if (visionCapabilities.prc < stealth) {
                     return false;
                 }
+            } else {
+                return false;
             }
         }
         return true;

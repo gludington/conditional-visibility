@@ -1,14 +1,8 @@
 node_modules
 foundryconfig.json
 dist
-dist/module
-dist/templates
-dist/lang
-dist/icons
-dist/**/*.js
-dist/**/*.json
 package
-package/*.zip
 .vscode
 .DS_Store
 **/.DS_Store
+coverage

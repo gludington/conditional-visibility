@@ -7,6 +7,7 @@
     "package": "gulp package",
     "test": "jest",
     "test:watch": "jest --watch",
+    "test:coverage": "jest --collect-coverage",
     "build": "gulp build && gulp link",
     "build:watch": "gulp watch",
     "clean": "gulp clean && gulp link --clean",
@@ -33,6 +34,8 @@
     "yargs": "^16.0.3"
   },
   "jest": {
-    "transform": { "^.+\\.(ts|tsx|js|jsx)?$": "ts-jest" }
+    "transform": {
+      "^.+\\.(ts|tsx|js|jsx)?$": "ts-jest"
+    }
   }
 }

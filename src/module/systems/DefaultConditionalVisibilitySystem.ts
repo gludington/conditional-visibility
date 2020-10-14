@@ -6,6 +6,18 @@ import { ConditionalVisibilitySystem } from "./ConditionalVisibilitySystem";
  */
 export class DefaultConditionalVisibilitySystem implements ConditionalVisibilitySystem {
     
+    _effectsByIcon: Map<string, string>;
+    _effectsByCondition: Map<string, string>;
+
+    constructor() {
+        //yes, this is a BiMap but the solid TS BiMap implementaiton is GPLv3, so we will just fake what we need here
+        this._effectsByIcon = this.effects();
+        this._effectsByCondition = new Map();
+        this._effectsByIcon.forEach((value: string, key: string) => {
+            this._effectsByCondition.set(value, key);
+        });
+    }
+
     gameSystemId(): string {
         return "default";
     }
@@ -13,18 +25,35 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
     /**
      * Base effects are invisible, obscured, and indarkness
      */
-    public effects():Map<String, String> {
-        return new Map<String, String> ([['modules/conditional-visibility/icons/unknown.svg', 'invisible'],
+    protected effects():Map<string, string> {
+        return new Map<string, string> ([['modules/conditional-visibility/icons/unknown.svg', 'invisible'],
         ['modules/conditional-visibility/icons/foggy.svg', 'obscured'],
         ['modules/conditional-visibility/icons/moon.svg', 'indarkness']]);
     }
 
+
+    public effectsByIcon(): Map<string, string> {
+        return this._effectsByIcon;
+    }
+
+    public effectsByCondition(): Map<string, string> {
+        return this._effectsByCondition;
+    }
+
     public initializeStatusEffects():void {
         console.log(Constants.MODULE_NAME + " | Initializing visibility system effects " + this.gameSystemId() + " for game system " + game.system.id);
-        for (const effect of this.effects().keys()) {
+        for (const effect of this.effectsByIcon().keys()) {
             //@ts-ignore
             CONFIG.statusEffects.push(effect);	
         }
+    }
+
+    /**
+     * For subclasses to set up systsem specific hooks.
+     * @todo unify initializeOnToggleEffect if possible
+     */
+    public initializeHooks(): void {
+
     }
 
     /**
@@ -147,12 +176,16 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
         return true;
     }
 
+    public hasStealth():boolean {
+        return false;
+    }
+
     /**
      * Roll for the contested hiding check; override in subclass systems
      * @param token the token whose stats may create the roll.
      * @return a Roll
      */
-    protected rollStealth(token:Token):Roll {
+    public rollStealth(token:Token):Roll {
         return new Roll("1d20");
     }
 
@@ -182,7 +215,7 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
         const content = await renderTemplate("modules/conditional-visibility/templates/stealth_hud.html", { initialValue: result });
         return new Promise((resolve, reject) => {   
             let hud = new Dialog({
-                title: game.i18n.format('CONVIS.hidden', {}),
+                title: game.i18n.localize('CONVIS.hidden'),
                 content: content,
                 buttons: {
                     one: {

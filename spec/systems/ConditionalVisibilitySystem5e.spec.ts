@@ -24,7 +24,7 @@ describe('ConditionalVisibilitySystem5e', () => {
 
     describe('Setup', () => {
         it('Establishes four conditions for dnd5e', () => {
-            const effects:Map<String, String> = system.effects();
+            const effects:Map<string, string> = system.effectsByIcon();
             expect(effects.size).toBe(4);
             expect(effects.get('modules/conditional-visibility/icons/unknown.svg')).toBe('invisible');
             expect(effects.get('modules/conditional-visibility/icons/foggy.svg')).toBe('obscured');

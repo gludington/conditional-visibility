@@ -3,6 +3,7 @@ import { ConditionalVisibilitySystemPf2e } from "./systems/ConditionalVisibility
 import { ConditionalVisibilitySystem } from "./systems/ConditionalVisibilitySystem";
 import { DefaultConditionalVisibilitySystem } from "./systems/DefaultConditionalVisibilitySystem";
 import * as Constants from './Constants';
+import { ConditionalVisibilityFacade } from "./ConditionalVisibilityFacade";
 
 export class ConditionalVisibility {
 
@@ -50,6 +51,10 @@ export class ConditionalVisibility {
      */
     static initialize(sightLayer: any, tokenHud: TokenHUD) {
         ConditionalVisibility.INSTANCE = new ConditionalVisibility(sightLayer, tokenHud);
+        //@ts-ignore
+        window.ConditionalVisibility = new ConditionalVisibilityFacade(ConditionalVisibility.INSTANCE,
+            ConditionalVisibility.INSTANCE._conditionalVisibilitySystem);
+        ConditionalVisibility.INSTANCE._conditionalVisibilitySystem.initializeHooks();    
     }
 
     /**
@@ -154,16 +159,17 @@ export class ConditionalVisibility {
             || (toTest.flags != undefined && toTest.flags[Constants.MODULE_NAME] != undefined));
     }
 
-    public async onRenderTokenConfig(tokenConfig: any, jQuery:JQuery, data: any) {
+    public onRenderTokenConfig(tokenConfig: any, jQuery:JQuery, data: any) {
         const visionTab = $('div.tab[data-tab="vision"]');
-        const extraSenses = await renderTemplate("modules/conditional-visibility/templates/extra_senses.html", tokenConfig.object.data.flags[Constants.MODULE_NAME] || {});
-        visionTab.append(extraSenses);
+        renderTemplate("modules/conditional-visibility/templates/extra_senses.html", tokenConfig.object.data.flags[Constants.MODULE_NAME] || {})
+            .then(extraSenses => {
+                visionTab.append(extraSenses);
+            });
     }
 
     public onRenderTokenHUD(app, html, data) {
-        const systemEffects = this._conditionalVisibilitySystem.effects();
-        const effects = systemEffects.keys();
-        const effectIcons = html.find("img.effect-control")
+        const systemEffects = this._conditionalVisibilitySystem.effectsByIcon();
+        html.find("img.effect-control")
             .each((idx, icon) => {
                 const src = icon.attributes.src.value;
                 if (systemEffects.has(src)) {

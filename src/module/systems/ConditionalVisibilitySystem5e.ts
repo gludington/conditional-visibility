@@ -10,8 +10,8 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
     /**
      * Use the base conditions, plus set up the icon for the "hidden" condition
      */
-    public effects(): Map<String, String> {
-        const effects:Map<String, String> = super.effects();
+    protected effects(): Map<string, string> {
+        const effects:Map<string, string> = super.effects();
         effects.set('modules/conditional-visibility/icons/newspaper.svg', 'hidden');
         return effects;
     }
@@ -83,7 +83,11 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
         }
     }
 
-    protected rollStealth(token:Token):Roll {
+    public hasStealth() {
+        return true;
+    }
+
+    public rollStealth(token:Token):Roll {
         if (token && token.actor) {
             return new Roll("1d20 + (" + token.actor.data.data.skills.ste.total + ")");
         } else {

@@ -13,6 +13,7 @@
     "CONVIS.indarkness":"In Darkness",
     "CONVIS.hidden":"Hidden",
     
+    "CONVIS.stealth.not.supported": "ConditionalVisilbity does not support the hidden condition/stealth for {sysid}",
     "CONVIS.currentstealth":"Current Stealth",
     "CONVIS.stealthroll":"Stealh Roll",
     "CONVIS.stealthrolldescription":"This value will be compared with passive perception as long is the token is hiding.  Non-numeric entries will result in the initial value being taken"

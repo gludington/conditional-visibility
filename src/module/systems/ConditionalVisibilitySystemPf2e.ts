@@ -9,8 +9,8 @@ export class ConditionalVisibilitySystemPf2e extends DefaultConditionalVisibilit
     /**
      * Use the base conditions, plus set up the icon for the "hidden" condition
      */
-    public effects(): Map<String, String> {
-        return new Map<String, String> ([['systems/pf2e/icons/conditions-2/invisible.png', 'invisible']]);
+    public effects(): Map<string, string> {
+        return new Map<string, string> ([['systems/pf2e/icons/conditions-2/invisible.png', 'invisible']]);
     }
 
     public gameSystemId() {

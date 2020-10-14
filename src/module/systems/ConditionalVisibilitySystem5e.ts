@@ -24,7 +24,6 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
 
     public initializeHooks(facade:ConditionalVisibilityFacade) {
         Hooks.on('createChatMessage', (message, jQuery, speaker) => {
-            console.error(message, jQuery, speaker);
             if (message.data.flags.dnd5e
                 && message.data.flags.dnd5e.roll
                 && message.data.flags.dnd5e.roll.skillId === 'ste') {

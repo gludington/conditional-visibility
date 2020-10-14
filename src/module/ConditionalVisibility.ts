@@ -51,10 +51,11 @@ export class ConditionalVisibility {
      */
     static initialize(sightLayer: any, tokenHud: TokenHUD) {
         ConditionalVisibility.INSTANCE = new ConditionalVisibility(sightLayer, tokenHud);
-        //@ts-ignore
-        window.ConditionalVisibility = new ConditionalVisibilityFacade(ConditionalVisibility.INSTANCE,
+        const facade:ConditionalVisibilityFacade  = new ConditionalVisibilityFacade(ConditionalVisibility.INSTANCE,
             ConditionalVisibility.INSTANCE._conditionalVisibilitySystem);
-        ConditionalVisibility.INSTANCE._conditionalVisibilitySystem.initializeHooks();    
+        //@ts-ignore
+        window.ConditionalVisibility = facade;
+        ConditionalVisibility.INSTANCE._conditionalVisibilitySystem.initializeHooks(facade);    
     }
 
     /**

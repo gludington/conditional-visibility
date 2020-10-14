@@ -1,4 +1,5 @@
 import { ConditionalVisibility } from "../ConditionalVisibility";
+import { ConditionalVisibilityFacade } from "../ConditionalVisibilityFacade";
 
 /**
  * A ConditionalVisibilitySystem abstracts the parameters that would be specific to a game system, e.g. dnd5e might use stealth
@@ -28,9 +29,11 @@ export interface ConditionalVisibilitySystem {
 
     /**
      * Initialize system-specific hooks.
+     * @param facade the window-scoped object for a public api
+     * @todo clean this up and hide
      */
-    initializeHooks(): void;
-    
+    initializeHooks(facade:ConditionalVisibilityFacade): void;
+
     /**
      * Get the vision capabilities of the combined list of tokens provided.
      * @param srcTokens 

@@ -1,3 +1,5 @@
+import { ConditionalVisibility } from '../ConditionalVisibility';
+import { ConditionalVisibilityFacade } from '../ConditionalVisibilityFacade';
 import * as Constants from '../Constants';
 import { DefaultConditionalVisibilitySystem } from "./DefaultConditionalVisibilitySystem";
 
@@ -18,6 +20,23 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
 
     public gameSystemId() {
         return "dnd5e";
+    }
+
+    public initializeHooks(facade:ConditionalVisibilityFacade) {
+        Hooks.on('createChatMessage', (message, jQuery, speaker) => {
+            console.error(message, jQuery, speaker);
+            if (message.data.flags.dnd5e
+                && message.data.flags.dnd5e.roll
+                && message.data.flags.dnd5e.roll.skillId === 'ste') {
+                    if (message.data.speaker.token) {
+                        const tokenId = message.data.speaker.token;
+                        const token = canvas.tokens.placeables.find(tok => tok.id === tokenId);
+                        if (token && token.owner) {
+                            facade.hide([token], message._roll.total);
+                        }
+                    }
+                }
+        });
     }
 
     /**

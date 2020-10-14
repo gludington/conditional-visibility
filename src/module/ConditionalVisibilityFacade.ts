@@ -64,10 +64,11 @@ export class ConditionalVisibilityFacade {
                 } else {
                     stealth = this._system.rollStealth(token).roll().total;
                 }
-                token.data.flags[Constants.MODULE_NAME]._ste = stealth;
                 if (this.has(token.data.effects, icon) === true) {
-                    token.update({flags: token.data.flags});
+                    const update = { 'conditional-visibility': { '_ste':stealth}};
+                    token.update({flags: update});
                 } else {
+                    token.data.flags[Constants.MODULE_NAME]._ste = stealth;
                     token.toggleEffect(icon);
                 }
             })

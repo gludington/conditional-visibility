@@ -1,3 +1,4 @@
+import { ConditionalVisibilityFacade } from '../ConditionalVisibilityFacade';
 import * as Constants from '../Constants';
 import { ConditionalVisibilitySystem } from "./ConditionalVisibilitySystem";
 
@@ -52,7 +53,7 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
      * For subclasses to set up systsem specific hooks.
      * @todo unify initializeOnToggleEffect if possible
      */
-    public initializeHooks(): void {
+    public initializeHooks(facade:ConditionalVisibilityFacade): void {
 
     }
 

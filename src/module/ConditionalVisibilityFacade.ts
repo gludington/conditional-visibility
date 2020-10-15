@@ -15,7 +15,7 @@ export class ConditionalVisibilityFacade {
         this._system = system;
     }
 
-    public status():void {
+    public help():void {
         if (game.user.isGM) {
             let conditions = [];
             this._system.effectsByCondition().forEach((value, key) => {
@@ -45,18 +45,20 @@ export class ConditionalVisibilityFacade {
      * @param condition the name of the condition
      * @param value true or false
      */
-    public set(tokens:Array<Token>, condition:string, value:boolean) {       
-        if (this._system.effectsByCondition().has(condition)) {
+    public setCondition(tokens:Array<Token>, condition:string, value:boolean) {       
+        if (this._system.hasStealth()) {
             let icon = this._system.effectsByCondition().get(condition);
             tokens.forEach(token => {
-                let effects = token.data.effects;
-                if (value !== true) {
-                    if (this.has(effects, icon)) {
-                        token.toggleEffect(icon).then(() => {});
-                    }
-                } else {
-                    if (!this.has(effects, icon)) {
-                        token.toggleEffect(icon).then(() => {});
+                if (token.owner) {
+                    let effects = token.data.effects;
+                    if (value !== true) {
+                        if (this.has(effects, icon)) {
+                            token.toggleEffect(icon).then(() => {});
+                        }
+                    } else {
+                        if (!this.has(effects, icon)) {
+                            token.toggleEffect(icon).then(() => {});
+                        }
                     }
                 }
             });
@@ -76,24 +78,26 @@ export class ConditionalVisibilityFacade {
         if (this._system.effectsByCondition().has('hidden')) {
             let icon = this._system.effectsByCondition().get('hidden');
             tokens.forEach(token => {    
-                if (!token.data.flags) {
-                    token.data.flags = {};
-                }
-                if (!token.data.flags[Constants.MODULE_NAME]) {
-                    token.data.flags[Constants.MODULE_NAME] = {};
-                }
-                let stealth;
-                if (value) {
-                    stealth = value;
-                } else {
-                    stealth = this._system.rollStealth(token).roll().total;
-                }
-                if (this.has(token.data.effects, icon) === true) {
-                    const update = { 'conditional-visibility': { '_ste':stealth}};
-                    token.update({flags: update});
-                } else {
-                    token.data.flags[Constants.MODULE_NAME]._ste = stealth;
-                    token.toggleEffect(icon);
+                if (token.owner) {
+                    if (!token.data.flags) {
+                        token.data.flags = {};
+                    }
+                    if (!token.data.flags[Constants.MODULE_NAME]) {
+                        token.data.flags[Constants.MODULE_NAME] = {};
+                    }
+                    let stealth;
+                    if (value) {
+                        stealth = value;
+                    } else {
+                        stealth = this._system.rollStealth(token).roll().total;
+                    }
+                    if (this.has(token.data.effects, icon) === true) {
+                        const update = { 'conditional-visibility': { '_ste':stealth}};
+                        token.update({flags: update});
+                    } else {
+                        token.data.flags[Constants.MODULE_NAME]._ste = stealth;
+                        token.toggleEffect(icon);
+                    }
                 }
             })
         }
@@ -103,15 +107,16 @@ export class ConditionalVisibilityFacade {
      * Removes the hide condition from the set of tokens.
      * @param tokens the list of tokens to affect
      */
-    public unhide(tokens:Array<Token>) {
-        if (this._system.effectsByCondition().has('hidden')) {
+    public unHide(tokens:Array<Token>) {
+        if (this._system.hasStealth()) {
             let icon = this._system.effectsByCondition().get('hidden');
             tokens.forEach(token => {
-                if (this.has(token.data.effects, icon)) {
-                    token.toggleEffect(icon);
+                if (token.owner) {
+                    if (this.has(token.data.effects, icon)) {
+                        token.toggleEffect(icon);
+                    }
                 }
             })
-
         }
     }
 

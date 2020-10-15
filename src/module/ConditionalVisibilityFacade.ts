@@ -15,6 +15,30 @@ export class ConditionalVisibilityFacade {
         this._system = system;
     }
 
+    public status():void {
+        if (game.user.isGM) {
+            let conditions = [];
+            this._system.effectsByCondition().forEach((value, key) => {
+                conditions.push({ name: key, icon: value});
+            })
+            renderTemplate("modules/conditional-visibility/templates/help_dialog.html", {
+                gamesystem: game.system.id,
+                hasStealth: this._system.hasStealth(),
+                autoStealth: game.settings.get(Constants.MODULE_NAME, "autoStealth"),
+                conditions: conditions
+            })
+                .then(content => {
+                    let d = new Dialog({
+                        title: "Conditional Visibility",
+                        content: content,
+                        buttons: {},
+                        close: () => console.log("This always is logged no matter which option is chosen")
+                       });
+                       d.render(true);
+                });
+        }
+    }
+
     /**
      * Sets a true false condition on tokens.  Will toggle the status effect on the token.
      * @param tokens the list of tokens to affect

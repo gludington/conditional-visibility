@@ -2,6 +2,12 @@
 
     "CONVIS.settings.autoStealth.name": "Auto hide on stealth rolls",
     "CONVIS.settings.autoStealth.hint": "On supported game systems, set the hidden condition on a token's stealth roll",
+
+    "CONVIS.help.readmeat": "More instructions can be found at the",
+    "CONVIS.help.gamesystem": "Game System",
+    "CONVIS.help.hasStealth": "Has Stealth",
+    "CONVIS.help.availableconditions": "Available Conditions",
+
     "CONVIS.unsupportedsystem":"Conditional Visibility does not support the system {system}, as it has its own condition mechanism.  Issues (especially pull requests) are welcomed",
     "CONVIS.ExtraSenseInstructions": "Additional senses that may enhance vision",
     "CONVIS.seeinvisible":"Sees Invisible",

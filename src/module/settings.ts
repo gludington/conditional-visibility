@@ -9,7 +9,7 @@ export const registerSettings = function() {
 		config: true,
 		type: Boolean,
 		default: false,
-		onChange: value => console.error(value)
+		onChange: value => console.log(Constants.MODULE_NAME + ' | autoStealth set to ' + value)
 	})
 	// Register any custom module settings here
 	ConditionalVisibility.onInit();	

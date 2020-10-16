@@ -18,10 +18,10 @@
   "minimumCoreVersion": "0.6.6",
   "compatibleCoreVersion": "0.6.6",
   "url": "https://github.com/gludington/conditional-visibility/",
-    "manifest": "https://github.com/gludington/conditional-visibility/releases/download/v0.0.7/module.json",
-    "download": "https://github.com/gludington/conditional-visibility/releases/download/v0.0.7/conditional-visibility-v0.0.7.zip",
-    "changelog": "https://raw.githubusercontent.com/gludington/conditional-visibility/master/CHANGELOG.md",
-    "readme": "https://raw.githubusercontent.com/gludington/conditional-visibility/master/README.md",
-  "license": "",
-  "bugs": ""
+    "manifest": "https://github.com/gludington/conditional-visibility/releases/download/v0.0.8/module.json",
+    "download": "https://github.com/gludington/conditional-visibility/releases/download/v0.0.8/conditional-visibility-v0.0.8.zip",
+    "changelog": "https://github.com/gludington/conditional-visibility/blob/master/CHANGELOG.md",
+    "readme": "https://github.com/gludington/conditional-visibility/blob/master/README.md",
+    "license": "",
+    "bugs": ""
 }

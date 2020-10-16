@@ -14,6 +14,7 @@
 import { registerSettings } from './module/settings.js';
 import { preloadTemplates } from './module/preloadTemplates.js';
 import { ConditionalVisibility } from './module/ConditionalVisibility';
+import * as Constants from './module/Constants';
 
 declare global {
     interface Window { Senses: ConditionalVisibility }
@@ -22,7 +23,7 @@ declare global {
 /* Initialize module					*/
 /* ------------------------------------ */
 Hooks.once('init', async function() {
-	console.log('conditional-visibility | Initializing conditional-visibility');
+	console.log(Constants.MODULE_NAME + ' | init ' + Constants.MODULE_NAME);
 	// Assign custom classes and constants here
 	
 	// Register custom module settings
@@ -46,7 +47,7 @@ Hooks.once('setup', function() {
 /* ------------------------------------ */
 Hooks.once('ready', async function() {
 	// Do anything once the module is ready
-	console.log('conditional-visibility | Ready conditional-visibility');
+	console.log(Constants.MODULE_NAME + ' | Ready ' + Constants.MODULE_NAME);
     const sightLayer = canvas.layers.find(layer => {
         return layer.__proto__.constructor.name === 'SightLayer'
     });

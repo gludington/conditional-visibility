@@ -5,9 +5,9 @@
 
 [Installation](#Installation)
 
-[Module Manifest](https://github.com/gludington/conditional-visibility/releases/download/v0.0.6/module.json)
+[Module Manifest](https://github.com/gludington/conditional-visibility/releases/download/v0.0.8/module.json)
 
-[Changelog](https://raw.githubusercontent.com/gludington/conditional-visibility/master/CHANGELOG.md)
+[Changelog](https://github.com/gludington/conditional-visibility/blob/master/CHANGELOG.md)
 
 Invisible Stalkers should only be seen by players that have cast See Invisibility.  Stealthy Goblins should only be seen by players with high perception.
 And when that Drow casts Darkness, players should need Devil's Sight to see any tokens inside.
@@ -39,7 +39,40 @@ exceeds that stealth roll. (click to play on YouTube):
 
 [![Watch the video](https://img.youtube.com/vi/pYay4fRlnu4/hqdefault.jpg)](https://youtu.be/pYay4fRlnu4)
 
-Condition and capability updates are communicatedto player screens (click to play on YouTube):
+### Other Ways of Applying conditions to a token
+
+#### Scripting
+
+New to version 0.0.8, script entry points are created for macro and script authors.  The following methods are supported:
+
+`ConditionalVisibility.help()`
+
+(GM only) pops up a dialog showing the current system, available conditions, and configuration status.
+
+`ConditionalVisibility.setCondition(tokens, condition, value)`
+
+* tokens - an array of tokens to affect
+* condition - the name of the condition, e.g. invisible or indarkness.  You can check the available names for your system in the `help()` dialog.
+* value true to turn the condition on, false to turn it off
+
+For example, if you want to set all the selected tokens invisible:
+`ConditionalVisibility.setCondition(canvas.tokens.controlled, 'invisible', true)`
+
+The *hidden* condition requires system specific rules, and so uses a different set of methods.  Note this is only available on systems that have these rules developed, currently only D&D 5e.  Issues or contributions for other issues are welcome.
+
+`ConditionalVisibility.hide(tokens, value)`
+* tokens - a list of tokens to affect
+* value - optional; a flat value to apply to all tokens.  If not specified, each token will make system-specific roll.
+
+`ConditionalVisibility.unHide(tokens)`
+* tokens - a list of tokens from which to remove the hidden condition. 
+
+#### Auto-applied from Stealth Rolls
+Conditional Visibility contains an setting to auto-apply the hidden condition based on a stealth roll.  Currently only 5e; again, contributions for other systems are welcomed.
+
+![Vision Panel](https://raw.githubusercontent.com/gludington/conditional-visibility/master/src/support/autoStealth.png)
+
+When this setting is true, then rolling stealth from that token's character sheet will apply the hidden condition based on the value of that roll.
 
 [![Watch the video](https://img.youtube.com/vi/U308ksxblZU/hqdefault.jpg)](https://youtu.be/U308ksxblZU)
 

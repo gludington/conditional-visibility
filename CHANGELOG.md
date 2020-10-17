@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.0.8]
+- Added ConditionalVisibility.setCondition, hide, and unhide methods for macros and scripts to use
+- Added an auto-hide off of stealth rolls in 5e.  (BetterRolls5e not supported - see README)
+
 ## [0.0.7]
 - Add initial support for Pathfinder 2e, using the system stock Invisible token
 
@@ -20,4 +24,4 @@
 - Initial commit with Invisible, Obscured, and Devil's Sight
 
 ## [Known Issues]
-- Does not work with systems that use their own Conditions mechanism, e.g. Pathfinder 2e
+- Auto-hiding on stealth does not work with BetterRolls5e

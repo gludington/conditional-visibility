@@ -1,3 +1,5 @@
+import { ConditionalVisibility } from '../ConditionalVisibility';
+import { ConditionalVisibilityFacade } from '../ConditionalVisibilityFacade';
 import * as Constants from '../Constants';
 import { DefaultConditionalVisibilitySystem } from "./DefaultConditionalVisibilitySystem";
 
@@ -10,8 +12,8 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
     /**
      * Use the base conditions, plus set up the icon for the "hidden" condition
      */
-    public effects(): Map<String, String> {
-        const effects:Map<String, String> = super.effects();
+    protected effects(): Map<string, string> {
+        const effects:Map<string, string> = super.effects();
         effects.set('modules/conditional-visibility/icons/newspaper.svg', 'hidden');
         return effects;
     }
@@ -50,6 +52,22 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
         }
     }
         
+    public initializeHooks(facade:ConditionalVisibilityFacade) {
+        Hooks.on('createChatMessage', (message, jQuery, speaker) => {
+            if (game.settings.get(Constants.MODULE_NAME, "autoStealth") === true && message.data.flags.dnd5e
+                && message.data.flags.dnd5e.roll
+                && message.data.flags.dnd5e.roll.skillId === 'ste') {
+                    if (message.data.speaker.token) {
+                        const tokenId = message.data.speaker.token;
+                        const token = canvas.tokens.placeables.find(tok => tok.id === tokenId);
+                        if (token && token.owner) {
+                            facade.hide([token], message._roll.total);
+                        }
+                    }
+                }
+        });
+    }
+
     /**
      * Get the base vision capabilities, and add the maximum passive perception for any token in the list.
      * @param srcTokens tokens whos abilities to test
@@ -121,7 +139,11 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
         }
     }
 
-    protected rollStealth(token:Token):Roll {
+    public hasStealth() {
+        return true;
+    }
+
+    public rollStealth(token:Token):Roll {
         if (token && token.actor) {
             return new Roll("1d20 + (" + token.actor.data.data.skills.ste.total + ")");
         } else {

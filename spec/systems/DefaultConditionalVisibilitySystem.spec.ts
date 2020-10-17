@@ -26,7 +26,7 @@ describe('DefaultConditionaVisibilitySystem', () => {
 
     describe('Setup', () => {
         it('Establishes three conditions for an unrecognized game system', () => {
-            const effects:Map<String, String> = system.effects();
+            const effects:Map<string, string> = system.effectsByIcon();
             expect(effects.size).toBe(3);
             expect(effects.get('modules/conditional-visibility/icons/unknown.svg')).toBe('invisible');
             expect(effects.get('modules/conditional-visibility/icons/foggy.svg')).toBe('obscured');

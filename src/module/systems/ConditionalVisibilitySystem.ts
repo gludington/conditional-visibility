@@ -1,4 +1,5 @@
 import { ConditionalVisibility } from "../ConditionalVisibility";
+import { ConditionalVisibilityFacade } from "../ConditionalVisibilityFacade";
 
 /**
  * A ConditionalVisibilitySystem abstracts the parameters that would be specific to a game system, e.g. dnd5e might use stealth
@@ -12,9 +13,14 @@ export interface ConditionalVisibilitySystem {
     gameSystemId(): string;
 
     /**
-     * A map of icon urls to a condition name.
+     * A map of icon urls to a condition name. Effectively a BiMap with effectsByCondition()
      */
-    effects(): Map<String, String>;
+    effectsByIcon(): Map<string, string>;
+
+    /**
+     * A map of condition names to icon urls.  Effectively a BiMap with effects()
+     */
+    effectsByCondition(): Map<string, string>;
 
     /**
      * Initizialize status effects for the system.
@@ -28,6 +34,13 @@ export interface ConditionalVisibilitySystem {
      * @param update the update being made
      */
     recalculateVisibleStatus(token: any, update: any);
+
+    /*
+     * Initialize system-specific hooks.
+     * @param facade the window-scoped object for a public api
+     * @todo clean this up and hide
+     */
+    initializeHooks(facade:ConditionalVisibilityFacade): void;
 
     /**
      * Get the vision capabilities of the combined list of tokens provided.
@@ -49,4 +62,15 @@ export interface ConditionalVisibilitySystem {
      * @param tokenHud the tokenHud where the effects are toggled
      */
     initializeOnToggleEffect(tokenHud: any): void
+
+    /**
+     * Returns true if the system supports the "hidden" condition and provides a means to roll dice, false otherwise.
+     */
+    hasStealth():boolean
+
+    /**
+     * Rolls stealth appropriate to the token, for those systems that support stealth
+     * @param token
+     */
+    rollStealth(token: Token): any;
 }

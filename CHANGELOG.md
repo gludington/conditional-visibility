@@ -1,5 +1,8 @@
 # Changelog
 
+## [0.0.9]
+- Added Korean language support, courtesy of drdwing
+  
 ## [0.0.8]
 - Added ConditionalVisibility.setCondition, hide, and unhide methods for macros and scripts to use
 - Added an auto-hide off of stealth rolls in 5e.  (BetterRolls5e not supported - see README)

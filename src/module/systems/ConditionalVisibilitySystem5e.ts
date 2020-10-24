@@ -1,4 +1,4 @@
-import { ConditionalVisibility } from '../ConditionalVisibility';
+import { StatusEffect } from '../Constants';
 import { ConditionalVisibilityFacade } from '../ConditionalVisibilityFacade';
 import * as Constants from '../Constants';
 import { DefaultConditionalVisibilitySystem } from "./DefaultConditionalVisibilitySystem";
@@ -12,9 +12,13 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
     /**
      * Use the base conditions, plus set up the icon for the "hidden" condition
      */
-    protected effects(): Map<string, string> {
-        const effects:Map<string, string> = super.effects();
-        effects.set('modules/conditional-visibility/icons/newspaper.svg', 'hidden');
+    protected effects(): Array<StatusEffect> {
+        const effects:Array<StatusEffect> = super.effects();
+        effects.push({
+            id: 'hidden',
+            label: 'CONVIS.hidden',
+            icon: 'modules/conditional-visibility/icons/newspaper.svg'
+        });
         return effects;
     }
 

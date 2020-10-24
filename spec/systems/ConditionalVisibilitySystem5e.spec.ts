@@ -1,3 +1,4 @@
+import { StatusEffect } from '../../src/module/Constants';
 import {ConditionalVisibilitySystem5e } from '../../src/module/systems/ConditionalVisibilitySystem5e';
 //@ts-ignore
 (global as any).game = {
@@ -24,12 +25,12 @@ describe('ConditionalVisibilitySystem5e', () => {
 
     describe('Setup', () => {
         it('Establishes four conditions for dnd5e', () => {
-            const effects:Map<string, string> = system.effectsByIcon();
+            const effects:Map<string, StatusEffect> = system.effectsByIcon();
             expect(effects.size).toBe(4);
-            expect(effects.get('modules/conditional-visibility/icons/unknown.svg')).toBe('invisible');
-            expect(effects.get('modules/conditional-visibility/icons/foggy.svg')).toBe('obscured');
-            expect(effects.get('modules/conditional-visibility/icons/moon.svg')).toBe('indarkness');
-            expect(effects.get('modules/conditional-visibility/icons/newspaper.svg')).toBe('hidden');
+            expect(effects.get('modules/conditional-visibility/icons/unknown.svg').id).toBe('invisible');
+            expect(effects.get('modules/conditional-visibility/icons/foggy.svg').id).toBe('obscured');
+            expect(effects.get('modules/conditional-visibility/icons/moon.svg').id).toBe('indarkness');
+            expect(effects.get('modules/conditional-visibility/icons/newspaper.svg').id).toBe('hidden');
         });
     });
 

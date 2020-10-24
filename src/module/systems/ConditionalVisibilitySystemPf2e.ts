@@ -1,4 +1,4 @@
-import * as Constants from '../Constants';
+import { StatusEffect } from '../Constants';
 import { DefaultConditionalVisibilitySystem } from "./DefaultConditionalVisibilitySystem";
 
 /**
@@ -6,11 +6,18 @@ import { DefaultConditionalVisibilitySystem } from "./DefaultConditionalVisibili
  */
 export class ConditionalVisibilitySystemPf2e extends DefaultConditionalVisibilitySystem {
 
+    static PF2E_BASE_EFFECTS = new Array<StatusEffect> (
+        { 
+            id: 'invisible',
+            label: 'CONVIS.invisible',
+            icon:'systems/pf2e/icons/conditions-2/invisible.png'
+        }
+    );
     /**
      * Use the base conditions, plus set up the icon for the "hidden" condition
      */
-    public effects(): Map<string, string> {
-        return new Map<string, string> ([['systems/pf2e/icons/conditions-2/invisible.png', 'invisible']]);
+    protected effects(): Array<StatusEffect> {
+        return ConditionalVisibilitySystemPf2e.PF2E_BASE_EFFECTS;
     }
 
     public gameSystemId() {

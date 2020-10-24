@@ -1,4 +1,6 @@
+import { ConditionalVisibility } from '../ConditionalVisibility';
 import { ConditionalVisibilityFacade } from '../ConditionalVisibilityFacade';
+import { StatusEffect } from '../Constants';
 import * as Constants from '../Constants';
 import { ConditionalVisibilitySystem } from "./ConditionalVisibilitySystem";
 
@@ -6,17 +8,34 @@ import { ConditionalVisibilitySystem } from "./ConditionalVisibilitySystem";
  * The DefaultConditionalVisibilitySystem, to use when no visibility system can be found for the game system.
  */
 export class DefaultConditionalVisibilitySystem implements ConditionalVisibilitySystem {
+
+    static BASE_EFFECTS = new Array<StatusEffect> (
+        { 
+            id: 'invisible',
+            label: 'CONVIS.invisible',
+            icon:'modules/conditional-visibility/icons/unknown.svg'
+        }, {
+            id: 'obscured',
+            label: 'CONVIS.obscured',
+            icon: 'modules/conditional-visibility/icons/foggy.svg'
+         }, {
+            id:'indarkness',
+            label: 'CONVIS.indarkness',
+            icon: 'modules/conditional-visibility/icons/moon.svg' 
+        }
+    );
     
-    _effectsByIcon: Map<string, string>;
-    _effectsByCondition: Map<string, string>;
+    _effectsByIcon: Map<string, StatusEffect>;
+    _effectsByCondition: Map<string, StatusEffect>;
 
     constructor() {
         //yes, this is a BiMap but the solid TS BiMap implementaiton is GPLv3, so we will just fake what we need here
-        this._effectsByIcon = this.effects();
-        this._effectsByCondition = new Map();
-        this._effectsByIcon.forEach((value: string, key: string) => {
-            this._effectsByCondition.set(value, key);
-        });
+        this._effectsByIcon = new Map<string, StatusEffect>();
+        this._effectsByCondition = new Map<string, StatusEffect>();
+        this.effects().forEach(statusEffect => {
+            this._effectsByIcon.set(statusEffect.icon, statusEffect);
+            this._effectsByCondition.set(statusEffect.id, statusEffect);
+        })
     }
 
     gameSystemId(): string {
@@ -26,18 +45,16 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
     /**
      * Base effects are invisible, obscured, and indarkness
      */
-    protected effects():Map<string, string> {
-        return new Map<string, string> ([['modules/conditional-visibility/icons/unknown.svg', 'invisible'],
-        ['modules/conditional-visibility/icons/foggy.svg', 'obscured'],
-        ['modules/conditional-visibility/icons/moon.svg', 'indarkness']]);
+    protected effects():Array<StatusEffect> {
+        return DefaultConditionalVisibilitySystem.BASE_EFFECTS;
     }
 
 
-    public effectsByIcon(): Map<string, string> {
+    public effectsByIcon(): Map<string, StatusEffect> {
         return this._effectsByIcon;
     }
 
-    public effectsByCondition(): Map<string, string> {
+    public effectsByCondition(): Map<string, StatusEffect> {
         return this._effectsByCondition;
     }
 

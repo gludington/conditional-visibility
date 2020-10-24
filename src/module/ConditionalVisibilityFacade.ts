@@ -47,7 +47,7 @@ export class ConditionalVisibilityFacade {
      */
     public setCondition(tokens:Array<Token>, condition:string, value:boolean) {       
         if (this._system.hasStealth()) {
-            let icon = this._system.effectsByCondition().get(condition);
+            let icon = this._system.effectsByCondition().get(condition).icon;
             tokens.forEach(token => {
                 if (token.owner) {
                     let effects = token.data.effects;
@@ -76,7 +76,7 @@ export class ConditionalVisibilityFacade {
             return;
         } 
         if (this._system.effectsByCondition().has('hidden')) {
-            let icon = this._system.effectsByCondition().get('hidden');
+            let icon = this._system.effectsByCondition().get('hidden').icon;
             tokens.forEach(token => {    
                 if (token.owner) {
                     if (!token.data.flags) {
@@ -109,7 +109,7 @@ export class ConditionalVisibilityFacade {
      */
     public unHide(tokens:Array<Token>) {
         if (this._system.hasStealth()) {
-            let icon = this._system.effectsByCondition().get('hidden');
+            let icon = this._system.effectsByCondition().get('hidden').icon;
             tokens.forEach(token => {
                 if (token.owner) {
                     if (this.has(token.data.effects, icon)) {

@@ -8,7 +8,7 @@ import { ConditionalVisibilityFacade } from "./ConditionalVisibilityFacade";
 export class ConditionalVisibility {
 
     static INSTANCE: ConditionalVisibility;
-
+    static ISV7: boolean;
     private _sightLayer: any;
     private _tokenHud: any;
     private _conditionalVisibilitySystem: ConditionalVisibilitySystem
@@ -21,6 +21,7 @@ export class ConditionalVisibility {
      * Called from init hook to establish the extra status effects in the main list before full game initialization.
      */
     static onInit() {
+        ConditionalVisibility.ISV7 = isNewerVersion(game.data.version, "0.7");
         const system = ConditionalVisibility.newSystem();
         system.initializeStatusEffects();
     }
@@ -67,8 +68,7 @@ export class ConditionalVisibility {
         this._conditionalVisibilitySystem = ConditionalVisibility.newSystem();
 
         // v0.6 and v0.7 inspect the tokens in a sightLayer differently, so switch based on version
-        this._isV7 = isNewerVersion(game.data.version, "0.7");
-        if (this._isV7) {
+        if (ConditionalVisibility.ISV7) {
             console.log(Constants.MODULE_NAME + " | starting against v0.7 or greater instance " + game.data.version);
             this._getSrcTokens = () => {
                 let srcTokens = new Array<Token>();
@@ -175,7 +175,7 @@ export class ConditionalVisibility {
                 const src = icon.attributes.src.value;
                 if (systemEffects.has(src)) {
                     let title;
-                    if (systemEffects.get(src) === 'hidden') {
+                    if (systemEffects.get(src).id === 'hidden') {
                         //@ts-ignore
                         title = game.i18n.localize('CONVIS.' + systemEffects.get(src));
                         if (data.flags && data.flags[Constants.MODULE_NAME] 

@@ -61,7 +61,7 @@ describe('Ready - initialize', () => {
     it('it should set up a listener for modifyEmbeddedDocument and redraw', () => {
         ConditionalVisibility.initialize(sightLayer, tokenHud);
         //@ts-ignore
-        expect(ConditionalVisibility.INSTANCE._isV7).toBe(false);
+        expect(ConditionalVisibility.ISV7).toBe(false);
         expect(game.socket.on).toHaveBeenCalledWith("modifyEmbeddedDocument", expect.any(Function));
         expect(sightLayer.initialize).toHaveBeenCalled();
         expect(sightLayer.refresh).not.toHaveBeenCalled();

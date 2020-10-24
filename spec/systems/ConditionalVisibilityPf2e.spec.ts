@@ -1,3 +1,4 @@
+import { StatusEffect } from '../../src/module/Constants';
 import {ConditionalVisibilitySystemPf2e } from '../../src/module/systems/ConditionalVisibilitySystemPf2e';
 //@ts-ignore
 (global as any).game = {
@@ -24,9 +25,9 @@ describe('ConditionalVisibilitySystem5e', () => {
 
     describe('Setup', () => {
         it('Establishes one condition for pf2e', () => {
-            const effects:Map<string, string> = system.effectsByIcon();
+            const effects:Map<string, StatusEffect> = system.effectsByIcon();
             expect(effects.size).toBe(1);
-            expect(effects.get('systems/pf2e/icons/conditions-2/invisible.png')).toBe('invisible');
+            expect(effects.get('systems/pf2e/icons/conditions-2/invisible.png').id).toBe('invisible');
         });
     });
 

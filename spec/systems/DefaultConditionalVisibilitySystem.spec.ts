@@ -1,3 +1,5 @@
+import { StatusEffect } from '../../src/module/Constants';
+import { ConditionalVisibility } from '../../src/module/ConditionalVisibility';
 import {DefaultConditionalVisibilitySystem } from '../../src/module/systems/DefaultConditionalVisibilitySystem';
 //@ts-ignore
 (global as any).game = {
@@ -22,13 +24,25 @@ describe('DefaultConditionaVisibilitySystem', () => {
 
     const system:DefaultConditionalVisibilitySystem = new DefaultConditionalVisibilitySystem();
 
-    describe('Setup', () => {
+    describe('Setup V6', () => {
+        ConditionalVisibility.ISV7 = false;
         it('Establishes three conditions for an unrecognized game system', () => {
-            const effects:Map<string, string> = system.effectsByIcon();
+            const effects:Map<string, StatusEffect> = system.effectsByIcon();
             expect(effects.size).toBe(3);
-            expect(effects.get('modules/conditional-visibility/icons/unknown.svg')).toBe('invisible');
-            expect(effects.get('modules/conditional-visibility/icons/foggy.svg')).toBe('obscured');
-            expect(effects.get('modules/conditional-visibility/icons/moon.svg')).toBe('indarkness');
+            expect(effects.get('modules/conditional-visibility/icons/unknown.svg').id).toBe('invisible');
+            expect(effects.get('modules/conditional-visibility/icons/foggy.svg').id).toBe('obscured');
+            expect(effects.get('modules/conditional-visibility/icons/moon.svg').id).toBe('indarkness');
+        });
+    });
+
+    describe('Setup V7', () => {
+        ConditionalVisibility.ISV7 = true;
+        it('Establishes three conditions for an unrecognized game system', () => {
+            const effects:Map<string, StatusEffect> = system.effectsByIcon();
+            expect(effects.size).toBe(3);
+            expect(effects.get('modules/conditional-visibility/icons/unknown.svg').id).toBe('invisible');
+            expect(effects.get('modules/conditional-visibility/icons/foggy.svg').id).toBe('obscured');
+            expect(effects.get('modules/conditional-visibility/icons/moon.svg').id).toBe('indarkness');
         });
     });
 

@@ -14,7 +14,7 @@ export interface ConditionalVisibilityFacade {
 /**
  * A class to expose macro-friendly messages on the window object.
  */
-export class ConditionalVisibilityFacadeV6 implements ConditionalVisibilityFacade {
+export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFacade {
 
     readonly _mod:ConditionalVisibility;
     readonly _system: ConditionalVisibilitySystem;
@@ -27,7 +27,14 @@ export class ConditionalVisibilityFacadeV6 implements ConditionalVisibilityFacad
         this._mod = mod;
         this._system = system;
         if (ConditionalVisibility.ISV7) {
-            throw new Error("HAVENT DONE V7 yet");
+            this.has = (token, condition) => {
+                return token.data.actorData.effects
+                    && token.data.actorData.effects.some(eff => eff.flags.core.statusId === condition.id);
+            }
+            this.toggleEffect = (token, condition) => {
+                //@ts-ignore
+                return token.toggleEffect(condition);
+            }
         } else {
             this.has = (token, condition) => {
                 return token.data.effects && token.data.effects.some(eff => eff === condition.icon);
@@ -42,7 +49,7 @@ export class ConditionalVisibilityFacadeV6 implements ConditionalVisibilityFacad
         if (game.user.isGM) {
             let conditions = [];
             this._system.effectsByCondition().forEach((value, key) => {
-                conditions.push({ name: key, icon: value});
+                conditions.push({ name: key, icon: value.icon});
             })
             renderTemplate("modules/conditional-visibility/templates/help_dialog.html", {
                 gamesystem: game.system.id,

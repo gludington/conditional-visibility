@@ -3,7 +3,7 @@ import { ConditionalVisibilitySystemPf2e } from "./systems/ConditionalVisibility
 import { ConditionalVisibilitySystem } from "./systems/ConditionalVisibilitySystem";
 import { DefaultConditionalVisibilitySystem } from "./systems/DefaultConditionalVisibilitySystem";
 import * as Constants from './Constants';
-import { ConditionalVisibilityFacade, ConditionalVisibilityFacadeV6 } from "./ConditionalVisibilityFacade";
+import { ConditionalVisibilityFacade, ConditionalVisibilityFacadeImpl } from "./ConditionalVisibilityFacade";
 
 export class ConditionalVisibility {
 
@@ -52,7 +52,7 @@ export class ConditionalVisibility {
      */
     static initialize(sightLayer: any, tokenHud: TokenHUD) {
         ConditionalVisibility.INSTANCE = new ConditionalVisibility(sightLayer, tokenHud);
-        const facade:ConditionalVisibilityFacade  = ConditionalVisibility.ISV7 ? undefined : new ConditionalVisibilityFacadeV6(ConditionalVisibility.INSTANCE,
+        const facade:ConditionalVisibilityFacade  = new ConditionalVisibilityFacadeImpl(ConditionalVisibility.INSTANCE,
             ConditionalVisibility.INSTANCE._conditionalVisibilitySystem);
         //@ts-ignore
         window.ConditionalVisibility = facade;

@@ -150,23 +150,23 @@ describe('DefaultConditionaVisibilitySystem', () => {
             it ('empty capabilities cannot see it', () => {
                 flags.seeinvisible = false;
                 //@ts-ignore
-                expect(system.seeInvisible(token, token.data.effects, flags)).toBe(false);
+                expect(system.seeInvisible(token, flags)).toBe(false);
             });
 
             it ('seeinvisible can see it', () => {
                 flags.seeinvisible = true;
                 //@ts-ignore
-                expect(system.seeInvisible(token, token.data.effects, flags)).toBe(true);
+                expect(system.seeInvisible(token, flags)).toBe(true);
             }); 
             it ('seeobscured cannot see it', () => {
                 flags.seeobscured = true;
                 //@ts-ignore
-                expect(system.seeInvisible(token, token.data.effects, flags)).toBe(false);
+                expect(system.seeInvisible(token, flags)).toBe(false);
             }); 
             it ('seeindarkness cannot see it', () => {
                 flags.seeobscured = true;
                 //@ts-ignore
-                expect(system.seeInvisible(token, token.data.effects, flags)).toBe(false);
+                expect(system.seeInvisible(token, flags)).toBe(false);
             }); 
         });
 
@@ -180,7 +180,7 @@ describe('DefaultConditionaVisibilitySystem', () => {
             it ('empty capabilities cannot see it', () => {
                 flags.seeinvisible = false;
                 //@ts-ignore
-                expect(system.seeObscured(token, token.data.effects, flags)).toBe(false);
+                expect(system.seeObscured(token, flags)).toBe(false);
             });
 
             it ('seeinvisible cannot see it', () => {
@@ -191,7 +191,7 @@ describe('DefaultConditionaVisibilitySystem', () => {
             it ('seeobscured can see it', () => {
                 flags.seeobscured = true;
                 //@ts-ignore
-                expect(system.seeObscured(token, token.data.effects, flags)).toBe(true);
+                expect(system.seeObscured(token, flags)).toBe(true);
             }); 
             it ('seeindarkness cannot see it', () => {
                 flags.seeindarkness = true;
@@ -208,23 +208,23 @@ describe('DefaultConditionaVisibilitySystem', () => {
 
             it ('empty capabilities cannot see it', () => {
                 //@ts-ignore
-                expect(system.seeInDarkness(token, token.data.effects, flags)).toBe(false);
+                expect(system.seeInDarkness(token, flags)).toBe(false);
             });
 
             it ('seeinvisible cannot see it', () => {
                 flags.seeinvisible = true;
                 //@ts-ignore
-                expect(system.seeInDarkness(token, token.data.effects, flags)).toBe(false);
+                expect(system.seeInDarkness(token, flags)).toBe(false);
             }); 
             it ('seeobscured cannot see it', () => {
                 flags.seeobscured = true;
                 //@ts-ignore
-                expect(system.seeInDarkness(token, token.data.effects, flags)).toBe(false);
+                expect(system.seeInDarkness(token, flags)).toBe(false);
             }); 
             it ('seeindarkness can see it', () => {
                 flags.seeindarkness = true;
                 //@ts-ignore
-                expect(system.seeInDarkness(token, token.data.effects, flags)).toBe(true);
+                expect(system.seeInDarkness(token, flags)).toBe(true);
             }); 
         });
     })

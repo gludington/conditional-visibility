@@ -148,7 +148,6 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
      * @param flags the capabilities established by the sight layer
      */
     public canSee(target: Token, visionCapabilities: any): boolean {
-        console.error(this.seeInvisible (target, visionCapabilities));
         if (this.seeInvisible(target, visionCapabilities) === false) {
             return false;
         }

@@ -52,17 +52,17 @@ describe('ConditionalVisibilitySystem5e', () => {
         it ('seeinvisible can see it', () => {
             flags.seeinvisible = true;
             //@ts-ignore
-            expect(system.seeInvisible(token, token.data.effects, flags)).toBe(true);
+            expect(system.seeInvisible(token, flags)).toBe(true);
         }); 
         it ('seeobscured cannot see it', () => {
             flags.seeobscured = true;
             //@ts-ignore
-            expect(system.seeInvisible(token, token.data.effects, flags)).toBe(false);
+            expect(system.seeInvisible(token, flags)).toBe(false);
         }); 
         it ('seeindarkness cannot see it', () => {
             flags.seeobscured = true;
             //@ts-ignore
-            expect(system.seeInvisible(token, token.data.effects, flags)).toBe(false);
+            expect(system.seeInvisible(token, flags)).toBe(false);
         }); 
     });
 });

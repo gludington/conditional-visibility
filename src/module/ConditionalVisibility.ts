@@ -3,7 +3,7 @@ import { ConditionalVisibilitySystemPf2e } from "./systems/ConditionalVisibility
 import { ConditionalVisibilitySystem } from "./systems/ConditionalVisibilitySystem";
 import { DefaultConditionalVisibilitySystem } from "./systems/DefaultConditionalVisibilitySystem";
 import * as Constants from './Constants';
-import { ConditionalVisibilityFacade } from "./ConditionalVisibilityFacade";
+import { ConditionalVisibilityFacade, ConditionalVisibilityFacadeV6 } from "./ConditionalVisibilityFacade";
 
 export class ConditionalVisibility {
 
@@ -52,10 +52,11 @@ export class ConditionalVisibility {
      */
     static initialize(sightLayer: any, tokenHud: TokenHUD) {
         ConditionalVisibility.INSTANCE = new ConditionalVisibility(sightLayer, tokenHud);
-        const facade:ConditionalVisibilityFacade  = new ConditionalVisibilityFacade(ConditionalVisibility.INSTANCE,
+        const facade:ConditionalVisibilityFacade  = ConditionalVisibility.ISV7 ? undefined : new ConditionalVisibilityFacadeV6(ConditionalVisibility.INSTANCE,
             ConditionalVisibility.INSTANCE._conditionalVisibilitySystem);
         //@ts-ignore
         window.ConditionalVisibility = facade;
+        debugger;
         ConditionalVisibility.INSTANCE._conditionalVisibilitySystem.initializeHooks(facade);    
     }
 
@@ -177,7 +178,7 @@ export class ConditionalVisibility {
                     let title;
                     if (systemEffects.get(src).id === 'hidden') {
                         //@ts-ignore
-                        title = game.i18n.localize('CONVIS.' + systemEffects.get(src));
+                        title = game.i18n.localize(systemEffects.get(src).label);
                         if (data.flags && data.flags[Constants.MODULE_NAME] 
                             && data.flags[Constants.MODULE_NAME]._ste && !isNaN(parseInt(data.flags[Constants.MODULE_NAME]._ste))) {
                             //@ts-ignore
@@ -185,7 +186,7 @@ export class ConditionalVisibility {
                         }
                     } else {
                         //@ts-ignore
-                        title = game.i18n.localize('CONVIS.' + systemEffects.get(src));
+                        title = game.i18n.localize(systemEffects.get(src).label);
                     }
                     icon.setAttribute("title", title);
                 }
@@ -194,6 +195,7 @@ export class ConditionalVisibility {
 
     public async onPreUpdateToken(token:any, update:any) {
         if (update.effects) {
+            debugger;
             if (update.effects.some(eff => eff.endsWith('newspaper.svg'))) {
                 let currentStealth;
                 try {

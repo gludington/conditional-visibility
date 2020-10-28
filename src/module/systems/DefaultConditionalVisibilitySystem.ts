@@ -3,6 +3,7 @@ import { ConditionalVisibilityFacade } from '../ConditionalVisibilityFacade';
 import { StatusEffect } from '../Constants';
 import * as Constants from '../Constants';
 import { ConditionalVisibilitySystem } from "./ConditionalVisibilitySystem";
+import { ConditionalVisibilitySystemPf2e } from './ConditionalVisibilitySystemPf2e';
 
 /**
  * The DefaultConditionalVisibilitySystem, to use when no visibility system can be found for the game system.
@@ -28,6 +29,8 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
     _effectsByIcon: Map<string, StatusEffect>;
     _effectsByCondition: Map<string, StatusEffect>;
 
+    hasStatus:(token:Token, id:string, icon:string) => boolean;
+
     constructor() {
         //yes, this is a BiMap but the solid TS BiMap implementaiton is GPLv3, so we will just fake what we need here
         this._effectsByIcon = new Map<string, StatusEffect>();
@@ -36,6 +39,16 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
             this._effectsByIcon.set(statusEffect.icon, statusEffect);
             this._effectsByCondition.set(statusEffect.id, statusEffect);
         })
+        if (ConditionalVisibility.ISV7) {
+            this.hasStatus = (token:Token, id:string, icon:string) => {
+                //@ts-ignore
+                return token.data.actorData.effects.some(eff => eff.flags.core.statusId === id);
+            }
+        } else {
+            this.hasStatus = (token:Token, id:string, icon:string) => {
+                return token.data.effects.some(eff => eff.endsWith(icon));
+            }
+        }
     }
 
     gameSystemId(): string {
@@ -60,9 +73,32 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
 
     public initializeStatusEffects():void {
         console.log(Constants.MODULE_NAME + " | Initializing visibility system effects " + this.gameSystemId() + " for game system " + game.system.id);
-        for (const effect of this.effectsByIcon().keys()) {
-            //@ts-ignore
-            CONFIG.statusEffects.push(effect);	
+        if (ConditionalVisibility.ISV7) {
+            console.error(CONFIG.statusEffects);
+            let json = [];
+            this.effectsByIcon().forEach((value: StatusEffect, key: string) => {
+                //@ts-ignore
+                json.push({
+                    id: value.id,
+                    label: value.label,
+                    icon: value.icon 
+                })
+            });
+            for (let i  = 0; i < json.length; i++ ) {
+                console.error(json[i]);
+                //@ts-ignore
+                CONFIG.statusEffects.push({
+                    id: json[i].id,
+                    label: json[i].label,
+                    icon: json[i].icon
+                 });
+            }
+             console.error(CONFIG.statusEffects);
+        } else {
+            for (const effect of this.effectsByIcon().keys()) {
+                //@ts-ignore
+                CONFIG.statusEffects.push(effect);	
+            }
         }
     }
 
@@ -112,27 +148,24 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
      * @param flags the capabilities established by the sight layer
      */
     public canSee(target: Token, visionCapabilities: any): boolean {
-        const effects = target.data.effects;
-        if (effects.length > 0) {
-            if (this.seeInvisible(target, effects, visionCapabilities) === false) {
-                return false;
-            }
-
-            if (this.seeObscured(target, effects, visionCapabilities) === false) {
-                return false;
-            }
-
-            if (this.seeInDarkness(target, effects, visionCapabilities) === false) {
-                return false;
-            }
-
-            if (this.seeContested(target, effects, visionCapabilities) === false) {
-                return false;
-            }
-            return true;
-        } else {
-            return true;
+        console.error(this.seeInvisible (target, visionCapabilities));
+        if (this.seeInvisible(target, visionCapabilities) === false) {
+            return false;
         }
+
+        if (this.seeObscured(target, visionCapabilities) === false) {
+            return false;
+        }
+
+        if (this.seeInDarkness(target, visionCapabilities) === false) {
+            return false;
+        }
+
+        if (this.seeContested(target, visionCapabilities) === false) {
+            return false;
+        }
+        return true;
+
     }
 
     /**
@@ -141,8 +174,8 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
      * @param effects the effects of that token
      * @param visionCapabilities the sight capabilities of the sight layer
      */
-    protected seeInvisible(target:Token, effects:any, visionCapabilities:any): boolean {
-        const invisible = effects.some(eff => eff.endsWith('unknown.svg'));
+    protected seeInvisible(target:Token, visionCapabilities:any): boolean {
+        const invisible = this.hasStatus(target, 'invisible', 'unknown.svg');
         if (invisible === true) {
             if (visionCapabilities.seeinvisible !== true) {
                 return false;
@@ -154,11 +187,10 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
     /**
      * Tests whether a token is obscured, and if it can be seen.
      * @param target the token being seen (or not)
-     * @param effects the effects of that token
      * @param visionCapabilities the sight capabilities of the sight layer
      */
-    protected seeObscured(target:Token, effects:any, visionCapabilities:any): boolean {
-        const obscured = effects.some(eff => eff.endsWith('foggy.svg'));
+    protected seeObscured(target:Token, visionCapabilities:any): boolean {
+        const obscured = this.hasStatus(target, 'obscured', 'foggy.svg');
         if (obscured === true) {
             if (visionCapabilities.seeobscured !== true) {
                 return false;
@@ -173,8 +205,8 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
      * @param effects the effects of that token
      * @param flags the sight capabilities of the sight layer
      */
-    protected seeInDarkness(target:Token, effects:any, visionCapabilities:any): boolean {
-        const indarkness = effects.some(eff => eff.endsWith('moon.svg'));
+    protected seeInDarkness(target:Token, visionCapabilities:any): boolean {
+        const indarkness = this.hasStatus(target, 'indarkness', 'moon.svg');
         if (indarkness === true) {
             if (visionCapabilities.seeindarkness !== true) {
                 return false;
@@ -190,7 +222,7 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
      * @param effects the effects of that token
      * @param visionCapabilities the sight capabilities of the sight layer
      */
-    protected seeContested(target:Token, effects:any, flags:any): boolean {
+    protected seeContested(target:Token, flags:any): boolean {
         return true;
     }
 

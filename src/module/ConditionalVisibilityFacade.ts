@@ -1,18 +1,41 @@
 import * as Constants from './Constants';
 import { ConditionalVisibility } from "./ConditionalVisibility";
 import { ConditionalVisibilitySystem } from "./systems/ConditionalVisibilitySystem";
+import { ConditionalVisibilitySystemPf2e } from './systems/ConditionalVisibilitySystemPf2e';
+
+export interface ConditionalVisibilityFacade {
+
+    help(): void,
+    setCondition(tokens:Array<Token>, condition:string, value:boolean): void,
+    hide(tokens:Array<Token>, value?: number): void,
+    unHide(tokens:Array<Token>): void
+}
 
 /**
  * A class to expose macro-friendly messages on the window object.
  */
-export class ConditionalVisibilityFacade {
+export class ConditionalVisibilityFacadeV6 implements ConditionalVisibilityFacade {
 
     readonly _mod:ConditionalVisibility;
     readonly _system: ConditionalVisibilitySystem;
 
+    toggleToken: () => Promise<any>;
+    has: (token:Token, condition:Constants.StatusEffect) => boolean;
+    toggleEffect: (token:Token, condition:Constants.StatusEffect) => Promise<any>;
+
     constructor(mod:ConditionalVisibility, system: ConditionalVisibilitySystem) {
         this._mod = mod;
         this._system = system;
+        if (ConditionalVisibility.ISV7) {
+            throw new Error("HAVENT DONE V7 yet");
+        } else {
+            this.has = (token, condition) => {
+                return token.data.effects && token.data.effects.some(eff => eff === condition.icon);
+            }
+            this.toggleEffect = (token, condition) => {
+                return token.toggleEffect(condition.icon);
+            }
+        }
     }
 
     public help():void {
@@ -46,18 +69,18 @@ export class ConditionalVisibilityFacade {
      * @param value true or false
      */
     public setCondition(tokens:Array<Token>, condition:string, value:boolean) {       
-        if (this._system.hasStealth()) {
-            let icon = this._system.effectsByCondition().get(condition).icon;
+        let status = this._system.effectsByCondition().get(condition);
+        if (status) {
             tokens.forEach(token => {
                 if (token.owner) {
                     let effects = token.data.effects;
                     if (value !== true) {
-                        if (this.has(effects, icon)) {
-                            token.toggleEffect(icon).then(() => {});
+                        if (this.has(token, status)) {
+                            this.toggleEffect(token, status).then(() => {});
                         }
                     } else {
-                        if (!this.has(effects, icon)) {
-                            token.toggleEffect(icon).then(() => {});
+                        if (!this.has(token, status)) {
+                            this.toggleEffect(token, status).then(() => {});
                         }
                     }
                 }
@@ -76,7 +99,7 @@ export class ConditionalVisibilityFacade {
             return;
         } 
         if (this._system.effectsByCondition().has('hidden')) {
-            let icon = this._system.effectsByCondition().get('hidden').icon;
+            let hidden = this._system.effectsByCondition().get('hidden');
             tokens.forEach(token => {    
                 if (token.owner) {
                     if (!token.data.flags) {
@@ -91,12 +114,12 @@ export class ConditionalVisibilityFacade {
                     } else {
                         stealth = this._system.rollStealth(token).roll().total;
                     }
-                    if (this.has(token.data.effects, icon) === true) {
+                    if (this.has(token, hidden) === true) {
                         const update = { 'conditional-visibility': { '_ste':stealth}};
                         token.update({flags: update});
                     } else {
                         token.data.flags[Constants.MODULE_NAME]._ste = stealth;
-                        token.toggleEffect(icon);
+                        this.toggleEffect(token, hidden);
                     }
                 }
             })
@@ -109,18 +132,14 @@ export class ConditionalVisibilityFacade {
      */
     public unHide(tokens:Array<Token>) {
         if (this._system.hasStealth()) {
-            let icon = this._system.effectsByCondition().get('hidden').icon;
+            let hidden = this._system.effectsByCondition().get('hidden');
             tokens.forEach(token => {
                 if (token.owner) {
-                    if (this.has(token.data.effects, icon)) {
-                        token.toggleEffect(icon);
+                    if (this.has(token, hidden)) {
+                        this.toggleEffect(token, hidden);
                     }
                 }
             })
         }
-    }
-
-    private has(effects, icon):boolean {
-        return effects.some(eff => eff === icon);
     }
 }

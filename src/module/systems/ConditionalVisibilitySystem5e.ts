@@ -61,11 +61,11 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
     /**
      * Override seeContested to compare any available stealth with the passive perception calculated in getVisionCapabilities
      * @param target the toekn to try and see
-     * @param effects the effects on the token
      * @param flags the flags calculated from getVisionCapabilities
      */
-    protected seeContested(target: Token, effects: any, visionCapabilities: any): boolean {
-        const hidden = effects.some(eff => eff.endsWith('newspaper.svg'));
+    protected seeContested(target: Token, visionCapabilities: any): boolean {
+        console.error("SEE CONTESTED");
+        const hidden = this.hasStatus(target, 'hidden', 'newspaper.svg');
         if (hidden === true) {
             if (target.data.flags[Constants.MODULE_NAME] && target.data.flags[Constants.MODULE_NAME]._ste) {
                 const stealth = target.data.flags[Constants.MODULE_NAME]._ste;
@@ -110,6 +110,7 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
     }
 
     public rollStealth(token:Token):Roll {
+        console.error("FUCKING ROLL");
         if (token && token.actor) {
             return new Roll("1d20 + (" + token.actor.data.data.skills.ste.total + ")");
         } else {

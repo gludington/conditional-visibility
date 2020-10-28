@@ -1,9 +1,10 @@
+import { ConditionalVisibility } from '../../src/module/ConditionalVisibility';
 import { StatusEffect } from '../../src/module/Constants';
 import {ConditionalVisibilitySystemPf2e } from '../../src/module/systems/ConditionalVisibilitySystemPf2e';
 //@ts-ignore
 (global as any).game = {
     data: { version: "0.6.6"},
-    system: {id: 'asdf'},
+    system: {id: 'pf2e'},
     socket: { 
         on:jest.fn().mockImplementation((name, data) => {})
     }
@@ -21,7 +22,8 @@ import {ConditionalVisibilitySystemPf2e } from '../../src/module/systems/Conditi
 
 describe('ConditionalVisibilitySystem5e', () => {
 
-    const system:ConditionalVisibilitySystemPf2e = new ConditionalVisibilitySystemPf2e();
+    //@ts-ignore
+    const system:ConditionalVisibilitySystemPf2e = ConditionalVisibility.newSystem();
 
     describe('Setup', () => {
         it('Establishes one condition for pf2e', () => {

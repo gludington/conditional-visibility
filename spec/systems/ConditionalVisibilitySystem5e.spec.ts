@@ -1,9 +1,10 @@
 import { StatusEffect } from '../../src/module/Constants';
+import { ConditionalVisibility } from '../../src/module/ConditionalVisibility';
 import {ConditionalVisibilitySystem5e } from '../../src/module/systems/ConditionalVisibilitySystem5e';
 //@ts-ignore
 (global as any).game = {
     data: { version: "0.6.6"},
-    system: {id: 'asdf'},
+    system: {id: 'dnd5e'},
     socket: { 
         on:jest.fn().mockImplementation((name, data) => {})
     }
@@ -21,7 +22,8 @@ import {ConditionalVisibilitySystem5e } from '../../src/module/systems/Condition
 
 describe('ConditionalVisibilitySystem5e', () => {
 
-    const system:ConditionalVisibilitySystem5e = new ConditionalVisibilitySystem5e();
+    //@ts-ignore
+    const system:ConditionalVisibilitySystem5e = ConditionalVisibility.newSystem();
 
     describe('Setup', () => {
         it('Establishes four conditions for dnd5e', () => {

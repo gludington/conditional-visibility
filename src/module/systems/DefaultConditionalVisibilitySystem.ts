@@ -14,18 +14,15 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
         { 
             id: 'invisible',
             label: 'CONVIS.invisible',
-            icon:'modules/conditional-visibility/icons/unknown.svg',
-            transfer: false
+            icon:'modules/conditional-visibility/icons/unknown.svg'
         }, {
             id: 'obscured',
             label: 'CONVIS.obscured',
             icon: 'modules/conditional-visibility/icons/foggy.svg',
-            transfer: false
          }, {
             id:'indarkness',
             label: 'CONVIS.indarkness',
-            icon: 'modules/conditional-visibility/icons/moon.svg',
-            transfer: false
+            icon: 'modules/conditional-visibility/icons/moon.svg'
         }
     );
     

@@ -14,6 +14,8 @@ export class ConditionalVisibility {
     private _conditionalVisibilitySystem: ConditionalVisibilitySystem
     private _isV7:boolean;
 
+    private _onPreUpdateToken:(scene:any, token:any, update:any, options:any, userId:string) => void;
+
     private _getSrcTokens: () => Array<Token>;
     private _draw: () => void;
 
@@ -56,7 +58,6 @@ export class ConditionalVisibility {
             ConditionalVisibility.INSTANCE._conditionalVisibilitySystem);
         //@ts-ignore
         window.ConditionalVisibility = facade;
-        debugger;
         ConditionalVisibility.INSTANCE._conditionalVisibilitySystem.initializeHooks(facade);    
     }
 
@@ -71,6 +72,7 @@ export class ConditionalVisibility {
         // v0.6 and v0.7 inspect the tokens in a sightLayer differently, so switch based on version
         if (ConditionalVisibility.ISV7) {
             console.log(Constants.MODULE_NAME + " | starting against v0.7 or greater instance " + game.data.version);
+            this._onPreUpdateToken = this.onPreUpdateTokenV7;
             this._getSrcTokens = () => {
                 let srcTokens = new Array<Token>();
                 if (this._sightLayer.sources) {
@@ -95,6 +97,7 @@ export class ConditionalVisibility {
             }
         } else {
             console.log(Constants.MODULE_NAME + " | starting against v0.6 instance " + game.data.version);
+            this._onPreUpdateToken = this.onPreUpdateTokenV6;
             this._getSrcTokens = () => {
                 let srcTokens = new Array<Token>();
                 if (this._sightLayer.sources && this._sightLayer.sources.vision) {
@@ -193,9 +196,36 @@ export class ConditionalVisibility {
             });
     }
 
-    public async onPreUpdateToken(token:any, update:any) {
+    public onPreUpdateToken(scene:any, token:any, update:any, options:any, userId:string) {
+        this._onPreUpdateToken(scene, token, update, options, userId);
+    }
+
+    private onPreUpdateTokenV7(scene:any, token:any, update:any, options:any, userId:string) {
+
+        if (update.actorData?.effects) {
+            let convis = { };
+            this._conditionalVisibilitySystem.effectsByCondition().forEach((value:any, key:string) => {
+                convis[key] = false;
+            });
+                
+            update.actorData.effects.forEach(effect => {
+                const status = this._conditionalVisibilitySystem.effectsByIcon().get(effect.icon);
+                if (status) {
+                    effect.changeType = "add";
+                    effect.changes = [{
+                        //@ts-ignore
+                        key: "data.data.convis." + status.id, value: true, mode: ACTIVE_EFFECT_MODES.OVERWRITE
+                    }]
+                }
+            });
+            this.draw().then(() => {});
+        } else if (update.flags && update.flags[Constants.MODULE_NAME]) {
+            this.draw().then(() => {});
+        }
+    }
+
+    private onPreUpdateTokenV6(scene:any, token:any, update:any, options:any, userId:string) {
         if (update.effects) {
-            debugger;
             if (update.effects.some(eff => eff.endsWith('newspaper.svg'))) {
                 let currentStealth;
                 try {
@@ -223,9 +253,9 @@ export class ConditionalVisibility {
                 }
                 update.flags[Constants.MODULE_NAME]._ste = "";
             }
-            await this.draw();
+            this.draw().then(() => {});
         } else if (update.flags && update.flags[Constants.MODULE_NAME]) {
-            await this.draw();
+            this.draw().then(() => {});
         }
     }
 

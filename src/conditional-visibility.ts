@@ -65,6 +65,6 @@ Hooks.on("renderTokenHUD", (app, html, data) => {
     ConditionalVisibility.INSTANCE.onRenderTokenHUD(app, html, data);
 });
 
-Hooks.on("preUpdateToken", (thing, token, update, options, userId) => {
-    ConditionalVisibility.INSTANCE.onPreUpdateToken(token, update);
+Hooks.on("preUpdateToken", (scene, token, update, options, userId) => {
+    ConditionalVisibility.INSTANCE.onPreUpdateToken(scene, token, update, options, userId);
 })

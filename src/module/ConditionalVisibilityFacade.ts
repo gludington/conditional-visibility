@@ -28,8 +28,10 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
         this._system = system;
         if (ConditionalVisibility.ISV7) {
             this.has = (token, condition) => {
-                return token.data.actorData.effects
-                    && token.data.actorData.effects.some(eff => eff.flags.core.statusId === condition.id);
+                //@ts-ignore
+                return token.actor?.effects?.entries?.some(eff => eff.data?.flags?.core?.statusId === condition.id);
+                //return token.data?.actorData?.effects?.some(eff => eff.flags?.core?.statusId === condition.id);
+                //return token.actor?.data?.data?.[Constants.MODULE_NAME]?.[condition.id] === true;
             }
             this.toggleEffect = (token, condition) => {
                 //@ts-ignore
@@ -80,7 +82,6 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
         if (status) {
             tokens.forEach(token => {
                 if (token.owner) {
-                    let effects = token.data.effects;
                     if (value !== true) {
                         if (this.has(token, status)) {
                             this.toggleEffect(token, status).then(() => {});
@@ -124,6 +125,7 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
                     if (this.has(token, hidden) === true) {
                         const update = { 'conditional-visibility': { '_ste':stealth}};
                         token.update({flags: update});
+
                     } else {
                         token.data.flags[Constants.MODULE_NAME]._ste = stealth;
                         this.toggleEffect(token, hidden);

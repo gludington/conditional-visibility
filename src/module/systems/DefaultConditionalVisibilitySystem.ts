@@ -14,15 +14,18 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
         { 
             id: 'invisible',
             label: 'CONVIS.invisible',
-            icon:'modules/conditional-visibility/icons/unknown.svg'
+            icon:'modules/conditional-visibility/icons/unknown.svg',
+            transfer: false
         }, {
             id: 'obscured',
             label: 'CONVIS.obscured',
-            icon: 'modules/conditional-visibility/icons/foggy.svg'
+            icon: 'modules/conditional-visibility/icons/foggy.svg',
+            transfer: false
          }, {
             id:'indarkness',
             label: 'CONVIS.indarkness',
-            icon: 'modules/conditional-visibility/icons/moon.svg' 
+            icon: 'modules/conditional-visibility/icons/moon.svg',
+            transfer: false
         }
     );
     
@@ -42,7 +45,8 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
         if (ConditionalVisibility.ISV7) {
             this.hasStatus = (token:Token, id:string, icon:string) => {
                 //@ts-ignore
-                return token.data.actorData.effects.some(eff => eff.flags.core.statusId === id);
+                return token.data?.actorData?.effects?.some(eff => eff.flags?.core?.statusId === id);
+                //return token.actor?.data?.data?.[Constants.MODULE_NAME]?.[id] === true;
             }
         } else {
             this.hasStatus = (token:Token, id:string, icon:string) => {
@@ -74,26 +78,15 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
     public initializeStatusEffects():void {
         console.log(Constants.MODULE_NAME + " | Initializing visibility system effects " + this.gameSystemId() + " for game system " + game.system.id);
         if (ConditionalVisibility.ISV7) {
-            console.error(CONFIG.statusEffects);
-            let json = [];
             this.effectsByIcon().forEach((value: StatusEffect, key: string) => {
                 //@ts-ignore
-                json.push({
+                CONFIG.statusEffects.push({
                     id: value.id,
                     label: value.label,
-                    icon: value.icon 
-                })
-            });
-            for (let i  = 0; i < json.length; i++ ) {
-                console.error(json[i]);
-                //@ts-ignore
-                CONFIG.statusEffects.push({
-                    id: json[i].id,
-                    label: json[i].label,
-                    icon: json[i].icon
+                    icon: value.icon
                  });
-            }
-             console.error(CONFIG.statusEffects);
+
+            });
         } else {
             for (const effect of this.effectsByIcon().keys()) {
                 //@ts-ignore

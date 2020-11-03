@@ -3,6 +3,9 @@
 # conditional-visibility
 **Author**: Greg Ludington  
 
+## Notes on FoundryVTT 0.75
+This module is unfortunately not compatible with 0.75 at this time, as there have been changes in the rendering system that make the methods used in this module incompatible.  There is an issue both in this module at over on the Foundry tracker discussing this, and I hope to bring this module forward, but at this time, there is no simple path.
+
 [Installation](#Installation)
 
 [Module Manifest](https://github.com/gludington/conditional-visibility/releases/download/v0.0.9/module.json)

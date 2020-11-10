@@ -3,6 +3,7 @@ export const DEFAULT_STEALTH:number = 10;
 
 export interface StatusEffect {
     id: string,
+    conditionId: string,
     label: string,
     icon: string,
 }

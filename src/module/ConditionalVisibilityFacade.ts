@@ -99,14 +99,9 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
         } 
         if (this._system.effectsByCondition().has('hidden')) {
             let hidden = this._system.effectsByCondition().get('hidden');
+            console.error("F");
             tokens.forEach(token => {    
                 if (token.owner) {
-                    if (!token.data.flags) {
-                        token.data.flags = {};
-                    }
-                    if (!token.data.flags[Constants.MODULE_NAME]) {
-                        token.data.flags[Constants.MODULE_NAME] = {};
-                    }
                     let stealth;
                     if (value) {
                         stealth = value;
@@ -118,7 +113,7 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
                         token.update({flags: update});
 
                     } else {
-                        token.data.flags[Constants.MODULE_NAME]._ste = stealth;
+                        const update = { 'conditional-visibility': { hidden:true, '_ste':stealth}};
                         this.toggleEffect(token, hidden);
                     }
                 }

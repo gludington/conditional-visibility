@@ -4,6 +4,7 @@ import { ConditionalVisibilitySystem } from "./systems/ConditionalVisibilitySyst
 import { DefaultConditionalVisibilitySystem } from "./systems/DefaultConditionalVisibilitySystem";
 import * as Constants from './Constants';
 import { ConditionalVisibilityFacade, ConditionalVisibilityFacadeImpl } from "./ConditionalVisibilityFacade";
+import { MODULE_NAME } from "./Constants";
 
 export class ConditionalVisibility {
 
@@ -38,6 +39,10 @@ export class ConditionalVisibility {
         system.initializeStatusEffects();
     }
 
+    /**
+     * A static method that will be replaced after initialization with the appropriate system specific method.
+     * @param token the token to test
+     */
     static canSee(token:Token) {
         return false;
     }
@@ -141,6 +146,7 @@ export class ConditionalVisibility {
         this._conditionalVisibilitySystem.initializeOnToggleEffect(this._tokenHud);
 
         game.socket.on("modifyEmbeddedDocument", async (message) => {
+            console.error(message.result);
             const result = message.result.find(result => {
                 return result?.actorData?.effects !== undefined;
             });
@@ -154,9 +160,12 @@ export class ConditionalVisibility {
         this.draw();
     }
 
-    public shouldRedraw(toTest: any):boolean {            
+    public shouldRedraw(toTest: any):boolean {         
         const effects = toTest?.actorData?.effects;
-        return effects?.length === 0 || effects?.find(eff => {
+        if (effects === undefined) {
+            return false;
+        }
+        return effects.length === 0 || effects.find(eff => {
             return eff.flags?.core !== undefined;
         });        
     }
@@ -176,7 +185,7 @@ export class ConditionalVisibility {
                 const src = icon.attributes.src.value;
                 if (systemEffects.has(src)) {
                     let title;
-                    if (systemEffects.get(src).id === 'hidden') {
+                    if (systemEffects.get(src).conditionId === 'hidden') {
                         //@ts-ignore
                         title = game.i18n.localize(systemEffects.get(src).label);
                         if (data.flags && data.flags[Constants.MODULE_NAME] 
@@ -200,19 +209,26 @@ export class ConditionalVisibility {
             this._conditionalVisibilitySystem.effectsByCondition().forEach((value:any, key:string) => {
                 convis[key] = false;
             });
-                
+            //TODO- figure out active effects for this?
             update.actorData.effects.forEach(effect => {
-                const status = this._conditionalVisibilitySystem.effectsByIcon().get(effect.icon);
+                const status:Constants.StatusEffect = this._conditionalVisibilitySystem.effectsByIcon().get(effect.icon);
                 if (status) {
-                    effect.changeType = "add";
-                    effect.changes = [{
+                    //effect.changeType = "add";
+                    //effect.changes = [{
                         //@ts-ignore
-                        key: "data.data.convis." + status.id, value: true, mode: ACTIVE_EFFECT_MODES.OVERWRITE
-                    }]
+                    //    key: "data.data.convis." + status.id, value: true, mode: ACTIVE_EFFECT_MODES.OVERWRITE
+                    //}]
+                    convis[status.conditionId] = true;
                 }
             });
+            if (!update.flags) {
+                update.flags = {};
+            }
+            if (update.flags[MODULE_NAME] === undefined) {
+                update.flags[MODULE_NAME] = convis;    
+            }
             this.draw().then(() => {});
-        } else if (update.flags && update.flags[Constants.MODULE_NAME]) {
+        } else if (update.flags && update.flags[MODULE_NAME]) {
             this.draw().then(() => {});
         }
     }

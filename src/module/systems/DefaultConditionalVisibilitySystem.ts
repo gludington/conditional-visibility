@@ -1,6 +1,6 @@
 import { ConditionalVisibility } from '../ConditionalVisibility';
 import { ConditionalVisibilityFacade } from '../ConditionalVisibilityFacade';
-import { StatusEffect } from '../Constants';
+import { MODULE_NAME, StatusEffect } from '../Constants';
 import * as Constants from '../Constants';
 import { ConditionalVisibilitySystem } from "./ConditionalVisibilitySystem";
 import { ConditionalVisibilitySystemPf2e } from './ConditionalVisibilitySystemPf2e';
@@ -12,15 +12,18 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
 
     static BASE_EFFECTS = new Array<StatusEffect> (
         { 
-            id: 'invisible',
+            id: MODULE_NAME + '.invisible',
+            conditionId: 'invisible',
             label: 'CONVIS.invisible',
             icon:'modules/conditional-visibility/icons/unknown.svg'
         }, {
-            id: 'obscured',
+            id: MODULE_NAME + '.obscured',
+            conditionId: 'obscured',
             label: 'CONVIS.obscured',
             icon: 'modules/conditional-visibility/icons/foggy.svg',
          }, {
-            id:'indarkness',
+            id: MODULE_NAME + '.indarkness',
+            conditionId: 'indarkness',
             label: 'CONVIS.indarkness',
             icon: 'modules/conditional-visibility/icons/moon.svg'
         }
@@ -29,7 +32,9 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
     _effectsByIcon: Map<string, StatusEffect>;
     _effectsByCondition: Map<string, StatusEffect>;
 
-    hasStatus:(token:Token, id:string, icon:string) => boolean;
+    hasStatus(token:Token, id:string, icon:string): boolean {
+        return token.data?.flags?.[MODULE_NAME]?.[id] === true;
+    }
 
     constructor() {
         //yes, this is a BiMap but the solid TS BiMap implementaiton is GPLv3, so we will just fake what we need here
@@ -37,13 +42,8 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
         this._effectsByCondition = new Map<string, StatusEffect>();
         this.effects().forEach(statusEffect => {
             this._effectsByIcon.set(statusEffect.icon, statusEffect);
-            this._effectsByCondition.set(statusEffect.id, statusEffect);
+            this._effectsByCondition.set(statusEffect.conditionId, statusEffect);
         })
-        this.hasStatus = (token:Token, id:string, icon:string) => {
-            //@ts-ignore
-            return token.data?.actorData?.effects?.some(eff => eff.flags?.core?.statusId === id);
-            //return token.actor?.data?.data?.[Constants.MODULE_NAME]?.[id] === true;
-        }
     }
 
     gameSystemId(): string {
@@ -136,7 +136,7 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
         if (this.seeInDarkness(target, visionCapabilities) === false) {
             return false;
         }
-
+console.error("CAN SEE");
         if (this.seeContested(target, visionCapabilities) === false) {
             return false;
         }

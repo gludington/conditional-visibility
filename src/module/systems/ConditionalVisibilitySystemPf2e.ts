@@ -1,4 +1,4 @@
-import { StatusEffect } from '../Constants';
+import { MODULE_NAME, StatusEffect } from '../Constants';
 import { DefaultConditionalVisibilitySystem } from "./DefaultConditionalVisibilitySystem";
 
 /**
@@ -8,7 +8,8 @@ export class ConditionalVisibilitySystemPf2e extends DefaultConditionalVisibilit
 
     static PF2E_BASE_EFFECTS = new Array<StatusEffect> (
         { 
-            id: 'invisible',
+            id: MODULE_NAME + '.invisible',
+            conditionId: 'invisible',
             label: 'CONVIS.invisible',
             icon:'systems/pf2e/icons/conditions-2/invisible.png'
         }

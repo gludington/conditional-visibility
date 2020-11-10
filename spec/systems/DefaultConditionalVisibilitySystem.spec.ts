@@ -3,7 +3,7 @@ import { ConditionalVisibility } from '../../src/module/ConditionalVisibility';
 import {DefaultConditionalVisibilitySystem } from '../../src/module/systems/DefaultConditionalVisibilitySystem';
 //@ts-ignore
 (global as any).game = {
-    data: { version: "0.6.6"},
+    data: { version: "0.7.6"},
     system: {id: 'asdf'},
     socket: { 
         on:jest.fn().mockImplementation((name, data) => {})
@@ -24,19 +24,7 @@ describe('DefaultConditionaVisibilitySystem', () => {
 
     const system:DefaultConditionalVisibilitySystem = new DefaultConditionalVisibilitySystem();
 
-    describe('Setup V6', () => {
-        ConditionalVisibility.ISV7 = false;
-        it('Establishes three conditions for an unrecognized game system', () => {
-            const effects:Map<string, StatusEffect> = system.effectsByIcon();
-            expect(effects.size).toBe(3);
-            expect(effects.get('modules/conditional-visibility/icons/unknown.svg').id).toBe('invisible');
-            expect(effects.get('modules/conditional-visibility/icons/foggy.svg').id).toBe('obscured');
-            expect(effects.get('modules/conditional-visibility/icons/moon.svg').id).toBe('indarkness');
-        });
-    });
-
     describe('Setup V7', () => {
-        ConditionalVisibility.ISV7 = true;
         it('Establishes three conditions for an unrecognized game system', () => {
             const effects:Map<string, StatusEffect> = system.effectsByIcon();
             expect(effects.size).toBe(3);
@@ -101,7 +89,7 @@ describe('DefaultConditionaVisibilitySystem', () => {
 
     describe('Testing if something is visible', () => {
         let flags:any = {};
-        let token:any = { data: { effects:[]}};
+        let token:any = { data: { actorData: { effects:[]}}};
 
         it('if token has no effects, no flags are needed to see', () => {
             //@ts-ignore
@@ -119,8 +107,8 @@ describe('DefaultConditionaVisibilitySystem', () => {
             
             beforeEach(() => {
                 flags = {};
-                token = { data: { effects:['modules/conditional-visibility/icons/unknown.svg',
-                'modules/conditional-visibility/icons/foggy.svg']}};
+                token = { data: { actorData: { effects:[{ flags: { core: { statusId:'invisible'}}},
+                { flags: { core: { statusId: 'obscured'}}}]}}};
             });
 
             it('having one of the flags will not see it', () => {
@@ -144,7 +132,7 @@ describe('DefaultConditionaVisibilitySystem', () => {
             
             beforeEach(() => {
                 flags = {};
-                token = { data: { effects:['modules/conditional-visibility/icons/unknown.svg']}};
+                token = { data: { actorData: { effects:[{ flags: { core: { statusId:'invisible'}}}]}}};
             });
 
             it ('empty capabilities cannot see it', () => {
@@ -174,7 +162,7 @@ describe('DefaultConditionaVisibilitySystem', () => {
             
             beforeEach(() => {
                 flags = {};
-                token = { data: { effects:['modules/conditional-visibility/icons/foggy.svg']}};
+                token = { data: { actorData: { effects:[{ flags: { core: { statusId:'obscured'}}}]}}};
             });
 
             it ('empty capabilities cannot see it', () => {
@@ -203,7 +191,7 @@ describe('DefaultConditionaVisibilitySystem', () => {
         describe('if token is in darkness', () => {   
             beforeEach(() => {
                 flags = {};
-                token = { data: { effects:['modules/conditional-visibility/icons/moon.svg']}};
+                token = { data: { actorData: { effects:[{ flags: { core: { statusId:'indarkness'}}}]}}};
             });
 
             it ('empty capabilities cannot see it', () => {

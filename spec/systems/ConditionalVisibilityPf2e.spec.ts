@@ -3,7 +3,7 @@ import { StatusEffect } from '../../src/module/Constants';
 import {ConditionalVisibilitySystemPf2e } from '../../src/module/systems/ConditionalVisibilitySystemPf2e';
 //@ts-ignore
 (global as any).game = {
-    data: { version: "0.6.6"},
+    data: { version: "0.7.6"},
     system: {id: 'pf2e'},
     socket: { 
         on:jest.fn().mockImplementation((name, data) => {})
@@ -40,7 +40,7 @@ describe('ConditionalVisibilitySystem5e', () => {
 
         beforeEach(() => {
             flags = {};
-            token = { data: { effects:['systems/pf2e/icons/conditions-2/invisible.png']}};
+            token = { data: { actorData: { effects:[{ flags: { core: { statusId:'invisible'}}}]}}};
         });
 
         it ('empty capabilities cannot see it', () => {

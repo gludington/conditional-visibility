@@ -39,16 +39,10 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
             this._effectsByIcon.set(statusEffect.icon, statusEffect);
             this._effectsByCondition.set(statusEffect.id, statusEffect);
         })
-        if (ConditionalVisibility.ISV7) {
-            this.hasStatus = (token:Token, id:string, icon:string) => {
-                //@ts-ignore
-                return token.data?.actorData?.effects?.some(eff => eff.flags?.core?.statusId === id);
-                //return token.actor?.data?.data?.[Constants.MODULE_NAME]?.[id] === true;
-            }
-        } else {
-            this.hasStatus = (token:Token, id:string, icon:string) => {
-                return token.data.effects.some(eff => eff.endsWith(icon));
-            }
+        this.hasStatus = (token:Token, id:string, icon:string) => {
+            //@ts-ignore
+            return token.data?.actorData?.effects?.some(eff => eff.flags?.core?.statusId === id);
+            //return token.actor?.data?.data?.[Constants.MODULE_NAME]?.[id] === true;
         }
     }
 
@@ -74,22 +68,15 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
 
     public initializeStatusEffects():void {
         console.log(Constants.MODULE_NAME + " | Initializing visibility system effects " + this.gameSystemId() + " for game system " + game.system.id);
-        if (ConditionalVisibility.ISV7) {
-            this.effectsByIcon().forEach((value: StatusEffect, key: string) => {
-                //@ts-ignore
-                CONFIG.statusEffects.push({
-                    id: value.id,
-                    label: value.label,
-                    icon: value.icon
-                 });
+        this.effectsByIcon().forEach((value: StatusEffect, key: string) => {
+            //@ts-ignore
+            CONFIG.statusEffects.push({
+                id: value.id,
+                label: value.label,
+                icon: value.icon
+                });
 
-            });
-        } else {
-            for (const effect of this.effectsByIcon().keys()) {
-                //@ts-ignore
-                CONFIG.statusEffects.push(effect);	
-            }
-        }
+        });
     }
 
     /**

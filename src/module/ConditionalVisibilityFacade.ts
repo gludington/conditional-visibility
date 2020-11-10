@@ -26,7 +26,6 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
     constructor(mod:ConditionalVisibility, system: ConditionalVisibilitySystem) {
         this._mod = mod;
         this._system = system;
-        if (ConditionalVisibility.ISV7) {
             this.has = (token, condition) => {
                 //@ts-ignore
                 return token.actor?.effects?.entries?.some(eff => eff.data?.flags?.core?.statusId === condition.id);
@@ -37,14 +36,6 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
                 //@ts-ignore
                 return token.toggleEffect(condition);
             }
-        } else {
-            this.has = (token, condition) => {
-                return token.data.effects && token.data.effects.some(eff => eff === condition.icon);
-            }
-            this.toggleEffect = (token, condition) => {
-                return token.toggleEffect(condition.icon);
-            }
-        }
     }
 
     public help():void {

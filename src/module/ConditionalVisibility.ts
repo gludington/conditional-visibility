@@ -8,13 +8,10 @@ import { ConditionalVisibilityFacade, ConditionalVisibilityFacadeImpl } from "./
 export class ConditionalVisibility {
 
     static INSTANCE: ConditionalVisibility;
-    static ISV7: boolean;
     private _sightLayer: any;
     private _tokenHud: any;
-    private _conditionalVisibilitySystem: ConditionalVisibilitySystem
-    private _isV7:boolean;
-
-    private _onPreUpdateToken:(scene:any, token:any, update:any, options:any, userId:string) => void;
+    private _conditionalVisibilitySystem: ConditionalVisibilitySystem;
+    private _capabilities: any;
 
     private _getSrcTokens: () => Array<Token>;
     private _draw: () => void;
@@ -23,9 +20,26 @@ export class ConditionalVisibility {
      * Called from init hook to establish the extra status effects in the main list before full game initialization.
      */
     static onInit() {
-        ConditionalVisibility.ISV7 = isNewerVersion(game.data.version, "0.7");
         const system = ConditionalVisibility.newSystem();
+        const realIsVisible = Object.getOwnPropertyDescriptor(Token.prototype, 'isVisible').get;
+        Object.defineProperty(Token.prototype, "isVisible", {
+            get: function() {
+                const isVisible = realIsVisible.call(this);
+                if (isVisible === false) {
+                    return false;
+                }
+                if (game.user.isGM || this._controlled || !canvas.sight.tokenVision) {
+                    return true;
+                }
+                return ConditionalVisibility.canSee(this);
+            }
+            
+        });
         system.initializeStatusEffects();
+    }
+
+    static canSee(token:Token) {
+        return false;
     }
 
     /**
@@ -69,61 +83,37 @@ export class ConditionalVisibility {
     private constructor(sightLayer: any, tokenHud: TokenHUD) {
         this._conditionalVisibilitySystem = ConditionalVisibility.newSystem();
 
-        // v0.6 and v0.7 inspect the tokens in a sightLayer differently, so switch based on version
-        if (ConditionalVisibility.ISV7) {
-            console.log(Constants.MODULE_NAME + " | starting against v0.7 or greater instance " + game.data.version);
-            this._onPreUpdateToken = this.onPreUpdateTokenV7;
-            this._getSrcTokens = () => {
-                let srcTokens = new Array<Token>();
-                if (this._sightLayer.sources) {
-                    for (const key of this._sightLayer.sources.keys()) {
-                        if (key.startsWith("Token.")) {
-                            const tok = canvas.tokens.placeables.find(tok => tok.id === key.substring("Token.".length))
-                            if (tok) {
-                                srcTokens.push(tok);
-                            }
+        console.log(Constants.MODULE_NAME + " | starting against v0.7 or greater instance " + game.data.version);
+        this._getSrcTokens = () => {
+            let srcTokens = new Array<Token>();
+            if (this._sightLayer.sources) {
+                for (const key of this._sightLayer.sources.keys()) {
+                    if (key.startsWith("Token.")) {
+                        const tok = canvas.tokens.placeables.find(tok => tok.id === key.substring("Token.".length))
+                        if (tok) {
+                            srcTokens.push(tok);
                         }
                     }
-                } else {
-                    if (game.user.isGM === false) {
-                        srcTokens = game.user.character.getActiveTokens();
-                    }
                 }
-                return srcTokens;
-            }
-            this._draw = async() => {
-                await this._sightLayer.initialize();
-                await this._sightLayer.refresh();
-            }
-        } else {
-            console.log(Constants.MODULE_NAME + " | starting against v0.6 instance " + game.data.version);
-            this._onPreUpdateToken = this.onPreUpdateTokenV6;
-            this._getSrcTokens = () => {
-                let srcTokens = new Array<Token>();
-                if (this._sightLayer.sources && this._sightLayer.sources.vision) {
-                    for (const [key, source] of this._sightLayer.sources.vision) {
-                        if (key.startsWith("Token.")) {
-                            const tok = canvas.tokens.placeables.find(tok => tok.id === key.substring("Token.".length))
-                            if (tok) {
-                                srcTokens.push(tok);
-                            }
-                        }
-                    }
-                } else {
-                    if (game.user.isGM === false) {
-                        srcTokens = game.user.character.getActiveTokens();
-                    }
+            } else {
+                if (game.user.isGM === false) {
+                    srcTokens = game.user.character.getActiveTokens();
                 }
-                return srcTokens;
             }
-            this._draw = async() => {
-                await this._sightLayer.initialize();
-                await this._sightLayer.update();
-            }
+            return srcTokens;
+        }
+        this._draw = async() => {
+            await this._sightLayer.initialize();
+            await this._sightLayer.refresh();
+        }
+        ConditionalVisibility.canSee = (token:Token) => {
+            return this._conditionalVisibilitySystem.canSee(token, this._capabilities);
         }
         this._sightLayer = sightLayer;
         const realRestrictVisibility = sightLayer.restrictVisibility;    
         this._sightLayer.restrictVisibility = () => {
+            this._capabilities = this._conditionalVisibilitySystem.getVisionCapabilities(this._getSrcTokens());
+
             realRestrictVisibility.call(this._sightLayer);
 
             const restricted = canvas.tokens.placeables.filter(token => token.visible);
@@ -141,13 +131,18 @@ export class ConditionalVisibility {
                 }
             }
         }
+        const realTestVisiblity = sightLayer.testVisibility;
+        this._sightLayer.testVisibility = (point, options) => {
+            return realTestVisiblity.call(this._sightLayer, point, options);
+        }
+
 
         this._tokenHud = tokenHud;
         this._conditionalVisibilitySystem.initializeOnToggleEffect(this._tokenHud);
 
         game.socket.on("modifyEmbeddedDocument", async (message) => {
             const result = message.result.find(result => {
-                return result.effects || (result.flags && result.flags[Constants.MODULE_NAME]);
+                return result?.actorData?.effects !== undefined;
             });
 
             if (this.shouldRedraw(result)) {
@@ -160,8 +155,10 @@ export class ConditionalVisibility {
     }
 
     public shouldRedraw(toTest: any):boolean {            
-        return toTest != undefined && ((toTest.effects !== undefined) // && toTest.effects.some(effect => effect.indexOf(Constants.MODULE_NAME) > -1)) //TODO optimize, perhaps with flag dummy value?
-            || (toTest.flags != undefined && toTest.flags[Constants.MODULE_NAME] != undefined));
+        const effects = toTest?.actorData?.effects;
+        return effects?.length === 0 || effects?.find(eff => {
+            return eff.flags?.core !== undefined;
+        });        
     }
 
     public onRenderTokenConfig(tokenConfig: any, jQuery:JQuery, data: any) {
@@ -197,11 +194,7 @@ export class ConditionalVisibility {
     }
 
     public onPreUpdateToken(scene:any, token:any, update:any, options:any, userId:string) {
-        this._onPreUpdateToken(scene, token, update, options, userId);
-    }
-
-    private onPreUpdateTokenV7(scene:any, token:any, update:any, options:any, userId:string) {
-
+        
         if (update.actorData?.effects) {
             let convis = { };
             this._conditionalVisibilitySystem.effectsByCondition().forEach((value:any, key:string) => {
@@ -218,41 +211,6 @@ export class ConditionalVisibility {
                     }]
                 }
             });
-            this.draw().then(() => {});
-        } else if (update.flags && update.flags[Constants.MODULE_NAME]) {
-            this.draw().then(() => {});
-        }
-    }
-
-    private onPreUpdateTokenV6(scene:any, token:any, update:any, options:any, userId:string) {
-        if (update.effects) {
-            if (update.effects.some(eff => eff.endsWith('newspaper.svg'))) {
-                let currentStealth;
-                try {
-                    currentStealth = parseInt(token.flags[Constants.MODULE_NAME]._ste);
-                } catch (err) {
-                    
-                }
-
-                if (currentStealth === undefined || isNaN(parseInt(currentStealth))) {
-                } else {
-                    if (!update.flags) {
-                        update.flags = {};
-                    }
-                    if (!update.flags[Constants.MODULE_NAME]) {
-                        update.flags[Constants.MODULE_NAME] = {};
-                    }
-                    update.flags[Constants.MODULE_NAME]._ste = currentStealth;
-                }
-            } else {
-                if (!update.flags) {
-                    update.flags = {};
-                }
-                if (!update.flags[Constants.MODULE_NAME]) {
-                    update.flags[Constants.MODULE_NAME] = {};
-                }
-                update.flags[Constants.MODULE_NAME]._ste = "";
-            }
             this.draw().then(() => {});
         } else if (update.flags && update.flags[Constants.MODULE_NAME]) {
             this.draw().then(() => {});

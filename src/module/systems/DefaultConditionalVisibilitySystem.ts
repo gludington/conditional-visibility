@@ -136,7 +136,7 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
         if (this.seeInDarkness(target, visionCapabilities) === false) {
             return false;
         }
-console.error("CAN SEE");
+        
         if (this.seeContested(target, visionCapabilities) === false) {
             return false;
         }

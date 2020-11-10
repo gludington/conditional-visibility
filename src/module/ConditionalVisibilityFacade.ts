@@ -99,7 +99,6 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
         } 
         if (this._system.effectsByCondition().has('hidden')) {
             let hidden = this._system.effectsByCondition().get('hidden');
-            console.error("F");
             tokens.forEach(token => {    
                 if (token.owner) {
                     let stealth;

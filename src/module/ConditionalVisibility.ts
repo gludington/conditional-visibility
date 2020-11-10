@@ -146,11 +146,9 @@ export class ConditionalVisibility {
         this._conditionalVisibilitySystem.initializeOnToggleEffect(this._tokenHud);
 
         game.socket.on("modifyEmbeddedDocument", async (message) => {
-            console.error(message.result);
             const result = message.result.find(result => {
                 return result?.actorData?.effects !== undefined;
             });
-
             if (this.shouldRedraw(result)) {
                 await this.draw();
             }

@@ -108,11 +108,11 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
                         stealth = this._system.rollStealth(token).roll().total;
                     }
                     if (this.has(token, hidden) === true) {
-                        const update = { 'conditional-visibility': { '_ste':stealth}};
-                        token.update({flags: update});
-
+                        const update = { 'conditional-visibility': {}};
+                        update[Constants.MODULE_NAME]._ste = stealth;
+                        token.update({flags: update });
                     } else {
-                        const update = { 'conditional-visibility': { hidden:true, '_ste':stealth}};
+                        token.data.flags[Constants.MODULE_NAME]._ste = stealth;
                         this.toggleEffect(token, hidden);
                     }
                 }

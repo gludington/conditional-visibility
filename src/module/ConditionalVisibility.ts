@@ -146,26 +146,16 @@ export class ConditionalVisibility {
         this._conditionalVisibilitySystem.initializeOnToggleEffect(this._tokenHud);
 
         game.socket.on("modifyEmbeddedDocument", async (message) => {
-            const result = message.result.find(result => {
-                return result?.actorData?.effects !== undefined;
+            const result = message.result.some(result => {
+                return result?.flags?.[Constants.MODULE_NAME] || result?.actorData?.effects !== undefined;
             });
-            if (this.shouldRedraw(result)) {
+            if (result) {
                 await this.draw();
             }
         });
         // update sight layer, as custom decisons will not be executed the
         // first time through, and cannot be forced in setup
         this.draw();
-    }
-
-    public shouldRedraw(toTest: any):boolean {         
-        const effects = toTest?.actorData?.effects;
-        if (effects === undefined) {
-            return false;
-        }
-        return effects.length === 0 || effects.find(eff => {
-            return eff.flags?.core !== undefined;
-        });        
     }
 
     public onRenderTokenConfig(tokenConfig: any, jQuery:JQuery, data: any) {
@@ -201,9 +191,8 @@ export class ConditionalVisibility {
     }
 
     public onPreUpdateToken(scene:any, token:any, update:any, options:any, userId:string) {
-        
         if (update.actorData?.effects) {
-            let convis = { };
+            let convis:any = { };
             this._conditionalVisibilitySystem.effectsByCondition().forEach((value:any, key:string) => {
                 convis[key] = false;
             });
@@ -221,6 +210,9 @@ export class ConditionalVisibility {
             });
             if (!update.flags) {
                 update.flags = {};
+            }
+            if (convis.hidden !== true) {
+                convis._ste = null;
             }
             if (update.flags[MODULE_NAME] === undefined) {
                 update.flags[MODULE_NAME] = convis;    

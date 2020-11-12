@@ -83,8 +83,7 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
     
         const realOnToggleEffect = tokenHud._onToggleEffect.bind(tokenHud);
 
-        tokenHud._onToggleEffect = (event) => {
-            event.preventDefault();
+        tokenHud._onToggleEffect = (event, opts) => {
             const icon = event.currentTarget;
             if (icon.src.endsWith('newspaper.svg') && icon.className.indexOf('active') < 0) {
                 const object = tokenHud.object;
@@ -96,11 +95,11 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
                         object.data.flags[Constants.MODULE_NAME] = {};
                     }
                     object.data.flags[Constants.MODULE_NAME]._ste = result;
-                    realOnToggleEffect(event);
+                    return realOnToggleEffect(event, opts);
                 });
                 return false;
             } else {
-                realOnToggleEffect(event);
+                return realOnToggleEffect(event, opts);
             }
         }
     }

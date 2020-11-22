@@ -66,6 +66,15 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
         return this._effectsByCondition;
     }
 
+    public effectsFromUpdate(update: any):any {
+        return update.actorData?.effects;
+    }
+
+    public getEffectByIcon(effect:StatusEffect|string):StatusEffect {
+        //@ts-ignore
+        return this.effectsByIcon().get(effect.icon);
+    }
+
     public initializeStatusEffects():void {
         console.log(Constants.MODULE_NAME + " | Initializing visibility system effects " + this.gameSystemId() + " for game system " + game.system.id);
         this.effectsByIcon().forEach((value: StatusEffect, key: string) => {

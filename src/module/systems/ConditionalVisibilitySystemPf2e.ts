@@ -11,7 +11,7 @@ export class ConditionalVisibilitySystemPf2e extends DefaultConditionalVisibilit
             id: MODULE_NAME + '.invisible',
             visibilityId: 'invisible',
             label: 'CONVIS.invisible',
-            icon:'systems/pf2e/icons/conditions-2/invisible.png'
+            icon:'systems/pf2e/icons/conditions/invisible.png'
         }
     );
 
@@ -20,6 +20,17 @@ export class ConditionalVisibilitySystemPf2e extends DefaultConditionalVisibilit
      */
     protected effects(): Array<StatusEffect> {
         return ConditionalVisibilitySystemPf2e.PF2E_BASE_EFFECTS;
+    }
+
+
+    public effectsFromUpdate(update: any):any {
+        return update.actorData?.items;
+    }
+
+    public getEffectByIcon(effect:StatusEffect|string):StatusEffect {
+        //@ts-ignore
+        return this.effectsByIcon().get(effect.img);
+
     }
 
     public gameSystemId() {
@@ -32,8 +43,7 @@ export class ConditionalVisibilitySystemPf2e extends DefaultConditionalVisibilit
      * @param visionCapabilities the sight capabilities of the sight layer
      */
     protected seeInvisible(target:Token, visionCapabilities:any): boolean {
-        const invisible = this.hasStatus(target, 'invisibile', 'invisible.png');
-        console.error("ARE YOU FKCING KIDDING ME?", invisible);
+        const invisible = this.hasStatus(target, 'invisible', 'invisible.png');
         if (invisible === true) {
             if (visionCapabilities.seeinvisible !== true) {
                 return false;

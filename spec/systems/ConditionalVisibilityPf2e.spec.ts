@@ -20,7 +20,7 @@ import {ConditionalVisibilitySystemPf2e } from '../../src/module/systems/Conditi
     return parseFloat(version) >= parseFloat(base);
 }
 
-describe('ConditionalVisibilitySystem5e', () => {
+describe('ConditionalVisibilitySystemPf2e', () => {
 
     //@ts-ignore
     const system:ConditionalVisibilitySystemPf2e = ConditionalVisibility.newSystem();
@@ -45,23 +45,23 @@ describe('ConditionalVisibilitySystem5e', () => {
         });
 
         it ('empty capabilities cannot see it', () => {
-            flags.seeinvisible = false;
+            flags= {}
             //@ts-ignore
             expect(system.seeInvisible(token, flags)).toBe(false);
         });
 
         it ('seeinvisible can see it', () => {
-            flags.seeinvisible = true;
+            flags = {seeinvisible: true};
             //@ts-ignore
             expect(system.seeInvisible(token, flags)).toBe(true);
         }); 
         it ('seeobscured cannot see it', () => {
-            flags.seeobscured = true;
+            flags = {seeobscured: true};
             //@ts-ignore
             expect(system.seeInvisible(token, flags)).toBe(false);
         }); 
         it ('seeindarkness cannot see it', () => {
-            flags.seeobscured = true;
+            flags = {seeindarkness: true};
             //@ts-ignore
             expect(system.seeInvisible(token, flags)).toBe(false);
         }); 

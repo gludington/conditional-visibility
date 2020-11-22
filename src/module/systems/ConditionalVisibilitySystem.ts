@@ -23,6 +23,13 @@ export interface ConditionalVisibilitySystem {
     effectsByCondition(): Map<string, StatusEffect>;
 
     /**
+     * Get an effect by icon - pf2e uses a string, not a StatusEffect
+     */
+    getEffectByIcon(effect:StatusEffect|string): StatusEffect;
+
+    effectsFromUpdate(update: any): any;
+
+    /**
      * Initizialize status effects for the system.
      */
     initializeStatusEffects(): void;

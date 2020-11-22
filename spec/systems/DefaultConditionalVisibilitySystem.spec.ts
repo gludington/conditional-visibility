@@ -139,23 +139,22 @@ describe('DefaultConditionaVisibilitySystem', () => {
              });
 
             it ('empty capabilities cannot see it', () => {
-                flags.seeinvisible = false;
                 //@ts-ignore
                 expect(system.seeInvisible(token, flags)).toBe(false);
             });
 
             it ('seeinvisible can see it', () => {
-                flags.seeinvisible = true;
+                flags = { seeinvisible : true };
                 //@ts-ignore
                 expect(system.seeInvisible(token, flags)).toBe(true);
             }); 
             it ('seeobscured cannot see it', () => {
-                flags.seeobscured = true;
-                //@ts-ignore
+                flags = { seeobscured : true };
+                //@ts-ignorew
                 expect(system.seeInvisible(token, flags)).toBe(false);
             }); 
             it ('seeindarkness cannot see it', () => {
-                flags.seeobscured = true;
+                flags.seeindarkness = true;
                 //@ts-ignore
                 expect(system.seeInvisible(token, flags)).toBe(false);
             }); 

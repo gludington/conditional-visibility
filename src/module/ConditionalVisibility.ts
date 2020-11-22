@@ -193,12 +193,9 @@ export class ConditionalVisibility {
     public onPreUpdateToken(scene:any, token:any, update:any, options:any, userId:string) {
         if (update.actorData?.effects) {
             let convis:any = { };
-            console.error("FUCK YOU");
-            console.error(update.actorData.effects);
             this._conditionalVisibilitySystem.effectsByCondition().forEach((value:any, key:string) => {
                 convis[key] = false;
             });
-            console.error
             //TODO- figure out active effects for this?
             update.actorData.effects.forEach(effect => {
                 const status:Constants.StatusEffect = this._conditionalVisibilitySystem.effectsByIcon().get(effect.icon);

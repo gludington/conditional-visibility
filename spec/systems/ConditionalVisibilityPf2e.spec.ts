@@ -29,24 +29,25 @@ describe('ConditionalVisibilitySystem5e', () => {
         it('Establishes one condition for pf2e', () => {
             const effects:Map<string, StatusEffect> = system.effectsByIcon();
             expect(effects.size).toBe(1);
-            expect(effects.get('systems/pf2e/icons/conditions-2/invisible.png').id).toBe('invisible');
+            expect(effects.get('systems/pf2e/icons/conditions-2/invisible.png').id).toBe('conditional-visibility.invisible');
         });
     });
 
     describe('if token is invisible', () => {
             
         let flags:any = {};
-        let token:any = { data: { effects:[]}};
+        let token:any = { data : { flags: {
+            'conditional-visibility': { 'invisible':true }
+        }}};
 
         beforeEach(() => {
             flags = {};
-            token = { data: { actorData: { effects:[{ flags: { core: { statusId:'invisible'}}}]}}};
         });
 
         it ('empty capabilities cannot see it', () => {
             flags.seeinvisible = false;
             //@ts-ignore
-            expect(system.seeInvisible(token, token.data.effects, flags)).toBe(false);
+            expect(system.seeInvisible(token, flags)).toBe(false);
         });
 
         it ('seeinvisible can see it', () => {

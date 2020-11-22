@@ -29,10 +29,11 @@ describe('ConditionalVisibilitySystem5e', () => {
         it('Establishes four conditions for dnd5e', () => {
             const effects:Map<string, StatusEffect> = system.effectsByIcon();
             expect(effects.size).toBe(4);
-            expect(effects.get('modules/conditional-visibility/icons/unknown.svg').id).toBe('invisible');
-            expect(effects.get('modules/conditional-visibility/icons/foggy.svg').id).toBe('obscured');
-            expect(effects.get('modules/conditional-visibility/icons/moon.svg').id).toBe('indarkness');
-            expect(effects.get('modules/conditional-visibility/icons/newspaper.svg').id).toBe('hidden');
+            expect(effects.get('modules/conditional-visibility/icons/unknown.svg').id).toBe('conditional-visibility.invisible');
+            expect(effects.get('modules/conditional-visibility/icons/foggy.svg').id).toBe('conditional-visibility.obscured');
+            expect(effects.get('modules/conditional-visibility/icons/moon.svg').id).toBe('conditional-visibility.indarkness');
+            expect(effects.get('modules/conditional-visibility/icons/newspaper.svg').id).toBe('conditional-visibility.hidden');
+
         });
     });
 
@@ -77,24 +78,26 @@ describe('ConditionalVisibilitySystem5e', () => {
 
     describe('Contested Test', () => {
         let flags:any = { prc: 12};
-        let token:any = { data: { effects:['modules/conditional-visibility/icons/newspaper.svg']}};
+        let token:any = { data : { flags: {
+            'conditional-visibility': { 'hidden':true }
+        }}};
 
         it('stealth higher than the prc cannot be seen', () => {
-            token.data.flags = { 'conditional-visibility': { _ste: 15}}
+            token.data.flags = { 'conditional-visibility': { hidden:true, _ste: 15}}
             //@ts-ignore
             expect(system.seeContested(token, flags)).toBe(false);
             expect(system.canSee(token, flags)).toBe(false);
         });
 
         it('stealth equal to the prc can be seen', () => {
-            token.data.flags = { 'conditional-visibility': { _ste: 12}}
+            token.data.flags = { 'conditional-visibility': { hidden:true, _ste: 12}}
             //@ts-ignore
             expect(system.seeContested(token, flags)).toBe(true);
             expect(system.canSee(token, flags)).toBe(true);
         });
 
         it('stealth lower than the prc can be seen', () => {
-            token.data.flags = { 'conditional-visibility': { _ste: 10}}
+            token.data.flags = { 'conditional-visibility': { hidden:true, _ste: 10}}
             //@ts-ignore
             expect(system.seeContested(token, flags)).toBe(true);
             expect(system.canSee(token, flags)).toBe(true);

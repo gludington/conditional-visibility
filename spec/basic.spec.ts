@@ -71,32 +71,3 @@ describe('Ready - initialize', () => {
         //expect(sightLayer.update).toHaveBeenCalled();
     })
 });
-
-describe("shouldRedraw", () => {
-
-    beforeEach(() => {
-        const sightLayer:any = {
-            initialize: jest.fn().mockResolvedValue(43),
-            refresh: jest.fn().mockResolvedValue(43),
-            update: jest.fn().mockResolvedValue(43)
-        };
-        const tokenHud:any = {};
-        ConditionalVisibility.initialize(sightLayer, tokenHud);
-    });
-
-    it ("Should not redraw on a null change", () => {
-        const toTest = {};
-        expect(ConditionalVisibility.INSTANCE.shouldRedraw(toTest)).toBe(false);
-    });
-
-    it ("Should redraw on adding an empty effects change", () => {
-        const toTest = { actorData: { effects: []}};
-        expect(ConditionalVisibility.INSTANCE.shouldRedraw(toTest)).toBe(true);
-    });
-
-
-    it ("Should redraw on adding with module flags change", () => {
-        const toTest = { actorData: { effects: [ {}]}}
-        expect(ConditionalVisibility.INSTANCE.shouldRedraw(toTest)).toBe(true);
-    });
-});

@@ -16,7 +16,7 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
         const effects:Array<StatusEffect> = super.effects();
         effects.push({
             id: 'conditional-visibility.hidden',
-            conditionId: 'hidden',
+            visibilityId: 'hidden',
             label: 'CONVIS.hidden',
             icon: 'modules/conditional-visibility/icons/newspaper.svg'
         });

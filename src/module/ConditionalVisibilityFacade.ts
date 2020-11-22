@@ -112,6 +112,15 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
                         update[Constants.MODULE_NAME]._ste = stealth;
                         token.update({flags: update });
                     } else {
+                        if (!token.data) {
+                            token.data = {};
+                        }
+                        if (!token.data.flags) {
+                            token.data.flags = {};
+                        }
+                        if (!token.data.flags[Constants.MODULE_NAME]) {
+                            token.data.flags[Constants.MODULE_NAME] = {};
+                        }
                         token.data.flags[Constants.MODULE_NAME]._ste = stealth;
                         this.toggleEffect(token, hidden);
                     }

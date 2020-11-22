@@ -13,17 +13,17 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
     static BASE_EFFECTS = new Array<StatusEffect> (
         { 
             id: MODULE_NAME + '.invisible',
-            conditionId: 'invisible',
+            visibilityId: 'invisible',
             label: 'CONVIS.invisible',
             icon:'modules/conditional-visibility/icons/unknown.svg'
         }, {
             id: MODULE_NAME + '.obscured',
-            conditionId: 'obscured',
+            visibilityId: 'obscured',
             label: 'CONVIS.obscured',
             icon: 'modules/conditional-visibility/icons/foggy.svg',
          }, {
             id: MODULE_NAME + '.indarkness',
-            conditionId: 'indarkness',
+            visibilityId: 'indarkness',
             label: 'CONVIS.indarkness',
             icon: 'modules/conditional-visibility/icons/moon.svg'
         }
@@ -42,7 +42,7 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
         this._effectsByCondition = new Map<string, StatusEffect>();
         this.effects().forEach(statusEffect => {
             this._effectsByIcon.set(statusEffect.icon, statusEffect);
-            this._effectsByCondition.set(statusEffect.conditionId, statusEffect);
+            this._effectsByCondition.set(statusEffect.visibilityId, statusEffect);
         })
     }
 

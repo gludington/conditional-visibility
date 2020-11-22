@@ -9,11 +9,12 @@ export class ConditionalVisibilitySystemPf2e extends DefaultConditionalVisibilit
     static PF2E_BASE_EFFECTS = new Array<StatusEffect> (
         { 
             id: MODULE_NAME + '.invisible',
-            conditionId: 'invisible',
+            visibilityId: 'invisible',
             label: 'CONVIS.invisible',
             icon:'systems/pf2e/icons/conditions-2/invisible.png'
         }
     );
+
     /**
      * Use the base conditions, plus set up the icon for the "hidden" condition
      */
@@ -24,7 +25,7 @@ export class ConditionalVisibilitySystemPf2e extends DefaultConditionalVisibilit
     public gameSystemId() {
         return "pf2e";
     }
-
+    
     /**
      * Tests whether a token is invisible, and if it can be seen.
      * @param target the token being seen (or not)
@@ -32,6 +33,7 @@ export class ConditionalVisibilitySystemPf2e extends DefaultConditionalVisibilit
      */
     protected seeInvisible(target:Token, visionCapabilities:any): boolean {
         const invisible = this.hasStatus(target, 'invisibile', 'invisible.png');
+        console.error("ARE YOU FKCING KIDDING ME?", invisible);
         if (invisible === true) {
             if (visionCapabilities.seeinvisible !== true) {
                 return false;

@@ -173,7 +173,7 @@ export class ConditionalVisibility {
                 const src = icon.attributes.src.value;
                 if (systemEffects.has(src)) {
                     let title;
-                    if (systemEffects.get(src).conditionId === 'hidden') {
+                    if (systemEffects.get(src).visibilityId === 'hidden') {
                         //@ts-ignore
                         title = game.i18n.localize(systemEffects.get(src).label);
                         if (data.flags && data.flags[Constants.MODULE_NAME] 
@@ -205,7 +205,7 @@ export class ConditionalVisibility {
                         //@ts-ignore
                     //    key: "data.data.convis." + status.id, value: true, mode: ACTIVE_EFFECT_MODES.OVERWRITE
                     //}]
-                    convis[status.conditionId] = true;
+                    convis[status.visibilityId] = true;
                 }
             });
             if (!update.flags) {

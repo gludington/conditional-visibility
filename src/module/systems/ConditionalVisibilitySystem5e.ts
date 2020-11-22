@@ -67,7 +67,6 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
     protected seeContested(target: Token, visionCapabilities: any): boolean {
         const hidden = this.hasStatus(target, 'hidden', 'newspaper.svg');
         if (hidden === true) {
-            console.error("CONTEST");
             if (target.data.flags[Constants.MODULE_NAME] && target.data.flags[Constants.MODULE_NAME]._ste) {
                 const stealth = target.data.flags[Constants.MODULE_NAME]._ste;
                 if (visionCapabilities.prc < stealth) {

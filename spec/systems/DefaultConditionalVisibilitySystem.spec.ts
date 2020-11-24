@@ -1,7 +1,9 @@
+import { StatusEffect } from '../../src/module/Constants';
+import { ConditionalVisibility } from '../../src/module/ConditionalVisibility';
 import {DefaultConditionalVisibilitySystem } from '../../src/module/systems/DefaultConditionalVisibilitySystem';
 //@ts-ignore
 (global as any).game = {
-    data: { version: "0.6.6"},
+    data: { version: "0.7.6"},
     system: {id: 'asdf'},
     socket: { 
         on:jest.fn().mockImplementation((name, data) => {})
@@ -22,13 +24,13 @@ describe('DefaultConditionaVisibilitySystem', () => {
 
     const system:DefaultConditionalVisibilitySystem = new DefaultConditionalVisibilitySystem();
 
-    describe('Setup', () => {
+    describe('Setup V7', () => {
         it('Establishes three conditions for an unrecognized game system', () => {
-            const effects:Map<string, string> = system.effectsByIcon();
+            const effects:Map<string, StatusEffect> = system.effectsByIcon();
             expect(effects.size).toBe(3);
-            expect(effects.get('modules/conditional-visibility/icons/unknown.svg')).toBe('invisible');
-            expect(effects.get('modules/conditional-visibility/icons/foggy.svg')).toBe('obscured');
-            expect(effects.get('modules/conditional-visibility/icons/moon.svg')).toBe('indarkness');
+            expect(effects.get('modules/conditional-visibility/icons/unknown.svg').id).toBe('conditional-visibility.invisible');
+            expect(effects.get('modules/conditional-visibility/icons/foggy.svg').id).toBe('conditional-visibility.obscured');
+            expect(effects.get('modules/conditional-visibility/icons/moon.svg').id).toBe('conditional-visibility.indarkness');
         });
     });
 
@@ -87,7 +89,7 @@ describe('DefaultConditionaVisibilitySystem', () => {
 
     describe('Testing if something is visible', () => {
         let flags:any = {};
-        let token:any = { data: { effects:[]}};
+        let token:any = { data: { actorData: { effects:[]}}};
 
         it('if token has no effects, no flags are needed to see', () => {
             //@ts-ignore
@@ -105,8 +107,9 @@ describe('DefaultConditionaVisibilitySystem', () => {
             
             beforeEach(() => {
                 flags = {};
-                token = { data: { effects:['modules/conditional-visibility/icons/unknown.svg',
-                'modules/conditional-visibility/icons/foggy.svg']}};
+                token = { data : { flags: {
+                    'conditional-visibility': { 'invisible':true, 'obscured':true}
+                }}};
             });
 
             it('having one of the flags will not see it', () => {
@@ -130,29 +133,30 @@ describe('DefaultConditionaVisibilitySystem', () => {
             
             beforeEach(() => {
                 flags = {};
-                token = { data: { effects:['modules/conditional-visibility/icons/unknown.svg']}};
-            });
+                token = { data : { flags: {
+                    'conditional-visibility': { 'invisible':true}
+                }}};           
+             });
 
             it ('empty capabilities cannot see it', () => {
-                flags.seeinvisible = false;
                 //@ts-ignore
-                expect(system.seeInvisible(token, token.data.effects, flags)).toBe(false);
+                expect(system.seeInvisible(token, flags)).toBe(false);
             });
 
             it ('seeinvisible can see it', () => {
-                flags.seeinvisible = true;
+                flags = { seeinvisible : true };
                 //@ts-ignore
-                expect(system.seeInvisible(token, token.data.effects, flags)).toBe(true);
+                expect(system.seeInvisible(token, flags)).toBe(true);
             }); 
             it ('seeobscured cannot see it', () => {
-                flags.seeobscured = true;
-                //@ts-ignore
-                expect(system.seeInvisible(token, token.data.effects, flags)).toBe(false);
+                flags = { seeobscured : true };
+                //@ts-ignorew
+                expect(system.seeInvisible(token, flags)).toBe(false);
             }); 
             it ('seeindarkness cannot see it', () => {
-                flags.seeobscured = true;
+                flags.seeindarkness = true;
                 //@ts-ignore
-                expect(system.seeInvisible(token, token.data.effects, flags)).toBe(false);
+                expect(system.seeInvisible(token, flags)).toBe(false);
             }); 
         });
 
@@ -160,57 +164,61 @@ describe('DefaultConditionaVisibilitySystem', () => {
             
             beforeEach(() => {
                 flags = {};
-                token = { data: { effects:['modules/conditional-visibility/icons/foggy.svg']}};
+                token = { data : { flags: {
+                    'conditional-visibility': { 'obscured':true}
+                }}}; 
             });
 
             it ('empty capabilities cannot see it', () => {
                 flags.seeinvisible = false;
                 //@ts-ignore
-                expect(system.seeObscured(token, token.data.effects, flags)).toBe(false);
+                expect(system.seeObscured(token, flags)).toBe(false);
             });
 
             it ('seeinvisible cannot see it', () => {
                 flags.seeinvisible = true;
                 //@ts-ignore
-                expect(system.seeObscured(token, token.data.effects, flags)).toBe(false);
+                expect(system.seeObscured(token, flags)).toBe(false);
             }); 
             it ('seeobscured can see it', () => {
                 flags.seeobscured = true;
                 //@ts-ignore
-                expect(system.seeObscured(token, token.data.effects, flags)).toBe(true);
+                expect(system.seeObscured(token, flags)).toBe(true);
             }); 
             it ('seeindarkness cannot see it', () => {
                 flags.seeindarkness = true;
                 //@ts-ignore
-                expect(system.seeObscured(token, token.data.effects, flags)).toBe(false);
+                expect(system.seeObscured(token, flags)).toBe(false);
             }); 
         });
 
         describe('if token is in darkness', () => {   
             beforeEach(() => {
                 flags = {};
-                token = { data: { effects:['modules/conditional-visibility/icons/moon.svg']}};
+                token = { data : { flags: {
+                    'conditional-visibility': { 'indarkness':true}
+                }}};  
             });
 
             it ('empty capabilities cannot see it', () => {
                 //@ts-ignore
-                expect(system.seeInDarkness(token, token.data.effects, flags)).toBe(false);
+                expect(system.seeInDarkness(token, flags)).toBe(false);
             });
 
             it ('seeinvisible cannot see it', () => {
                 flags.seeinvisible = true;
                 //@ts-ignore
-                expect(system.seeInDarkness(token, token.data.effects, flags)).toBe(false);
+                expect(system.seeInDarkness(token, flags)).toBe(false);
             }); 
             it ('seeobscured cannot see it', () => {
                 flags.seeobscured = true;
                 //@ts-ignore
-                expect(system.seeInDarkness(token, token.data.effects, flags)).toBe(false);
+                expect(system.seeInDarkness(token, flags)).toBe(false);
             }); 
             it ('seeindarkness can see it', () => {
                 flags.seeindarkness = true;
                 //@ts-ignore
-                expect(system.seeInDarkness(token, token.data.effects, flags)).toBe(true);
+                expect(system.seeInDarkness(token, flags)).toBe(true);
             }); 
         });
     })

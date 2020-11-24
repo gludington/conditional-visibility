@@ -1,8 +1,10 @@
+import { StatusEffect } from '../../src/module/Constants';
+import { ConditionalVisibility } from '../../src/module/ConditionalVisibility';
 import {ConditionalVisibilitySystem5e } from '../../src/module/systems/ConditionalVisibilitySystem5e';
 //@ts-ignore
 (global as any).game = {
     data: { version: "0.6.6"},
-    system: {id: 'asdf'},
+    system: {id: 'dnd5e'},
     socket: { 
         on:jest.fn().mockImplementation((name, data) => {})
     }
@@ -20,16 +22,18 @@ import {ConditionalVisibilitySystem5e } from '../../src/module/systems/Condition
 
 describe('ConditionalVisibilitySystem5e', () => {
 
-    const system:ConditionalVisibilitySystem5e = new ConditionalVisibilitySystem5e();
+    //@ts-ignore
+    const system:ConditionalVisibilitySystem5e = ConditionalVisibility.newSystem();
 
     describe('Setup', () => {
         it('Establishes four conditions for dnd5e', () => {
-            const effects:Map<string, string> = system.effectsByIcon();
+            const effects:Map<string, StatusEffect> = system.effectsByIcon();
             expect(effects.size).toBe(4);
-            expect(effects.get('modules/conditional-visibility/icons/unknown.svg')).toBe('invisible');
-            expect(effects.get('modules/conditional-visibility/icons/foggy.svg')).toBe('obscured');
-            expect(effects.get('modules/conditional-visibility/icons/moon.svg')).toBe('indarkness');
-            expect(effects.get('modules/conditional-visibility/icons/newspaper.svg')).toBe('hidden');
+            expect(effects.get('modules/conditional-visibility/icons/unknown.svg').id).toBe('conditional-visibility.invisible');
+            expect(effects.get('modules/conditional-visibility/icons/foggy.svg').id).toBe('conditional-visibility.obscured');
+            expect(effects.get('modules/conditional-visibility/icons/moon.svg').id).toBe('conditional-visibility.indarkness');
+            expect(effects.get('modules/conditional-visibility/icons/newspaper.svg').id).toBe('conditional-visibility.hidden');
+
         });
     });
 
@@ -74,26 +78,28 @@ describe('ConditionalVisibilitySystem5e', () => {
 
     describe('Contested Test', () => {
         let flags:any = { prc: 12};
-        let token:any = { data: { effects:['modules/conditional-visibility/icons/newspaper.svg']}};
+        let token:any = { data : { flags: {
+            'conditional-visibility': { 'hidden':true }
+        }}};
 
         it('stealth higher than the prc cannot be seen', () => {
-            token.data.flags = { 'conditional-visibility': { _ste: 15}}
+            token.data.flags = { 'conditional-visibility': { hidden:true, _ste: 15}}
             //@ts-ignore
-            expect(system.seeContested(token, token.data.effects, flags)).toBe(false);
+            expect(system.seeContested(token, flags)).toBe(false);
             expect(system.canSee(token, flags)).toBe(false);
         });
 
         it('stealth equal to the prc can be seen', () => {
-            token.data.flags = { 'conditional-visibility': { _ste: 12}}
+            token.data.flags = { 'conditional-visibility': { hidden:true, _ste: 12}}
             //@ts-ignore
-            expect(system.seeContested(token, token.data.effects, flags)).toBe(true);
+            expect(system.seeContested(token, flags)).toBe(true);
             expect(system.canSee(token, flags)).toBe(true);
         });
 
         it('stealth lower than the prc can be seen', () => {
-            token.data.flags = { 'conditional-visibility': { _ste: 10}}
+            token.data.flags = { 'conditional-visibility': { hidden:true, _ste: 10}}
             //@ts-ignore
-            expect(system.seeContested(token, token.data.effects, flags)).toBe(true);
+            expect(system.seeContested(token, flags)).toBe(true);
             expect(system.canSee(token, flags)).toBe(true);
         });
        

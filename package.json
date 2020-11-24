@@ -4,7 +4,7 @@
   "version": "0.0.9",
   "description": "",
   "scripts": {
-    "package": "gulp package",
+    "package": "gulp clean && gulp build && gulp package",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --collect-coverage",

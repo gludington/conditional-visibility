@@ -1,11 +1,20 @@
 import * as Constants from './Constants';
 import { ConditionalVisibility } from "./ConditionalVisibility";
 import { ConditionalVisibilitySystem } from "./systems/ConditionalVisibilitySystem";
+import { ConditionalVisibilitySystemPf2e } from './systems/ConditionalVisibilitySystemPf2e';
+
+export interface ConditionalVisibilityFacade {
+
+    help(): void,
+    setCondition(tokens:Array<Token>, condition:string, value:boolean): void,
+    hide(tokens:Array<Token>, value?: number): void,
+    unHide(tokens:Array<Token>): void
+}
 
 /**
  * A class to expose macro-friendly messages on the window object.
  */
-export class ConditionalVisibilityFacade {
+export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFacade {
 
     readonly _mod:ConditionalVisibility;
     readonly _system: ConditionalVisibilitySystem;
@@ -13,13 +22,17 @@ export class ConditionalVisibilityFacade {
     constructor(mod:ConditionalVisibility, system: ConditionalVisibilitySystem) {
         this._mod = mod;
         this._system = system;
+        this.toggleEffect = (token, condition) => {
+            //@ts-ignore
+            return token.toggleEffect(condition);
+        }
     }
 
     public help():void {
         if (game.user.isGM) {
             let conditions = [];
             this._system.effectsByCondition().forEach((value, key) => {
-                conditions.push({ name: key, icon: value});
+                conditions.push({ name: key, icon: value.icon});
             })
             renderTemplate("modules/conditional-visibility/templates/help_dialog.html", {
                 gamesystem: game.system.id,
@@ -46,18 +59,17 @@ export class ConditionalVisibilityFacade {
      * @param value true or false
      */
     public setCondition(tokens:Array<Token>, condition:string, value:boolean) {       
-        if (this._system.hasStealth()) {
-            let icon = this._system.effectsByCondition().get(condition);
+        let status = this._system.effectsByCondition().get(condition);
+        if (status) {
             tokens.forEach(token => {
                 if (token.owner) {
-                    let effects = token.data.effects;
                     if (value !== true) {
-                        if (this.has(effects, icon)) {
-                            token.toggleEffect(icon).then(() => {});
+                        if (this.has(token, status)) {
+                            this.toggleEffect(token, status).then(() => {});
                         }
                     } else {
-                        if (!this.has(effects, icon)) {
-                            token.toggleEffect(icon).then(() => {});
+                        if (!this.has(token, status)) {
+                            this.toggleEffect(token, status).then(() => {});
                         }
                     }
                 }
@@ -76,27 +88,31 @@ export class ConditionalVisibilityFacade {
             return;
         } 
         if (this._system.effectsByCondition().has('hidden')) {
-            let icon = this._system.effectsByCondition().get('hidden');
+            let hidden = this._system.effectsByCondition().get('hidden');
             tokens.forEach(token => {    
                 if (token.owner) {
-                    if (!token.data.flags) {
-                        token.data.flags = {};
-                    }
-                    if (!token.data.flags[Constants.MODULE_NAME]) {
-                        token.data.flags[Constants.MODULE_NAME] = {};
-                    }
                     let stealth;
                     if (value) {
                         stealth = value;
                     } else {
                         stealth = this._system.rollStealth(token).roll().total;
                     }
-                    if (this.has(token.data.effects, icon) === true) {
-                        const update = { 'conditional-visibility': { '_ste':stealth}};
-                        token.update({flags: update});
+                    if (this.has(token, hidden) === true) {
+                        const update = { 'conditional-visibility': {}};
+                        update[Constants.MODULE_NAME]._ste = stealth;
+                        token.update({flags: update });
                     } else {
+                        if (!token.data) {
+                            token.data = {};
+                        }
+                        if (!token.data.flags) {
+                            token.data.flags = {};
+                        }
+                        if (!token.data.flags[Constants.MODULE_NAME]) {
+                            token.data.flags[Constants.MODULE_NAME] = {};
+                        }
                         token.data.flags[Constants.MODULE_NAME]._ste = stealth;
-                        token.toggleEffect(icon);
+                        this.toggleEffect(token, hidden);
                     }
                 }
             })
@@ -109,18 +125,30 @@ export class ConditionalVisibilityFacade {
      */
     public unHide(tokens:Array<Token>) {
         if (this._system.hasStealth()) {
-            let icon = this._system.effectsByCondition().get('hidden');
+            let hidden = this._system.effectsByCondition().get('hidden');
             tokens.forEach(token => {
                 if (token.owner) {
-                    if (this.has(token.data.effects, icon)) {
-                        token.toggleEffect(icon);
+                    if (this.has(token, hidden)) {
+                        this.toggleEffect(token, hidden);
                     }
                 }
             })
         }
     }
 
-    private has(effects, icon):boolean {
-        return effects.some(eff => eff === icon);
+    private toggleEffect(token, condition):Promise<any> {
+        //@ts-ignore
+        return token.toggleEffect(condition);
+    }
+
+    private has(token, condition):boolean {
+        console.error("OKdddd");
+            console.error(condition);
+            let flags = token?.data?.flags?.[Constants.MODULE_NAME];
+            if (flags) {
+                return flags[condition.visibilityId] === true;
+            } else {
+                return false;
+            }
     }
 }

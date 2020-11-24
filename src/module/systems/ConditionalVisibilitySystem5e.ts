@@ -1,4 +1,4 @@
-import { ConditionalVisibility } from '../ConditionalVisibility';
+import { StatusEffect } from '../Constants';
 import { ConditionalVisibilityFacade } from '../ConditionalVisibilityFacade';
 import * as Constants from '../Constants';
 import { DefaultConditionalVisibilitySystem } from "./DefaultConditionalVisibilitySystem";
@@ -12,9 +12,14 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
     /**
      * Use the base conditions, plus set up the icon for the "hidden" condition
      */
-    protected effects(): Map<string, string> {
-        const effects:Map<string, string> = super.effects();
-        effects.set('modules/conditional-visibility/icons/newspaper.svg', 'hidden');
+    protected effects(): Array<StatusEffect> {
+        const effects:Array<StatusEffect> = super.effects();
+        effects.push({
+            id: 'conditional-visibility.hidden',
+            visibilityId: 'hidden',
+            label: 'CONVIS.hidden',
+            icon: 'modules/conditional-visibility/icons/newspaper.svg'
+        });
         return effects;
     }
 
@@ -57,11 +62,10 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
     /**
      * Override seeContested to compare any available stealth with the passive perception calculated in getVisionCapabilities
      * @param target the toekn to try and see
-     * @param effects the effects on the token
      * @param flags the flags calculated from getVisionCapabilities
      */
-    protected seeContested(target: Token, effects: any, visionCapabilities: any): boolean {
-        const hidden = effects.some(eff => eff.endsWith('newspaper.svg'));
+    protected seeContested(target: Token, visionCapabilities: any): boolean {
+        const hidden = this.hasStatus(target, 'hidden', 'newspaper.svg');
         if (hidden === true) {
             if (target.data.flags[Constants.MODULE_NAME] && target.data.flags[Constants.MODULE_NAME]._ste) {
                 const stealth = target.data.flags[Constants.MODULE_NAME]._ste;
@@ -79,8 +83,7 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
     
         const realOnToggleEffect = tokenHud._onToggleEffect.bind(tokenHud);
 
-        tokenHud._onToggleEffect = (event) => {
-            event.preventDefault();
+        tokenHud._onToggleEffect = (event, opts) => {
             const icon = event.currentTarget;
             if (icon.src.endsWith('newspaper.svg') && icon.className.indexOf('active') < 0) {
                 const object = tokenHud.object;
@@ -92,11 +95,11 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
                         object.data.flags[Constants.MODULE_NAME] = {};
                     }
                     object.data.flags[Constants.MODULE_NAME]._ste = result;
-                    realOnToggleEffect(event);
+                    return realOnToggleEffect(event, opts);
                 });
                 return false;
             } else {
-                realOnToggleEffect(event);
+                return realOnToggleEffect(event, opts);
             }
         }
     }

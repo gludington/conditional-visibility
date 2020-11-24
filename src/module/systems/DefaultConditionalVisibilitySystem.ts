@@ -1,22 +1,49 @@
+import { ConditionalVisibility } from '../ConditionalVisibility';
 import { ConditionalVisibilityFacade } from '../ConditionalVisibilityFacade';
+import { MODULE_NAME, StatusEffect } from '../Constants';
 import * as Constants from '../Constants';
 import { ConditionalVisibilitySystem } from "./ConditionalVisibilitySystem";
+import { ConditionalVisibilitySystemPf2e } from './ConditionalVisibilitySystemPf2e';
 
 /**
  * The DefaultConditionalVisibilitySystem, to use when no visibility system can be found for the game system.
  */
 export class DefaultConditionalVisibilitySystem implements ConditionalVisibilitySystem {
+
+    static BASE_EFFECTS = new Array<StatusEffect> (
+        { 
+            id: MODULE_NAME + '.invisible',
+            visibilityId: 'invisible',
+            label: 'CONVIS.invisible',
+            icon:'modules/conditional-visibility/icons/unknown.svg'
+        }, {
+            id: MODULE_NAME + '.obscured',
+            visibilityId: 'obscured',
+            label: 'CONVIS.obscured',
+            icon: 'modules/conditional-visibility/icons/foggy.svg',
+         }, {
+            id: MODULE_NAME + '.indarkness',
+            visibilityId: 'indarkness',
+            label: 'CONVIS.indarkness',
+            icon: 'modules/conditional-visibility/icons/moon.svg'
+        }
+    );
     
-    _effectsByIcon: Map<string, string>;
-    _effectsByCondition: Map<string, string>;
+    _effectsByIcon: Map<string, StatusEffect>;
+    _effectsByCondition: Map<string, StatusEffect>;
+
+    hasStatus(token:Token, id:string, icon:string): boolean {
+        return token.data?.flags?.[MODULE_NAME]?.[id] === true;
+    }
 
     constructor() {
         //yes, this is a BiMap but the solid TS BiMap implementaiton is GPLv3, so we will just fake what we need here
-        this._effectsByIcon = this.effects();
-        this._effectsByCondition = new Map();
-        this._effectsByIcon.forEach((value: string, key: string) => {
-            this._effectsByCondition.set(value, key);
-        });
+        this._effectsByIcon = new Map<string, StatusEffect>();
+        this._effectsByCondition = new Map<string, StatusEffect>();
+        this.effects().forEach(statusEffect => {
+            this._effectsByIcon.set(statusEffect.icon, statusEffect);
+            this._effectsByCondition.set(statusEffect.visibilityId, statusEffect);
+        })
     }
 
     gameSystemId(): string {
@@ -26,27 +53,39 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
     /**
      * Base effects are invisible, obscured, and indarkness
      */
-    protected effects():Map<string, string> {
-        return new Map<string, string> ([['modules/conditional-visibility/icons/unknown.svg', 'invisible'],
-        ['modules/conditional-visibility/icons/foggy.svg', 'obscured'],
-        ['modules/conditional-visibility/icons/moon.svg', 'indarkness']]);
+    protected effects():Array<StatusEffect> {
+        return DefaultConditionalVisibilitySystem.BASE_EFFECTS;
     }
 
 
-    public effectsByIcon(): Map<string, string> {
+    public effectsByIcon(): Map<string, StatusEffect> {
         return this._effectsByIcon;
     }
 
-    public effectsByCondition(): Map<string, string> {
+    public effectsByCondition(): Map<string, StatusEffect> {
         return this._effectsByCondition;
+    }
+
+    public effectsFromUpdate(update: any):any {
+        return update.actorData?.effects;
+    }
+
+    public getEffectByIcon(effect:StatusEffect|string):StatusEffect {
+        //@ts-ignore
+        return this.effectsByIcon().get(effect.icon);
     }
 
     public initializeStatusEffects():void {
         console.log(Constants.MODULE_NAME + " | Initializing visibility system effects " + this.gameSystemId() + " for game system " + game.system.id);
-        for (const effect of this.effectsByIcon().keys()) {
+        this.effectsByIcon().forEach((value: StatusEffect, key: string) => {
             //@ts-ignore
-            CONFIG.statusEffects.push(effect);	
-        }
+            CONFIG.statusEffects.push({
+                id: value.id,
+                label: value.label,
+                icon: value.icon
+                });
+
+        });
     }
 
     /**
@@ -95,27 +134,23 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
      * @param flags the capabilities established by the sight layer
      */
     public canSee(target: Token, visionCapabilities: any): boolean {
-        const effects = target.data.effects;
-        if (effects.length > 0) {
-            if (this.seeInvisible(target, effects, visionCapabilities) === false) {
-                return false;
-            }
-
-            if (this.seeObscured(target, effects, visionCapabilities) === false) {
-                return false;
-            }
-
-            if (this.seeInDarkness(target, effects, visionCapabilities) === false) {
-                return false;
-            }
-
-            if (this.seeContested(target, effects, visionCapabilities) === false) {
-                return false;
-            }
-            return true;
-        } else {
-            return true;
+        if (this.seeInvisible(target, visionCapabilities) === false) {
+            return false;
         }
+
+        if (this.seeObscured(target, visionCapabilities) === false) {
+            return false;
+        }
+
+        if (this.seeInDarkness(target, visionCapabilities) === false) {
+            return false;
+        }
+        
+        if (this.seeContested(target, visionCapabilities) === false) {
+            return false;
+        }
+        return true;
+
     }
 
     /**
@@ -124,8 +159,8 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
      * @param effects the effects of that token
      * @param visionCapabilities the sight capabilities of the sight layer
      */
-    protected seeInvisible(target:Token, effects:any, visionCapabilities:any): boolean {
-        const invisible = effects.some(eff => eff.endsWith('unknown.svg'));
+    protected seeInvisible(target:Token, visionCapabilities:any): boolean {
+        const invisible = this.hasStatus(target, 'invisible', 'unknown.svg');
         if (invisible === true) {
             if (visionCapabilities.seeinvisible !== true) {
                 return false;
@@ -137,11 +172,10 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
     /**
      * Tests whether a token is obscured, and if it can be seen.
      * @param target the token being seen (or not)
-     * @param effects the effects of that token
      * @param visionCapabilities the sight capabilities of the sight layer
      */
-    protected seeObscured(target:Token, effects:any, visionCapabilities:any): boolean {
-        const obscured = effects.some(eff => eff.endsWith('foggy.svg'));
+    protected seeObscured(target:Token, visionCapabilities:any): boolean {
+        const obscured = this.hasStatus(target, 'obscured', 'foggy.svg');
         if (obscured === true) {
             if (visionCapabilities.seeobscured !== true) {
                 return false;
@@ -156,8 +190,8 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
      * @param effects the effects of that token
      * @param flags the sight capabilities of the sight layer
      */
-    protected seeInDarkness(target:Token, effects:any, visionCapabilities:any): boolean {
-        const indarkness = effects.some(eff => eff.endsWith('moon.svg'));
+    protected seeInDarkness(target:Token, visionCapabilities:any): boolean {
+        const indarkness = this.hasStatus(target, 'indarkness', 'moon.svg');
         if (indarkness === true) {
             if (visionCapabilities.seeindarkness !== true) {
                 return false;
@@ -173,7 +207,7 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
      * @param effects the effects of that token
      * @param visionCapabilities the sight capabilities of the sight layer
      */
-    protected seeContested(target:Token, effects:any, flags:any): boolean {
+    protected seeContested(target:Token, flags:any): boolean {
         return true;
     }
 

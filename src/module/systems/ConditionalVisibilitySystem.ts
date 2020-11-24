@@ -1,4 +1,4 @@
-import { ConditionalVisibility } from "../ConditionalVisibility";
+import { StatusEffect } from "../Constants";
 import { ConditionalVisibilityFacade } from "../ConditionalVisibilityFacade";
 
 /**
@@ -15,12 +15,19 @@ export interface ConditionalVisibilitySystem {
     /**
      * A map of icon urls to a condition name. Effectively a BiMap with effectsByCondition()
      */
-    effectsByIcon(): Map<string, string>;
+    effectsByIcon(): Map<string, StatusEffect>;
 
     /**
      * A map of condition names to icon urls.  Effectively a BiMap with effects()
      */
-    effectsByCondition(): Map<string, string>;
+    effectsByCondition(): Map<string, StatusEffect>;
+
+    /**
+     * Get an effect by icon - pf2e uses a string, not a StatusEffect
+     */
+    getEffectByIcon(effect:StatusEffect|string): StatusEffect;
+
+    effectsFromUpdate(update: any): any;
 
     /**
      * Initizialize status effects for the system.

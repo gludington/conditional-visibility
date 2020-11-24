@@ -29,7 +29,7 @@ describe('ConditionalVisibilitySystemPf2e', () => {
         it('Establishes one condition for pf2e', () => {
             const effects:Map<string, StatusEffect> = system.effectsByIcon();
             expect(effects.size).toBe(1);
-            expect(effects.get('systems/pf2e/icons/conditions-2/invisible.png').id).toBe('conditional-visibility.invisible');
+            expect(effects.get('systems/pf2e/icons/conditions/invisible.png').id).toBe('conditional-visibility.invisible');
         });
     });
 

@@ -165,6 +165,7 @@ async function copyFiles() {
 		'fonts',
 		'assets',
 		'templates',
+		'packs',
 		'icons',
 		'module.json',
 		'system.json',
@@ -213,6 +214,7 @@ async function clean() {
 		files.push(
 			'lang',
 			'templates',
+			'packs',
 			'assets',
 			'module',
 			`${name}.js`,

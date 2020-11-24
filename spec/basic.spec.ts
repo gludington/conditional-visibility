@@ -51,7 +51,7 @@ describe('Setup - onInit', () => {
         game.system.id = "pf2e";
         ConditionalVisibility.onInit();
         expect(CONFIG.statusEffects.length).toBe(1);
-        expect(CONFIG.statusEffects[0].icon).toBe('systems/pf2e/icons/conditions-2/invisible.png');
+        expect(CONFIG.statusEffects[0].icon).toBe('systems/pf2e/icons/conditions/invisible.png');
     });
 });
 

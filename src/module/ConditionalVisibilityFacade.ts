@@ -19,23 +19,13 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
     readonly _mod:ConditionalVisibility;
     readonly _system: ConditionalVisibilitySystem;
 
-    toggleToken: () => Promise<any>;
-    has: (token:Token, condition:Constants.StatusEffect) => boolean;
-    toggleEffect: (token:Token, condition:Constants.StatusEffect) => Promise<any>;
-
     constructor(mod:ConditionalVisibility, system: ConditionalVisibilitySystem) {
         this._mod = mod;
         this._system = system;
-            this.has = (token, condition) => {
-                //@ts-ignore
-                return token.actor?.effects?.entries?.some(eff => eff.data?.flags?.core?.statusId === condition.id);
-                //return token.data?.actorData?.effects?.some(eff => eff.flags?.core?.statusId === condition.id);
-                //return token.actor?.data?.data?.[Constants.MODULE_NAME]?.[condition.id] === true;
-            }
-            this.toggleEffect = (token, condition) => {
-                //@ts-ignore
-                return token.toggleEffect(condition);
-            }
+        this.toggleEffect = (token, condition) => {
+            //@ts-ignore
+            return token.toggleEffect(condition);
+        }
     }
 
     public help():void {
@@ -144,5 +134,21 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
                 }
             })
         }
+    }
+
+    private toggleEffect(token, condition):Promise<any> {
+        //@ts-ignore
+        return token.toggleEffect(condition);
+    }
+
+    private has(token, condition):boolean {
+        console.error("OKdddd");
+            console.error(condition);
+            let flags = token?.data?.flags?.[Constants.MODULE_NAME];
+            if (flags) {
+                return flags[condition.visibilityId] === true;
+            } else {
+                return false;
+            }
     }
 }

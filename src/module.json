@@ -7,7 +7,16 @@
   "scripts": [],
   "esmodules": ["conditional-visibility.js"],
   "styles": ["templates/conditional-visibility.css"],
-  "packs": [],
+  "packs": [
+    {
+      "name": "Conditional Visibility",
+      "label": "Conditional Visibility",
+      "path": "./packs/visibility-scripts.db",
+      "module": "world",
+      "entity": "Macro",
+      "lang": []
+    }
+  ],
   "languages": [
     {
       "lang": "en",

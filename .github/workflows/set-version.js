@@ -8,7 +8,7 @@ if (!tagVersion || !tagVersion.startsWith('v')) {
   process.exitCode = 1;
 } else {
   manifest.version = tagVersion.substring(1); // strip the 'v'-prefix
-  manifest.download = `https://github.com/gludington/conditional-visibility/releases/download/conditional-visibility-${tagVersion}.zip`
+  manifest.download = `https://github.com/gludington/conditional-visibility/releases/download/${tagVersion}/conditional-visibility-${tagVersion}.zip`
   manifest.manifest = `https://github.com/gludington/conditional-visibility/releases/download/${tagVersion}/module.json`,
   manifest.changelog= `https://github.com/gludington/conditional-visibility/blob/${tagVersion}/CHANGELOG.md`,
   manifest.readme = `https://github.com/gludington/conditional-visibility/blob/${tagVersion}/README.md`,

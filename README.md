@@ -5,7 +5,7 @@
 
 [Installation](#Installation)
 
-[Module Manifest](https://github.com/gludington/conditional-visibility/releases/download/v0.0.9/module.json)
+[Module Manifest](https://github.com/gludington/conditional-visibility/releases/download/v0.1.1/module.json)
 
 [Changelog](https://github.com/gludington/conditional-visibility/blob/master/CHANGELOG.md)
 

@@ -66,6 +66,9 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
      */
     protected seeContested(target: Token, visionCapabilities: any): boolean {
         const hidden = this.hasStatus(target, 'hidden', 'newspaper.svg');
+        console.error(target.data.name + " " + hidden);
+        console.error(target.data.flags);
+        console.error(target.actor.data.flags);
         if (hidden === true) {
             if (target.data.flags[Constants.MODULE_NAME] && target.data.flags[Constants.MODULE_NAME]._ste) {
                 const stealth = target.data.flags[Constants.MODULE_NAME]._ste;
@@ -95,6 +98,18 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
                         object.data.flags[Constants.MODULE_NAME] = {};
                     }
                     object.data.flags[Constants.MODULE_NAME]._ste = result;
+                    if (object.actor) {
+                        if (!object.actor.data) {
+                            object.actor.data = {};
+                        }
+                        if (!object.actor.data.flags) {
+                            object.actor.data.flags = {};
+                        }
+                        if (!object.actor.data.flags[Constants.MODULE_NAME]) {
+                            object.actor.data.flags[Constants.MODULE_NAME] = {};
+                        }
+                        object.actor.data.flags[Constants.MODULE_NAME]._ste = result;
+                    }
                     return realOnToggleEffect(event, opts);
                 });
                 return false;

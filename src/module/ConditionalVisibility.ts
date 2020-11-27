@@ -29,7 +29,8 @@ export class ConditionalVisibility {
                 if (isVisible === false) {
                     return false;
                 }
-                if (game.user.isGM || this._controlled || !canvas.sight.tokenVision) {
+                console.error(this);
+                if (game.user.isGM || this.owner || !canvas.sight.tokenVision) {
                     return true;
                 }
                 return ConditionalVisibility.canSee(this);
@@ -188,6 +189,20 @@ export class ConditionalVisibility {
                     icon.setAttribute("title", title);
                 }
             });
+    }
+
+    public onPreCreateActiveEffect(actor, effect, options, userId) {
+        const status:Constants.StatusEffect = this._conditionalVisibilitySystem.getEffectByIcon(effect);
+        if (status) {
+            actor.setFlag(Constants.MODULE_NAME, status.visibilityId, true);
+        }
+    }
+
+    public onPreDeleteActiveEffect(actor, effect, options, userId) {
+        const status:Constants.StatusEffect = this._conditionalVisibilitySystem.getEffectByIcon(effect);
+        if (status) {
+            actor.unsetFlag(Constants.MODULE_NAME, status.visibilityId);
+        }
     }
 
     public onPreUpdateToken(scene:any, token:any, update:any, options:any, userId:string) {

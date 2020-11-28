@@ -43,7 +43,7 @@ export class ConditionalVisibility {
         const firstSemVar:Array<number> = this.splitOnDot(first);
         const secondSemVar:Array<number> = this.splitOnDot(second);
         if (firstSemVar.length != secondSemVar.length) {
-            throw new Error("bad semvar");
+            throw new Error("bad semvar first " + first +", second" + second);
         }
         for (let i = 0; i < firstSemVar.length;i++ ){
             if (firstSemVar[i] > secondSemVar[i]) {
@@ -176,7 +176,7 @@ export class ConditionalVisibility {
         this.draw();
 
         const popupVersion = game.settings.get(MODULE_NAME, "popup-version");
-        const currentVersion = "0.0.3";//game.modules.get(MODULE_NAME).data.version;
+        const currentVersion = game.modules.get(MODULE_NAME).data.version === "@tagVersion@" ? "0.0.3" : game.modules.get(MODULE_NAME).data.version;
 
         if (this.isSemvarGreater(currentVersion, popupVersion)) {
         renderTemplate("modules/conditional-visibility/templates/version_popup.html", {

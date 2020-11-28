@@ -34,7 +34,7 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
 
     hasStatus(token:Token, id:string, icon:string): boolean {
             return token.data?.flags?.[MODULE_NAME]?.[id] === true
-                || token.actor.data?.flags?.[MODULE_NAME]?.[id] === true;
+                || token.actor?.data?.flags?.[MODULE_NAME]?.[id] === true;
     }
 
     constructor() {
@@ -135,7 +135,6 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
      * @param flags the capabilities established by the sight layer
      */
     public canSee(target: Token, visionCapabilities: any): boolean {
-        console.error("in casen see for " + target.data.name)
         if (this.seeInvisible(target, visionCapabilities) === false) {
             return false;
         }
@@ -162,7 +161,6 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
      * @param visionCapabilities the sight capabilities of the sight layer
      */
     protected seeInvisible(target:Token, visionCapabilities:any): boolean {
-        console.error(target);
         const invisible = this.hasStatus(target, 'invisible', 'unknown.svg');
         if (invisible === true) {
             if (visionCapabilities.seeinvisible !== true) {

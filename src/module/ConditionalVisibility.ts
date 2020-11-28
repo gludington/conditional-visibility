@@ -40,6 +40,24 @@ export class ConditionalVisibility {
         system.initializeStatusEffects();
     }
 
+    public isSemvarGreater(first:string, second:string):boolean {
+        const firstSemVar:Array<number> = this.splitOnDot(first);
+        const secondSemVar:Array<number> = this.splitOnDot(second);
+        if (firstSemVar.length != secondSemVar.length) {
+            throw new Error("bad semvar");
+        }
+        for (let i = 0; i < firstSemVar.length;i++ ){
+            if (firstSemVar[i] > secondSemVar[i]) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private splitOnDot(toSplit:string):Array<number> {
+        return toSplit.split(".").map(str => isNaN(Number(str)) ? 0 : Number(str));
+    }
+    
     /**
      * A static method that will be replaced after initialization with the appropriate system specific method.
      * @param token the token to test
@@ -157,6 +175,32 @@ export class ConditionalVisibility {
         // update sight layer, as custom decisons will not be executed the
         // first time through, and cannot be forced in setup
         this.draw();
+
+        const popupVersion = game.settings.get(MODULE_NAME, "popup-version");
+        const currentVersion = game.modules.get(MODULE_NAME).data.version;
+        console.error(game.i18n.localize("CONVIS.popup.dismissuntilupdated"));
+        if (this.isSemvarGreater(currentVersion, popupVersion)) {
+        renderTemplate("modules/conditional-visibility/templates/version_popup.html", {
+            version: currentVersion,
+        }).then(content => {
+            let d = new Dialog({
+                title: "Conditional Visibility",
+                content: content,
+                buttons: {
+                    one: {
+                        icon: '<i class="fas fa-check"></i>',
+                        label: game.i18n.localize('CONVIS.popup.dismissuntilupdated'),
+                        callback: () => game.settings.set(MODULE_NAME, 'popup-version', currentVersion)
+                       },
+                       two: {
+                        icon: '<i class="fas fa-times"></i>',
+                        label: game.i18n.localize('CONVIS.popup.close')
+                       }
+                }
+               });
+               d.render(true);
+            });
+        }
     }
 
     public onRenderTokenConfig(tokenConfig: any, jQuery:JQuery, data: any) {

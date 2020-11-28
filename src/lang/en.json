@@ -3,6 +3,12 @@
     "CONVIS.settings.autoStealth.name": "Auto hide on stealth rolls",
     "CONVIS.settings.autoStealth.hint": "On supported game systems, set the hidden condition on a token's stealth roll",
 
+    "CONVIS.popup.dismissuntilupdated": "Dismiss until updated",
+    "CONVIS.popup.close": "Close",
+    "CONVIS.popup.version0910.1":"A compendium has is now part of this module, for those who wish to use macros instead of conditions icons to apply conditions, or to apply them in bulk.",
+    "CONVIS.popup.version0910.2":"There is also a script to migrate conditions of selected tokens from the Foundry 0.6.x model to the Foundry 0.7 model",
+    "CONVIS.popup.version0910.3":"Using these scripts as macros will require the installation of the Furnace module, as they are asynchronous",
+
     "CONVIS.help.readmeat": "More instructions can be found at the",
     "CONVIS.help.gamesystem": "Game System",
     "CONVIS.help.hasStealth": "Has Stealth",

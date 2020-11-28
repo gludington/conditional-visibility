@@ -29,7 +29,6 @@ export class ConditionalVisibility {
                 if (isVisible === false) {
                     return false;
                 }
-                console.error(this);
                 if (game.user.isGM || this.owner || !canvas.sight.tokenVision) {
                     return true;
                 }
@@ -177,8 +176,8 @@ export class ConditionalVisibility {
         this.draw();
 
         const popupVersion = game.settings.get(MODULE_NAME, "popup-version");
-        const currentVersion = game.modules.get(MODULE_NAME).data.version;
-        console.error(game.i18n.localize("CONVIS.popup.dismissuntilupdated"));
+        const currentVersion = "0.0.3";//game.modules.get(MODULE_NAME).data.version;
+
         if (this.isSemvarGreater(currentVersion, popupVersion)) {
         renderTemplate("modules/conditional-visibility/templates/version_popup.html", {
             version: currentVersion,

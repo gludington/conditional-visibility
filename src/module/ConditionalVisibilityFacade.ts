@@ -142,7 +142,7 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
     }
 
     private has(token, condition):boolean {
-        let flags = token?.data?.flags?.[Constants.MODULE_NAME] || token?.actor?.data?.flags?.[Constants.MODULE_NAME];
+        const flags = token.data.actorLink ? token.actor?.data?.flags?.[Constants.MODULE_NAME] : token?.data?.flags?.[Constants.MODULE_NAME];
         if (flags) {
             return flags[condition.visibilityId] === true;
         } else {

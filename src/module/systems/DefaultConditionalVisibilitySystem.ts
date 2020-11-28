@@ -33,8 +33,7 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
     _effectsByCondition: Map<string, StatusEffect>;
 
     hasStatus(token:Token, id:string, icon:string): boolean {
-            return token.data?.flags?.[MODULE_NAME]?.[id] === true
-                || token.actor?.data?.flags?.[MODULE_NAME]?.[id] === true;
+        return token.data.actorLink ? token.actor?.data?.flags?.[MODULE_NAME]?.[id] === true : token.data?.flags?.[MODULE_NAME]?.[id] === true;
     }
 
     constructor() {

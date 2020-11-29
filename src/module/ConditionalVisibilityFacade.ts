@@ -142,13 +142,11 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
     }
 
     private has(token, condition):boolean {
-        console.error("OKdddd");
-            console.error(condition);
-            let flags = token?.data?.flags?.[Constants.MODULE_NAME];
-            if (flags) {
-                return flags[condition.visibilityId] === true;
-            } else {
-                return false;
-            }
+        const flags = token.data.actorLink ? token.actor?.data?.flags?.[Constants.MODULE_NAME] : token?.data?.flags?.[Constants.MODULE_NAME];
+        if (flags) {
+            return flags[condition.visibilityId] === true;
+        } else {
+            return false;
+        }
     }
 }

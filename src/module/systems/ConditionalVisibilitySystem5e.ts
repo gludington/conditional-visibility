@@ -95,6 +95,18 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
                         object.data.flags[Constants.MODULE_NAME] = {};
                     }
                     object.data.flags[Constants.MODULE_NAME]._ste = result;
+                    if (object.actor) {
+                        if (!object.actor.data) {
+                            object.actor.data = {};
+                        }
+                        if (!object.actor.data.flags) {
+                            object.actor.data.flags = {};
+                        }
+                        if (!object.actor.data.flags[Constants.MODULE_NAME]) {
+                            object.actor.data.flags[Constants.MODULE_NAME] = {};
+                        }
+                        object.actor.data.flags[Constants.MODULE_NAME]._ste = result;
+                    }
                     return realOnToggleEffect(event, opts);
                 });
                 return false;

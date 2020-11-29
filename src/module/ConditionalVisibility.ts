@@ -29,7 +29,7 @@ export class ConditionalVisibility {
                 if (isVisible === false) {
                     return false;
                 }
-                if (game.user.isGM || this._controlled || !canvas.sight.tokenVision) {
+                if (game.user.isGM || this.owner || !canvas.sight.tokenVision) {
                     return true;
                 }
                 return ConditionalVisibility.canSee(this);
@@ -39,6 +39,24 @@ export class ConditionalVisibility {
         system.initializeStatusEffects();
     }
 
+    public isSemvarGreater(first:string, second:string):boolean {
+        const firstSemVar:Array<number> = this.splitOnDot(first);
+        const secondSemVar:Array<number> = this.splitOnDot(second);
+        if (firstSemVar.length != secondSemVar.length) {
+            throw new Error("bad semvar first " + first +", second" + second);
+        }
+        for (let i = 0; i < firstSemVar.length;i++ ){
+            if (firstSemVar[i] > secondSemVar[i]) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private splitOnDot(toSplit:string):Array<number> {
+        return toSplit.split(".").map(str => isNaN(Number(str)) ? 0 : Number(str));
+    }
+    
     /**
      * A static method that will be replaced after initialization with the appropriate system specific method.
      * @param token the token to test
@@ -156,6 +174,32 @@ export class ConditionalVisibility {
         // update sight layer, as custom decisons will not be executed the
         // first time through, and cannot be forced in setup
         this.draw();
+
+        const popupVersion = game.settings.get(MODULE_NAME, "popup-version");
+        const currentVersion = game.modules.get(MODULE_NAME).data.version === "@tagVersion@" ? "0.0.3" : game.modules.get(MODULE_NAME).data.version;
+
+        if (this.isSemvarGreater(currentVersion, popupVersion)) {
+        renderTemplate("modules/conditional-visibility/templates/version_popup.html", {
+            version: currentVersion,
+        }).then(content => {
+            let d = new Dialog({
+                title: "Conditional Visibility",
+                content: content,
+                buttons: {
+                    one: {
+                        icon: '<i class="fas fa-check"></i>',
+                        label: game.i18n.localize('CONVIS.popup.dismissuntilupdated'),
+                        callback: () => game.settings.set(MODULE_NAME, 'popup-version', currentVersion)
+                       },
+                       two: {
+                        icon: '<i class="fas fa-times"></i>',
+                        label: game.i18n.localize('CONVIS.popup.close')
+                       }
+                }
+               });
+               d.render(true);
+            });
+        }
     }
 
     public onRenderTokenConfig(tokenConfig: any, jQuery:JQuery, data: any) {
@@ -188,6 +232,20 @@ export class ConditionalVisibility {
                     icon.setAttribute("title", title);
                 }
             });
+    }
+
+    public onPreCreateActiveEffect(actor, effect, options, userId) {
+        const status:Constants.StatusEffect = this._conditionalVisibilitySystem.getEffectByIcon(effect);
+        if (status) {
+            actor.setFlag(Constants.MODULE_NAME, status.visibilityId, true);
+        }
+    }
+
+    public onPreDeleteActiveEffect(actor, effect, options, userId) {
+        const status:Constants.StatusEffect = this._conditionalVisibilitySystem.getEffectByIcon(effect);
+        if (status) {
+            actor.unsetFlag(Constants.MODULE_NAME, status.visibilityId);
+        }
     }
 
     public onPreUpdateToken(scene:any, token:any, update:any, options:any, userId:string) {

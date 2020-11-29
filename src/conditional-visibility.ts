@@ -65,6 +65,16 @@ Hooks.on("renderTokenHUD", (app, html, data) => {
     ConditionalVisibility.INSTANCE.onRenderTokenHUD(app, html, data);
 });
 
+//synthetic actors go through this
 Hooks.on("preUpdateToken", (scene, token, update, options, userId) => {
     ConditionalVisibility.INSTANCE.onPreUpdateToken(scene, token, update, options, userId);
+})
+
+//real actors go through this
+Hooks.on("preCreateActiveEffect", (actor, effect, options, userId) => {
+    ConditionalVisibility.INSTANCE.onPreCreateActiveEffect(actor, effect, options, userId);
+})
+
+Hooks.on("preDeleteActiveEffect", (actor, effect, options, userId) => {
+    ConditionalVisibility.INSTANCE.onPreDeleteActiveEffect(actor, effect, options, userId);
 })

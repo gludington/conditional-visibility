@@ -61,20 +61,37 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
     public setCondition(tokens:Array<Token>, condition:string, value:boolean) {       
         let status = this._system.effectsByCondition().get(condition);
         if (status) {
+            const guard:Map<string, boolean> = new Map();
             tokens.forEach(token => {
                 if (token.owner) {
-                    if (value !== true) {
-                        if (this.has(token, status)) {
-                            this.toggleEffect(token, status).then(() => {});
-                        }
-                    } else {
-                        if (!this.has(token, status)) {
-                            this.toggleEffect(token, status).then(() => {});
+                    if (!this.actorAlreadyAdjusted(token, guard)) {
+                        if (value !== true) {
+                            if (this.has(token, status)) {
+                                this.toggleEffect(token, status).then(() => {});
+                            }
+                        } else {
+                            if (!this.has(token, status)) {
+                                this.toggleEffect(token, status).then(() => {});
+                            }
                         }
                     }
                 }
             });
         }
+    }
+
+    private actorAlreadyAdjusted(token: any, guard:Map<string, boolean>):boolean {
+        if (token.data.actorLink === true) {
+            const actorId = token?.actor?.data?._id;
+            if (actorId) {
+                if (guard.has(actorId)) {
+                    return true;
+                }
+                guard.set(actorId, true);
+                return false;
+            }
+        }
+        return false;
     }
 
     /**
@@ -89,30 +106,33 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
         } 
         if (this._system.effectsByCondition().has('hidden')) {
             let hidden = this._system.effectsByCondition().get('hidden');
+            const guard:Map<string, boolean> = new Map();
             tokens.forEach(token => {    
                 if (token.owner) {
-                    let stealth;
-                    if (value) {
-                        stealth = value;
-                    } else {
-                        stealth = this._system.rollStealth(token).roll().total;
-                    }
-                    if (this.has(token, hidden) === true) {
-                        const update = { 'conditional-visibility': {}};
-                        update[Constants.MODULE_NAME]._ste = stealth;
-                        token.update({flags: update });
-                    } else {
-                        if (!token.data) {
-                            token.data = {};
+                    if (!this.actorAlreadyAdjusted(token, guard)) {
+                        let stealth;
+                        if (value) {
+                            stealth = value;
+                        } else {
+                            stealth = this._system.rollStealth(token).roll().total;
                         }
-                        if (!token.data.flags) {
-                            token.data.flags = {};
+                        if (this.has(token, hidden) === true) {
+                            const update = { 'conditional-visibility': {}};
+                            update[Constants.MODULE_NAME]._ste = stealth;
+                            token.update({flags: update });
+                        } else {
+                            if (!token.data) {
+                                token.data = {};
+                            }
+                            if (!token.data.flags) {
+                                token.data.flags = {};
+                            }
+                            if (!token.data.flags[Constants.MODULE_NAME]) {
+                                token.data.flags[Constants.MODULE_NAME] = {};
+                            }
+                            token.data.flags[Constants.MODULE_NAME]._ste = stealth;
+                            this.toggleEffect(token, hidden);
                         }
-                        if (!token.data.flags[Constants.MODULE_NAME]) {
-                            token.data.flags[Constants.MODULE_NAME] = {};
-                        }
-                        token.data.flags[Constants.MODULE_NAME]._ste = stealth;
-                        this.toggleEffect(token, hidden);
                     }
                 }
             })
@@ -126,10 +146,13 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
     public unHide(tokens:Array<Token>) {
         if (this._system.hasStealth()) {
             let hidden = this._system.effectsByCondition().get('hidden');
+            const guard:Map<string, boolean> = new Map();
             tokens.forEach(token => {
                 if (token.owner) {
-                    if (this.has(token, hidden)) {
-                        this.toggleEffect(token, hidden);
+                    if (!this.actorAlreadyAdjusted(token, guard)) {
+                        if (this.has(token, hidden)) {
+                            this.toggleEffect(token, hidden);
+                        }
                     }
                 }
             })

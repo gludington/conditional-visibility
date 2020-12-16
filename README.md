@@ -1,4 +1,4 @@
-![https://img.shields.io/badge/Foundry%20VTT-0.6.6%2B-green](https://img.shields.io/badge/Foundry%20VTT-0.6.6%2B-green)
+![https://img.shields.io/badge/Foundry%20VTT-0.7.6%2B-green](https://img.shields.io/badge/Foundry%20VTT-0.7.6%2B-green)
 
 # conditional-visibility
 **Author**: Greg Ludington  
@@ -8,7 +8,7 @@ This module is unfortunately not compatible with 0.75 at this time, as there hav
 
 [Installation](#Installation)
 
-[Module Manifest](https://github.com/gludington/conditional-visibility/releases/download/v0.1.1/module.json)
+[Module Manifest](https://github.com/gludington/conditional-visibility/releases/download/v0.1.3/module.json)
 
 [Changelog](https://github.com/gludington/conditional-visibility/blob/master/CHANGELOG.md)
 

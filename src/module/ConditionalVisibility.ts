@@ -176,7 +176,7 @@ export class ConditionalVisibility {
         this.draw();
 
         const popupVersion = game.settings.get(MODULE_NAME, "popup-version");
-        const currentVersion = game.modules.get(MODULE_NAME).data.version === "@tagVersion@" ? "0.0.3" : game.modules.get(MODULE_NAME).data.version;
+        const currentVersion = game.modules.get(MODULE_NAME).data.version === "@tagVersion@" ? "0.0.9" : game.modules.get(MODULE_NAME).data.version;
 
         if (this.isSemvarGreater(currentVersion, popupVersion)) {
         renderTemplate("modules/conditional-visibility/templates/version_popup.html", {

@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.1.3]
+## [0.1.4]
 - Made functional with Foundry 0.7.x series
 
 ## [0.0.9]

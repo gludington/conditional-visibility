@@ -80,6 +80,25 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
         }
     }
 
+    /**
+     * Toggle a condition on a set of tokens.
+     * @param tokens the tokens to affect
+     * @param condition the string condition
+     */
+    public toggleCondition(tokens:Array<Token>, condition:string) {     
+        let status = this._system.effectsByCondition().get(condition);
+        if (status) {
+            const guard:Map<string, boolean> = new Map();
+            tokens.forEach(token => {
+                if (token.owner) {
+                    if (!this.actorAlreadyAdjusted(token, guard)) {
+                        this.toggleEffect(token, status).then(() => {});
+                    }
+                }
+            });
+        }
+    }
+
     private actorAlreadyAdjusted(token: any, guard:Map<string, boolean>):boolean {
         if (token.data.actorLink === true) {
             const actorId = token?.actor?.data?._id;
@@ -151,6 +170,45 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
                 if (token.owner) {
                     if (!this.actorAlreadyAdjusted(token, guard)) {
                         if (this.has(token, hidden)) {
+                            this.toggleEffect(token, hidden);
+                        }
+                    }
+                }
+            })
+        }
+    }
+    
+    /**
+     * Toggle the hidden condition on systems that support it.
+     * @param tokens the tokens to hide/unhide
+     * @param value the optional value to use when hiding.  If ommitted, will roll stealth
+     */
+    public toggleHide(tokens: Array<Token>, value?:number) {
+        if (this._system.hasStealth()) {
+            let hidden = this._system.effectsByCondition().get('hidden');
+            const guard:Map<string, boolean> = new Map();
+            tokens.forEach(token => {
+                if (token.owner) {
+                    if (!this.actorAlreadyAdjusted(token, guard)) {
+                        let stealth;
+                        if (value) {
+                            stealth = value;
+                        } else {
+                            stealth = this._system.rollStealth(token).roll().total;
+                        }
+                        if (this.has(token, hidden) === true) {
+                            this.toggleEffect(token, hidden);
+                        } else {
+                            if (!token.data) {
+                                token.data = {};
+                            }
+                            if (!token.data.flags) {
+                                token.data.flags = {};
+                            }
+                            if (!token.data.flags[Constants.MODULE_NAME]) {
+                                token.data.flags[Constants.MODULE_NAME] = {};
+                            }
+                            token.data.flags[Constants.MODULE_NAME]._ste = stealth;
                             this.toggleEffect(token, hidden);
                         }
                     }

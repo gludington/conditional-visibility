@@ -1,5 +1,8 @@
 # Changelog
 
+## [0.1.3]
+- Made functional with Foundry 0.7.x series
+
 ## [0.0.9]
 - Added Korean language support, courtesy of drdwing
   

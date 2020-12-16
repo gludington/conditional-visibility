@@ -29,8 +29,8 @@
       "path": "lang/ko.json"
     }
   ],
-  "minimumCoreVersion": "0.6.6",
-  "compatibleCoreVersion": "0.6.6",
+  "minimumCoreVersion": "0.7.6",
+  "compatibleCoreVersion": "0.7.6",
   "url": "https://github.com/gludington/conditional-visibility/",
     "manifest": "https://github.com/gludington/conditional-visibility/releases/download/@tagVersion@/module.json",
     "download": "https://github.com/gludington/conditional-visibility/releases/download/@tagVersion@/conditional-visibility-@tagVersion@.zip",

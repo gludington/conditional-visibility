@@ -1,0 +1,33 @@
+{
+    "CONVIS.settings.autoStealth.name": "Se cacher automatiquement sur un jet de discrétion réussie",
+    "CONVIS.settings.autoStealth.hint": "Sur les systèmes de jeu pris en charge, définissez la condition cachée sur le jet de discrétion d'un jeton",
+
+    "CONVIS.popup.dismissuntilupdated": "Ignorer jusqu'à la prochaine mise à jour",
+    "CONVIS.popup.close": "Fermé",
+    "CONVIS.popup.version0910.1":"Un Compendium fait désormais partie de ce module, pour ceux qui souhaitent utiliser des macros au lieu d'icônes de conditions pour appliquer des conditions, ou les appliquer en masse.",
+    "CONVIS.popup.version0910.2":"Il existe également un script qui s'efforce de migrer les jetons du modèle Foundry 0.6.x vers le modèle Foundry 0.7, même si vous devrez peut-être réappliquer certains effets.",
+    "CONVIS.popup.version0910.3":"L'utilisation de ces scripts comme macros nécessitera l'installation du module Furnace, car ils sont asynchrones",
+
+    "CONVIS.help.readmeat": "Plus d'instructions peuvent être consultées sur ",
+    "CONVIS.help.gamesystem": "système de jeu",
+    "CONVIS.help.hasStealth": "est discret",
+    "CONVIS.help.availableconditions": "Conditions disponibles",
+
+    "CONVIS.unsupportedsystem": "La Condition Visibilité n'est pas supporté par le système {system}, car il a son propre mécanisme de condition. Les problèmes (en particulier les demandes d'extraction) sont les bienvenus",
+    "CONVIS.ExtraSenseInstructions": "Des sens supplémentaires qui peuvent améliorer la vision",
+    "CONVIS.seeinvisible":"Vois l'invisible",
+    "CONVIS.blindsight": "Vision aveugle",
+    "CONVIS.tremorsense":"Sentir les vibrations",
+    "CONVIS.devilssight":"Vision des Diables",
+    "CONVIS.truesight":"Vision véritable",
+
+    "CONVIS.invisible":"Invisibilité",
+    "CONVIS.obscured":"Obscurcité",
+    "CONVIS.indarkness":"Ténébres",
+    "CONVIS.hidden":"Caché",
+    
+    "CONVIS.stealth.not.supported": "La condition Visibilité ne supporte pas les conditions Cachés/Discrétion pour ce système {sysid}",
+    "CONVIS.currentstealth":"Discrétion actuelle",
+    "CONVIS.stealthroll":"Jet de discrétion",
+    "CONVIS.stealthrolldescription":"Cette valeur sera comparée à la perception passive tant que le jeton se cache. Les entrées non numériques entraîneront la prise de la valeur initiale."
+}

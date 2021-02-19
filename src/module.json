@@ -27,6 +27,11 @@
       "lang": "ko",
       "name": "Korean",
       "path": "lang/ko.json"
+    },
+    {
+      "lang": "fr",
+      "name": "Français",
+      "path": "lang/fr.json"
     }
   ],
   "minimumCoreVersion": "0.7.6",

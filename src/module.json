@@ -2,19 +2,33 @@
   "name": "conditional-visibility",
   "title": "Conditional Visibility",
   "description": "Hide tokens from some players, but not others, based on the senses the players have. Uses unknown, newspaper, and foggy icons made by <a href=\"https://www.flaticon.com/authors/freepik\" title=\"Freepik\">Freepik</a>, from <a href=\"https://www.flaticon.com/\" title=\"Flaticon\"> www.flaticon.com</a>. Moon icon made by <a href=\"https://www.flaticon.com/authors/iconixar\" title=\"iconixar\">iconixar</a> from <a href=\"https://www.flaticon.com/\" title=\"Flaticon\"> www.flaticon.com</a>",
-  "version": "@tagVersion@",
+  "version": "0.1.5",
   "author": "Greg Ludington",
-  "scripts": [],
-  "esmodules": ["conditional-visibility.js"],
-  "styles": ["templates/conditional-visibility.css"],
-  "packs": [
+  "type": "module",
+  "socket": true,
+  "includes": [
+    "./assets/**",
+    "./lang/**",
+    "./scripts/**",
+    "./styles/**",
+    "./templates/**",
+    "./module.json",
+    "./README.md",
+    "./icons/**",
+    "./packs/**"
+  ],
+  "media": [
     {
-      "name": "Conditional Visibility",
-      "label": "Conditional Visibility",
-      "path": "./packs/visibility-scripts.db",
-      "module": "world",
-      "entity": "Macro",
-      "lang": []
+      "type": "icon",
+      "location": ""
+    },
+    {
+      "type": "cover",
+      "location": ""
+    },
+    {
+      "type": "screenshot",
+      "location": ""
     }
   ],
   "languages": [
@@ -29,13 +43,37 @@
       "path": "lang/ko.json"
     }
   ],
-  "minimumCoreVersion": "0.7.6",
-  "compatibleCoreVersion": "0.7.6",
-  "url": "https://github.com/gludington/conditional-visibility/",
-    "manifest": "https://github.com/gludington/conditional-visibility/releases/download/@tagVersion@/module.json",
-    "download": "https://github.com/gludington/conditional-visibility/releases/download/@tagVersion@/conditional-visibility-@tagVersion@.zip",
-    "changelog": "https://github.com/gludington/conditional-visibility/blob/master/CHANGELOG.md",
-    "readme": "https://github.com/gludington/conditional-visibility/blob/master/README.md",
-    "license": "",
-    "bugs": ""
+  "scripts": [],
+  "esmodules": [
+    "conditional-visibility.js"
+  ],
+  "styles": [
+    "templates/conditional-visibility.css"
+  ],
+  "packs": [
+    {
+      "name": "Conditional Visibility",
+      "label": "Conditional Visibility",
+      "path": "./packs/visibility-scripts.db",
+      "module": "world",
+      "entity": "Macro",
+      "lang": []
+    }
+  ],
+  
+  "minimumCoreVersion": "0.7.9",
+  "compatibleCoreVersion": "0.7.9",
+  "manifestPlusVersion": "1.0.0",
+  "url": "https://github.com/gludington/conditional-visibility",
+  "readme": "https://raw.githubusercontent.com/gludington/conditional-visibility/master/README.md",
+  "manifest": "https://raw.githubusercontent.com/gludington/conditional-visibility/master/src/module.json",
+  "download": "https://raw.githubusercontent.com/gludington/conditional-visibility/master/package/conditional-visibility-v0.1.5.zip",
+  "changelog": "https://raw.githubusercontent.com/gludington/conditional-visibility/master/CHANGELOG.md",
+  "bugs": "https://github.com/gludington/conditional-visibility/issues",
+  "allowBugReporter": true,
+  "dependencies": [
+    {
+      "name": "lib-wrapper"
+    }
+  ]
 }

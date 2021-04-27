@@ -1,22 +1,30 @@
-![https://img.shields.io/badge/Foundry%20VTT-0.7.6%2B-green](https://img.shields.io/badge/Foundry%20VTT-0.7.6%2B-green)
+![https://img.shields.io/badge/Foundry%20VTT-0.7.9%2B-green](https://img.shields.io/badge/Foundry%20VTT-0.7.9%2B-green)
 
 # conditional-visibility
-**Author**: Greg Ludington  
 
-## Notes on FoundryVTT 0.75
-This module is unfortunately not compatible with 0.75 at this time, as there have been changes in the rendering system that make the methods used in this module incompatible.  There is an issue both in this module at over on the Foundry tracker discussing this, and I hope to bring this module forward, but at this time, there is no simple path.
-
-[Installation](#Installation)
-
-[Module Manifest](https://github.com/gludington/conditional-visibility/releases/download/v0.1.4/module.json)
-
-[Changelog](https://github.com/gludington/conditional-visibility/blob/master/CHANGELOG.md)
+**Author**: Greg Ludington
 
 Invisible Stalkers should only be seen by players that have cast See Invisibility.  Stealthy Goblins should only be seen by players with high perception.
 And when that Drow casts Darkness, players should need Devil's Sight to see any tokens inside.
 
 Conditional Visibility allows you to set conditions on tokens that will display them only to players whose senses meet the conditions necessary to see
 the token.
+
+## Installation
+
+It's always easiest to install modules from the in game add-on browser.
+
+To install this module manually:
+1.  Inside the Foundry "Configuration and Setup" screen, click "Add-on Modules"
+2.  Click "Install Module"
+3.  In the "Manifest URL" field, paste the following url:
+`https://raw.githubusercontent.com/gludington/conditional-visibility/master/src/module.json`
+4.  Click 'Install' and wait for installation to complete
+5.  Don't forget to enable the module in game using the "Manage Module" button
+
+### libWrapper
+
+This module uses the [libWrapper](https://github.com/ruipin/fvtt-lib-wrapper) library for wrapping core methods. It is a hard dependency and it is recommended for the best experience and compatibility with other modules.
 
 ## Usage
 
@@ -25,12 +33,12 @@ the token.
 It does not work for game systems that use their own condition systems, though discussion (and pull requests!) are certainly welcomed
 from those more familiar with those systems.  Pathfinder 2e has partial support now, using the system's default Invisible condition.
 
-![Conditions Panel](https://raw.githubusercontent.com/gludington/conditional-visibility/master/src/support/conditions.png)
+![Conditions Panel](https://raw.githubusercontent.com/gludington/conditional-visibility/master/support/conditions.png)
 
 ### Invisible, Obscured, or Magical Darkness
 When a token has one of these conditions, it can only be seen by a token with the proper senses configured in their Vision panel.
 
-![Vision Panel](https://raw.githubusercontent.com/gludington/conditional-visibility/master/src/support/visionControls.png)
+![Vision Panel](https://raw.githubusercontent.com/gludington/conditional-visibility/master/support/visionControls.png)
 
 Put it together, it looks like this (click to play on YouTube):
 
@@ -73,7 +81,7 @@ The *hidden* condition requires system specific rules, and so uses a different s
 #### Auto-applied from Stealth Rolls
 Conditional Visibility contains an setting to auto-apply the hidden condition based on a stealth roll.  Currently only 5e; again, contributions for other systems are welcomed.
 
-![Vision Panel](https://raw.githubusercontent.com/gludington/conditional-visibility/master/src/support/autoStealth.png)
+![Vision Panel](https://raw.githubusercontent.com/gludington/conditional-visibility/master/support/autoStealth.png)
 
 When this setting is true, then rolling stealth from that token's character sheet will apply the hidden condition based on the value of that roll.
 
@@ -108,15 +116,24 @@ Hidden (5e only)
 
 * modules/conditional-visibility/icons/newspaper.svg
 
-## Issues/Feedback
-
-You can create an issue here: [Issue Log](https://github.com/gludington/conditional-visibility/issues)
-
 # Known Issues
 * Pathfinder 2e supports only the "Invisible" condition.
 * Will not work if the hide regular conditions options of Combat Utility Belt is checked, as it hides the required Conditional Visibility conditions
 
-## Attributions
+## [Changelog](./changelog.md)
+
+## Issues
+
+Any issues, bugs, or feature requests are always welcome to be reported directly to the [Issue Tracker](https://github.com/gludington/conditional-visibility/issues ), or using the [Bug Reporter Module](https://foundryvtt.com/packages/bug-reporter/).
+
+## Acknowledgements
+
+Bootstrapped with League of Extraordinary FoundryVTT Developers  [foundry-vtt-types](https://github.com/League-of-Foundry-Developers/foundry-vtt-types).
+
 **Icons by**
 * unknown.svg, newspaper.svg, and foggy.svg icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a>, from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>
 * moon.svg icon made by <a href="https://www.flaticon.com/authors/iconixar" title="iconixar">iconixar</a> from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>
+
+## Credit
+
+Thanks to anyone who helps me with this code! I appreciate the user community's feedback on this project!

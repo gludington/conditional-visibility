@@ -45,7 +45,8 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
                         title: "Conditional Visibility",
                         content: content,
                         buttons: {},
-                        close: () => console.log("This always is logged no matter which option is chosen")
+                        close: () => console.log("This always is logged no matter which option is chosen"),
+                        default: ""
                        });
                        d.render(true);
                 });
@@ -126,7 +127,7 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
         if (this._system.effectsByCondition().has('hidden')) {
             let hidden = this._system.effectsByCondition().get('hidden');
             const guard:Map<string, boolean> = new Map();
-            tokens.forEach(token => {    
+            tokens.forEach((token:Token) => {    
                 if (token.owner) {
                     if (!this.actorAlreadyAdjusted(token, guard)) {
                         let stealth;
@@ -141,7 +142,7 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
                             token.update({flags: update });
                         } else {
                             if (!token.data) {
-                                token.data = {};
+                                token.data = new Token().data;
                             }
                             if (!token.data.flags) {
                                 token.data.flags = {};
@@ -149,6 +150,7 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
                             if (!token.data.flags[Constants.MODULE_NAME]) {
                                 token.data.flags[Constants.MODULE_NAME] = {};
                             }
+                            //@ts-ignore
                             token.data.flags[Constants.MODULE_NAME]._ste = stealth;
                             this.toggleEffect(token, hidden);
                         }
@@ -200,7 +202,7 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
                             this.toggleEffect(token, hidden);
                         } else {
                             if (!token.data) {
-                                token.data = {};
+                                token.data = new Token().data;
                             }
                             if (!token.data.flags) {
                                 token.data.flags = {};
@@ -208,6 +210,7 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
                             if (!token.data.flags[Constants.MODULE_NAME]) {
                                 token.data.flags[Constants.MODULE_NAME] = {};
                             }
+                            //@ts-ignore
                             token.data.flags[Constants.MODULE_NAME]._ste = stealth;
                             this.toggleEffect(token, hidden);
                         }

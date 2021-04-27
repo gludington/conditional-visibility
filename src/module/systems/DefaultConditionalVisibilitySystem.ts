@@ -108,22 +108,32 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
         const flags: any = {};
         flags.seeinvisible = srcTokens.some(sTok => {
             return sTok.data.flags[Constants.MODULE_NAME] &&
+                //@ts-ignore
                 (sTok.data.flags[Constants.MODULE_NAME].seeinvisible === true
-                    || sTok.data.flags[Constants.MODULE_NAME].blindsight === true
-                    || sTok.data.flags[Constants.MODULE_NAME].tremorsense === true
-                    || sTok.data.flags[Constants.MODULE_NAME].truesight === true);
+                //@ts-ignore
+                || sTok.data.flags[Constants.MODULE_NAME].blindsight === true
+                //@ts-ignore
+                || sTok.data.flags[Constants.MODULE_NAME].tremorsense === true
+                //@ts-ignore
+                || sTok.data.flags[Constants.MODULE_NAME].truesight === true);
         });
         flags.seeobscured = srcTokens.some(sTok => {
             return sTok.data.flags[Constants.MODULE_NAME] &&
+                //@ts-ignore
                 (sTok.data.flags[Constants.MODULE_NAME].blindsight === true
-                    || sTok.data.flags[Constants.MODULE_NAME].tremorsense === true);
+                //@ts-ignore
+                || sTok.data.flags[Constants.MODULE_NAME].tremorsense === true);
         });
         flags.seeindarkness = srcTokens.some(sTok => {
             return sTok.data.flags[Constants.MODULE_NAME] &&
+                //@ts-ignore
                 (sTok.data.flags[Constants.MODULE_NAME].blindsight === true
-                    || sTok.data.flags[Constants.MODULE_NAME].devilssight === true
-                    || sTok.data.flags[Constants.MODULE_NAME].tremorsense === true
-                    || sTok.data.flags[Constants.MODULE_NAME].truesight === true);
+                //@ts-ignore
+                || sTok.data.flags[Constants.MODULE_NAME].devilssight === true
+                //@ts-ignore
+                || sTok.data.flags[Constants.MODULE_NAME].tremorsense === true
+                //@ts-ignore
+                || sTok.data.flags[Constants.MODULE_NAME].truesight === true);
         });
         return flags;
     }
@@ -247,10 +257,10 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
              }
         }
 
-        const content = await renderTemplate("modules/conditional-visibility/templates/stealth_hud.html", { initialValue: result });
+        const content = await renderTemplate("modules/"+Constants.MODULE_NAME+"/templates/stealth_hud.html", { initialValue: result });
         return new Promise((resolve, reject) => {   
             let hud = new Dialog({
-                title: game.i18n.localize('CONVIS.hidden'),
+                title: <string>game.i18n.localize('CONVIS.hidden'),
                 content: content,
                 buttons: {
                     one: {
@@ -275,7 +285,8 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
                         } else {
                             resolve(val);
                         }
-                }
+                },
+                default: ""
             });
             hud.render(true);
         });

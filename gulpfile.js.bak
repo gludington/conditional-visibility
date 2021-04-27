@@ -140,31 +140,10 @@ function buildTS() {
 }
 
 /**
- * Build JavaScript
- */
- function buildJS() {
-	return gulp.src('src/**/*.js').pipe(gulp.dest('dist'));
-}
-
-/**
- * Build JavaScript
- */
-function buildMJS() {
-	return gulp.src('src/**/*.mjs').pipe(gulp.dest('dist'));
-}
-
-/**
- * Build JavaScript
- */
- function buildCSS() {
-	return gulp.src('src/**/*.css').pipe(gulp.dest('dist'));
-}
-
-/**
  * Build Less
  */
 function buildLess() {
-	return gulp.src('src/**/*.less').pipe(less()).pipe(gulp.dest('dist'));
+	return gulp.src('src/*.less').pipe(less()).pipe(gulp.dest('dist'));
 }
 
 /**
@@ -172,7 +151,7 @@ function buildLess() {
  */
 function buildSASS() {
 	return gulp
-		.src('src/**/*.scss')
+		.src('src/*.scss')
 		.pipe(sass().on('error', sass.logError))
 		.pipe(gulp.dest('dist'));
 }
@@ -190,7 +169,7 @@ async function copyFiles() {
 		'icons',
 		'module.json',
 		'system.json',
-		'template.json'
+		'template.json',
 	];
 	try {
 		for (const file of statics) {
@@ -211,9 +190,6 @@ function buildWatch() {
 	gulp.watch('src/**/*.ts', { ignoreInitial: false }, buildTS);
 	gulp.watch('src/**/*.less', { ignoreInitial: false }, buildLess);
 	gulp.watch('src/**/*.scss', { ignoreInitial: false }, buildSASS);
-	gulp.watch('src/**/*.js', { ignoreInitial: false }, buildJS);
-	gulp.watch('src/**/*.mjs', { ignoreInitial: false }, buildMJS);
-	gulp.watch('src/**/*.css', { ignoreInitial: false }, buildCSS);
 	gulp.watch(
 		['src/fonts', 'src/lang', 'src/templates', 'src/*.json'],
 		{ ignoreInitial: false },
@@ -239,7 +215,6 @@ async function clean() {
 			'lang',
 			'templates',
 			'packs',
-			'icons',
 			'assets',
 			'module',
 			`${name}.js`,
@@ -515,7 +490,7 @@ function gitTag() {
 
 const execGit = gulp.series(gitAdd, gitCommit, gitTag);
 
-const execBuild = gulp.parallel(buildTS, buildJS, buildMJS, buildCSS, buildLess, buildSASS, copyFiles);
+const execBuild = gulp.parallel(buildTS, buildLess, buildSASS, copyFiles);
 
 exports.build = gulp.series(clean, execBuild);
 exports.watch = buildWatch;

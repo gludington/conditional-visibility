@@ -11,7 +11,7 @@
  */
 
 // Import TypeScript modules
-import { registerSettings } from './module/settings.js';
+import { getCanvas, registerSettings } from './module/settings.js';
 import { preloadTemplates } from './module/preloadTemplates.js';
 import { ConditionalVisibility } from './module/ConditionalVisibility';
 import * as Constants from './module/Constants';
@@ -48,11 +48,12 @@ Hooks.once('setup', function() {
 Hooks.once('ready', async function() {
 	// Do anything once the module is ready
 	console.log(Constants.MODULE_NAME + ' | Ready ' + Constants.MODULE_NAME);
-    const sightLayer = canvas.layers.find(layer => {
+    const sightLayer = getCanvas().layers.find(layer => {
+        //@ts-ignore
         return layer.__proto__.constructor.name === 'SightLayer'
     });
 
-    ConditionalVisibility.initialize(sightLayer, canvas.hud.token);	
+    ConditionalVisibility.initialize(sightLayer, getCanvas().hud.token);	
 });
 
 

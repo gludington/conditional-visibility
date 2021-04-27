@@ -5,6 +5,7 @@ import { DefaultConditionalVisibilitySystem } from "./systems/DefaultConditional
 import * as Constants from './Constants';
 import { ConditionalVisibilityFacade, ConditionalVisibilityFacadeImpl } from "./ConditionalVisibilityFacade";
 import { MODULE_NAME } from "./Constants";
+import { getCanvas } from "./settings";
 
 export class ConditionalVisibility {
 
@@ -29,7 +30,7 @@ export class ConditionalVisibility {
                 if (isVisible === false) {
                     return false;
                 }
-                if (game.user.isGM || this.owner || !canvas.sight.tokenVision) {
+                if (game.user.isGM || this.owner || !getCanvas().sight.tokenVision) {
                     return true;
                 }
                 return ConditionalVisibility.canSee(this);
@@ -112,7 +113,7 @@ export class ConditionalVisibility {
             if (this._sightLayer.sources) {
                 for (const key of this._sightLayer.sources.keys()) {
                     if (key.startsWith("Token.")) {
-                        const tok = canvas.tokens.placeables.find(tok => tok.id === key.substring("Token.".length))
+                        const tok = getCanvas().tokens.placeables.find(tok => tok.id === key.substring("Token.".length))
                         if (tok) {
                             srcTokens.push(tok);
                         }
@@ -139,7 +140,7 @@ export class ConditionalVisibility {
 
             realRestrictVisibility.call(this._sightLayer);
 
-            const restricted = canvas.tokens.placeables.filter(token => token.visible);
+            const restricted = getCanvas().tokens.placeables.filter(token => token.visible);
             
             if (restricted && restricted.length > 0) {
                 let srcTokens = this._getSrcTokens();
@@ -175,11 +176,13 @@ export class ConditionalVisibility {
         // first time through, and cannot be forced in setup
         this.draw();
 
+        // REMOVED
+        /*
         const popupVersion = game.settings.get(MODULE_NAME, "popup-version");
         const currentVersion = game.modules.get(MODULE_NAME).data.version === "@tagVersion@" ? "0.0.9" : game.modules.get(MODULE_NAME).data.version;
 
         if (this.isSemvarGreater(currentVersion, popupVersion)) {
-        renderTemplate("modules/conditional-visibility/templates/version_popup.html", {
+        renderTemplate("modules/"+MODULE_NAME+"/templates/version_popup.html", {
             version: currentVersion,
         }).then(content => {
             let d = new Dialog({
@@ -195,16 +198,18 @@ export class ConditionalVisibility {
                         icon: '<i class="fas fa-times"></i>',
                         label: game.i18n.localize('CONVIS.popup.close')
                        }
-                }
+                },
+                default: ""
                });
                d.render(true);
             });
         }
+        */
     }
 
     public onRenderTokenConfig(tokenConfig: any, jQuery:JQuery, data: any) {
         const visionTab = $('div.tab[data-tab="vision"]');
-        renderTemplate("modules/conditional-visibility/templates/extra_senses.html", tokenConfig.object.data.flags[Constants.MODULE_NAME] || {})
+        renderTemplate("modules/"+MODULE_NAME+"/templates/extra_senses.html", tokenConfig.object.data.flags[Constants.MODULE_NAME] || {})
             .then(extraSenses => {
                 visionTab.append(extraSenses);
             });

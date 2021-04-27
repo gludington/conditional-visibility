@@ -2,6 +2,7 @@ import { StatusEffect } from '../Constants';
 import { ConditionalVisibilityFacade } from '../ConditionalVisibilityFacade';
 import * as Constants from '../Constants';
 import { DefaultConditionalVisibilitySystem } from "./DefaultConditionalVisibilitySystem";
+import { getCanvas } from '../settings';
 
 /**
  * Conditional visibility system for dnd5e.  Uses the same base conditions, plus adds hidden, which compares
@@ -34,7 +35,7 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
                 && message.data.flags.dnd5e.roll.skillId === 'ste') {
                     if (message.data.speaker.token) {
                         const tokenId = message.data.speaker.token;
-                        const token = canvas.tokens.placeables.find(tok => tok.id === tokenId);
+                        const token = getCanvas().tokens.placeables.find(tok => tok.id === tokenId);
                         if (token && token.owner) {
                             facade.hide([token], message._roll.total);
                         }
@@ -67,7 +68,9 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
     protected seeContested(target: Token, visionCapabilities: any): boolean {
         const hidden = this.hasStatus(target, 'hidden', 'newspaper.svg');
         if (hidden === true) {
+            //@ts-ignore
             if (target.data.flags[Constants.MODULE_NAME] && target.data.flags[Constants.MODULE_NAME]._ste) {
+                 //@ts-ignore
                 const stealth = target.data.flags[Constants.MODULE_NAME]._ste;
                 if (visionCapabilities.prc < stealth) {
                     return false;

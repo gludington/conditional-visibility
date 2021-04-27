@@ -1,9 +1,2 @@
 node_modules
-foundryconfig.json
-dist
-package
-.vscode
-.DS_Store
-**/.DS_Store
-coverage
-*.code-workspace
+/dist

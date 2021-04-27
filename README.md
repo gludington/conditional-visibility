@@ -116,7 +116,7 @@ Hidden (5e only)
 * Pathfinder 2e supports only the "Invisible" condition.
 * Will not work if the hide regular conditions options of Combat Utility Belt is checked, as it hides the required Conditional Visibility conditions
 
-## [Changelog](./changelog.md)
+## [Changelog](./CHANGELOG.md)
 
 ## Issues
 

@@ -18,8 +18,8 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
         effects.push({
             id: 'conditional-visibility.hidden',
             visibilityId: 'hidden',
-            label: 'CONVIS.hidden',
-            icon: 'modules/conditional-visibility/icons/newspaper.svg'
+            label: game.i18n.localize('conditional-visibility.hidden'),
+            icon: 'modules/'+Constants.MODULE_NAME+'/icons/newspaper.svg'
         });
         return effects;
     }

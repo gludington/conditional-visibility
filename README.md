@@ -1,6 +1,6 @@
 ![https://img.shields.io/badge/Foundry%20VTT-0.7.9%2B-green](https://img.shields.io/badge/Foundry%20VTT-0.7.9%2B-green)
 
-# conditional-visibility
+# Conditional Visibility (maintenance version) 
 
 **Author**: Greg Ludington
 
@@ -21,10 +21,6 @@ To install this module manually:
 `https://raw.githubusercontent.com/gludington/conditional-visibility/master/src/module.json`
 4.  Click 'Install' and wait for installation to complete
 5.  Don't forget to enable the module in game using the "Manage Module" button
-
-### libWrapper
-
-This module uses the [libWrapper](https://github.com/ruipin/fvtt-lib-wrapper) library for wrapping core methods. It is a hard dependency and it is recommended for the best experience and compatibility with other modules.
 
 ## Usage
 

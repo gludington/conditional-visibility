@@ -191,12 +191,12 @@ export class ConditionalVisibility {
                 buttons: {
                     one: {
                         icon: '<i class="fas fa-check"></i>',
-                        label: game.i18n.localize('CONVIS.popup.dismissuntilupdated'),
+                        label: game.i18n.localize('conditional-visibility.popup.dismissuntilupdated'),
                         callback: () => game.settings.set(MODULE_NAME, 'popup-version', currentVersion)
                        },
                        two: {
                         icon: '<i class="fas fa-times"></i>',
-                        label: game.i18n.localize('CONVIS.popup.close')
+                        label: game.i18n.localize('conditional-visibility.popup.close')
                        }
                 },
                 default: ""
@@ -228,7 +228,7 @@ export class ConditionalVisibility {
                         if (data.flags && data.flags[Constants.MODULE_NAME] 
                             && data.flags[Constants.MODULE_NAME]._ste && !isNaN(parseInt(data.flags[Constants.MODULE_NAME]._ste))) {
                             //@ts-ignore
-                            title += ' ' + game.i18n.localize('CONVIS.currentstealth') + ': ' + data.flags[Constants.MODULE_NAME]._ste;
+                            title += ' ' + game.i18n.localize('conditional-visibility.currentstealth') + ': ' + data.flags[Constants.MODULE_NAME]._ste;
                         }
                     } else {
                         //@ts-ignore

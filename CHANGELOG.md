@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.5]
+
+-  Made functional with Foundry 0.7.9
+-  Bootstrapped with League of Extraordinary FoundryVTT Developers  [foundry-vtt-types](https://github.com/League-of-Foundry-Developers/foundry-vtt-types).
+
 ## [0.1.4]
 - Made functional with Foundry 0.7.x series
 

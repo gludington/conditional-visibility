@@ -20,8 +20,8 @@ import * as Constants from "./Constants";
 export const registerSettings = function() {
 
 	game.settings.register(Constants.MODULE_NAME, "autoStealth", {
-		name: game.i18n.localize("CONVIS.settings.autoStealth.name"),
-		hint: game.i18n.localize("CONVIS.settings.autoStealth.hint"),
+		name: game.i18n.localize("conditional-visibility.settings.autoStealth.name"),
+		hint: game.i18n.localize("conditional-visibility.settings.autoStealth.hint"),
 		scope: "world",
 		config: true,
 		type: Boolean,

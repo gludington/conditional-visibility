@@ -15,6 +15,7 @@ import { getCanvas, registerSettings } from './module/settings.js';
 import { preloadTemplates } from './module/preloadTemplates.js';
 import { ConditionalVisibility } from './module/ConditionalVisibility';
 import * as Constants from './module/Constants';
+import { readyHooks } from './module/Hooks.js';
 
 declare global {
     interface Window { Senses: ConditionalVisibility }
@@ -47,35 +48,5 @@ Hooks.once('setup', function() {
 /* ------------------------------------ */
 Hooks.once('ready', async function() {
 	// Do anything once the module is ready
-	console.log(Constants.MODULE_NAME + ' | Ready ' + Constants.MODULE_NAME);
-    const sightLayer = getCanvas().layers.find(layer => {
-        //@ts-ignore
-        return layer.__proto__.constructor.name === 'SightLayer'
-    });
-
-    ConditionalVisibility.initialize(sightLayer, getCanvas().hud.token);	
+    readyHooks();
 });
-
-
-// Add any additional hooks if necessary
-Hooks.on("renderTokenConfig", (tokenConfig, html, data) => {
-    ConditionalVisibility.INSTANCE.onRenderTokenConfig(tokenConfig, html, data);
-});
-
-Hooks.on("renderTokenHUD", (app, html, data) => {
-    ConditionalVisibility.INSTANCE.onRenderTokenHUD(app, html, data);
-});
-
-//synthetic actors go through this
-Hooks.on("preUpdateToken", (scene, token, update, options, userId) => {
-    ConditionalVisibility.INSTANCE.onPreUpdateToken(scene, token, update, options, userId);
-})
-
-//real actors go through this
-Hooks.on("preCreateActiveEffect", (actor, effect, options, userId) => {
-    ConditionalVisibility.INSTANCE.onPreCreateActiveEffect(actor, effect, options, userId);
-})
-
-Hooks.on("preDeleteActiveEffect", (actor, effect, options, userId) => {
-    ConditionalVisibility.INSTANCE.onPreDeleteActiveEffect(actor, effect, options, userId);
-})

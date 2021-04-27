@@ -34,7 +34,7 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
             this._system.effectsByCondition().forEach((value, key) => {
                 conditions.push({ name: key, icon: value.icon});
             })
-            renderTemplate("modules/conditional-visibility/templates/help_dialog.html", {
+            renderTemplate("modules/"+Constants.MODULE_NAME+"/templates/help_dialog.html", {
                 gamesystem: game.system.id,
                 hasStealth: this._system.hasStealth(),
                 autoStealth: game.settings.get(Constants.MODULE_NAME, "autoStealth"),
@@ -121,7 +121,7 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
      */
     public hide(tokens:Array<Token>, value?: number) {
         if (!this._system.hasStealth()) {
-            ui.notifications.error(game.i18n.format("CONVIS.stealth.not.supported", {sysid: game.system.id}));
+            ui.notifications.error(game.i18n.format("conditional-visibility.stealth.not.supported", {sysid: game.system.id}));
             return;
         } 
         if (this._system.effectsByCondition().has('hidden')) {

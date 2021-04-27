@@ -14,18 +14,18 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
         { 
             id: MODULE_NAME + '.invisible',
             visibilityId: 'invisible',
-            label: 'CONVIS.invisible',
-            icon:'modules/conditional-visibility/icons/unknown.svg'
+            label: game.i18n.localize('conditional-visibility.invisible'),
+            icon:'modules/'+MODULE_NAME+'/icons/unknown.svg'
         }, {
             id: MODULE_NAME + '.obscured',
             visibilityId: 'obscured',
-            label: 'CONVIS.obscured',
-            icon: 'modules/conditional-visibility/icons/foggy.svg',
+            label: game.i18n.localize('conditional-visibility.obscured'),
+            icon: 'modules/'+MODULE_NAME+'/icons/foggy.svg',
          }, {
             id: MODULE_NAME + '.indarkness',
             visibilityId: 'indarkness',
-            label: 'CONVIS.indarkness',
-            icon: 'modules/conditional-visibility/icons/moon.svg'
+            label: game.i18n.localize('conditional-visibility.indarkness'),
+            icon: 'modules/'+MODULE_NAME+'/icons/moon.svg'
         }
     );
     
@@ -260,7 +260,7 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
         const content = await renderTemplate("modules/"+Constants.MODULE_NAME+"/templates/stealth_hud.html", { initialValue: result });
         return new Promise((resolve, reject) => {   
             let hud = new Dialog({
-                title: <string>game.i18n.localize('CONVIS.hidden'),
+                title: <string>game.i18n.localize('conditional-visibility.hidden'),
                 content: content,
                 buttons: {
                     one: {

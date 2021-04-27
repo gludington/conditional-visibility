@@ -10,7 +10,7 @@ export class ConditionalVisibilitySystemPf2e extends DefaultConditionalVisibilit
         { 
             id: MODULE_NAME + '.invisible',
             visibilityId: 'invisible',
-            label: 'CONVIS.invisible',
+            label: game.i18n.localize('conditional-visibility.invisible'),
             icon:'systems/pf2e/icons/conditions/invisible.png'
         }
     );

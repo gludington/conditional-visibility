@@ -29,12 +29,12 @@ To install this module manually:
 It does not work for game systems that use their own condition systems, though discussion (and pull requests!) are certainly welcomed
 from those more familiar with those systems.  Pathfinder 2e has partial support now, using the system's default Invisible condition.
 
-![Conditions Panel](https://raw.githubusercontent.com/gludington/conditional-visibility/master/support/conditions.png)
+![Conditions Panel](./support/conditions.png)
 
 ### Invisible, Obscured, or Magical Darkness
 When a token has one of these conditions, it can only be seen by a token with the proper senses configured in their Vision panel.
 
-![Vision Panel](https://raw.githubusercontent.com/gludington/conditional-visibility/master/support/visionControls.png)
+![Vision Panel](./support/visionControls.png)
 
 Put it together, it looks like this (click to play on YouTube):
 
@@ -77,7 +77,7 @@ The *hidden* condition requires system specific rules, and so uses a different s
 #### Auto-applied from Stealth Rolls
 Conditional Visibility contains an setting to auto-apply the hidden condition based on a stealth roll.  Currently only 5e; again, contributions for other systems are welcomed.
 
-![Vision Panel](https://raw.githubusercontent.com/gludington/conditional-visibility/master/support/autoStealth.png)
+![Vision Panel](./support/autoStealth.png)
 
 When this setting is true, then rolling stealth from that token's character sheet will apply the hidden condition based on the value of that roll.
 

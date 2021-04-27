@@ -14,17 +14,17 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
         { 
             id: MODULE_NAME + '.invisible',
             visibilityId: 'invisible',
-            label: game.i18n.localize('conditional-visibility.invisible'),
+            label: 'conditional-visibility.invisible',
             icon:'modules/'+MODULE_NAME+'/icons/unknown.svg'
         }, {
             id: MODULE_NAME + '.obscured',
             visibilityId: 'obscured',
-            label: game.i18n.localize('conditional-visibility.obscured'),
+            label: 'conditional-visibility.obscured',
             icon: 'modules/'+MODULE_NAME+'/icons/foggy.svg',
          }, {
             id: MODULE_NAME + '.indarkness',
             visibilityId: 'indarkness',
-            label: game.i18n.localize('conditional-visibility.indarkness'),
+            label: 'conditional-visibility.indarkness',
             icon: 'modules/'+MODULE_NAME+'/icons/moon.svg'
         }
     );

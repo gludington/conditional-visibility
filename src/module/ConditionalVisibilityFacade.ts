@@ -1,5 +1,5 @@
-import * as Constants from './Constants';
 import { ConditionalVisibility } from "./ConditionalVisibility";
+import { MODULE_NAME } from "./settings";
 import { ConditionalVisibilitySystem } from "./systems/ConditionalVisibilitySystem";
 import { ConditionalVisibilitySystemPf2e } from './systems/ConditionalVisibilitySystemPf2e';
 
@@ -34,10 +34,10 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
             this._system.effectsByCondition().forEach((value, key) => {
                 conditions.push({ name: key, icon: value.icon});
             })
-            renderTemplate("modules/"+Constants.MODULE_NAME+"/templates/help_dialog.html", {
+            renderTemplate("modules/"+MODULE_NAME+"/templates/help_dialog.html", {
                 gamesystem: game.system.id,
                 hasStealth: this._system.hasStealth(),
-                autoStealth: game.settings.get(Constants.MODULE_NAME, "autoStealth"),
+                autoStealth: game.settings.get(MODULE_NAME, "autoStealth"),
                 conditions: conditions
             })
                 .then(content => {
@@ -138,7 +138,7 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
                         }
                         if (this.has(token, hidden) === true) {
                             const update = { 'conditional-visibility': {}};
-                            update[Constants.MODULE_NAME]._ste = stealth;
+                            update[MODULE_NAME]._ste = stealth;
                             token.update({flags: update });
                         } else {
                             if (!token.data) {
@@ -147,11 +147,11 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
                             if (!token.data.flags) {
                                 token.data.flags = {};
                             }
-                            if (!token.data.flags[Constants.MODULE_NAME]) {
-                                token.data.flags[Constants.MODULE_NAME] = {};
+                            if (!token.data.flags[MODULE_NAME]) {
+                                token.data.flags[MODULE_NAME] = {};
                             }
                             //@ts-ignore
-                            token.data.flags[Constants.MODULE_NAME]._ste = stealth;
+                            token.data.flags[MODULE_NAME]._ste = stealth;
                             this.toggleEffect(token, hidden);
                         }
                     }
@@ -207,11 +207,11 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
                             if (!token.data.flags) {
                                 token.data.flags = {};
                             }
-                            if (!token.data.flags[Constants.MODULE_NAME]) {
-                                token.data.flags[Constants.MODULE_NAME] = {};
+                            if (!token.data.flags[MODULE_NAME]) {
+                                token.data.flags[MODULE_NAME] = {};
                             }
                             //@ts-ignore
-                            token.data.flags[Constants.MODULE_NAME]._ste = stealth;
+                            token.data.flags[MODULE_NAME]._ste = stealth;
                             this.toggleEffect(token, hidden);
                         }
                     }
@@ -226,7 +226,7 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
     }
 
     private has(token, condition):boolean {
-        const flags = token.data.actorLink ? token.actor?.data?.flags?.[Constants.MODULE_NAME] : token?.data?.flags?.[Constants.MODULE_NAME];
+        const flags = token.data.actorLink ? token.actor?.data?.flags?.[MODULE_NAME] : token?.data?.flags?.[MODULE_NAME];
         if (flags) {
             return flags[condition.visibilityId] === true;
         } else {

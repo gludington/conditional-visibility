@@ -1,4 +1,5 @@
-import { MODULE_NAME, StatusEffect } from '../Constants';
+import { i18n } from '../../conditional-visibility';
+import { MODULE_NAME, StatusEffect } from '../settings';
 import { DefaultConditionalVisibilitySystem } from "./DefaultConditionalVisibilitySystem";
 
 /**
@@ -10,7 +11,7 @@ export class ConditionalVisibilitySystemPf2e extends DefaultConditionalVisibilit
         { 
             id: MODULE_NAME + '.invisible',
             visibilityId: 'invisible',
-            label: 'conditional-visibility.invisible',
+            label: i18n(MODULE_NAME+'.invisible'),
             icon:'systems/pf2e/icons/conditions/invisible.png'
         }
     );

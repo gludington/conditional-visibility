@@ -1,11 +1,10 @@
 import { ConditionalVisibility } from "./ConditionalVisibility";
-import { getCanvas } from "./settings";
-import * as Constants from './Constants';
+import { getCanvas, MODULE_NAME } from "./settings";
 
 export let readyHooks = async () => {
 
   // setup all the hooks
-  console.log(Constants.MODULE_NAME + ' | Ready ' + Constants.MODULE_NAME);
+  console.log(MODULE_NAME + ' | Ready ' + MODULE_NAME);
   const sightLayer = getCanvas().layers.find(layer => {
       //@ts-ignore
       return layer.__proto__.constructor.name === 'SightLayer'

@@ -2,10 +2,8 @@ import { ConditionalVisibilitySystem5e } from "./systems/ConditionalVisibilitySy
 import { ConditionalVisibilitySystemPf2e } from "./systems/ConditionalVisibilitySystemPf2e";
 import { ConditionalVisibilitySystem } from "./systems/ConditionalVisibilitySystem";
 import { DefaultConditionalVisibilitySystem } from "./systems/DefaultConditionalVisibilitySystem";
-import * as Constants from './Constants';
 import { ConditionalVisibilityFacade, ConditionalVisibilityFacadeImpl } from "./ConditionalVisibilityFacade";
-import { MODULE_NAME } from "./Constants";
-import { getCanvas } from "./settings";
+import { getCanvas, MODULE_NAME, StatusEffect } from "./settings";
 
 export class ConditionalVisibility {
 
@@ -107,7 +105,7 @@ export class ConditionalVisibility {
     private constructor(sightLayer: any, tokenHud: TokenHUD) {
         this._conditionalVisibilitySystem = ConditionalVisibility.newSystem();
 
-        console.log(Constants.MODULE_NAME + " | starting against v0.7 or greater instance " + game.data.version);
+        console.log(MODULE_NAME + " | starting against v0.7 or greater instance " + game.data.version);
         this._getSrcTokens = () => {
             let srcTokens = new Array<Token>();
             if (this._sightLayer.sources) {
@@ -166,7 +164,7 @@ export class ConditionalVisibility {
 
         game.socket.on("modifyEmbeddedDocument", async (message) => {
             const result = message.result.some(result => {
-                return result?.flags?.[Constants.MODULE_NAME] || result?.actorData?.effects !== undefined;
+                return result?.flags?.[MODULE_NAME] || result?.actorData?.effects !== undefined;
             });
             if (result) {
                 await this.draw();
@@ -191,12 +189,12 @@ export class ConditionalVisibility {
                 buttons: {
                     one: {
                         icon: '<i class="fas fa-check"></i>',
-                        label: game.i18n.localize('conditional-visibility.popup.dismissuntilupdated'),
+                        label: game.i18n.localize(MODULE_NAME+'.popup.dismissuntilupdated'),
                         callback: () => game.settings.set(MODULE_NAME, 'popup-version', currentVersion)
                        },
                        two: {
                         icon: '<i class="fas fa-times"></i>',
-                        label: game.i18n.localize('conditional-visibility.popup.close')
+                        label: game.i18n.localize(MODULE_NAME+'.popup.close')
                        }
                 },
                 default: ""
@@ -209,7 +207,7 @@ export class ConditionalVisibility {
 
     public onRenderTokenConfig(tokenConfig: any, jQuery:JQuery, data: any) {
         const visionTab = $('div.tab[data-tab="vision"]');
-        renderTemplate("modules/"+MODULE_NAME+"/templates/extra_senses.html", tokenConfig.object.data.flags[Constants.MODULE_NAME] || {})
+        renderTemplate("modules/"+MODULE_NAME+"/templates/extra_senses.html", tokenConfig.object.data.flags[MODULE_NAME] || {})
             .then(extraSenses => {
                 visionTab.append(extraSenses);
             });
@@ -225,10 +223,10 @@ export class ConditionalVisibility {
                     if (systemEffects.get(src).visibilityId === 'hidden') {
                         //@ts-ignore
                         title = game.i18n.localize(systemEffects.get(src).label);
-                        if (data.flags && data.flags[Constants.MODULE_NAME] 
-                            && data.flags[Constants.MODULE_NAME]._ste && !isNaN(parseInt(data.flags[Constants.MODULE_NAME]._ste))) {
+                        if (data.flags && data.flags[MODULE_NAME] 
+                            && data.flags[MODULE_NAME]._ste && !isNaN(parseInt(data.flags[MODULE_NAME]._ste))) {
                             //@ts-ignore
-                            title += ' ' + game.i18n.localize('conditional-visibility.currentstealth') + ': ' + data.flags[Constants.MODULE_NAME]._ste;
+                            title += ' ' + game.i18n.localize(MODULE_NAME+'.currentstealth') + ': ' + data.flags[MODULE_NAME]._ste;
                         }
                     } else {
                         //@ts-ignore
@@ -240,16 +238,16 @@ export class ConditionalVisibility {
     }
 
     public onPreCreateActiveEffect(actor, effect, options, userId) {
-        const status:Constants.StatusEffect = this._conditionalVisibilitySystem.getEffectByIcon(effect);
+        const status:StatusEffect = this._conditionalVisibilitySystem.getEffectByIcon(effect);
         if (status) {
-            actor.setFlag(Constants.MODULE_NAME, status.visibilityId, true);
+            actor.setFlag(MODULE_NAME, status.visibilityId, true);
         }
     }
 
     public onPreDeleteActiveEffect(actor, effect, options, userId) {
-        const status:Constants.StatusEffect = this._conditionalVisibilitySystem.getEffectByIcon(effect);
+        const status:StatusEffect = this._conditionalVisibilitySystem.getEffectByIcon(effect);
         if (status) {
-            actor.unsetFlag(Constants.MODULE_NAME, status.visibilityId);
+            actor.unsetFlag(MODULE_NAME, status.visibilityId);
         }
     }
 
@@ -262,7 +260,7 @@ export class ConditionalVisibility {
             });
             //TODO- figure out active effects for this?
             effectsFromUpdate.forEach(effect => {
-                const status:Constants.StatusEffect = this._conditionalVisibilitySystem.getEffectByIcon(effect);
+                const status:StatusEffect = this._conditionalVisibilitySystem.getEffectByIcon(effect);
                 if (status) {
                     //effect.changeType = "add";
                     //effect.changes = [{

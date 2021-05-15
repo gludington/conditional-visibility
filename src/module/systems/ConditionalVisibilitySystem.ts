@@ -1,5 +1,5 @@
-import { StatusEffect } from "../Constants";
 import { ConditionalVisibilityFacade } from "../ConditionalVisibilityFacade";
+import { StatusEffect } from "../settings";
 
 /**
  * A ConditionalVisibilitySystem abstracts the parameters that would be specific to a game system, e.g. dnd5e might use stealth

@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "conditional-visibility",
-  "version": "0.1.5",
+  "version": "0.2.0",
   "description": "",
   "scripts": {
     "package": "gulp clean && gulp build && gulp package",

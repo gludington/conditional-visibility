@@ -1,7 +1,7 @@
+import { i18n } from '../../conditional-visibility';
 import { ConditionalVisibility } from '../ConditionalVisibility';
 import { ConditionalVisibilityFacade } from '../ConditionalVisibilityFacade';
-import { MODULE_NAME, StatusEffect } from '../Constants';
-import * as Constants from '../Constants';
+import { DEFAULT_STEALTH, MODULE_NAME, StatusEffect } from '../settings';
 import { ConditionalVisibilitySystem } from "./ConditionalVisibilitySystem";
 import { ConditionalVisibilitySystemPf2e } from './ConditionalVisibilitySystemPf2e';
 
@@ -14,17 +14,17 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
         { 
             id: MODULE_NAME + '.invisible',
             visibilityId: 'invisible',
-            label: 'conditional-visibility.invisible',
+            label:  i18n(MODULE_NAME+'.invisible'),
             icon:'modules/'+MODULE_NAME+'/icons/unknown.svg'
         }, {
             id: MODULE_NAME + '.obscured',
             visibilityId: 'obscured',
-            label: 'conditional-visibility.obscured',
+            label:  i18n(MODULE_NAME+'.obscured'),
             icon: 'modules/'+MODULE_NAME+'/icons/foggy.svg',
          }, {
             id: MODULE_NAME + '.indarkness',
             visibilityId: 'indarkness',
-            label: 'conditional-visibility.indarkness',
+            label:  i18n(MODULE_NAME+'.indarkness'),
             icon: 'modules/'+MODULE_NAME+'/icons/moon.svg'
         }
     );
@@ -76,7 +76,7 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
     }
 
     public initializeStatusEffects():void {
-        console.log(Constants.MODULE_NAME + " | Initializing visibility system effects " + this.gameSystemId() + " for game system " + game.system.id);
+        console.log(MODULE_NAME + " | Initializing visibility system effects " + this.gameSystemId() + " for game system " + game.system.id);
         this.effectsByIcon().forEach((value: StatusEffect, key: string) => {
             //@ts-ignore
             CONFIG.statusEffects.push({
@@ -107,33 +107,33 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
     public getVisionCapabilities(srcTokens: Token[]) {
         const flags: any = {};
         flags.seeinvisible = srcTokens.some(sTok => {
-            return sTok.data.flags[Constants.MODULE_NAME] &&
+            return sTok.data.flags[MODULE_NAME] &&
                 //@ts-ignore
-                (sTok.data.flags[Constants.MODULE_NAME].seeinvisible === true
+                (sTok.data.flags[MODULE_NAME].seeinvisible === true
                 //@ts-ignore
-                || sTok.data.flags[Constants.MODULE_NAME].blindsight === true
+                || sTok.data.flags[MODULE_NAME].blindsight === true
                 //@ts-ignore
-                || sTok.data.flags[Constants.MODULE_NAME].tremorsense === true
+                || sTok.data.flags[MODULE_NAME].tremorsense === true
                 //@ts-ignore
-                || sTok.data.flags[Constants.MODULE_NAME].truesight === true);
+                || sTok.data.flags[MODULE_NAME].truesight === true);
         });
         flags.seeobscured = srcTokens.some(sTok => {
-            return sTok.data.flags[Constants.MODULE_NAME] &&
+            return sTok.data.flags[MODULE_NAME] &&
                 //@ts-ignore
-                (sTok.data.flags[Constants.MODULE_NAME].blindsight === true
+                (sTok.data.flags[MODULE_NAME].blindsight === true
                 //@ts-ignore
-                || sTok.data.flags[Constants.MODULE_NAME].tremorsense === true);
+                || sTok.data.flags[MODULE_NAME].tremorsense === true);
         });
         flags.seeindarkness = srcTokens.some(sTok => {
-            return sTok.data.flags[Constants.MODULE_NAME] &&
+            return sTok.data.flags[MODULE_NAME] &&
                 //@ts-ignore
-                (sTok.data.flags[Constants.MODULE_NAME].blindsight === true
+                (sTok.data.flags[MODULE_NAME].blindsight === true
                 //@ts-ignore
-                || sTok.data.flags[Constants.MODULE_NAME].devilssight === true
+                || sTok.data.flags[MODULE_NAME].devilssight === true
                 //@ts-ignore
-                || sTok.data.flags[Constants.MODULE_NAME].tremorsense === true
+                || sTok.data.flags[MODULE_NAME].tremorsense === true
                 //@ts-ignore
-                || sTok.data.flags[Constants.MODULE_NAME].truesight === true);
+                || sTok.data.flags[MODULE_NAME].truesight === true);
         });
         return flags;
     }
@@ -243,7 +243,7 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
     protected async stealthHud(token:any):Promise<number> {
         let initialValue;
         try {
-            initialValue = parseInt(token.data.flags[Constants.MODULE_NAME]._ste);
+            initialValue = parseInt(token.data.flags[MODULE_NAME]._ste);
         } catch (err) {
             
         }
@@ -253,14 +253,14 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
                  result = this.rollStealth(token).roll().total;
              } catch (err) {
                  console.warn("Error rolling stealth, check formula for system");
-                 result = Constants.DEFAULT_STEALTH;
+                 result = DEFAULT_STEALTH;
              }
         }
 
-        const content = await renderTemplate("modules/"+Constants.MODULE_NAME+"/templates/stealth_hud.html", { initialValue: result });
+        const content = await renderTemplate("modules/"+MODULE_NAME+"/templates/stealth_hud.html", { initialValue: result });
         return new Promise((resolve, reject) => {   
             let hud = new Dialog({
-                title: <string>game.i18n.localize('conditional-visibility.hidden'),
+                title: <string>game.i18n.localize(MODULE_NAME+'.hidden'),
                 content: content,
                 buttons: {
                     one: {

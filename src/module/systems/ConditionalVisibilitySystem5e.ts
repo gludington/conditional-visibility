@@ -1,8 +1,6 @@
-import { StatusEffect } from '../Constants';
 import { ConditionalVisibilityFacade } from '../ConditionalVisibilityFacade';
-import * as Constants from '../Constants';
 import { DefaultConditionalVisibilitySystem } from "./DefaultConditionalVisibilitySystem";
-import { getCanvas } from '../settings';
+import { getCanvas, MODULE_NAME, StatusEffect } from '../settings';
 
 /**
  * Conditional visibility system for dnd5e.  Uses the same base conditions, plus adds hidden, which compares
@@ -16,10 +14,10 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
     protected effects(): Array<StatusEffect> {
         const effects:Array<StatusEffect> = super.effects();
         effects.push({
-            id: 'conditional-visibility.hidden',
+            id: MODULE_NAME+'.hidden',
             visibilityId: 'hidden',
-            label: game.i18n.localize('conditional-visibility.hidden'),
-            icon: 'modules/'+Constants.MODULE_NAME+'/icons/newspaper.svg'
+            label: game.i18n.localize(MODULE_NAME+'.hidden'),
+            icon: 'modules/'+MODULE_NAME+'/icons/newspaper.svg'
         });
         return effects;
     }
@@ -30,7 +28,7 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
 
     public initializeHooks(facade:ConditionalVisibilityFacade) {
         Hooks.on('createChatMessage', (message, jQuery, speaker) => {
-            if (game.settings.get(Constants.MODULE_NAME, "autoStealth") === true && message.data.flags.dnd5e
+            if (game.settings.get(MODULE_NAME, "autoStealth") === true && message.data.flags.dnd5e
                 && message.data.flags.dnd5e.roll
                 && message.data.flags.dnd5e.roll.skillId === 'ste') {
                     if (message.data.speaker.token) {
@@ -69,9 +67,9 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
         const hidden = this.hasStatus(target, 'hidden', 'newspaper.svg');
         if (hidden === true) {
             //@ts-ignore
-            if (target.data.flags[Constants.MODULE_NAME] && target.data.flags[Constants.MODULE_NAME]._ste) {
+            if (target.data.flags[MODULE_NAME] && target.data.flags[MODULE_NAME]._ste) {
                  //@ts-ignore
-                const stealth = target.data.flags[Constants.MODULE_NAME]._ste;
+                const stealth = target.data.flags[MODULE_NAME]._ste;
                 if (visionCapabilities.prc < stealth) {
                     return false;
                 }
@@ -94,10 +92,10 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
                     if (!object.data.flags) {
                         object.data.flags = {};
                     }
-                    if (!object.data.flags[Constants.MODULE_NAME]) {
-                        object.data.flags[Constants.MODULE_NAME] = {};
+                    if (!object.data.flags[MODULE_NAME]) {
+                        object.data.flags[MODULE_NAME] = {};
                     }
-                    object.data.flags[Constants.MODULE_NAME]._ste = result;
+                    object.data.flags[MODULE_NAME]._ste = result;
                     if (object.actor) {
                         if (!object.actor.data) {
                             object.actor.data = {};
@@ -105,10 +103,10 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
                         if (!object.actor.data.flags) {
                             object.actor.data.flags = {};
                         }
-                        if (!object.actor.data.flags[Constants.MODULE_NAME]) {
-                            object.actor.data.flags[Constants.MODULE_NAME] = {};
+                        if (!object.actor.data.flags[MODULE_NAME]) {
+                            object.actor.data.flags[MODULE_NAME] = {};
                         }
-                        object.actor.data.flags[Constants.MODULE_NAME]._ste = result;
+                        object.actor.data.flags[MODULE_NAME]._ste = result;
                     }
                     return realOnToggleEffect(event, opts);
                 });

@@ -1,5 +1,5 @@
 import { ConditionalVisibility } from '../../src/module/ConditionalVisibility';
-import { StatusEffect } from '../../src/module/Constants';
+import { StatusEffect } from '../../src/module/settings';
 import {ConditionalVisibilitySystemPf2e } from '../../src/module/systems/ConditionalVisibilitySystemPf2e';
 //@ts-ignore
 (global as any).game = {

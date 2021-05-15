@@ -1,5 +1,14 @@
 import { ConditionalVisibility } from "./ConditionalVisibility"
-import * as Constants from "./Constants";
+
+export const MODULE_NAME:string = "conditional-visibility";
+export const DEFAULT_STEALTH:number = 10;
+
+export interface StatusEffect {
+    id: string,
+    visibilityId: string,
+    label: string,
+    icon: string,
+}
 
 /**
  * Because typescript doesn't know when in the lifecycle of foundry your code runs, we have to assume that the
@@ -19,17 +28,17 @@ import * as Constants from "./Constants";
 
 export const registerSettings = function() {
 
-	game.settings.register(Constants.MODULE_NAME, "autoStealth", {
+	game.settings.register(MODULE_NAME, "autoStealth", {
 		name: game.i18n.localize("conditional-visibility.settings.autoStealth.name"),
 		hint: game.i18n.localize("conditional-visibility.settings.autoStealth.hint"),
 		scope: "world",
 		config: true,
 		type: Boolean,
 		default: false,
-		onChange: value => console.log(Constants.MODULE_NAME + ' | autoStealth set to ' + value)
+		onChange: value => console.log(MODULE_NAME + ' | autoStealth set to ' + value)
 	});
 
-	game.settings.register(Constants.MODULE_NAME, "popup-version", {
+	game.settings.register(MODULE_NAME, "popup-version", {
 		scope: "world",
 		config: false,
 		type: String,

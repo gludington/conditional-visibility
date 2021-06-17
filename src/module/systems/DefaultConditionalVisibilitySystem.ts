@@ -11,7 +11,7 @@ import { ConditionalVisibilitySystemPf2e } from './ConditionalVisibilitySystemPf
 export class DefaultConditionalVisibilitySystem implements ConditionalVisibilitySystem {
 
     static BASE_EFFECTS = new Array<StatusEffect> (
-        { 
+        {
             id: MODULE_NAME + '.invisible',
             visibilityId: 'invisible',
             label:  i18n(MODULE_NAME+'.invisible'),
@@ -28,7 +28,7 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
             icon: 'modules/'+MODULE_NAME+'/icons/moon.svg'
         }
     );
-    
+
     _effectsByIcon: Map<string, StatusEffect>;
     _effectsByCondition: Map<string, StatusEffect>;
 
@@ -155,7 +155,7 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
         if (this.seeInDarkness(target, visionCapabilities) === false) {
             return false;
         }
-        
+
         if (this.seeContested(target, visionCapabilities) === false) {
             return false;
         }
@@ -245,7 +245,7 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
         try {
             initialValue = parseInt(token.data.flags[MODULE_NAME]._ste);
         } catch (err) {
-            
+
         }
         let result = initialValue;
         if (initialValue === undefined || isNaN(parseInt(initialValue))) {
@@ -258,7 +258,7 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
         }
 
         const content = await renderTemplate("modules/"+MODULE_NAME+"/templates/stealth_hud.html", { initialValue: result });
-        return new Promise((resolve, reject) => {   
+        return new Promise((resolve, reject) => {
             let hud = new Dialog({
                 title: <string>game.i18n.localize(MODULE_NAME+'.hidden'),
                 content: content,

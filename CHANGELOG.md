@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.2.0] (BETA)
+
+- Made functional with Foundry 0.8.6 (maybe)
+- Bootstrapped with League of Extraordinary FoundryVTT Developers  [foundry-vtt-types](https://github.com/League-of-Foundry-Developers/foundry-vtt-types)
+- Added [Bug Reporter Module](https://foundryvtt.com/packages/bug-reporter/)
 ## [0.1.5]
 
 -  Made functional with Foundry 0.7.9

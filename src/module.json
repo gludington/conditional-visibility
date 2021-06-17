@@ -60,10 +60,10 @@
       "lang": []
     }
   ],
-  
-  "minimumCoreVersion": "0.7.9",
-  "compatibleCoreVersion": "0.7.9",
-  "manifestPlusVersion": "1.0.0",
+
+  "minimumCoreVersion": "0.8.6",
+  "compatibleCoreVersion": "0.8.7",
+  "manifestPlusVersion": "1.2.0",
   "url": "https://github.com/gludington/conditional-visibility",
   "readme": "https://raw.githubusercontent.com/gludington/conditional-visibility/master/README.md",
   "manifest": "https://raw.githubusercontent.com/gludington/conditional-visibility/master/src/module.json",

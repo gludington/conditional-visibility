@@ -5,7 +5,7 @@ export let readyHooks = async () => {
 
   // setup all the hooks
   console.log(MODULE_NAME + ' | Ready ' + MODULE_NAME);
-  const sightLayer = getCanvas().layers.find(layer => {
+  const sightLayer = <SightLayer>getCanvas().layers.find(layer => {
       //@ts-ignore
       return layer.__proto__.constructor.name === 'SightLayer'
   });

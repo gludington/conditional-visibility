@@ -11,15 +11,15 @@
     "build": "gulp build && gulp link",
     "build:watch": "gulp watch",
     "clean": "gulp clean && gulp link --clean",
-    "update": "npm install --save-dev @league-of-foundry-developers/foundry-vtt-types@fvtt-0.8.6"
+    "update": "npm install --save-dev @league-of-foundry-developers/foundry-vtt-types@fvtt-0.7.10"
   },
   "author": "",
   "license": "",
   "devDependencies": {
+    "@league-of-foundry-developers/foundry-vtt-types": "^0.7.10-0",
     "@types/jest": "^26.0.23",
     "archiver": "^5.2.0",
     "chalk": "^4.1.1",
-    "foundry-pc-types": "gitlab:foundry-projects/foundry-pc/foundry-pc-types",
     "fs-extra": "^9.1.0",
     "gulp": "^4.0.2",
     "gulp-git": "^2.10.1",

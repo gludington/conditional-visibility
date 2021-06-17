@@ -2,6 +2,8 @@
 
 # Conditional Visibility (maintenance version) 
 
+## THIS PROJECT IS IN BETA BUT IL TRY TO MAKE A "STABLE" VERSION FOR FOUNDRYVTT 0.8.6 AND NEWER
+
 **Author**: Greg Ludington
 
 Invisible Stalkers should only be seen by players that have cast See Invisibility.  Stealthy Goblins should only be seen by players with high perception.

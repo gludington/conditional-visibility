@@ -8,7 +8,7 @@ import { getCanvas, MODULE_NAME, StatusEffect } from "./settings";
 export class ConditionalVisibility {
 
     static INSTANCE: ConditionalVisibility;
-    private _sightLayer: any;
+    private _sightLayer: SightLayer;
     private _tokenHud: any;
     private _conditionalVisibilitySystem: ConditionalVisibilitySystem;
     private _capabilities: any;
@@ -33,7 +33,7 @@ export class ConditionalVisibility {
                 }
                 return ConditionalVisibility.canSee(this);
             }
-            
+
         });
         system.initializeStatusEffects();
     }
@@ -51,11 +51,11 @@ export class ConditionalVisibility {
         }
         return false;
     }
-    
+
     private splitOnDot(toSplit:string):Array<number> {
         return toSplit.split(".").map(str => isNaN(Number(str)) ? 0 : Number(str));
     }
-    
+
     /**
      * A static method that will be replaced after initialization with the appropriate system specific method.
      * @param token the token to test
@@ -73,13 +73,13 @@ export class ConditionalVisibility {
         switch (game.system.id) {
             case 'dnd5e':
                 system = new ConditionalVisibilitySystem5e();
-                break;    
+                break;
             case 'pf2e':
                 system = new ConditionalVisibilitySystemPf2e();
                 break;
             default:
                 system = new DefaultConditionalVisibilitySystem();
-        }        
+        }
         return system;
     }
 
@@ -88,13 +88,13 @@ export class ConditionalVisibility {
      * @param sightLayer the slightlayer from the game system.
      * @param tokenHud the tokenHud to use.
      */
-    static initialize(sightLayer: any, tokenHud: TokenHUD) {
+    static initialize(sightLayer: SightLayer, tokenHud: TokenHUD) {
         ConditionalVisibility.INSTANCE = new ConditionalVisibility(sightLayer, tokenHud);
         const facade:ConditionalVisibilityFacade  = new ConditionalVisibilityFacadeImpl(ConditionalVisibility.INSTANCE,
             ConditionalVisibility.INSTANCE._conditionalVisibilitySystem);
         //@ts-ignore
         window.ConditionalVisibility = facade;
-        ConditionalVisibility.INSTANCE._conditionalVisibilitySystem.initializeHooks(facade);    
+        ConditionalVisibility.INSTANCE._conditionalVisibilitySystem.initializeHooks(facade);
     }
 
     /**
@@ -102,7 +102,7 @@ export class ConditionalVisibility {
      * @param sightLayer the sightLayer to use
      * @param tokenHud the tokenHud to use
      */
-    private constructor(sightLayer: any, tokenHud: TokenHUD) {
+    private constructor(sightLayer: SightLayer, tokenHud: TokenHUD) {
         this._conditionalVisibilitySystem = ConditionalVisibility.newSystem();
 
         console.log(MODULE_NAME + " | starting against v0.7 or greater instance " + game.data.version);
@@ -132,17 +132,17 @@ export class ConditionalVisibility {
             return this._conditionalVisibilitySystem.canSee(token, this._capabilities);
         }
         this._sightLayer = sightLayer;
-        const realRestrictVisibility = sightLayer.restrictVisibility;    
+        const realRestrictVisibility = sightLayer.restrictVisibility;
         this._sightLayer.restrictVisibility = () => {
             this._capabilities = this._conditionalVisibilitySystem.getVisionCapabilities(this._getSrcTokens());
 
             realRestrictVisibility.call(this._sightLayer);
 
             const restricted = getCanvas().tokens.placeables.filter(token => token.visible);
-            
+
             if (restricted && restricted.length > 0) {
                 let srcTokens = this._getSrcTokens();
-                
+
                 if (srcTokens.length > 0) {
                     const flags: any = this._conditionalVisibilitySystem.getVisionCapabilities(srcTokens);
                     for (let t of restricted) {
@@ -223,7 +223,7 @@ export class ConditionalVisibility {
                     if (systemEffects.get(src).visibilityId === 'hidden') {
                         //@ts-ignore
                         title = game.i18n.localize(systemEffects.get(src).label);
-                        if (data.flags && data.flags[MODULE_NAME] 
+                        if (data.flags && data.flags[MODULE_NAME]
                             && data.flags[MODULE_NAME]._ste && !isNaN(parseInt(data.flags[MODULE_NAME]._ste))) {
                             //@ts-ignore
                             title += ' ' + game.i18n.localize(MODULE_NAME+'.currentstealth') + ': ' + data.flags[MODULE_NAME]._ste;
@@ -281,7 +281,7 @@ export class ConditionalVisibility {
                 }
             }
             if (update.flags[MODULE_NAME] === undefined) {
-                update.flags[MODULE_NAME] = convis;    
+                update.flags[MODULE_NAME] = convis;
             }
             this.draw().then(() => {});
         } else if (update.flags && update.flags[MODULE_NAME]) {

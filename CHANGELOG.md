@@ -5,6 +5,8 @@
 - Made functional with Foundry 0.8.6 (maybe)
 - Bootstrapped with League of Extraordinary FoundryVTT Developers  [foundry-vtt-types](https://github.com/League-of-Foundry-Developers/foundry-vtt-types)
 - Added [Bug Reporter Module](https://foundryvtt.com/packages/bug-reporter/)
+- Very special ty to [Szefo09](https://github.com/szefo09) for make full operational patch for Dnd5e
+
 ## [0.1.5]
 
 -  Made functional with Foundry 0.7.9

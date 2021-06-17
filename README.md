@@ -135,3 +135,5 @@ Bootstrapped with League of Extraordinary FoundryVTT Developers  [foundry-vtt-ty
 ## Credit
 
 Thanks to anyone who helps me with this code! I appreciate the user community's feedback on this project!
+
+Very special ty to [Szefo09](https://github.com/szefo09) for make a full operational patch for Dnd5e with FoundryVtt 0.8.6

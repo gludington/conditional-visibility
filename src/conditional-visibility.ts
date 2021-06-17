@@ -9,12 +9,11 @@
  * Software License: [your license] Put your desired license here, which
  * 					 determines how others may use and modify your module
  */
-
 // Import TypeScript modules
-import { getCanvas, MODULE_NAME, registerSettings } from './module/settings.js';
-import { preloadTemplates } from './module/preloadTemplates.js';
+import { getCanvas, MODULE_NAME, registerSettings } from './module/settings';
+import { preloadTemplates } from './module/preloadTemplates';
 import { ConditionalVisibility } from './module/ConditionalVisibility';
-import { readyHooks } from './module/Hooks.js';
+import { readyHooks } from './module/Hooks';
 
 declare global {
     interface Window { Senses: ConditionalVisibility }

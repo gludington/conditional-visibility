@@ -1,10 +1,8 @@
-import { i18n } from '../../conditional-visibility';
-import { ConditionalVisibility } from '../ConditionalVisibility';
-import { ConditionalVisibilityFacade } from '../ConditionalVisibilityFacade';
-import { DEFAULT_STEALTH, MODULE_NAME, StatusEffect } from '../settings';
+import { i18n } from "../../conditional-visibility";
+import { ConditionalVisibilityFacade } from "../ConditionalVisibilityFacade";
+import { DEFAULT_STEALTH, StatusEffect } from "../settings";
 import { ConditionalVisibilitySystem } from "./ConditionalVisibilitySystem";
-import { ConditionalVisibilitySystemPf2e } from './ConditionalVisibilitySystemPf2e';
-
+const MODULE_NAME = "conditional-visibility";
 /**
  * The DefaultConditionalVisibilitySystem, to use when no visibility system can be found for the game system.
  */
@@ -32,9 +30,9 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
     _effectsByIcon: Map<string, StatusEffect>;
     _effectsByCondition: Map<string, StatusEffect>;
 
-    hasStatus(token:Token, id:string, icon:string): boolean {
-        return token.data.actorLink ? token.actor?.data?.flags?.[MODULE_NAME]?.[id] === true : token.data?.flags?.[MODULE_NAME]?.[id] === true;
-    }
+    // hasStatus(token:Token, id:string, icon:string): boolean {
+    //     return token.data.actorLink ? token.actor?.data?.flags?.[MODULE_NAME]?.[id] === true : token.data?.flags?.[MODULE_NAME]?.[id] === true;
+    // }
 
     constructor() {
         //yes, this is a BiMap but the solid TS BiMap implementaiton is GPLv3, so we will just fake what we need here
@@ -43,39 +41,44 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
         this.effects().forEach(statusEffect => {
             this._effectsByIcon.set(statusEffect.icon, statusEffect);
             this._effectsByCondition.set(statusEffect.visibilityId, statusEffect);
-        })
+        });
+    }
+
+    hasStatus(token, id, icon) {
+        return token.actor?.data?.flags?.[MODULE_NAME]?.[id] === true || token.data?.flags?.[MODULE_NAME]?.[id] === true;
     }
 
     gameSystemId(): string {
         return "default";
     }
-
     /**
      * Base effects are invisible, obscured, and indarkness
      */
-    protected effects():Array<StatusEffect> {
+    effects():Array<StatusEffect> {
         return DefaultConditionalVisibilitySystem.BASE_EFFECTS;
     }
 
-
-    public effectsByIcon(): Map<string, StatusEffect> {
+    effectsByIcon(): Map<string, StatusEffect> {
         return this._effectsByIcon;
     }
 
-    public effectsByCondition(): Map<string, StatusEffect> {
+    effectsByCondition(): Map<string, StatusEffect> {
         return this._effectsByCondition;
     }
 
-    public effectsFromUpdate(update: any):any {
+    effectsFromUpdate(update: any):any {
         return update.actorData?.effects;
     }
 
-    public getEffectByIcon(effect:StatusEffect|string):StatusEffect {
+    getEffectByIcon(effect):StatusEffect {
         //@ts-ignore
+        if(!effect.data?.icon){
         return this.effectsByIcon().get(effect.icon);
+        }
+        return this.effectsByIcon().get(effect.data?.icon);
     }
 
-    public initializeStatusEffects():void {
+    initializeStatusEffects() {
         console.log(MODULE_NAME + " | Initializing visibility system effects " + this.gameSystemId() + " for game system " + game.system.id);
         this.effectsByIcon().forEach((value: StatusEffect, key: string) => {
             //@ts-ignore
@@ -83,28 +86,25 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
                 id: value.id,
                 label: value.label,
                 icon: value.icon
-                });
+            });
 
         });
     }
-
     /**
      * For subclasses to set up systsem specific hooks.
      * @todo unify initializeOnToggleEffect if possible
      */
-    public initializeHooks(facade:ConditionalVisibilityFacade): void {
-
+    initializeHooks(facade:ConditionalVisibilityFacade): void {
     }
 
     /**
      * Default system does not have any reaction to a condition change.  Subclasses override this to add behavior.
      * @param tokenHud the tokenHud to use
      */
-    public initializeOnToggleEffect(tokenHud: any) {
-
+    initializeOnToggleEffect(tokenHud: any) {
     }
 
-    public getVisionCapabilities(srcTokens: Token[]) {
+    getVisionCapabilities(srcTokens: Token[]) {
         const flags: any = {};
         flags.seeinvisible = srcTokens.some(sTok => {
             return sTok.data.flags[MODULE_NAME] &&
@@ -143,7 +143,7 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
      * @param target the token whose visibility is being checked
      * @param flags the capabilities established by the sight layer
      */
-    public canSee(target: Token, visionCapabilities: any): boolean {
+    canSee(target: Token, visionCapabilities: any): boolean {
         if (this.seeInvisible(target, visionCapabilities) === false) {
             return false;
         }
@@ -169,7 +169,7 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
      * @param effects the effects of that token
      * @param visionCapabilities the sight capabilities of the sight layer
      */
-    protected seeInvisible(target:Token, visionCapabilities:any): boolean {
+    seeInvisible(target:Token, visionCapabilities:any): boolean {
         const invisible = this.hasStatus(target, 'invisible', 'unknown.svg');
         if (invisible === true) {
             if (visionCapabilities.seeinvisible !== true) {
@@ -184,7 +184,7 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
      * @param target the token being seen (or not)
      * @param visionCapabilities the sight capabilities of the sight layer
      */
-    protected seeObscured(target:Token, visionCapabilities:any): boolean {
+    seeObscured(target:Token, visionCapabilities:any): boolean {
         const obscured = this.hasStatus(target, 'obscured', 'foggy.svg');
         if (obscured === true) {
             if (visionCapabilities.seeobscured !== true) {
@@ -200,7 +200,7 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
      * @param effects the effects of that token
      * @param flags the sight capabilities of the sight layer
      */
-    protected seeInDarkness(target:Token, visionCapabilities:any): boolean {
+    seeInDarkness(target:Token, visionCapabilities:any): boolean {
         const indarkness = this.hasStatus(target, 'indarkness', 'moon.svg');
         if (indarkness === true) {
             if (visionCapabilities.seeindarkness !== true) {
@@ -217,11 +217,11 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
      * @param effects the effects of that token
      * @param visionCapabilities the sight capabilities of the sight layer
      */
-    protected seeContested(target:Token, flags:any): boolean {
+    seeContested(target:Token, flags:any): boolean {
         return true;
     }
 
-    public hasStealth():boolean {
+    hasStealth() {
         return false;
     }
 
@@ -230,7 +230,7 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
      * @param token the token whose stats may create the roll.
      * @return a Roll
      */
-    public rollStealth(token:Token):Roll {
+    rollStealth(token:Token):Roll {
         return new Roll("1d20");
     }
 
@@ -240,27 +240,27 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
      * @param token the actor to whom this dialog refers
      * @returns a Promise<number> containing the value of the result, or -1 if unintelligble
      */
-    protected async stealthHud(token:any):Promise<number> {
+    async stealthHud(token) {
         let initialValue;
         try {
             initialValue = parseInt(token.data.flags[MODULE_NAME]._ste);
-        } catch (err) {
-
+        }
+        catch (err) {
         }
         let result = initialValue;
         if (initialValue === undefined || isNaN(parseInt(initialValue))) {
-             try {
-                 result = this.rollStealth(token).roll().total;
-             } catch (err) {
-                 console.warn("Error rolling stealth, check formula for system");
-                 result = DEFAULT_STEALTH;
-             }
+            try {
+                result = this.rollStealth(token).roll().total;
+            }
+            catch (err) {
+                console.warn("Error rolling stealth, check formula for system");
+                result = DEFAULT_STEALTH;
+            }
         }
-
-        const content = await renderTemplate("modules/"+MODULE_NAME+"/templates/stealth_hud.html", { initialValue: result });
+        const content = await renderTemplate("modules/" + MODULE_NAME + "/templates/stealth_hud.html", { initialValue: result });
         return new Promise((resolve, reject) => {
             let hud = new Dialog({
-                title: <string>game.i18n.localize(MODULE_NAME+'.hidden'),
+                title: game.i18n.localize(MODULE_NAME + '.hidden'),
                 content: content,
                 buttons: {
                     one: {
@@ -271,7 +271,8 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
                             const val = parseInt(html.find('div.form-group').children()[1].value);
                             if (isNaN(val)) {
                                 resolve(-1);
-                            } else {
+                            }
+                            else {
                                 resolve(val);
                             }
                         }
@@ -280,11 +281,12 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
                 close: (html) => {
                     //@ts-ignore
                     const val = parseInt(html.find('div.form-group').children()[1].value);
-                        if (isNaN(val)) {
-                            resolve(-1);
-                        } else {
-                            resolve(val);
-                        }
+                    if (isNaN(val)) {
+                        resolve(-1);
+                    }
+                    else {
+                        resolve(val);
+                    }
                 },
                 default: ""
             });
@@ -292,3 +294,20 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
         });
     }
 }
+
+DefaultConditionalVisibilitySystem.BASE_EFFECTS = new Array({
+    id: MODULE_NAME + '.invisible',
+    visibilityId: 'invisible',
+    label: MODULE_NAME + '.invisible',
+    icon: 'modules/' + MODULE_NAME + '/icons/unknown.svg'
+}, {
+    id: MODULE_NAME + '.obscured',
+    visibilityId: 'obscured',
+    label: MODULE_NAME + '.obscured',
+    icon: 'modules/' + MODULE_NAME + '/icons/foggy.svg',
+}, {
+    id: MODULE_NAME + '.indarkness',
+    visibilityId: 'indarkness',
+    label: MODULE_NAME + '.indarkness',
+    icon: 'modules/' + MODULE_NAME + '/icons/moon.svg'
+});

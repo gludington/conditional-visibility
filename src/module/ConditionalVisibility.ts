@@ -16,86 +16,84 @@ export class ConditionalVisibility {
     private _getSrcTokens: () => Array<Token>;
     private _draw: () => void;
 
-    // /**
-    //  * Called from init hook to establish the extra status effects in the main list before full game initialization.
-    //  */
-    // static onInit() {
-    //     const system = ConditionalVisibility.newSystem();
-    //     const realIsVisible = Object.getOwnPropertyDescriptor(Token.prototype, 'isVisible').get;
-    //     Object.defineProperty(Token.prototype, "isVisible", {
-    //         get: function() {
-    //             const isVisible = realIsVisible.call(this);
-    //             if (isVisible === false) {
-    //                 return false;
-    //             }
-    //             if (game.user.isGM || this.owner || !getCanvas().sight.tokenVision) {
-    //                 return true;
-    //             }
-    //             return ConditionalVisibility.canSee(this);
-    //         }
+    /**
+     * Called from init hook to establish the extra status effects in the main list before full game initialization.
+     */
+     static onInit() {
+        const system = ConditionalVisibility.newSystem();
+        const realIsVisible = Object.getOwnPropertyDescriptor(Token.prototype, 'isVisible').get;
+        Object.defineProperty(Token.prototype, "isVisible", {
+            get: function () {
+                const isVisible = realIsVisible.call(this);
+                if (isVisible === false) {
+                    return false;
+                }
+                if (game.user.isGM || this.owner || !getCanvas().sight.tokenVision) {
+                    return true;
+                }
+                return ConditionalVisibility.canSee(this);
+            }
+        });
+        system.initializeStatusEffects();
+    }
 
-    //     });
-    //     system.initializeStatusEffects();
-    // }
+    isSemvarGreater(first, second) {
+        const firstSemVar = this.splitOnDot(first);
+        const secondSemVar = this.splitOnDot(second);
+        if (firstSemVar.length != secondSemVar.length) {
+            throw new Error("bad semvar first " + first + ", second" + second);
+        }
+        for (let i = 0; i < firstSemVar.length; i++) {
+            if (firstSemVar[i] > secondSemVar[i]) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-    // public isSemvarGreater(first:string, second:string):boolean {
-    //     const firstSemVar:Array<number> = this.splitOnDot(first);
-    //     const secondSemVar:Array<number> = this.splitOnDot(second);
-    //     if (firstSemVar.length != secondSemVar.length) {
-    //         throw new Error("bad semvar first " + first +", second" + second);
-    //     }
-    //     for (let i = 0; i < firstSemVar.length;i++ ){
-    //         if (firstSemVar[i] > secondSemVar[i]) {
-    //             return true;
-    //         }
-    //     }
-    //     return false;
-    // }
+    splitOnDot(toSplit) {
+        return toSplit.split(".").map(str => isNaN(Number(str)) ? 0 : Number(str));
+    }
 
-    // private splitOnDot(toSplit:string):Array<number> {
-    //     return toSplit.split(".").map(str => isNaN(Number(str)) ? 0 : Number(str));
-    // }
+    /**
+     * A static method that will be replaced after initialization with the appropriate system specific method.
+     * @param token the token to test
+     */
+    static canSee(token) {
+        return false;
+    }
 
-    // /**
-    //  * A static method that will be replaced after initialization with the appropriate system specific method.
-    //  * @param token the token to test
-    //  */
-    // static canSee(token:Token) {
-    //     return false;
-    // }
+    /**
+     * Create a new ConditionalVisibilitySystem appropriate to the game system
+     * @returns ConditionalVisibilitySystem
+     */
+    static newSystem() {
+        let system;
+        switch (game.system.id) {
+            case 'dnd5e':
+                system = new ConditionalVisibilitySystem5e();
+                break;
+            case 'pf2e':
+                system = new ConditionalVisibilitySystemPf2e();
+                break;
+            default:
+                system = new DefaultConditionalVisibilitySystem();
+        }
+        return system;
+    }
 
-    // /**
-    //  * Create a new ConditionalVisibilitySystem appropriate to the game system
-    //  * @returns ConditionalVisibilitySystem
-    //  */
-    // private static newSystem():ConditionalVisibilitySystem {
-    //     let system;
-    //     switch (game.system.id) {
-    //         case 'dnd5e':
-    //             system = new ConditionalVisibilitySystem5e();
-    //             break;
-    //         case 'pf2e':
-    //             system = new ConditionalVisibilitySystemPf2e();
-    //             break;
-    //         default:
-    //             system = new DefaultConditionalVisibilitySystem();
-    //     }
-    //     return system;
-    // }
-
-    // /**
-    //  * Initializes the ConditionalVisibilitySystem.  Called from ready Hook.
-    //  * @param sightLayer the slightlayer from the game system.
-    //  * @param tokenHud the tokenHud to use.
-    //  */
-    // static initialize(sightLayer: SightLayer, tokenHud: TokenHUD) {
-    //     ConditionalVisibility.INSTANCE = new ConditionalVisibility(sightLayer, tokenHud);
-    //     const facade:ConditionalVisibilityFacade  = new ConditionalVisibilityFacadeImpl(ConditionalVisibility.INSTANCE,
-    //         ConditionalVisibility.INSTANCE._conditionalVisibilitySystem);
-    //     //@ts-ignore
-    //     window.ConditionalVisibility = facade;
-    //     ConditionalVisibility.INSTANCE._conditionalVisibilitySystem.initializeHooks(facade);
-    // }
+    /**
+     * Initializes the ConditionalVisibilitySystem.  Called from ready Hook.
+     * @param sightLayer the slightlayer from the game system.
+     * @param tokenHud the tokenHud to use.
+     */
+    static initialize(sightLayer, tokenHud) {
+        ConditionalVisibility.INSTANCE = new ConditionalVisibility(sightLayer, tokenHud);
+        const facade = new ConditionalVisibilityFacadeImpl(ConditionalVisibility.INSTANCE, ConditionalVisibility.INSTANCE._conditionalVisibilitySystem);
+        //@ts-ignore
+        window.ConditionalVisibility = facade;
+        ConditionalVisibility.INSTANCE._conditionalVisibilitySystem.initializeHooks(facade);
+    }
 
     /**
      * Create a ConditionalVisibility with a given sightLayer and tokenHud.
@@ -205,84 +203,6 @@ export class ConditionalVisibility {
             });
         }
         */
-    }
-    /**
-     * Called from init hook to establish the extra status effects in the main list before full game initialization.
-     */
-    static onInit() {
-        const system = ConditionalVisibility.newSystem();
-        const realIsVisible = Object.getOwnPropertyDescriptor(Token.prototype, 'isVisible').get;
-        Object.defineProperty(Token.prototype, "isVisible", {
-            get: function () {
-                const isVisible = realIsVisible.call(this);
-                if (isVisible === false) {
-                    return false;
-                }
-                if (game.user.isGM || this.owner || !getCanvas().sight.tokenVision) {
-                    return true;
-                }
-                return ConditionalVisibility.canSee(this);
-            }
-        });
-        system.initializeStatusEffects();
-    }
-
-    isSemvarGreater(first, second) {
-        const firstSemVar = this.splitOnDot(first);
-        const secondSemVar = this.splitOnDot(second);
-        if (firstSemVar.length != secondSemVar.length) {
-            throw new Error("bad semvar first " + first + ", second" + second);
-        }
-        for (let i = 0; i < firstSemVar.length; i++) {
-            if (firstSemVar[i] > secondSemVar[i]) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    splitOnDot(toSplit) {
-        return toSplit.split(".").map(str => isNaN(Number(str)) ? 0 : Number(str));
-    }
-
-    /**
-     * A static method that will be replaced after initialization with the appropriate system specific method.
-     * @param token the token to test
-     */
-    static canSee(token) {
-        return false;
-    }
-
-    /**
-     * Create a new ConditionalVisibilitySystem appropriate to the game system
-     * @returns ConditionalVisibilitySystem
-     */
-    static newSystem() {
-        let system;
-        switch (game.system.id) {
-            case 'dnd5e':
-                system = new ConditionalVisibilitySystem5e();
-                break;
-            case 'pf2e':
-                system = new ConditionalVisibilitySystemPf2e();
-                break;
-            default:
-                system = new DefaultConditionalVisibilitySystem();
-        }
-        return system;
-    }
-
-    /**
-     * Initializes the ConditionalVisibilitySystem.  Called from ready Hook.
-     * @param sightLayer the slightlayer from the game system.
-     * @param tokenHud the tokenHud to use.
-     */
-    static initialize(sightLayer, tokenHud) {
-        ConditionalVisibility.INSTANCE = new ConditionalVisibility(sightLayer, tokenHud);
-        const facade = new ConditionalVisibilityFacadeImpl(ConditionalVisibility.INSTANCE, ConditionalVisibility.INSTANCE._conditionalVisibilitySystem);
-        //@ts-ignore
-        window.ConditionalVisibility = facade;
-        ConditionalVisibility.INSTANCE._conditionalVisibilitySystem.initializeHooks(facade);
     }
 
     onRenderTokenConfig(tokenConfig: any, jQuery:JQuery, data: any) {

@@ -26,11 +26,19 @@ export let readyHooks = async () => {
     // });
     //real actors go through this
     Hooks.on("createActiveEffect", (effect, options, userId) => {
-        ConditionalVisibility.INSTANCE.onCreateActiveEffect(effect, options, userId);
+        ConditionalVisibility.INSTANCE.onCreateEffect(effect, options, userId);
     });
 
     Hooks.on("deleteActiveEffect", (effect, options, userId) => {
-        ConditionalVisibility.INSTANCE.onDeleteActiveEffect(effect, options, userId);
+        ConditionalVisibility.INSTANCE.onDeleteEffect(effect, options, userId);
+    });
+    
+    Hooks.on("createItem", (effect, options, userId) => {
+        ConditionalVisibility.INSTANCE.onCreateEffect(effect, options, userId);
+    });
+
+    Hooks.on("deleteItem", (effect, options, userId) => {
+        ConditionalVisibility.INSTANCE.onDeleteEffect(effect, options, userId);
     });
 }
 

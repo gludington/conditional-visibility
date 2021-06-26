@@ -44,7 +44,7 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
         });
     }
 
-    async onCreateActiveEffect(effect, options, userId) {
+    async onCreateEffect(effect, options, userId) {
         const status = this.getEffectByIcon(effect);
         if (status) {
             const actor = effect.parent;
@@ -52,7 +52,7 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
         }
     }
 
-    async onDeleteActiveEffect(effect, options, userId) {
+    async onDeleteEffect(effect, options, userId) {
         const status = this.getEffectByIcon(effect);
         if (status) {
             const actor = effect.parent;
@@ -138,37 +138,32 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
     initializeOnToggleEffect(tokenHud: any) {
     }
 
-    getVisionCapabilities(srcTokens: Token[]) {
-        const flags: any = {};
-        flags.seeinvisible = srcTokens.some(sTok => {
-            return sTok.data.flags[MODULE_NAME] &&
-                //@ts-ignore
-                (sTok.data.flags[MODULE_NAME].seeinvisible === true
-                //@ts-ignore
-                || sTok.data.flags[MODULE_NAME].blindsight === true
-                //@ts-ignore
-                || sTok.data.flags[MODULE_NAME].tremorsense === true
-                //@ts-ignore
-                || sTok.data.flags[MODULE_NAME].truesight === true);
-        });
-        flags.seeobscured = srcTokens.some(sTok => {
-            return sTok.data.flags[MODULE_NAME] &&
-                //@ts-ignore
-                (sTok.data.flags[MODULE_NAME].blindsight === true
-                //@ts-ignore
-                || sTok.data.flags[MODULE_NAME].tremorsense === true);
-        });
-        flags.seeindarkness = srcTokens.some(sTok => {
-            return sTok.data.flags[MODULE_NAME] &&
-                //@ts-ignore
-                (sTok.data.flags[MODULE_NAME].blindsight === true
-                //@ts-ignore
-                || sTok.data.flags[MODULE_NAME].devilssight === true
-                //@ts-ignore
-                || sTok.data.flags[MODULE_NAME].tremorsense === true
-                //@ts-ignore
-                || sTok.data.flags[MODULE_NAME].truesight === true);
-        });
+    getVisionCapabilities(srcToken: Array<Token>|Token) {
+        if(srcToken)
+        //In case of sending an array only take the first element
+        srcToken=srcToken instanceof Array?srcToken[0]:srcToken;
+        const flags:any = {};
+        //@ts-ignore
+        var _seeinvisible = srcToken?.data?.document?.getFlag(MODULE_NAME, "seeinvisible") ?? 0;
+        //@ts-ignore
+        var _blindsight = srcToken?.data?.document?.getFlag(MODULE_NAME, "blindsight") ?? 0;
+        //@ts-ignore
+        var _tremorsense = srcToken?.data?.document?.getFlag(MODULE_NAME, "tremorsense") ?? 0;
+        //@ts-ignore
+        var _truesight = srcToken?.data?.document?.getFlag(MODULE_NAME, "truesight") ?? 0;
+        //@ts-ignore
+        var _devilssight = srcToken?.data?.document?.getFlag(MODULE_NAME, "devilssight") ?? 0;
+        _seeinvisible = _seeinvisible < 0 ? 100000 : _seeinvisible;
+        _blindsight = _blindsight < 0 ? 100000 : _blindsight;
+        _tremorsense = _tremorsense < 0 ? 100000 : _tremorsense;
+        _truesight = _truesight < 0 ? 100000 : _truesight;
+        _devilssight = _devilssight < 0 ? 100000 : _devilssight;
+
+        flags.seeinvisible = Math.max(_seeinvisible, _blindsight, _tremorsense, _truesight, _devilssight);
+        flags.seeobscured = Math.max(_blindsight, _tremorsense);
+        flags.seeindarkness = Math.max(_blindsight, _devilssight, _tremorsense, _truesight);
+        //@ts-ignore
+        flags.visionfrom = srcToken?.position??{x:0,y:0};
         return flags;
     }
 
@@ -178,23 +173,26 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
      * @param flags the capabilities established by the sight layer
      */
     canSee(target: Token, visionCapabilities: any): boolean {
-        if (this.seeInvisible(target, visionCapabilities) === false) {
+        const distance = this.distanceBeetweenTokens(visionCapabilities.visionfrom, target.position);
+        if (this.seeInvisible(target, visionCapabilities, distance) === false) {
             return false;
         }
-
-        if (this.seeObscured(target, visionCapabilities) === false) {
+        if (this.seeObscured(target, visionCapabilities, distance) === false) {
             return false;
         }
-
-        if (this.seeInDarkness(target, visionCapabilities) === false) {
+        if (this.seeInDarkness(target, visionCapabilities, distance) === false) {
             return false;
         }
-
         if (this.seeContested(target, visionCapabilities) === false) {
             return false;
         }
         return true;
 
+    }
+    distanceBeetweenTokens(source, target) {
+        let segment = new Ray(source, target);
+        //@ts-ignore
+        return canvas.grid.measureDistances([{ ray: segment }], { gridSpaces: 1 })
     }
 
     /**
@@ -203,12 +201,13 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
      * @param effects the effects of that token
      * @param visionCapabilities the sight capabilities of the sight layer
      */
-    seeInvisible(target:Token, visionCapabilities:any): boolean {
+    seeInvisible(target:Token, visionCapabilities:any,distance:any): boolean {
         const invisible = this.hasStatus(target, 'invisible');
         if (invisible === true) {
-            if (visionCapabilities.seeinvisible !== true) {
-                return false;
+            if (visionCapabilities.seeinvisible > 0) {
+                return visionCapabilities.seeinvisible >= distance
             }
+            return false;
         }
         return true;
     }
@@ -218,12 +217,13 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
      * @param target the token being seen (or not)
      * @param visionCapabilities the sight capabilities of the sight layer
      */
-    seeObscured(target:Token, visionCapabilities:any): boolean {
+    seeObscured(target:Token, visionCapabilities:any,distance:any): boolean {
         const obscured = this.hasStatus(target, 'obscured');
         if (obscured === true) {
-            if (visionCapabilities.seeobscured !== true) {
-                return false;
+            if (visionCapabilities.seeobscured > 0) {
+                return visionCapabilities.seeobscured >= distance;
             }
+            return false;
         }
         return true;
     }
@@ -234,12 +234,13 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
      * @param effects the effects of that token
      * @param flags the sight capabilities of the sight layer
      */
-    seeInDarkness(target:Token, visionCapabilities:any): boolean {
+    seeInDarkness(target:Token, visionCapabilities:any,distance:any): boolean {
         const indarkness = this.hasStatus(target, 'indarkness');
         if (indarkness === true) {
-            if (visionCapabilities.seeindarkness !== true) {
-                return false;
+            if (visionCapabilities.seeindarkness > 0) {
+                return visionCapabilities.seeindarkness >= distance;
             }
+            return false;
         }
         return true;
     }

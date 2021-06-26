@@ -3,6 +3,7 @@ import { ConditionalVisibilitySystemPf2e } from "./systems/ConditionalVisibility
 import { ConditionalVisibilitySystem } from "./systems/ConditionalVisibilitySystem";
 import { DefaultConditionalVisibilitySystem } from "./systems/DefaultConditionalVisibilitySystem";
 import { ConditionalVisibilityFacade, ConditionalVisibilityFacadeImpl } from "./ConditionalVisibilityFacade";
+import { i18n } from '../conditional-visibility';
 import { getCanvas, MODULE_NAME, StatusEffect } from "./settings";
 
 export class ConditionalVisibility {
@@ -12,6 +13,7 @@ export class ConditionalVisibility {
     private _tokenHud: any;
     private _conditionalVisibilitySystem: ConditionalVisibilitySystem;
     private _capabilities: any;
+    private _defaultTokens: Array<Token>;
 
     private _getSrcTokens: () => Array<Token>;
     private _draw: () => void;
@@ -19,7 +21,7 @@ export class ConditionalVisibility {
     /**
      * Called from init hook to establish the extra status effects in the main list before full game initialization.
      */
-     static onInit() {
+    static onInit() {
         const system = ConditionalVisibility.newSystem();
         const realIsVisible = Object.getOwnPropertyDescriptor(Token.prototype, 'isVisible').get;
         Object.defineProperty(Token.prototype, "isVisible", {
@@ -124,30 +126,43 @@ export class ConditionalVisibility {
             }
             return srcTokens;
         }
-        this._draw = async() => {
+        this._draw = async () => {
             await this._sightLayer.initialize();
             await this._sightLayer.refresh();
         }
-        ConditionalVisibility.canSee = (token:Token) => {
-            return this._conditionalVisibilitySystem.canSee(token, this._capabilities);
+        ConditionalVisibility.canSee = (token: Token) => {
+            const srcTokens = this._defaultTokens;
+            let output = false;
+            for (let sTok of srcTokens) {
+                const flags = this._conditionalVisibilitySystem.getVisionCapabilities(sTok);
+                output = this._conditionalVisibilitySystem.canSee(sTok, flags);
+                if (output) return true;
+            }
+            return false;
         }
         this._sightLayer = sightLayer;
         const realRestrictVisibility = sightLayer.restrictVisibility;
+        this._defaultTokens = this._getSrcTokens();
         this._sightLayer.restrictVisibility = () => {
-            this._capabilities = this._conditionalVisibilitySystem.getVisionCapabilities(this._getSrcTokens());
 
             realRestrictVisibility.call(this._sightLayer);
 
-            const restricted = getCanvas().tokens.placeables.filter(token => token.visible);
+            let restricted = getCanvas().tokens.placeables.filter(token => token.visible);
 
             if (restricted && restricted.length > 0) {
                 let srcTokens = this._getSrcTokens();
 
                 if (srcTokens.length > 0) {
-                    const flags: any = this._conditionalVisibilitySystem.getVisionCapabilities(srcTokens);
+                    restricted = restricted.filter(t => srcTokens.indexOf(t) < 0);
                     for (let t of restricted) {
-                        if (srcTokens.indexOf(t) < 0) {
-                            t.visible = this._conditionalVisibilitySystem.canSee(t, flags);
+                        t.visible = false;
+                    }
+                    for (let sTok of srcTokens) {
+                        const flags = this._conditionalVisibilitySystem.getVisionCapabilities(sTok);
+                        for (let t of restricted) {
+                            if (!t.visible) {
+                                t.visible = this._conditionalVisibilitySystem.canSee(t, flags);
+                            }
                         }
                     }
                 }
@@ -205,59 +220,59 @@ export class ConditionalVisibility {
         */
     }
 
-    onRenderTokenConfig(tokenConfig: any, jQuery:JQuery, data: any) {
+    onRenderTokenConfig(tokenConfig: any, jQuery: JQuery, data: any) {
         const visionTab = $('div.tab[data-tab="vision"]');
         renderTemplate("modules/" + MODULE_NAME + "/templates/extra_senses.html", tokenConfig.object.data.flags[MODULE_NAME] || {})
             .then(extraSenses => {
-            visionTab.append(extraSenses);
-        });
+                visionTab.append(extraSenses);
+            });
     }
 
     onRenderTokenHUD(app, html, token) {
         const systemEffects = this._conditionalVisibilitySystem.effectsByIcon();
         html.find("img.effect-control")
             .each((idx, icon) => {
-            const src = icon.attributes.src.value;
-            if (systemEffects.has(src)) {
-                let title;
-                if (systemEffects.get(src).visibilityId === 'hidden') {
-                    //@ts-ignore
-                    title = game.i18n.localize(systemEffects.get(src).label);
-                    let tokenActorData;
-                    if(!token.actorData?.flags){
-                       tokenActorData  = game.actors.get(token.actorId).data;
-                    }else{
-                        tokenActorData = token.actorData;
-                    }
-                    if (tokenActorData && tokenActorData.flags && tokenActorData.flags[MODULE_NAME]
-                        && tokenActorData.flags[MODULE_NAME]._ste && !isNaN(parseInt(tokenActorData.flags[MODULE_NAME]._ste))) {
+                const src = icon.attributes.src.value;
+                if (systemEffects.has(src)) {
+                    let title;
+                    if (systemEffects.get(src).visibilityId === 'hidden') {
                         //@ts-ignore
-                        title += ' ' + game.i18n.localize(MODULE_NAME + '.currentstealth') + ': ' + tokenActorData.flags[MODULE_NAME]._ste;
+                        title = i18n(systemEffects.get(src).label);
+                        let tokenActorData;
+                        if (!token.actorData?.flags) {
+                            tokenActorData = game.actors.get(token.actorId).data;
+                        } else {
+                            tokenActorData = token.actorData;
+                        }
+                        if (tokenActorData && tokenActorData.flags && tokenActorData.flags[MODULE_NAME]
+                            && tokenActorData.flags[MODULE_NAME]._ste && !isNaN(parseInt(tokenActorData.flags[MODULE_NAME]._ste))) {
+                            //@ts-ignore
+                            title += ' ' + i18n(MODULE_NAME + '.currentstealth') + ': ' + tokenActorData.flags[MODULE_NAME]._ste;
+                        }
                     }
+                    else {
+                        //@ts-ignore
+                        title = i18n(systemEffects.get(src).label);
+                    }
+                    icon.setAttribute("title", title);
                 }
-                else {
-                    //@ts-ignore
-                    title = game.i18n.localize(systemEffects.get(src).label);
-                }
-                icon.setAttribute("title", title);
-            }
-        });
+            });
     }
 
-    async onCreateActiveEffect(effect, options, userId) {
-        await this._conditionalVisibilitySystem.onCreateActiveEffect(effect, options, userId);
+    async onCreateEffect(effect, options, userId) {
+        await this._conditionalVisibilitySystem.onCreateEffect(effect, options, userId);
         this.refresh();
     }
 
-    async onDeleteActiveEffect(effect, options, userId) {
-        await this._conditionalVisibilitySystem.onDeleteActiveEffect(effect, options, userId);
+    async onDeleteEffect(effect, options, userId) {
+        await this._conditionalVisibilitySystem.onDeleteEffect(effect, options, userId);
         this.refresh();
     }
 
-    onUpdateToken( token, update, options, userId) {
+    onUpdateToken(token, update, options, userId) {
         const effectsFromUpdate = this._conditionalVisibilitySystem.effectsFromUpdate(update);
         if (effectsFromUpdate) {
-            let convis:any = {};
+            let convis: any = {};
             this._conditionalVisibilitySystem.effectsByCondition().forEach((value, key) => {
                 convis[key] = false;
             });
@@ -276,7 +291,7 @@ export class ConditionalVisibility {
             if (!update.flags) {
                 update.flags = {};
             }
-            
+
             if (convis.hidden !== true) {
                 convis._ste = null;
             }
@@ -299,7 +314,7 @@ export class ConditionalVisibility {
         this._draw();
     }
 
-    async refresh(){
+    async refresh() {
         await this._sightLayer.refresh();
     }
 }

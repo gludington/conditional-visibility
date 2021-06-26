@@ -9,26 +9,7 @@ import { i18n } from '../../conditional-visibility';
  */
 export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilitySystem {
 
-    BASE_EFFECTS = new Array<StatusEffect> (
-        {
-            id: MODULE_NAME + '.invisible',
-            visibilityId: 'invisible',
-            label:  game.i18n.localize(MODULE_NAME+'.invisible'),
-            icon:'modules/'+MODULE_NAME+'/icons/unknown.svg'
-        }, {
-            id: MODULE_NAME + '.obscured',
-            visibilityId: 'obscured',
-            label:  game.i18n.localize(MODULE_NAME+'.obscured'),
-            icon: 'modules/'+MODULE_NAME+'/icons/foggy.svg',
-         }, {
-            id: MODULE_NAME + '.indarkness',
-            visibilityId: 'indarkness',
-            label:  game.i18n.localize(MODULE_NAME+'.indarkness'),
-            icon: 'modules/'+MODULE_NAME+'/icons/moon.svg'
-        }
-    );
-
-    async onCreateActiveEffect(effect, options, userId) {
+    async onCreateEffect(effect, options, userId) {
         const status = this.getEffectByIcon(effect);
         if (status) {
             const actor = effect.parent;
@@ -36,7 +17,7 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
         }
     }
 
-    async onDeleteActiveEffect(effect, options, userId) {
+    async onDeleteEffect(effect, options, userId) {
         const status = this.getEffectByIcon(effect);
         if (status) {
             const actor = effect.parent;
@@ -84,16 +65,15 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
      * Get the base vision capabilities, and add the maximum passive perception for any token in the list.
      * @param srcTokens tokens whos abilities to test
      */
-    getVisionCapabilities(srcTokens: Token[]):any {
-        const flags = super.getVisionCapabilities(srcTokens);
-        //@ts-ignore
-        flags.prc = Math.max(...srcTokens.map(sTok => {
-            if (sTok.actor && sTok.actor.data && sTok.actor.data.data.skills.prc.passive) {
-                return sTok.actor.data.data.skills.prc.passive;
-            }
-            return -1;
-        }));
-        return flags;
+    getVisionCapabilities(srcToken: Array<Token>|Token):any {
+        if (srcToken??false) {
+            
+            const flags = super.getVisionCapabilities(srcToken);
+            //@ts-ignore
+            flags.prc = srcToken?.actor?.data?.data?.skills?.prc?.passive??-1;
+            return flags;
+        }
+        return false;
     }
     /**
      * Override seeContested to compare any available stealth with the passive perception calculated in getVisionCapabilities

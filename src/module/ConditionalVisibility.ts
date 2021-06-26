@@ -324,22 +324,14 @@ export class ConditionalVisibility {
         });
     }
 
-    async onCreateActiveEffect(actor, effect, options, userId) {
-        const status = this._conditionalVisibilitySystem.getEffectByIcon(effect);
-        if (status) {
-            const actor = effect.parent;
-            await actor.setFlag(MODULE_NAME, status.visibilityId, true);
-            this.refresh();
-        }
+    async onCreateActiveEffect(effect, options, userId) {
+        await this._conditionalVisibilitySystem.onCreateActiveEffect(effect, options, userId);
+        this.refresh();
     }
 
-    async onDeleteActiveEffect(actor, effect, options, userId) {
-        const status = this._conditionalVisibilitySystem.getEffectByIcon(effect);
-        if (status) {
-            const actor = effect.parent;
-            await actor.unsetFlag(MODULE_NAME, status.visibilityId);
-            this.refresh();
-        }
+    async onDeleteActiveEffect(effect, options, userId) {
+        await this._conditionalVisibilitySystem.onDeleteActiveEffect(effect, options, userId);
+        this.refresh();
     }
 
     onUpdateToken( token, update, options, userId) {

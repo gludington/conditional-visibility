@@ -1,12 +1,47 @@
 import { ConditionalVisibilityFacade } from '../ConditionalVisibilityFacade';
 import { DefaultConditionalVisibilitySystem } from "./DefaultConditionalVisibilitySystem";
-import { getCanvas, MODULE_NAME } from '../settings';
+import { getCanvas, MODULE_NAME, StatusEffect } from '../settings';
 
 /**
  * Conditional visibility system for dnd5e.  Uses the same base conditions, plus adds hidden, which compares
  * stealth with passive perception.
  */
 export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilitySystem {
+
+    BASE_EFFECTS = new Array<StatusEffect> (
+        {
+            id: MODULE_NAME + '.invisible',
+            visibilityId: 'invisible',
+            label:  game.i18n.localize(MODULE_NAME+'.invisible'),
+            icon:'modules/'+MODULE_NAME+'/icons/unknown.svg'
+        }, {
+            id: MODULE_NAME + '.obscured',
+            visibilityId: 'obscured',
+            label:  game.i18n.localize(MODULE_NAME+'.obscured'),
+            icon: 'modules/'+MODULE_NAME+'/icons/foggy.svg',
+         }, {
+            id: MODULE_NAME + '.indarkness',
+            visibilityId: 'indarkness',
+            label:  game.i18n.localize(MODULE_NAME+'.indarkness'),
+            icon: 'modules/'+MODULE_NAME+'/icons/moon.svg'
+        }
+    );
+
+    async onCreateActiveEffect(effect, options, userId) {
+        const status = this.getEffectByIcon(effect);
+        if (status) {
+            const actor = effect.parent;
+            await actor.setFlag(MODULE_NAME, status.visibilityId, true);
+        }
+    }
+
+    async onDeleteActiveEffect(effect, options, userId) {
+        const status = this.getEffectByIcon(effect);
+        if (status) {
+            const actor = effect.parent;
+            await actor.unsetFlag(MODULE_NAME, status.visibilityId, true);
+        }
+    }
 
     /**
      * Use the base conditions, plus set up the icon for the "hidden" condition
@@ -64,7 +99,7 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
      */
     seeContested(target: Token, visionCapabilities: any): boolean {
 
-        const hidden = this.hasStatus(target, 'hidden', 'newspaper.svg');
+        const hidden = this.hasStatus(target, 'hidden');
         if (hidden === true) {
             //@ts-ignore
             const actor = target.actor;

@@ -23,6 +23,15 @@ export interface ConditionalVisibilitySystem {
     effectsByCondition(): Map<string, StatusEffect>;
 
     /**
+     *  Process the creation of an active effect
+     */
+    onCreateActiveEffect(data, options, userId);
+    /**
+     *  Process the removal of an active effect
+     */
+    onDeleteActiveEffect(data, options, userId);
+
+    /**
      * Get an effect by icon - pf2e uses a string, not a StatusEffect
      */
     getEffectByIcon(effect:StatusEffect|string): StatusEffect;

@@ -6,7 +6,7 @@ import { DefaultConditionalVisibilitySystem } from "./DefaultConditionalVisibili
  */
 export class ConditionalVisibilitySystemPf2e extends DefaultConditionalVisibilitySystem {
 
-    static PF2E_BASE_EFFECTS = new Array (
+    BASE_EFFECTS = new Array (
         { 
             id: MODULE_NAME + '.invisible',
             visibilityId: 'invisible',
@@ -14,13 +14,6 @@ export class ConditionalVisibilitySystemPf2e extends DefaultConditionalVisibilit
             icon:'systems/pf2e/icons/conditions/invisible.png'
         }
     )
-
-    /**
-     * Use the base conditions, plus set up the icon for the "hidden" condition
-     */
-    effects() {
-        return ConditionalVisibilitySystemPf2e.PF2E_BASE_EFFECTS;
-    }
 
     effectsFromUpdate(update) {
         return update.actorData?.items;
@@ -42,7 +35,7 @@ export class ConditionalVisibilitySystemPf2e extends DefaultConditionalVisibilit
      * @param visionCapabilities the sight capabilities of the sight layer
      */
     seeInvisible(target:Token, visionCapabilities:any): boolean {
-        const invisible = this.hasStatus(target, 'invisible', 'invisible.png');
+        const invisible = this.hasStatus(target, 'invisible');
         if (invisible === true) {
             if (visionCapabilities.seeinvisible !== true) {
                 return false;
@@ -51,10 +44,3 @@ export class ConditionalVisibilitySystemPf2e extends DefaultConditionalVisibilit
         return true;
     }
 }
-
-ConditionalVisibilitySystemPf2e.PF2E_BASE_EFFECTS = new Array({
-    id: MODULE_NAME + '.invisible',
-    visibilityId: 'invisible',
-    label: MODULE_NAME + '.invisible',
-    icon: 'systems/pf2e/icons/conditions/invisible.png'
-});

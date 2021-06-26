@@ -8,21 +8,21 @@ const MODULE_NAME = "conditional-visibility";
  */
 export class DefaultConditionalVisibilitySystem implements ConditionalVisibilitySystem {
 
-    static BASE_EFFECTS = new Array<StatusEffect> (
+    BASE_EFFECTS = new Array<StatusEffect> (
         {
             id: MODULE_NAME + '.invisible',
             visibilityId: 'invisible',
-            label:  i18n(MODULE_NAME+'.invisible'),
+            label:  game.i18n.localize(MODULE_NAME+'.invisible'),
             icon:'modules/'+MODULE_NAME+'/icons/unknown.svg'
         }, {
             id: MODULE_NAME + '.obscured',
             visibilityId: 'obscured',
-            label:  i18n(MODULE_NAME+'.obscured'),
+            label:  game.i18n.localize(MODULE_NAME+'.obscured'),
             icon: 'modules/'+MODULE_NAME+'/icons/foggy.svg',
          }, {
             id: MODULE_NAME + '.indarkness',
             visibilityId: 'indarkness',
-            label:  i18n(MODULE_NAME+'.indarkness'),
+            label:  game.i18n.localize(MODULE_NAME+'.indarkness'),
             icon: 'modules/'+MODULE_NAME+'/icons/moon.svg'
         }
     );
@@ -44,7 +44,23 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
         });
     }
 
-    hasStatus(token, id, icon) {
+    async onCreateActiveEffect(effect, options, userId) {
+        const status = this.getEffectByIcon(effect);
+        if (status) {
+            const actor = effect.parent;
+            await actor.setFlag(MODULE_NAME, status.visibilityId, true);
+        }
+    }
+
+    async onDeleteActiveEffect(effect, options, userId) {
+        const status = this.getEffectByIcon(effect);
+        if (status) {
+            const actor = effect.parent;
+            await actor.unsetFlag(MODULE_NAME, status.visibilityId, true);
+        }
+    }
+
+    hasStatus(token, id) {
         return token.actor?.data?.flags?.[MODULE_NAME]?.[id] === true || token.data?.flags?.[MODULE_NAME]?.[id] === true;
     }
 
@@ -55,7 +71,7 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
      * Base effects are invisible, obscured, and indarkness
      */
     effects():Array<StatusEffect> {
-        return DefaultConditionalVisibilitySystem.BASE_EFFECTS;
+        return this.BASE_EFFECTS;
     }
 
     effectsByIcon(): Map<string, StatusEffect> {
@@ -170,7 +186,7 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
      * @param visionCapabilities the sight capabilities of the sight layer
      */
     seeInvisible(target:Token, visionCapabilities:any): boolean {
-        const invisible = this.hasStatus(target, 'invisible', 'unknown.svg');
+        const invisible = this.hasStatus(target, 'invisible');
         if (invisible === true) {
             if (visionCapabilities.seeinvisible !== true) {
                 return false;
@@ -185,7 +201,7 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
      * @param visionCapabilities the sight capabilities of the sight layer
      */
     seeObscured(target:Token, visionCapabilities:any): boolean {
-        const obscured = this.hasStatus(target, 'obscured', 'foggy.svg');
+        const obscured = this.hasStatus(target, 'obscured');
         if (obscured === true) {
             if (visionCapabilities.seeobscured !== true) {
                 return false;
@@ -201,7 +217,7 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
      * @param flags the sight capabilities of the sight layer
      */
     seeInDarkness(target:Token, visionCapabilities:any): boolean {
-        const indarkness = this.hasStatus(target, 'indarkness', 'moon.svg');
+        const indarkness = this.hasStatus(target, 'indarkness');
         if (indarkness === true) {
             if (visionCapabilities.seeindarkness !== true) {
                 return false;
@@ -294,20 +310,3 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
         });
     }
 }
-
-DefaultConditionalVisibilitySystem.BASE_EFFECTS = new Array({
-    id: MODULE_NAME + '.invisible',
-    visibilityId: 'invisible',
-    label: MODULE_NAME + '.invisible',
-    icon: 'modules/' + MODULE_NAME + '/icons/unknown.svg'
-}, {
-    id: MODULE_NAME + '.obscured',
-    visibilityId: 'obscured',
-    label: MODULE_NAME + '.obscured',
-    icon: 'modules/' + MODULE_NAME + '/icons/foggy.svg',
-}, {
-    id: MODULE_NAME + '.indarkness',
-    visibilityId: 'indarkness',
-    label: MODULE_NAME + '.indarkness',
-    icon: 'modules/' + MODULE_NAME + '/icons/moon.svg'
-});

@@ -1,6 +1,7 @@
 import { ConditionalVisibilityFacade } from '../ConditionalVisibilityFacade';
 import { DefaultConditionalVisibilitySystem } from "./DefaultConditionalVisibilitySystem";
 import { getCanvas, MODULE_NAME, StatusEffect } from '../settings';
+import { i18n } from '../../conditional-visibility';
 
 /**
  * Conditional visibility system for dnd5e.  Uses the same base conditions, plus adds hidden, which compares
@@ -48,12 +49,14 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
      */
     effects() {
         const effects = super.effects();
-        effects.push({
-            id: MODULE_NAME + '.hidden',
-            visibilityId: 'hidden',
-            label: game.i18n.localize(MODULE_NAME + '.hidden'),
-            icon: 'modules/' + MODULE_NAME + '/icons/newspaper.svg'
-        });
+        effects.push(
+            {
+                id: MODULE_NAME + '.hidden',
+                visibilityId: 'hidden',
+                label: i18n(MODULE_NAME + '.hidden'),
+                icon: 'modules/' + MODULE_NAME + '/icons/newspaper.svg'
+            }
+        );
         return effects;
     }
 

@@ -1,31 +1,31 @@
 import { i18n } from "../../conditional-visibility";
 import { ConditionalVisibilityFacade } from "../ConditionalVisibilityFacade";
-import { DEFAULT_STEALTH, StatusEffect } from "../settings";
+import { DEFAULT_STEALTH, MODULE_NAME, StatusEffect } from "../settings";
 import { ConditionalVisibilitySystem } from "./ConditionalVisibilitySystem";
-const MODULE_NAME = "conditional-visibility";
+// const MODULE_NAME = "conditional-visibility";
 /**
  * The DefaultConditionalVisibilitySystem, to use when no visibility system can be found for the game system.
  */
 export class DefaultConditionalVisibilitySystem implements ConditionalVisibilitySystem {
 
-    BASE_EFFECTS = new Array<StatusEffect> (
-        {
-            id: MODULE_NAME + '.invisible',
-            visibilityId: 'invisible',
-            label:  game.i18n.localize(MODULE_NAME+'.invisible'),
-            icon:'modules/'+MODULE_NAME+'/icons/unknown.svg'
-        }, {
-            id: MODULE_NAME + '.obscured',
-            visibilityId: 'obscured',
-            label:  game.i18n.localize(MODULE_NAME+'.obscured'),
-            icon: 'modules/'+MODULE_NAME+'/icons/foggy.svg',
-         }, {
-            id: MODULE_NAME + '.indarkness',
-            visibilityId: 'indarkness',
-            label:  game.i18n.localize(MODULE_NAME+'.indarkness'),
-            icon: 'modules/'+MODULE_NAME+'/icons/moon.svg'
-        }
-    );
+    // static BASE_EFFECTS = new Array<StatusEffect> (
+    //     {
+    //         id: MODULE_NAME + '.invisible',
+    //         visibilityId: 'invisible',
+    //         label: MODULE_NAME + '.invisible',
+    //         icon: 'modules/' + MODULE_NAME + '/icons/unknown.svg'
+    //     }, {
+    //         id: MODULE_NAME + '.obscured',
+    //         visibilityId: 'obscured',
+    //         label: MODULE_NAME + '.obscured',
+    //         icon: 'modules/' + MODULE_NAME + '/icons/foggy.svg',
+    //     }, {
+    //         id: MODULE_NAME + '.indarkness',
+    //         visibilityId: 'indarkness',
+    //         label: MODULE_NAME + '.indarkness',
+    //         icon: 'modules/' + MODULE_NAME + '/icons/moon.svg'
+    //     }
+    // );
 
     _effectsByIcon: Map<string, StatusEffect>;
     _effectsByCondition: Map<string, StatusEffect>;
@@ -71,7 +71,25 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
      * Base effects are invisible, obscured, and indarkness
      */
     effects():Array<StatusEffect> {
-        return this.BASE_EFFECTS;
+        //return DefaultConditionalVisibilitySystem.BASE_EFFECTS;
+        return new Array<StatusEffect> (
+            {
+                id: MODULE_NAME + '.invisible',
+                visibilityId: 'invisible',
+                label:  i18n(MODULE_NAME+'.invisible'),
+                icon:'modules/'+MODULE_NAME+'/icons/unknown.svg'
+            }, {
+                id: MODULE_NAME + '.obscured',
+                visibilityId: 'obscured',
+                label:  i18n(MODULE_NAME+'.obscured'),
+                icon: 'modules/'+MODULE_NAME+'/icons/foggy.svg',
+            }, {
+                id: MODULE_NAME + '.indarkness',
+                visibilityId: 'indarkness',
+                label:  i18n(MODULE_NAME+'.indarkness'),
+                icon: 'modules/'+MODULE_NAME+'/icons/moon.svg'
+            }
+        );
     }
 
     effectsByIcon(): Map<string, StatusEffect> {
@@ -276,7 +294,7 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
         const content = await renderTemplate("modules/" + MODULE_NAME + "/templates/stealth_hud.html", { initialValue: result });
         return new Promise((resolve, reject) => {
             let hud = new Dialog({
-                title: game.i18n.localize(MODULE_NAME + '.hidden'),
+                title: i18n(MODULE_NAME + '.hidden'),
                 content: content,
                 buttons: {
                     one: {

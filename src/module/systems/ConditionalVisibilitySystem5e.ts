@@ -2,6 +2,7 @@ import { ConditionalVisibilityFacade } from '../ConditionalVisibilityFacade';
 import { DefaultConditionalVisibilitySystem } from "./DefaultConditionalVisibilitySystem";
 import { getCanvas, MODULE_NAME, StatusEffect } from '../settings';
 import { i18n } from '../../conditional-visibility';
+import { ConditionalVisibility } from '../ConditionalVisibility';
 
 /**
  * Conditional visibility system for dnd5e.  Uses the same base conditions, plus adds hidden, which compares
@@ -12,16 +13,30 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
     async onCreateEffect(effect, options, userId) {
         const status = this.getEffectByIcon(effect);
         if (status) {
-            const actor = effect.parent;
-            await actor.setFlag(MODULE_NAME, status.visibilityId, true);
+            //const actor = effect.parent;
+            //await actor.setFlag(MODULE_NAME, status.visibilityId, true);
+            let flag = "flags.conditional-visibility."+status.visibilityId;
+            if(effect.parent.isToken){
+                ConditionalVisibility.INSTANCE.sceneUpdates.push({_id:effect.parent.parent.id,["actorData."+flag]:true})
+            } else {
+                ConditionalVisibility.INSTANCE.actorUpdates.push({_id:effect.parent.id,[flag]:true})
+            }
+            ConditionalVisibility.INSTANCE.debouncedUpdate;
         }
     }
 
     async onDeleteEffect(effect, options, userId) {
         const status = this.getEffectByIcon(effect);
         if (status) {
-            const actor = effect.parent;
-            await actor.unsetFlag(MODULE_NAME, status.visibilityId, true);
+            //const actor = effect.parent;
+            //await actor.unsetFlag(MODULE_NAME, status.visibilityId, true);
+            let flag = "flags.conditional-visibility."+status.visibilityId;
+            if(effect.parent.isToken){
+                ConditionalVisibility.INSTANCE.sceneUpdates.push({_id:effect.parent.parent.id,["actorData."+flag]:false})
+            }else{
+                ConditionalVisibility.INSTANCE.actorUpdates.push({_id:effect.parent.id,[flag]:false})
+            }
+            ConditionalVisibility.INSTANCE.debouncedUpdate;
         }
     }
 

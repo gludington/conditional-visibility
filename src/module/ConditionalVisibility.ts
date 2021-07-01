@@ -18,6 +18,10 @@ export class ConditionalVisibility {
     private _getSrcTokens: () => Array<Token>;
     private _draw: () => void;
 
+    public sceneUpdates;
+    public actorUpdates;
+    public debouncedUpdate;
+
     /**
      * Called from init hook to establish the extra status effects in the main list before full game initialization.
      */
@@ -126,6 +130,9 @@ export class ConditionalVisibility {
             }
             return srcTokens;
         }
+        this.actorUpdates = [];
+        this.sceneUpdates = [];
+        this.debouncedUpdate = debounce(async ()=> await this.applyChanges(),300);
         this._draw = async () => {
             await this._sightLayer.initialize();
             await this._sightLayer.refresh();
@@ -267,6 +274,21 @@ export class ConditionalVisibility {
     async onDeleteEffect(effect, options, userId) {
         await this._conditionalVisibilitySystem.onDeleteEffect(effect, options, userId);
         this.refresh();
+    }
+
+    async applyChanges(){ 
+        if (ConditionalVisibility.INSTANCE.sceneUpdates.length){
+            //@ts-ignore
+            await getCanvas().scene.updateEmbeddedDocuments("Token", ConditionalVisibility.INSTANCE.sceneUpdates);
+            ConditionalVisibility.INSTANCE.sceneUpdates.length = 0;
+        } 
+        if (ConditionalVisibility.INSTANCE.actorUpdates.length){
+            //@ts-ignore
+            await Actor.updateDocuments(ConditionalVisibility.INSTANCE.actorUpdates);
+            ConditionalVisibility.INSTANCE.actorUpdates.length = 0;
+        }
+        //@ts-ignore
+        await socket.executeForEveryone("refresh");
     }
 
     onUpdateToken(token, update, options, userId) {

@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.2.2]
+
+- Very special ty to [Szefo09](https://github.com/szefo09) for make implemented a [debouncing functionality for CV](https://github.com/szefo09/conditional-visibility/commit/c2f3b9aa20d3bf4c37aec8e9eaf83b76bd532521)
+What this does is, if multiple tokens get CV effects (for example via Active Auras module), it will take all the changes and bulk apply them after a set delay, so that it won't flood the database with small changes with race condition.
+
 ## [0.2.1]
 
 - Very special ty to [Teshynil](https://github.com/Teshynil) for make many and many test with bug fix

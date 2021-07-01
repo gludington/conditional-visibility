@@ -9,21 +9,42 @@
  * Software License: [your license] Put your desired license here, which
  * 					 determines how others may use and modify your module
  */
-
 // Import TypeScript modules
-import { registerSettings } from './module/settings.js';
-import { preloadTemplates } from './module/preloadTemplates.js';
+import { getCanvas, MODULE_NAME, registerSettings } from './module/settings';
+import { preloadTemplates } from './module/preloadTemplates';
 import { ConditionalVisibility } from './module/ConditionalVisibility';
-import * as Constants from './module/Constants';
+import { readyHooks } from './module/Hooks';
 
 declare global {
     interface Window { Senses: ConditionalVisibility }
 }
+
+export let debugEnabled = 0;
+// 0 = none, warnings = 1, debug = 2, all = 3
+export let debug = (...args) => {if (debugEnabled > 1) console.log(`DEBUG:${MODULE_NAME} | `, ...args)};
+export let log = (...args) => console.log(`${MODULE_NAME} | `, ...args);
+export let warn = (...args) => {if (debugEnabled > 0) console.warn(`${MODULE_NAME} | `, ...args)};
+export let error = (...args) => console.error(`${MODULE_NAME} | `, ...args);
+export let timelog = (...args) => warn(`${MODULE_NAME} | `, Date.now(), ...args);
+
+export let i18n = key => {
+  return game.i18n.localize(key);
+};
+export let i18nFormat = (key, data = {}) => {
+  return game.i18n.format(key, data);
+}
+
+export let setDebugLevel = (debugText: string) => {
+  debugEnabled = {"none": 0, "warn": 1, "debug": 2, "all": 3}[debugText] || 0;
+  // 0 = none, warnings = 1, debug = 2, all = 3
+  if (debugEnabled >= 3) CONFIG.debug.hooks = true;
+}
+
 /* ------------------------------------ */
 /* Initialize module					*/
 /* ------------------------------------ */
 Hooks.once('init', async function() {
-	console.log(Constants.MODULE_NAME + ' | init ' + Constants.MODULE_NAME);
+	console.log(MODULE_NAME + ' | init ' + MODULE_NAME);
 	// Assign custom classes and constants here
 	
 	// Register custom module settings
@@ -47,34 +68,5 @@ Hooks.once('setup', function() {
 /* ------------------------------------ */
 Hooks.once('ready', async function() {
 	// Do anything once the module is ready
-	console.log(Constants.MODULE_NAME + ' | Ready ' + Constants.MODULE_NAME);
-    const sightLayer = canvas.layers.find(layer => {
-        return layer.__proto__.constructor.name === 'SightLayer'
-    });
-
-    ConditionalVisibility.initialize(sightLayer, canvas.hud.token);	
+    readyHooks();
 });
-
-
-// Add any additional hooks if necessary
-Hooks.on("renderTokenConfig", (tokenConfig, html, data) => {
-    ConditionalVisibility.INSTANCE.onRenderTokenConfig(tokenConfig, html, data);
-});
-
-Hooks.on("renderTokenHUD", (app, html, data) => {
-    ConditionalVisibility.INSTANCE.onRenderTokenHUD(app, html, data);
-});
-
-//synthetic actors go through this
-Hooks.on("preUpdateToken", (scene, token, update, options, userId) => {
-    ConditionalVisibility.INSTANCE.onPreUpdateToken(scene, token, update, options, userId);
-})
-
-//real actors go through this
-Hooks.on("preCreateActiveEffect", (actor, effect, options, userId) => {
-    ConditionalVisibility.INSTANCE.onPreCreateActiveEffect(actor, effect, options, userId);
-})
-
-Hooks.on("preDeleteActiveEffect", (actor, effect, options, userId) => {
-    ConditionalVisibility.INSTANCE.onPreDeleteActiveEffect(actor, effect, options, userId);
-})

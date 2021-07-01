@@ -1,9 +1,9 @@
-import { StatusEffect } from '../../src/module/Constants';
+import { StatusEffect } from '../../src/module/settings';
 import { ConditionalVisibility } from '../../src/module/ConditionalVisibility';
 import {ConditionalVisibilitySystem5e } from '../../src/module/systems/ConditionalVisibilitySystem5e';
 //@ts-ignore
 (global as any).game = {
-    data: { version: "0.6.6"},
+    data: { version: "0.8.7"},
     system: {id: 'dnd5e'},
     socket: { 
         on:jest.fn().mockImplementation((name, data) => {})

@@ -7,6 +7,24 @@ import { DefaultConditionalVisibilitySystem } from "./DefaultConditionalVisibili
  */
 export class ConditionalVisibilitySystemPf2e extends DefaultConditionalVisibilitySystem {
 
+    async onCreateEffect(effect, options, userId) {
+        if (effect.type !== "condition") return;
+        const status = this.getEffectByIcon(effect);
+        if (status) {
+            const actor = effect.parent;
+            await actor.setFlag(MODULE_NAME, status.visibilityId, true);
+        }
+    }
+
+    async onDeleteEffect(effect, options, userId) {
+        if (effect.type !== "condition") return;
+        const status = this.getEffectByIcon(effect);
+        if (status) {
+            const actor = effect.parent;
+            await actor.unsetFlag(MODULE_NAME, status.visibilityId, true);
+        }
+    }
+
     // static PF2E_BASE_EFFECTS = new Array (
     //     // { 
     //     //     id: MODULE_NAME + '.invisible',
@@ -27,7 +45,7 @@ export class ConditionalVisibilitySystemPf2e extends DefaultConditionalVisibilit
                 id: MODULE_NAME + '.invisible',
                 visibilityId: 'invisible',
                 label: i18n(MODULE_NAME + '.invisible'),
-                icon: 'systems/pf2e/icons/conditions/invisible.png'
+                icon: 'systems/pf2e/icons/conditions/invisible.webp'
             }
         );
         return effects;
@@ -39,25 +57,26 @@ export class ConditionalVisibilitySystemPf2e extends DefaultConditionalVisibilit
 
     getEffectByIcon(effect) {
         //@ts-ignore
-        return this.effectsByIcon().get(effect.img);
+        return this.effectsByIcon().get(effect.data.img);
 
     }
 
     gameSystemId() {
         return "pf2e";
     }
-    
+
     /**
      * Tests whether a token is invisible, and if it can be seen.
      * @param target the token being seen (or not)
      * @param visionCapabilities the sight capabilities of the sight layer
      */
-    seeInvisible(target:Token, visionCapabilities:any): boolean {
-        const invisible = this.hasStatus(target, 'invisible', 'invisible.png');
+    seeInvisible(target: Token, visionCapabilities: any, distance: any): boolean {
+        const invisible = this.hasStatus(target, 'invisible');
         if (invisible === true) {
-            if (visionCapabilities.seeinvisible !== true) {
-                return false;
+            if (visionCapabilities.seeinvisible > 0) {
+                return visionCapabilities.seeinvisible >= distance
             }
+            return false;
         }
         return true;
     }

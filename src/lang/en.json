@@ -15,7 +15,7 @@
     "conditional-visibility.help.availableconditions": "Available Conditions",
 
     "conditional-visibility.unsupportedsystem":"Conditional Visibility does not support the system {system}, as it has its own condition mechanism.  Issues (especially pull requests) are welcomed",
-    "conditional-visibility.ExtraSenseInstructions": "Additional senses that may enhance vision",
+    "conditional-visibility.ExtraSenseInstructions": "Additional senses that may enhance vision, for unlimited range use -1",
     "conditional-visibility.seeinvisible":"Sees Invisible",
     "conditional-visibility.blindsight": "Blindsight",
     "conditional-visibility.tremorsense":"Tremorsense",

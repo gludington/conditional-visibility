@@ -3,7 +3,7 @@ import { StatusEffect } from '../../src/module/settings';
 import {ConditionalVisibilitySystemPf2e } from '../../src/module/systems/ConditionalVisibilitySystemPf2e';
 //@ts-ignore
 (global as any).game = {
-    data: { version: "0.7.6"},
+    data: { version: "0.8.7"},
     system: {id: 'pf2e'},
     socket: { 
         on:jest.fn().mockImplementation((name, data) => {})

@@ -23,6 +23,15 @@ export interface ConditionalVisibilitySystem {
     effectsByCondition(): Map<string, StatusEffect>;
 
     /**
+     *  Process the creation of an active effect
+     */
+    onCreateEffect(data, options, userId);
+    /**
+     *  Process the removal of an active effect
+     */
+    onDeleteEffect(data, options, userId);
+
+    /**
      * Get an effect by icon - pf2e uses a string, not a StatusEffect
      */
     getEffectByIcon(effect:StatusEffect|string): StatusEffect;
@@ -43,10 +52,10 @@ export interface ConditionalVisibilitySystem {
 
     /**
      * Get the vision capabilities of the combined list of tokens provided.
-     * @param srcTokens 
+     * @param srcToken
      * @return an object containing flags for conditions that will be passed to canSee
      */
-    getVisionCapabilities(srcTokens: Token[]):any
+    getVisionCapabilities(srcToken: Array<Token>|Token):any
 
     /**
      * Check to see if a target token can be seen by an object containing sight capabilities.

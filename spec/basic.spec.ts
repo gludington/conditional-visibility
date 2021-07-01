@@ -2,8 +2,8 @@ import {ConditionalVisibility } from '../src/module/ConditionalVisibility';
 
 //@ts-ignore
 (global as any).game = {
-    data: { version: "0.7.6"},
-    system: {id: 'asdf'},
+    data: { version: "0.8.7"},
+    system: {id: 'default'},
     socket: { 
         on:jest.fn().mockImplementation((name, data) => {})
     }

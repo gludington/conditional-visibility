@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.2.1]
+
+- Very special ty to [Teshynil](https://github.com/Teshynil) for make many and many test with bug fix
+
 ## [0.2.0] (BETA)
 
 - Made functional with Foundry 0.8.6 (maybe)

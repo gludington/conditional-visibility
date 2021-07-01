@@ -20,7 +20,7 @@ To install this module manually:
 1.  Inside the Foundry "Configuration and Setup" screen, click "Add-on Modules"
 2.  Click "Install Module"
 3.  In the "Manifest URL" field, paste the following url:
-`https://raw.githubusercontent.com/gludington/conditional-visibility/master/src/module.json`
+`https://raw.githubusercontent.com/p4535992/conditional-visibility/master/src/module.json`
 4.  Click 'Install' and wait for installation to complete
 5.  Don't forget to enable the module in game using the "Manage Module" button
 
@@ -88,7 +88,7 @@ When this setting is true, then rolling stealth from that token's character shee
 ## Installation
 
 1. Navigate to the Foundry Setup screen and click on the Modules tab
-2. Click Install Module and paste the module.json link from the latest release into the box.  (Currently, https://github.com/gludington/conditional-visibility/releases/download/v0.0.6/module.json )
+2. Click Install Module and paste the module.json link from the latest release into the box.  (Currently, https://github.com/p4535992/conditional-visibility/releases/download/v0.0.6/module.json )
 3. Once the **conditional-visibility** module is installed, open your desired world and navigate to the `Game Settings` > `Configure Settings` > `Module Settings` and enable the module
 
 ## Note for Combat Utility Belt Users
@@ -122,7 +122,7 @@ Hidden (5e only)
 
 ## Issues
 
-Any issues, bugs, or feature requests are always welcome to be reported directly to the [Issue Tracker](https://github.com/gludington/conditional-visibility/issues ), or using the [Bug Reporter Module](https://foundryvtt.com/packages/bug-reporter/).
+Any issues, bugs, or feature requests are always welcome to be reported directly to the [Issue Tracker](https://github.com/p4535992/conditional-visibility/issues ), or using the [Bug Reporter Module](https://foundryvtt.com/packages/bug-reporter/).
 
 ## Acknowledgements
 
@@ -137,3 +137,5 @@ Bootstrapped with League of Extraordinary FoundryVTT Developers  [foundry-vtt-ty
 Thanks to anyone who helps me with this code! I appreciate the user community's feedback on this project!
 
 Very special ty to [Szefo09](https://github.com/szefo09) for make a full operational patch for Dnd5e with FoundryVtt 0.8.6
+
+Very special ty to [Teshynil](https://github.com/Teshynil) for make many and many test with bug fix

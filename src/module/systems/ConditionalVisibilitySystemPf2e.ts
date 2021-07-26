@@ -1,5 +1,5 @@
 import { i18n } from '../../conditional-visibility';
-import { MODULE_NAME } from '../settings';
+import { MODULE_NAME, StatusEffect } from '../settings';
 import { DefaultConditionalVisibilitySystem } from "./DefaultConditionalVisibilitySystem";
 // const MODULE_NAME = "conditional-visibility";
 /**
@@ -26,7 +26,7 @@ export class ConditionalVisibilitySystemPf2e extends DefaultConditionalVisibilit
     }
 
     // static PF2E_BASE_EFFECTS = new Array (
-    //     // { 
+    //     // {
     //     //     id: MODULE_NAME + '.invisible',
     //     //     visibilityId: 'invisible',
     //     //     label: i18n(MODULE_NAME+'.invisible'),
@@ -55,9 +55,9 @@ export class ConditionalVisibilitySystemPf2e extends DefaultConditionalVisibilit
         return update.actorData?.items;
     }
 
-    getEffectByIcon(effect) {
-        //@ts-ignore
-        return this.effectsByIcon().get(effect.data.img);
+    getEffectByIcon(effect):StatusEffect {
+
+        return <StatusEffect>this.effectsByIcon().get(effect.data.img);
 
     }
 

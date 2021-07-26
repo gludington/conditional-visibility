@@ -1,5 +1,5 @@
 import { ConditionalVisibility } from "./ConditionalVisibility";
-import { MODULE_NAME } from "./settings";
+import { getGame, MODULE_NAME } from "./settings";
 import { ConditionalVisibilitySystem } from "./systems/ConditionalVisibilitySystem";
 import { ConditionalVisibilitySystemPf2e } from './systems/ConditionalVisibilitySystemPf2e';
 
@@ -23,21 +23,21 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
         this._mod = mod;
         this._system = system;
         this.toggleEffect = (token, condition) => {
-            //@ts-ignore
+
             return token.toggleEffect(condition);
         }
     }
 
     help():void {
-        if (game.user.isGM) {
-            let conditions = [];
+        if (getGame().user?.isGM) {
+            let conditions:any[] = [];
             this._system.effectsByCondition().forEach((value, key) => {
                 conditions.push({ name: key, icon: value.icon });
             })
             renderTemplate("modules/" + MODULE_NAME + "/templates/help_dialog.html", {
-                gamesystem: game.system.id,
+                gamesystem: getGame().system.id,
                 hasStealth: this._system.hasStealth(),
-                autoStealth: game.settings.get(MODULE_NAME, "autoStealth"),
+                autoStealth: getGame().settings.get(MODULE_NAME, "autoStealth"),
                 conditions: conditions
             })
                 .then(content => {
@@ -59,7 +59,7 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
      * @param condition the name of the condition
      * @param value true or false
      */
-    setCondition(tokens:Array<Token>, condition:string, value:boolean) {       
+    setCondition(tokens:Array<Token>, condition:string, value:boolean) {
         let status = this._system.effectsByCondition().get(condition);
         if (status) {
             const guard:Map<string, boolean> = new Map();
@@ -87,7 +87,7 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
      * @param tokens the tokens to affect
      * @param condition the string condition
      */
-    toggleCondition(tokens:Array<Token>, condition:string) {     
+    toggleCondition(tokens:Array<Token>, condition:string) {
         let status = this._system.effectsByCondition().get(condition);
         if (status) {
             const guard:Map<string, boolean> = new Map();
@@ -122,13 +122,13 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
      */
     hide(tokens:Array<Token>, value?: number) {
         if (!this._system.hasStealth()) {
-            ui.notifications.error(game.i18n.format("conditional-visibility.stealth.not.supported", { sysid: game.system.id }));
+            ui.notifications?.error(getGame().i18n.format("conditional-visibility.stealth.not.supported", { sysid: getGame().system.id }));
             return;
-        } 
+        }
         if (this._system.effectsByCondition().has('hidden')) {
             let hidden = this._system.effectsByCondition().get('hidden');
             const guard:Map<string, boolean> = new Map();
-            tokens.forEach((token:Token) => {    
+            tokens.forEach((token:Token) => {
                 if (token.owner) {
                     if (!this.actorAlreadyAdjusted(token, guard)) {
                         let stealth;
@@ -138,24 +138,21 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
                         else {
                             stealth = this._system.rollStealth(token).roll().total;
                         }
+                        let tokenActor = <Actor>token.document.actor;
                         if (this.has(token, hidden) === true) {
                             const update = { 'conditional-visibility': {} };
-                            //@ts-ignore
                             update[MODULE_NAME]._ste = stealth;
-                            token.update({ flags: update });
+                            tokenActor.update({ flags: update });
                         }
                         else {
-                            if (!token.data) {
-                                token.data = new Token().data;
+                            if (!tokenActor.data.flags) {
+                              tokenActor.data.flags = {};
                             }
-                            if (!token.data.flags) {
-                                token.data.flags = {};
+                            if (!tokenActor.data.flags[MODULE_NAME]) {
+                                tokenActor.data.flags[MODULE_NAME] = {};
                             }
-                            if (!token.data.flags[MODULE_NAME]) {
-                                token.data.flags[MODULE_NAME] = {};
-                            }
-                            //@ts-ignore
-                            token.data.flags[MODULE_NAME]._ste = stealth;
+
+                            tokenActor.setFlag(MODULE_NAME,"_ste", stealth);
                             this.toggleEffect(token, hidden);
                         }
                     }
@@ -183,7 +180,7 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
             })
         }
     }
-    
+
     /**
      * Toggle the hidden condition on systems that support it.
      * @param tokens the tokens to hide/unhide
@@ -207,17 +204,14 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
                             this.toggleEffect(token, hidden);
                         }
                         else {
-                            if (!token.data) {
-                                token.data = new Token().data;
+                            let tokenActor = <Actor>token.document.actor;
+                            if (!tokenActor.data.flags) {
+                                tokenActor.data.flags = {};
                             }
-                            if (!token.data.flags) {
-                                token.data.flags = {};
+                            if (!tokenActor.data.flags[MODULE_NAME]) {
+                                tokenActor.data.flags[MODULE_NAME] = {};
                             }
-                            if (!token.data.flags[MODULE_NAME]) {
-                                token.data.flags[MODULE_NAME] = {};
-                            }
-                            //@ts-ignore
-                            token.data.flags[MODULE_NAME]._ste = stealth;
+                            tokenActor.setFlag(MODULE_NAME,"_ste", stealth);
                             this.toggleEffect(token, hidden);
                         }
                     }
@@ -227,7 +221,7 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
     }
 
     toggleEffect(token, condition):Promise<any> {
-        //@ts-ignore
+
         return token.toggleEffect(condition);
     }
 

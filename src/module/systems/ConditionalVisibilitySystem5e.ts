@@ -1,6 +1,6 @@
 import { ConditionalVisibilityFacade } from '../ConditionalVisibilityFacade';
 import { DefaultConditionalVisibilitySystem } from "./DefaultConditionalVisibilitySystem";
-import { getCanvas, MODULE_NAME, StatusEffect } from '../settings';
+import { getCanvas, getGame, MODULE_NAME, StatusEffect } from '../settings';
 import { i18n } from '../../conditional-visibility';
 import { ConditionalVisibility } from '../ConditionalVisibility';
 
@@ -62,12 +62,12 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
 
     initializeHooks(facade) {
         Hooks.on('createChatMessage', (message, jQuery, speaker) => {
-            if (game.settings.get(MODULE_NAME, "autoStealth") === true && message.data.flags.dnd5e
+            if (getGame().settings.get(MODULE_NAME, "autoStealth") === true && message.data.flags.dnd5e
                 && message.data.flags.dnd5e.roll
                 && message.data.flags.dnd5e.roll.skillId === 'ste') {
                 if (message.data.speaker.token) {
                     const tokenId = message.data.speaker.token;
-                    const token = getCanvas().tokens.placeables.find(tok => tok.id === tokenId);
+                    const token = getCanvas().tokens?.placeables.find(tok => tok.id === tokenId);
                     if (token && token.owner) {
                         facade.hide([token], message._roll.total);
                     }
@@ -80,9 +80,9 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
      * Get the base vision capabilities, and add the maximum passive perception for any token in the list.
      * @param srcTokens tokens whos abilities to test
      */
-    getVisionCapabilities(srcToken: Array<Token>|Token):any {
+    getVisionCapabilities(srcToken: Token):any {
         if (srcToken??false) {
-            
+
             const flags = super.getVisionCapabilities(srcToken);
             //@ts-ignore
             flags.prc = srcToken?.actor?.data?.data?.skills?.prc?.passive??-1;
@@ -99,12 +99,12 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
 
         const hidden = this.hasStatus(target, 'hidden');
         if (hidden === true) {
-            //@ts-ignore
+
             const actor = target.actor;
-            //@ts-ignore
-            if (actor.data.flags[MODULE_NAME] && actor.data.flags[MODULE_NAME]._ste) {
-                //@ts-ignore
-                const stealth = actor.data.flags[MODULE_NAME]._ste;
+
+            if (actor?.getFlag[MODULE_NAME] && actor?.getFlag[MODULE_NAME]._ste) {
+
+                const stealth = actor?.getFlag[MODULE_NAME]._ste;
                 if (visionCapabilities.prc < stealth) {
                     return false;
                 }
@@ -116,7 +116,7 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
     }
 
     initializeOnToggleEffect(tokenHud) {
-    
+
         const realOnToggleEffect = tokenHud._onToggleEffect.bind(tokenHud);
 
         tokenHud._onToggleEffect = (event, opts) => {
@@ -168,10 +168,11 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
 
     rollStealth(token:Token):Roll {
         if (token && token.actor) {
+            //@ts-ignore
             return new Roll("1d20 + (" + token.actor.data.data.skills.ste.total + ")");
         } else {
             return super.rollStealth(token);
         }
-        
+
     }
 }

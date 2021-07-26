@@ -10,7 +10,7 @@
  * 					 determines how others may use and modify your module
  */
 // Import TypeScript modules
-import { getCanvas, MODULE_NAME, registerSettings } from './module/settings';
+import { getCanvas, getGame, MODULE_NAME, registerSettings } from './module/settings';
 import { preloadTemplates } from './module/preloadTemplates';
 import { ConditionalVisibility } from './module/ConditionalVisibility';
 import { readyHooks } from './module/Hooks';
@@ -28,10 +28,10 @@ export let error = (...args) => console.error(`${MODULE_NAME} | `, ...args);
 export let timelog = (...args) => warn(`${MODULE_NAME} | `, Date.now(), ...args);
 
 export let i18n = key => {
-  return game.i18n.localize(key);
+  return getGame().i18n.localize(key);
 };
 export let i18nFormat = (key, data = {}) => {
-  return game.i18n.format(key, data);
+  return getGame().i18n.format(key, data);
 }
 
 export let setDebugLevel = (debugText: string) => {
@@ -44,12 +44,15 @@ export let setDebugLevel = (debugText: string) => {
 /* Initialize module					*/
 /* ------------------------------------ */
 Hooks.once('init', async function() {
+  if(getGame().modules.get("levels")?.active){
+      return console.error("Conditional Visibility does not currently work with Levels module. Initialization stopped.");
+  }
 	console.log(MODULE_NAME + ' | init ' + MODULE_NAME);
 	// Assign custom classes and constants here
-	
+
 	// Register custom module settings
 	registerSettings();
-	
+
 	// Preload Handlebars templates
 	await preloadTemplates();
 

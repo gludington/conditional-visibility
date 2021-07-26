@@ -13,6 +13,7 @@
 		"types": [
 			"@league-of-foundry-developers/foundry-vtt-types",
 			"@types/jest"
-		]
+		],
+    "strictNullChecks": true
 	}
 }

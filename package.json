@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "conditional-visibility",
-  "version": "0.2.1",
+  "version": "0.2.7",
   "description": "",
   "scripts": {
     "package": "gulp clean && gulp build && gulp package",
@@ -11,12 +11,12 @@
     "build": "gulp build && gulp link",
     "build:watch": "gulp watch",
     "clean": "gulp clean && gulp link --clean",
-    "update": "npm install --save-dev @league-of-foundry-developers/foundry-vtt-types@fvtt-0.7.10"
+    "update": "npm install --save-dev @league-of-foundry-developers/foundry-vtt-types@fvtt-0.8.8"
   },
   "author": "",
   "license": "",
   "devDependencies": {
-    "@league-of-foundry-developers/foundry-vtt-types": "^0.7.10-0",
+    "@league-of-foundry-developers/foundry-vtt-types": "^0.8.8-8",
     "@types/jest": "^26.0.23",
     "archiver": "^5.2.0",
     "chalk": "^4.1.1",

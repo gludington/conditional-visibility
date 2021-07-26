@@ -4,6 +4,8 @@
 
 ## THIS PROJECT IS IN BETA BUT IL TRY TO MAKE A "STABLE" VERSION FOR FOUNDRYVTT 0.8.6 AND NEWER
 
+## NOTE: If you are a javascript developer and not a typescript developer, you can just use the javascript files under the dist folder or rename the file from .ts to .js
+
 **Author**: Greg Ludington
 
 Invisible Stalkers should only be seen by players that have cast See Invisibility.  Stealthy Goblins should only be seen by players with high perception.
@@ -23,6 +25,14 @@ To install this module manually:
 `https://raw.githubusercontent.com/p4535992/conditional-visibility/master/src/module.json`
 4.  Click 'Install' and wait for installation to complete
 5.  Don't forget to enable the module in game using the "Manage Module" button
+
+### libWrapper
+
+This module uses the [libWrapper](https://github.com/ruipin/fvtt-lib-wrapper) library for wrapping core methods. It is a hard dependency and it is recommended for the best experience and compatibility with other modules.
+
+### socketlib
+
+This module uses the [socketlib](https://github.com/manuelVo/foundryvtt-socketlib) library for wrapping core methods. It is a hard dependency and it is recommended for the best experience and compatibility with other modules.
 
 ## Usage
 

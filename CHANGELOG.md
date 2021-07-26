@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.7] (Synchronized with [Szefo09](https://github.com/szefo09) fork)
+
+- Adde [socketlib](https://github.com/manuelVo/foundryvtt-socketlib) like requirement
+- Upgrade typescript library to 0.8.8
+- Very special ty to [Szefo09](https://github.com/szefo09) for [confirm working for 0.8.8, add Levels incompatibility error](https://github.com/szefo09/conditional-visibility/commit/6a031ef537ea580e478e6249fcff38f635b23a03)
+- Very special ty to [Szefo09](https://github.com/szefo09) for [fix autostealth](https://github.com/szefo09/conditional-visibility/commit/3cbde848c9d1c1a6982e2210a8e32ab87bd2dcc4)
+
 ## [0.2.2]
 
 - Very special ty to [Szefo09](https://github.com/szefo09) for make implemented a [debouncing functionality for CV](https://github.com/szefo09/conditional-visibility/commit/c2f3b9aa20d3bf4c37aec8e9eaf83b76bd532521)

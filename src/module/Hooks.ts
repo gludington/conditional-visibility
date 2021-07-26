@@ -32,7 +32,7 @@ export let readyHooks = async () => {
     Hooks.on("deleteActiveEffect", (effect, options, userId) => {
         ConditionalVisibility.INSTANCE.onDeleteEffect(effect, options, userId);
     });
-    
+
     Hooks.on("createItem", (effect, options, userId) => {
         ConditionalVisibility.INSTANCE.onCreateEffect(effect, options, userId);
     });

@@ -1,6 +1,6 @@
 import { i18n } from "../../conditional-visibility";
 import { ConditionalVisibilityFacade } from "../ConditionalVisibilityFacade";
-import { DEFAULT_STEALTH, MODULE_NAME, StatusEffect } from "../settings";
+import { DEFAULT_STEALTH, getCanvas, getGame, MODULE_NAME, StatusEffect } from "../settings";
 import { ConditionalVisibilitySystem } from "./ConditionalVisibilitySystem";
 // const MODULE_NAME = "conditional-visibility";
 /**
@@ -105,17 +105,17 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
     }
 
     getEffectByIcon(effect):StatusEffect {
-        //@ts-ignore
+
         if(!effect.data?.icon){
-        return this.effectsByIcon().get(effect.icon);
+          return <StatusEffect>this.effectsByIcon().get(effect.icon);
         }
-        return this.effectsByIcon().get(effect.data?.icon);
+        return <StatusEffect>this.effectsByIcon().get(effect.data?.icon);
     }
 
     initializeStatusEffects() {
-        console.log(MODULE_NAME + " | Initializing visibility system effects " + this.gameSystemId() + " for game system " + game.system.id);
+        console.log(MODULE_NAME + " | Initializing visibility system effects " + this.gameSystemId() + " for game system " + getGame().system.id);
         this.effectsByIcon().forEach((value: StatusEffect, key: string) => {
-            //@ts-ignore
+
             CONFIG.statusEffects.push({
                 id: value.id,
                 label: value.label,
@@ -143,16 +143,16 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
         //In case of sending an array only take the first element
         srcToken=srcToken instanceof Array?srcToken[0]:srcToken;
         const flags:any = {};
-        //@ts-ignore
-        var _seeinvisible = srcToken?.data?.document?.getFlag(MODULE_NAME, "seeinvisible") ?? 0;
-        //@ts-ignore
-        var _blindsight = srcToken?.data?.document?.getFlag(MODULE_NAME, "blindsight") ?? 0;
-        //@ts-ignore
-        var _tremorsense = srcToken?.data?.document?.getFlag(MODULE_NAME, "tremorsense") ?? 0;
-        //@ts-ignore
-        var _truesight = srcToken?.data?.document?.getFlag(MODULE_NAME, "truesight") ?? 0;
-        //@ts-ignore
-        var _devilssight = srcToken?.data?.document?.getFlag(MODULE_NAME, "devilssight") ?? 0;
+
+        var _seeinvisible = <number>srcToken?.data?.document?.getFlag(MODULE_NAME, "seeinvisible") ?? 0;
+
+        var _blindsight = <number>srcToken?.data?.document?.getFlag(MODULE_NAME, "blindsight") ?? 0;
+
+        var _tremorsense = <number>srcToken?.data?.document?.getFlag(MODULE_NAME, "tremorsense") ?? 0;
+
+        var _truesight = <number>srcToken?.data?.document?.getFlag(MODULE_NAME, "truesight") ?? 0;
+
+        var _devilssight = <number>srcToken?.data?.document?.getFlag(MODULE_NAME, "devilssight") ?? 0;
         _seeinvisible = _seeinvisible < 0 ? 100000 : _seeinvisible;
         _blindsight = _blindsight < 0 ? 100000 : _blindsight;
         _tremorsense = _tremorsense < 0 ? 100000 : _tremorsense;
@@ -162,7 +162,7 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
         flags.seeinvisible = Math.max(_seeinvisible, _blindsight, _tremorsense, _truesight, _devilssight);
         flags.seeobscured = Math.max(_blindsight, _tremorsense);
         flags.seeindarkness = Math.max(_blindsight, _devilssight, _tremorsense, _truesight);
-        //@ts-ignore
+
         flags.visionfrom = srcToken?.position??{x:0,y:0};
         return flags;
     }
@@ -191,8 +191,8 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
     }
     distanceBeetweenTokens(source, target) {
         let segment = new Ray(source, target);
-        //@ts-ignore
-        return canvas.grid.measureDistances([{ ray: segment }], { gridSpaces: 1 })
+
+        return getCanvas().grid?.measureDistances([{ ray: segment }], { gridSpaces: true })
     }
 
     /**
@@ -301,9 +301,9 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
                     one: {
                         icon: '<i class="fas fa-check"></i>',
                         label: 'OK',
-                        callback: (html) => {
+                        callback: (html:JQuery<HTMLElement>) => {
                             //@ts-ignore
-                            const val = parseInt(html.find('div.form-group').children()[1].value);
+                            const val = parseInt((html.find('div.form-group').children()[1])?.value);
                             if (isNaN(val)) {
                                 resolve(-1);
                             }
@@ -313,9 +313,9 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
                         }
                     }
                 },
-                close: (html) => {
+                close: (html:JQuery<HTMLElement>) => {
                     //@ts-ignore
-                    const val = parseInt(html.find('div.form-group').children()[1].value);
+                    const val = parseInt((html.find('div.form-group').children()[1])?.value);
                     if (isNaN(val)) {
                         resolve(-1);
                     }

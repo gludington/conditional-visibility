@@ -1,6 +1,7 @@
 import { i18n } from '../../conditional-visibility';
 import { MODULE_NAME, StatusEffect } from '../settings';
 import { DefaultConditionalVisibilitySystem } from "./DefaultConditionalVisibilitySystem";
+import { ConditionalVisibility } from '../ConditionalVisibility';
 // const MODULE_NAME = "conditional-visibility";
 /**
  * Conditional visibility system for pf2e.  Uses only the built in pf2e invisibility.
@@ -11,8 +12,16 @@ export class ConditionalVisibilitySystemPf2e extends DefaultConditionalVisibilit
         if (effect.type !== "condition") return;
         const status = this.getEffectByIcon(effect);
         if (status) {
-            const actor = effect.parent;
-            await actor.setFlag(MODULE_NAME, status.visibilityId, true);
+            //const actor = effect.parent;
+            //await actor.setFlag(MODULE_NAME, status.visibilityId, true);
+            let flag = "flags.conditional-visibility." + status.visibilityId;
+            if (effect.parent.isToken) {
+                ConditionalVisibility.INSTANCE.sceneUpdates.push({ _id: effect.parent.parent.id, ["actorData." + flag]: true })
+                ConditionalVisibility.INSTANCE.sceneUpdates.push({ _id: effect.parent.parent.id, ["actorData.flags.conditional-visibility.hasEffect"]: true });
+            } else {
+                ConditionalVisibility.INSTANCE.actorUpdates.push({ _id: effect.parent.id, [flag]: true })
+            }
+            ConditionalVisibility.INSTANCE.debouncedUpdate();
         }
     }
 
@@ -20,8 +29,19 @@ export class ConditionalVisibilitySystemPf2e extends DefaultConditionalVisibilit
         if (effect.type !== "condition") return;
         const status = this.getEffectByIcon(effect);
         if (status) {
-            const actor = effect.parent;
-            await actor.unsetFlag(MODULE_NAME, status.visibilityId, true);
+            //const actor = effect.parent;
+            //await actor.unsetFlag(MODULE_NAME, status.visibilityId, true);
+            let flag = "flags.conditional-visibility." + status.visibilityId;
+            if (effect.parent.isToken) {
+                ConditionalVisibility.INSTANCE.sceneUpdates.push({ _id: effect.parent.parent.id, ["actorData." + flag]: false })
+                //Check if its the last effect that causes hidden status
+                if (Array.from(this.effectsByCondition().values()).filter(e => effect.parent.getFlag(MODULE_NAME, e.visibilityId) ?? false).length == 1) {
+                    ConditionalVisibility.INSTANCE.sceneUpdates.push({ _id: effect.parent.parent.id, ["actorData.flags.conditional-visibility.hasEffect"]: false });
+                }
+            } else {
+                ConditionalVisibility.INSTANCE.actorUpdates.push({ _id: effect.parent.id, [flag]: false })
+            }
+            ConditionalVisibility.INSTANCE.debouncedUpdate();
         }
     }
 
@@ -55,7 +75,7 @@ export class ConditionalVisibilitySystemPf2e extends DefaultConditionalVisibilit
         return update.actorData?.items;
     }
 
-    getEffectByIcon(effect):StatusEffect {
+    getEffectByIcon(effect): StatusEffect {
 
         return <StatusEffect>this.effectsByIcon().get(effect.data.img);
 

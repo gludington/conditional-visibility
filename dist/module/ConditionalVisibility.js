@@ -3,7 +3,7 @@ import { ConditionalVisibilitySystemPf2e } from "./systems/ConditionalVisibility
 import { DefaultConditionalVisibilitySystem } from "./systems/DefaultConditionalVisibilitySystem.js";
 import { ConditionalVisibilityFacadeImpl } from "./ConditionalVisibilityFacade.js";
 import { i18n, log, warn } from "../conditional-visibility.js";
-import { getCanvas, getGame, MODULE_NAME } from "./settings.js";
+import { getCanvas, getGame, CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags, StatusEffectStatusFlags, } from "./settings.js";
 export class ConditionalVisibility {
     /**
      * Create a ConditionalVisibility with a given sightLayer and tokenHud.
@@ -67,7 +67,10 @@ export class ConditionalVisibility {
             warn('Restrict Calling');
             //realRestrictVisibility.call(this._sightLayer);
             //@ts-ignore
-            let restricted = getCanvas().tokens.placeables.filter((token) => ((token.data.actorData?.flags ?? [MODULE_NAME])[MODULE_NAME]?.hasEffect ?? false) && token.visible);
+            let restricted = getCanvas().tokens.placeables.filter((token) => ((token.data.actorData?.flags ?? [CONDITIONAL_VISIBILITY_MODULE_NAME])[CONDITIONAL_VISIBILITY_MODULE_NAME]
+                ?.hasEffect ??
+                false) &&
+                token.visible);
             if (restricted && restricted.length > 0) {
                 const srcTokens = this._getSrcTokens();
                 if (srcTokens.length > 0) {
@@ -110,7 +113,7 @@ export class ConditionalVisibility {
         this._conditionalVisibilitySystem.initializeOnToggleEffect(this._tokenHud);
         getGame().socket?.on('modifyEmbeddedDocument', async (message) => {
             const result = message.result.some((result) => {
-                return result?.flags?.[MODULE_NAME] || result?.actorData?.effects !== undefined;
+                return result?.flags?.[CONDITIONAL_VISIBILITY_MODULE_NAME] || result?.actorData?.effects !== undefined;
             });
             if (result) {
                 await this.draw();
@@ -214,7 +217,7 @@ export class ConditionalVisibility {
     }
     onRenderTokenConfig(tokenConfig, jQuery, data) {
         const visionTab = $('div.tab[data-tab="vision"]');
-        renderTemplate('modules/' + MODULE_NAME + '/templates/extra_senses.html', tokenConfig.object.data.flags[MODULE_NAME] || {}).then((extraSenses) => {
+        renderTemplate('modules/' + CONDITIONAL_VISIBILITY_MODULE_NAME + '/templates/extra_senses.html', tokenConfig.object.data.flags[CONDITIONAL_VISIBILITY_MODULE_NAME] || {}).then((extraSenses) => {
             visionTab.append(extraSenses);
         });
     }
@@ -224,7 +227,8 @@ export class ConditionalVisibility {
             const src = icon.attributes.src.value;
             if (systemEffects.has(src)) {
                 let title;
-                if (systemEffects.get(src)?.visibilityId === 'hidden') {
+                if (systemEffects.get(src)?.visibilityId === StatusEffectStatusFlags.HIDDEN) {
+                    // 'hidden'
                     title = i18n(systemEffects.get(src)?.label);
                     let tokenActorData;
                     if (!token.actorData?.flags) {
@@ -235,10 +239,14 @@ export class ConditionalVisibility {
                     }
                     if (tokenActorData &&
                         tokenActorData.flags &&
-                        tokenActorData.flags[MODULE_NAME] &&
-                        tokenActorData.flags[MODULE_NAME]._ste &&
-                        !isNaN(parseInt(tokenActorData.flags[MODULE_NAME]._ste))) {
-                        title += ' ' + i18n(MODULE_NAME + '.currentstealth') + ': ' + tokenActorData.flags[MODULE_NAME]._ste;
+                        tokenActorData.flags[CONDITIONAL_VISIBILITY_MODULE_NAME] &&
+                        tokenActorData.flags[CONDITIONAL_VISIBILITY_MODULE_NAME]._ste &&
+                        !isNaN(parseInt(tokenActorData.flags[CONDITIONAL_VISIBILITY_MODULE_NAME][StatusEffectSightFlags.PASSIVE_STEALTH]))) {
+                        title +=
+                            ' ' +
+                                i18n(CONDITIONAL_VISIBILITY_MODULE_NAME + '.currentstealth') +
+                                ': ' +
+                                tokenActorData.flags[CONDITIONAL_VISIBILITY_MODULE_NAME][StatusEffectSightFlags.PASSIVE_STEALTH];
                     }
                 }
                 else {

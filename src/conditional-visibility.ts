@@ -10,7 +10,7 @@
  * 					 determines how others may use and modify your module
  */
 // Import TypeScript modules
-import { getCanvas, getGame, MODULE_NAME, registerSettings } from './module/settings';
+import { getCanvas, getGame, CONDITIONAL_VISIBILITY_MODULE_NAME, registerSettings } from './module/settings';
 import { preloadTemplates } from './module/preloadTemplates';
 import { ConditionalVisibility } from './module/ConditionalVisibility';
 import { readyHooks } from './module/Hooks';
@@ -24,14 +24,14 @@ declare global {
 export let debugEnabled = 0;
 // 0 = none, warnings = 1, debug = 2, all = 3
 export const debug = (...args) => {
-  if (debugEnabled > 1) console.log(`DEBUG:${MODULE_NAME} | `, ...args);
+  if (debugEnabled > 1) console.log(`DEBUG:${CONDITIONAL_VISIBILITY_MODULE_NAME} | `, ...args);
 };
-export const log = (...args) => console.log(`${MODULE_NAME} | `, ...args);
+export const log = (...args) => console.log(`${CONDITIONAL_VISIBILITY_MODULE_NAME} | `, ...args);
 export const warn = (...args) => {
-  if (debugEnabled > 0) console.warn(`${MODULE_NAME} | `, ...args);
+  if (debugEnabled > 0) console.warn(`${CONDITIONAL_VISIBILITY_MODULE_NAME} | `, ...args);
 };
-export const error = (...args) => console.error(`${MODULE_NAME} | `, ...args);
-export const timelog = (...args) => warn(`${MODULE_NAME} | `, Date.now(), ...args);
+export const error = (...args) => console.error(`${CONDITIONAL_VISIBILITY_MODULE_NAME} | `, ...args);
+export const timelog = (...args) => warn(`${CONDITIONAL_VISIBILITY_MODULE_NAME} | `, Date.now(), ...args);
 export const i18n = (key) => {
   return getGame().i18n.localize(key);
 };
@@ -52,7 +52,7 @@ Hooks.once('init', async function () {
   //  if (getGame().modules.get("levels")?.active) {
   //    return error("Conditional Visibility does not currently work with Levels module. Initialization stopped.");
   //  }
-  log(' init ' + MODULE_NAME);
+  log(' init ' + CONDITIONAL_VISIBILITY_MODULE_NAME);
   // Assign custom classes and constants here
 
   // Register custom module settings
@@ -66,7 +66,7 @@ Hooks.once('init', async function () {
 
 Hooks.once('socketlib.ready', () => {
   //@ts-ignore
-  ConditionalVisibility.SOCKET = socketlib.registerModule(MODULE_NAME);
+  ConditionalVisibility.SOCKET = socketlib.registerModule(CONDITIONAL_VISIBILITY_MODULE_NAME);
 });
 
 /* ------------------------------------ */

@@ -1,5 +1,5 @@
 import { i18n, log, warn } from "../../conditional-visibility.js";
-import { DEFAULT_STEALTH, getCanvas, getGame, MODULE_NAME } from "../settings.js";
+import { CONDITIONAL_VISIBILITY_DEFAULT_STEALTH, getCanvas, getGame, CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags, StatusEffectStatusFlags, } from "../settings.js";
 // const MODULE_NAME = "conditional-visibility";
 /**
  * The DefaultConditionalVisibilitySystem, to use when no visibility system can be found for the game system.
@@ -21,18 +21,20 @@ export class DefaultConditionalVisibilitySystem {
         const status = this.getEffectByIcon(effect);
         if (status) {
             const actor = effect.parent;
-            await actor.setFlag(MODULE_NAME, status.visibilityId, true);
+            await actor.setFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, status.visibilityId, true);
         }
     }
     async onDeleteEffect(effect, options, userId) {
         const status = this.getEffectByIcon(effect);
         if (status) {
             const actor = effect.parent;
-            await actor.unsetFlag(MODULE_NAME, status.visibilityId, true);
+            await actor.unsetFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, status.visibilityId, true);
         }
     }
     hasStatus(token, id) {
-        return token.actor?.getFlag(MODULE_NAME, id) === true || token.getFlag(MODULE_NAME, id) === true || token.document?.getFlag(MODULE_NAME, id) === true;
+        return (token.actor?.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, id) === true ||
+            token.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, id) === true ||
+            token.document?.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, id) === true);
     }
     gameSystemId() {
         return 'default';
@@ -43,20 +45,20 @@ export class DefaultConditionalVisibilitySystem {
     effects() {
         //return DefaultConditionalVisibilitySystem.BASE_EFFECTS;
         return new Array({
-            id: MODULE_NAME + '.invisible',
+            id: CONDITIONAL_VISIBILITY_MODULE_NAME + '.invisible',
             visibilityId: 'invisible',
-            label: i18n(MODULE_NAME + '.invisible'),
-            icon: 'modules/' + MODULE_NAME + '/icons/unknown.svg',
+            label: i18n(CONDITIONAL_VISIBILITY_MODULE_NAME + '.invisible'),
+            icon: 'modules/' + CONDITIONAL_VISIBILITY_MODULE_NAME + '/icons/unknown.svg',
         }, {
-            id: MODULE_NAME + '.obscured',
+            id: CONDITIONAL_VISIBILITY_MODULE_NAME + '.obscured',
             visibilityId: 'obscured',
-            label: i18n(MODULE_NAME + '.obscured'),
-            icon: 'modules/' + MODULE_NAME + '/icons/foggy.svg',
+            label: i18n(CONDITIONAL_VISIBILITY_MODULE_NAME + '.obscured'),
+            icon: 'modules/' + CONDITIONAL_VISIBILITY_MODULE_NAME + '/icons/foggy.svg',
         }, {
-            id: MODULE_NAME + '.indarkness',
+            id: CONDITIONAL_VISIBILITY_MODULE_NAME + '.indarkness',
             visibilityId: 'indarkness',
-            label: i18n(MODULE_NAME + '.indarkness'),
-            icon: 'modules/' + MODULE_NAME + '/icons/moon.svg',
+            label: i18n(CONDITIONAL_VISIBILITY_MODULE_NAME + '.indarkness'),
+            icon: 'modules/' + CONDITIONAL_VISIBILITY_MODULE_NAME + '/icons/moon.svg',
         });
     }
     effectsByIcon() {
@@ -75,10 +77,7 @@ export class DefaultConditionalVisibilitySystem {
         return this.effectsByIcon().get(effect.data?.icon);
     }
     initializeStatusEffects() {
-        log(' Initializing visibility system effects ' +
-            this.gameSystemId() +
-            ' for game system ' +
-            getGame().system.id);
+        log(' Initializing visibility system effects ' + this.gameSystemId() + ' for game system ' + getGame().system.id);
         this.effectsByIcon().forEach((value, key) => {
             CONFIG.statusEffects.push({
                 id: value.id,
@@ -102,11 +101,11 @@ export class DefaultConditionalVisibilitySystem {
             //In case of sending an array only take the first element
             srcToken = srcToken instanceof Array ? srcToken[0] : srcToken;
         const flags = {};
-        let _seeinvisible = srcToken?.data?.document?.getFlag(MODULE_NAME, 'seeinvisible') ?? 0;
-        let _blindsight = srcToken?.data?.document?.getFlag(MODULE_NAME, 'blindsight') ?? 0;
-        let _tremorsense = srcToken?.data?.document?.getFlag(MODULE_NAME, 'tremorsense') ?? 0;
-        let _truesight = srcToken?.data?.document?.getFlag(MODULE_NAME, 'truesight') ?? 0;
-        let _devilssight = srcToken?.data?.document?.getFlag(MODULE_NAME, 'devilssight') ?? 0;
+        let _seeinvisible = (srcToken?.data?.document?.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.SEE_INVISIBLE)) ?? 0; // 'seeinvisible'
+        let _blindsight = (srcToken?.data?.document?.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.BLIND_SIGHT)) ?? 0; // 'blindsight'
+        let _tremorsense = (srcToken?.data?.document?.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.TREMOR_SENSE)) ?? 0; // 'tremorsense'
+        let _truesight = (srcToken?.data?.document?.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.TRUE_SIGHT)) ?? 0; // 'truesight'
+        let _devilssight = (srcToken?.data?.document?.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.DEVILS_SIGHT)) ?? 0; // 'devilssight'
         _seeinvisible = _seeinvisible < 0 ? 100000 : _seeinvisible;
         _blindsight = _blindsight < 0 ? 100000 : _blindsight;
         _tremorsense = _tremorsense < 0 ? 100000 : _tremorsense;
@@ -150,7 +149,7 @@ export class DefaultConditionalVisibilitySystem {
      * @param visionCapabilities the sight capabilities of the sight layer
      */
     seeInvisible(target, visionCapabilities, distance) {
-        const invisible = this.hasStatus(target, 'invisible');
+        const invisible = this.hasStatus(target, StatusEffectStatusFlags.INVISIBLE); // 'invisible'
         if (invisible === true) {
             if (visionCapabilities.seeinvisible > 0) {
                 return visionCapabilities.seeinvisible >= distance;
@@ -165,7 +164,7 @@ export class DefaultConditionalVisibilitySystem {
      * @param visionCapabilities the sight capabilities of the sight layer
      */
     seeObscured(target, visionCapabilities, distance) {
-        const obscured = this.hasStatus(target, 'obscured');
+        const obscured = this.hasStatus(target, StatusEffectStatusFlags.OBSCURED); // 'obscured'
         if (obscured === true) {
             if (visionCapabilities.seeobscured > 0) {
                 return visionCapabilities.seeobscured >= distance;
@@ -181,7 +180,7 @@ export class DefaultConditionalVisibilitySystem {
      * @param flags the sight capabilities of the sight layer
      */
     seeInDarkness(target, visionCapabilities, distance) {
-        const indarkness = this.hasStatus(target, 'indarkness');
+        const indarkness = this.hasStatus(target, StatusEffectStatusFlags.IN_DARKNESS); //'indarkness'
         if (indarkness === true) {
             if (visionCapabilities.seeindarkness > 0) {
                 return visionCapabilities.seeindarkness >= distance;
@@ -220,7 +219,7 @@ export class DefaultConditionalVisibilitySystem {
     async stealthHud(token) {
         let initialValue;
         try {
-            initialValue = parseInt(token.data.flags[MODULE_NAME]._ste);
+            initialValue = parseInt(token.data.flags[CONDITIONAL_VISIBILITY_MODULE_NAME][StatusEffectSightFlags.PASSIVE_STEALTH]);
         }
         catch (err) {
             initialValue === undefined;
@@ -232,15 +231,15 @@ export class DefaultConditionalVisibilitySystem {
             }
             catch (err) {
                 warn('Error rolling stealth, check formula for system');
-                result = DEFAULT_STEALTH;
+                result = CONDITIONAL_VISIBILITY_DEFAULT_STEALTH;
             }
         }
-        const content = await renderTemplate('modules/' + MODULE_NAME + '/templates/stealth_hud.html', {
+        const content = await renderTemplate('modules/' + CONDITIONAL_VISIBILITY_MODULE_NAME + '/templates/stealth_hud.html', {
             initialValue: result,
         });
         return new Promise((resolve, reject) => {
             const hud = new Dialog({
-                title: i18n(MODULE_NAME + '.hidden'),
+                title: i18n(CONDITIONAL_VISIBILITY_MODULE_NAME + '.hidden'),
                 content: content,
                 buttons: {
                     one: {

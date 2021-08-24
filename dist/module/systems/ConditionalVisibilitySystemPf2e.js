@@ -1,5 +1,5 @@
 import { i18n } from "../../conditional-visibility.js";
-import { MODULE_NAME } from "../settings.js";
+import { CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectStatusFlags } from "../settings.js";
 import { DefaultConditionalVisibilitySystem } from "./DefaultConditionalVisibilitySystem.js";
 import { ConditionalVisibility } from "../ConditionalVisibility.js";
 // const MODULE_NAME = "conditional-visibility";
@@ -42,7 +42,7 @@ export class ConditionalVisibilitySystemPf2e extends DefaultConditionalVisibilit
                     ['actorData.' + flag]: false,
                 });
                 //Check if its the last effect that causes hidden status
-                if (Array.from(this.effectsByCondition().values()).filter((e) => effect.parent.getFlag(MODULE_NAME, e.visibilityId) ?? false).length == 1) {
+                if (Array.from(this.effectsByCondition().values()).filter((e) => effect.parent.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, e.visibilityId) ?? false).length == 1) {
                     ConditionalVisibility.INSTANCE.sceneUpdates.push({
                         _id: effect.parent.parent.id,
                         ['actorData.flags.conditional-visibility.hasEffect']: false,
@@ -70,9 +70,9 @@ export class ConditionalVisibilitySystemPf2e extends DefaultConditionalVisibilit
         //return ConditionalVisibilitySystemPf2e.PF2E_BASE_EFFECTS;
         const effects = super.effects();
         effects.push({
-            id: MODULE_NAME + '.invisible',
+            id: CONDITIONAL_VISIBILITY_MODULE_NAME + '.invisible',
             visibilityId: 'invisible',
-            label: i18n(MODULE_NAME + '.invisible'),
+            label: i18n(CONDITIONAL_VISIBILITY_MODULE_NAME + '.invisible'),
             icon: 'systems/pf2e/icons/conditions/invisible.webp',
         });
         return effects;
@@ -92,7 +92,7 @@ export class ConditionalVisibilitySystemPf2e extends DefaultConditionalVisibilit
      * @param visionCapabilities the sight capabilities of the sight layer
      */
     seeInvisible(target, visionCapabilities, distance) {
-        const invisible = this.hasStatus(target, 'invisible');
+        const invisible = this.hasStatus(target, StatusEffectStatusFlags.INVISIBLE); // 'invisible'
         if (invisible === true) {
             if (visionCapabilities.seeinvisible > 0) {
                 return visionCapabilities.seeinvisible >= distance;

@@ -4,7 +4,7 @@
 
 ## THIS PROJECT IS IN BETA BUT IL TRY TO MAKE A "STABLE" VERSION FOR FOUNDRYVTT 0.8.6 AND NEWER
 
-## NOTE: If you are a javascript developer and not a typescript developer, you can just use the javascript files under the dist folder or rename the file from .ts to .js
+## NOTE: If you are a javascript developer and not a typescript developer, you can just use the javascript files under the dist folder
 
 **Author**: Greg Ludington
 
@@ -37,6 +37,7 @@ This module uses the [socketlib](https://github.com/manuelVo/foundryvtt-socketli
 ## Usage
 
 ### Conditions
+
 **Conditional Visibility** works by adding new conditions to the conditions panel, for Invisible, Obscured, In Magical Darkness, and Hidden (currently 5e Only).
 It does not work for game systems that use their own condition systems, though discussion (and pull requests!) are certainly welcomed
 from those more familiar with those systems.  Pathfinder 2e has partial support now, using the system's default Invisible condition.
@@ -44,6 +45,7 @@ from those more familiar with those systems.  Pathfinder 2e has partial support 
 ![Conditions Panel](./support/conditions.png)
 
 ### Invisible, Obscured, or Magical Darkness
+
 When a token has one of these conditions, it can only be seen by a token with the proper senses configured in their Vision panel.
 
 ![Vision Panel](./support/visionControls.png)
@@ -53,6 +55,7 @@ Put it together, it looks like this (click to play on YouTube):
 [![Watch the video](https://img.youtube.com/vi/IlgjHmSAsww/hqdefault.jpg)](https://youtu.be/IlgjHmSAsww)
 
 ### Hidden (currently 5e only)
+
 When the hidden condition is selected, a stealth roll is automatically made, which can be customized before closing.  The token will only be seen by a token whose passive perception
 exceeds that stealth roll. (click to play on YouTube):
 
@@ -87,6 +90,7 @@ The *hidden* condition requires system specific rules, and so uses a different s
 * tokens - a list of tokens from which to remove the hidden condition. 
 
 #### Auto-applied from Stealth Rolls
+
 Conditional Visibility contains an setting to auto-apply the hidden condition based on a stealth roll.  Currently only 5e; again, contributions for other systems are welcomed.
 
 ![Vision Panel](./support/autoStealth.png)
@@ -125,6 +129,7 @@ Hidden (5e only)
 * modules/conditional-visibility/icons/newspaper.svg
 
 # Known Issues
+
 * Pathfinder 2e supports only the "Invisible" condition.
 * Will not work if the hide regular conditions options of Combat Utility Belt is checked, as it hides the required Conditional Visibility conditions
 
@@ -139,6 +144,7 @@ Any issues, bugs, or feature requests are always welcome to be reported directly
 Bootstrapped with League of Extraordinary FoundryVTT Developers  [foundry-vtt-types](https://github.com/League-of-Foundry-Developers/foundry-vtt-types).
 
 **Icons by**
+
 * unknown.svg, newspaper.svg, and foggy.svg icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a>, from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>
 * moon.svg icon made by <a href="https://www.flaticon.com/authors/iconixar" title="iconixar">iconixar</a> from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>
 

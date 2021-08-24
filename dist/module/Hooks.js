@@ -1,9 +1,9 @@
 import { log, warn } from "../conditional-visibility.js";
 import { ConditionalVisibility } from "./ConditionalVisibility.js";
-import { getGame, getCanvas, MODULE_NAME } from "./settings.js";
+import { getGame, getCanvas, CONDITIONAL_VISIBILITY_MODULE_NAME } from "./settings.js";
 export const readyHooks = async () => {
     // setup all the hooks
-    log(' Ready ' + MODULE_NAME);
+    log(' Ready ' + CONDITIONAL_VISIBILITY_MODULE_NAME);
     const sightLayer = getCanvas().layers.find((layer) => {
         switch (getGame().system.id) {
             case 'dnd5e':

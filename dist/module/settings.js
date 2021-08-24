@@ -1,7 +1,24 @@
 import { log } from "../conditional-visibility.js";
 import { ConditionalVisibility } from "./ConditionalVisibility.js";
-export const MODULE_NAME = 'conditional-visibility';
-export const DEFAULT_STEALTH = 10;
+export const CONDITIONAL_VISIBILITY_MODULE_NAME = 'conditional-visibility';
+export const CONDITIONAL_VISIBILITY_DEFAULT_STEALTH = 10;
+export var StatusEffectSightFlags;
+(function (StatusEffectSightFlags) {
+    StatusEffectSightFlags["SEE_INVISIBLE"] = "seeinvisible";
+    StatusEffectSightFlags["BLIND_SIGHT"] = "blindsight";
+    StatusEffectSightFlags["TREMOR_SENSE"] = "tremorsense";
+    StatusEffectSightFlags["TRUE_SIGHT"] = "truesight";
+    StatusEffectSightFlags["DEVILS_SIGHT"] = "devilssight";
+    StatusEffectSightFlags["PASSIVE_STEALTH"] = "_ste";
+})(StatusEffectSightFlags || (StatusEffectSightFlags = {}));
+// TODO PUT THESE IN LOCALIZATION FOR OTHER LANGUAGE
+export var StatusEffectStatusFlags;
+(function (StatusEffectStatusFlags) {
+    StatusEffectStatusFlags["INVISIBLE"] = "invisible";
+    StatusEffectStatusFlags["OBSCURED"] = "obscured";
+    StatusEffectStatusFlags["IN_DARKNESS"] = "indarkness";
+    StatusEffectStatusFlags["HIDDEN"] = "hidden";
+})(StatusEffectStatusFlags || (StatusEffectStatusFlags = {}));
 /**
  * Because typescript doesn't know when in the lifecycle of foundry your code runs, we have to assume that the
  * canvas is potentially not yet initialized, so it's typed as declare let canvas: Canvas | {ready: false}.
@@ -33,7 +50,7 @@ export function getGame() {
     return game;
 }
 export const registerSettings = function () {
-    getGame().settings.register(MODULE_NAME, 'autoStealth', {
+    getGame().settings.register(CONDITIONAL_VISIBILITY_MODULE_NAME, 'autoStealth', {
         name: getGame().i18n.localize('conditional-visibility.settings.autoStealth.name'),
         hint: getGame().i18n.localize('conditional-visibility.settings.autoStealth.hint'),
         scope: 'world',
@@ -42,7 +59,7 @@ export const registerSettings = function () {
         default: false,
         onChange: (value) => log(' autoStealth set to ' + value),
     });
-    getGame().settings.register(MODULE_NAME, 'popup-version', {
+    getGame().settings.register(CONDITIONAL_VISIBILITY_MODULE_NAME, 'popup-version', {
         scope: 'world',
         config: false,
         type: String,

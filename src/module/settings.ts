@@ -1,14 +1,31 @@
 import { log } from '../conditional-visibility';
 import { ConditionalVisibility } from './ConditionalVisibility';
 
-export const MODULE_NAME = 'conditional-visibility';
-export const DEFAULT_STEALTH = 10;
+export const CONDITIONAL_VISIBILITY_MODULE_NAME = 'conditional-visibility';
+export const CONDITIONAL_VISIBILITY_DEFAULT_STEALTH = 10;
 
 export interface StatusEffect {
   id: string;
   visibilityId: string;
   label: string;
   icon: string;
+}
+
+export enum StatusEffectSightFlags {
+  SEE_INVISIBLE = 'seeinvisible',
+  BLIND_SIGHT = 'blindsight',
+  TREMOR_SENSE = 'tremorsense',
+  TRUE_SIGHT = 'truesight',
+  DEVILS_SIGHT = 'devilssight',
+  PASSIVE_STEALTH = '_ste',
+}
+
+// TODO PUT THESE IN LOCALIZATION FOR OTHER LANGUAGE
+export enum StatusEffectStatusFlags {
+  INVISIBLE = 'invisible',
+  OBSCURED = 'obscured',
+  IN_DARKNESS = 'indarkness',
+  HIDDEN = 'hidden',
 }
 
 /**
@@ -44,7 +61,7 @@ export function getGame(): Game {
 }
 
 export const registerSettings = function () {
-  getGame().settings.register(MODULE_NAME, 'autoStealth', {
+  getGame().settings.register(CONDITIONAL_VISIBILITY_MODULE_NAME, 'autoStealth', {
     name: getGame().i18n.localize('conditional-visibility.settings.autoStealth.name'),
     hint: getGame().i18n.localize('conditional-visibility.settings.autoStealth.hint'),
     scope: 'world',
@@ -54,7 +71,7 @@ export const registerSettings = function () {
     onChange: (value) => log(' autoStealth set to ' + value),
   });
 
-  getGame().settings.register(MODULE_NAME, 'popup-version', {
+  getGame().settings.register(CONDITIONAL_VISIBILITY_MODULE_NAME, 'popup-version', {
     scope: 'world',
     config: false,
     type: String,

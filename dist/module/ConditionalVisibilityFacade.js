@@ -1,5 +1,5 @@
 import { log } from "../conditional-visibility.js";
-import { getGame, MODULE_NAME } from "./settings.js";
+import { getGame, CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags } from "./settings.js";
 /**
  * A class to expose macro-friendly messages on the window object.
  */
@@ -17,10 +17,10 @@ export class ConditionalVisibilityFacadeImpl {
             this._system.effectsByCondition().forEach((value, key) => {
                 conditions.push({ name: key, icon: value.icon });
             });
-            renderTemplate('modules/' + MODULE_NAME + '/templates/help_dialog.html', {
+            renderTemplate('modules/' + CONDITIONAL_VISIBILITY_MODULE_NAME + '/templates/help_dialog.html', {
                 gamesystem: getGame().system.id,
                 hasStealth: this._system.hasStealth(),
-                autoStealth: getGame().settings.get(MODULE_NAME, 'autoStealth'),
+                autoStealth: getGame().settings.get(CONDITIONAL_VISIBILITY_MODULE_NAME, 'autoStealth'),
                 conditions: conditions,
             }).then((content) => {
                 const d = new Dialog({
@@ -119,17 +119,17 @@ export class ConditionalVisibilityFacadeImpl {
                         const tokenActor = token.document.actor;
                         if (this.has(token, hidden) === true) {
                             const update = { 'conditional-visibility': {} };
-                            update[MODULE_NAME]['_ste'] = stealth;
+                            update[CONDITIONAL_VISIBILITY_MODULE_NAME][StatusEffectSightFlags.PASSIVE_STEALTH] = stealth;
                             tokenActor.update({ flags: update });
                         }
                         else {
                             if (!tokenActor.data.flags) {
                                 tokenActor.data.flags = {};
                             }
-                            if (!tokenActor.data.flags[MODULE_NAME]) {
-                                tokenActor.data.flags[MODULE_NAME] = {};
+                            if (!tokenActor.data.flags[CONDITIONAL_VISIBILITY_MODULE_NAME]) {
+                                tokenActor.data.flags[CONDITIONAL_VISIBILITY_MODULE_NAME] = {};
                             }
-                            tokenActor.setFlag(MODULE_NAME, '_ste', stealth);
+                            tokenActor.setFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.PASSIVE_STEALTH, stealth);
                             this.toggleEffect(token, hidden);
                         }
                     }
@@ -183,10 +183,10 @@ export class ConditionalVisibilityFacadeImpl {
                             if (!tokenActor.data.flags) {
                                 tokenActor.data.flags = {};
                             }
-                            if (!tokenActor.data.flags[MODULE_NAME]) {
-                                tokenActor.data.flags[MODULE_NAME] = {};
+                            if (!tokenActor.data.flags[CONDITIONAL_VISIBILITY_MODULE_NAME]) {
+                                tokenActor.data.flags[CONDITIONAL_VISIBILITY_MODULE_NAME] = {};
                             }
-                            tokenActor.setFlag(MODULE_NAME, '_ste', stealth);
+                            tokenActor.setFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.PASSIVE_STEALTH, stealth);
                             this.toggleEffect(token, hidden);
                         }
                     }
@@ -198,7 +198,9 @@ export class ConditionalVisibilityFacadeImpl {
         return token.toggleEffect(condition);
     }
     has(token, condition) {
-        const flags = token.data.actorLink ? token.actor?.data?.flags?.[MODULE_NAME] : token?.data?.flags?.[MODULE_NAME];
+        const flags = token.data.actorLink
+            ? token.actor?.data?.flags?.[CONDITIONAL_VISIBILITY_MODULE_NAME]
+            : token?.data?.flags?.[CONDITIONAL_VISIBILITY_MODULE_NAME];
         if (flags) {
             return flags[condition.visibilityId] === true;
         }

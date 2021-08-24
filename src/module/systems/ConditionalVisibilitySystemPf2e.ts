@@ -1,5 +1,5 @@
 import { i18n } from '../../conditional-visibility';
-import { MODULE_NAME, StatusEffect } from '../settings';
+import { CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffect, StatusEffectStatusFlags } from '../settings';
 import { DefaultConditionalVisibilitySystem } from './DefaultConditionalVisibilitySystem';
 import { ConditionalVisibility } from '../ConditionalVisibility';
 // const MODULE_NAME = "conditional-visibility";
@@ -42,7 +42,7 @@ export class ConditionalVisibilitySystemPf2e extends DefaultConditionalVisibilit
         //Check if its the last effect that causes hidden status
         if (
           Array.from(this.effectsByCondition().values()).filter(
-            (e) => effect.parent.getFlag(MODULE_NAME, e.visibilityId) ?? false,
+            (e) => effect.parent.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, e.visibilityId) ?? false,
           ).length == 1
         ) {
           ConditionalVisibility.INSTANCE.sceneUpdates.push({
@@ -73,9 +73,9 @@ export class ConditionalVisibilitySystemPf2e extends DefaultConditionalVisibilit
     //return ConditionalVisibilitySystemPf2e.PF2E_BASE_EFFECTS;
     const effects = super.effects();
     effects.push({
-      id: MODULE_NAME + '.invisible',
+      id: CONDITIONAL_VISIBILITY_MODULE_NAME + '.invisible',
       visibilityId: 'invisible',
-      label: i18n(MODULE_NAME + '.invisible'),
+      label: i18n(CONDITIONAL_VISIBILITY_MODULE_NAME + '.invisible'),
       icon: 'systems/pf2e/icons/conditions/invisible.webp',
     });
     return effects;
@@ -99,7 +99,7 @@ export class ConditionalVisibilitySystemPf2e extends DefaultConditionalVisibilit
    * @param visionCapabilities the sight capabilities of the sight layer
    */
   seeInvisible(target: Token, visionCapabilities: any, distance: any): boolean {
-    const invisible = this.hasStatus(target, 'invisible');
+    const invisible = this.hasStatus(target, StatusEffectStatusFlags.INVISIBLE); // 'invisible'
     if (invisible === true) {
       if (visionCapabilities.seeinvisible > 0) {
         return visionCapabilities.seeinvisible >= distance;

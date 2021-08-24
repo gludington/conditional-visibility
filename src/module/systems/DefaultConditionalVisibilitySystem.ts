@@ -1,4 +1,4 @@
-import { i18n } from '../../conditional-visibility';
+import { i18n, log, warn } from '../../conditional-visibility';
 import { ConditionalVisibilityFacade } from '../ConditionalVisibilityFacade';
 import { DEFAULT_STEALTH, getCanvas, getGame, MODULE_NAME, StatusEffect } from '../settings';
 import { ConditionalVisibilitySystem } from './ConditionalVisibilitySystem';
@@ -59,8 +59,8 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
     }
   }
 
-  hasStatus(token, id) {
-    return token.actor?.data?.flags?.[MODULE_NAME]?.[id] === true || token.data?.flags?.[MODULE_NAME]?.[id] === true;
+  hasStatus(token:Token, id:string) {
+    return token.actor?.getFlag(MODULE_NAME,id) === true || token.getFlag(MODULE_NAME,id) === true || token.document?.getFlag(MODULE_NAME,id) === true;
   }
 
   gameSystemId(): string {
@@ -113,9 +113,8 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
   }
 
   initializeStatusEffects() {
-    console.log(
-      MODULE_NAME +
-        ' | Initializing visibility system effects ' +
+    log(
+        ' Initializing visibility system effects ' +
         this.gameSystemId() +
         ' for game system ' +
         getGame().system.id,
@@ -146,15 +145,15 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
       srcToken = srcToken instanceof Array ? srcToken[0] : srcToken;
     const flags: any = {};
 
-    var _seeinvisible = <number>srcToken?.data?.document?.getFlag(MODULE_NAME, 'seeinvisible') ?? 0;
+    let _seeinvisible = <number>srcToken?.data?.document?.getFlag(MODULE_NAME, 'seeinvisible') ?? 0;
 
-    var _blindsight = <number>srcToken?.data?.document?.getFlag(MODULE_NAME, 'blindsight') ?? 0;
+    let _blindsight = <number>srcToken?.data?.document?.getFlag(MODULE_NAME, 'blindsight') ?? 0;
 
-    var _tremorsense = <number>srcToken?.data?.document?.getFlag(MODULE_NAME, 'tremorsense') ?? 0;
+    let _tremorsense = <number>srcToken?.data?.document?.getFlag(MODULE_NAME, 'tremorsense') ?? 0;
 
-    var _truesight = <number>srcToken?.data?.document?.getFlag(MODULE_NAME, 'truesight') ?? 0;
+    let _truesight = <number>srcToken?.data?.document?.getFlag(MODULE_NAME, 'truesight') ?? 0;
 
-    var _devilssight = <number>srcToken?.data?.document?.getFlag(MODULE_NAME, 'devilssight') ?? 0;
+    let _devilssight = <number>srcToken?.data?.document?.getFlag(MODULE_NAME, 'devilssight') ?? 0;
     _seeinvisible = _seeinvisible < 0 ? 100000 : _seeinvisible;
     _blindsight = _blindsight < 0 ? 100000 : _blindsight;
     _tremorsense = _tremorsense < 0 ? 100000 : _tremorsense;
@@ -190,8 +189,9 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
     }
     return true;
   }
+
   distanceBeetweenTokens(source, target) {
-    let segment = new Ray(source, target);
+    const segment = new Ray(source, target);
 
     return getCanvas().grid?.measureDistances([{ ray: segment }], { gridSpaces: true });
   }
@@ -280,13 +280,15 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
     let initialValue;
     try {
       initialValue = parseInt(token.data.flags[MODULE_NAME]._ste);
-    } catch (err) {}
+    } catch (err) {
+      initialValue === undefined
+    }
     let result = initialValue;
     if (initialValue === undefined || isNaN(parseInt(initialValue))) {
       try {
         result = this.rollStealth(token).roll().total;
       } catch (err) {
-        console.warn('Error rolling stealth, check formula for system');
+        warn('Error rolling stealth, check formula for system');
         result = DEFAULT_STEALTH;
       }
     }
@@ -294,7 +296,7 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
       initialValue: result,
     });
     return new Promise((resolve, reject) => {
-      let hud = new Dialog({
+      const hud = new Dialog({
         title: i18n(MODULE_NAME + '.hidden'),
         content: content,
         buttons: {

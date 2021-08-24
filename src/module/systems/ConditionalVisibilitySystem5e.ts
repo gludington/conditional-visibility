@@ -117,8 +117,8 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
     if (hidden === true) {
       const actor = target.actor;
 
-      if (actor?.getFlag[MODULE_NAME] && actor?.getFlag[MODULE_NAME]._ste) {
-        const stealth = actor?.getFlag(MODULE_NAME,'_ste');
+      if (actor?.getFlag(MODULE_NAME,'_ste')) {
+        const stealth = <number>actor?.getFlag(MODULE_NAME,'_ste');
         if (visionCapabilities.prc < stealth) {
           return false;
         }
@@ -181,6 +181,7 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
 
   rollStealth(token: Token): Roll {
     if (token && token.actor) {
+      //@ts-ignore
       return new Roll('1d20 + (' + token.actor.data.data.skills.ste.total + ')');
     } else {
       return super.rollStealth(token);

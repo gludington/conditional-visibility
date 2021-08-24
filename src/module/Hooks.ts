@@ -1,9 +1,10 @@
+import { log, warn } from '../conditional-visibility';
 import { ConditionalVisibility } from './ConditionalVisibility';
 import { getGame, getCanvas, MODULE_NAME } from './settings';
 
-export let readyHooks = async () => {
+export const readyHooks = async () => {
   // setup all the hooks
-  console.log(MODULE_NAME + ' | Ready ' + MODULE_NAME);
+  log(' Ready ' + MODULE_NAME);
   const sightLayer = getCanvas().layers.find((layer) => {
     switch (getGame().system.id) {
       case 'dnd5e':
@@ -18,11 +19,9 @@ export let readyHooks = async () => {
         //@ts-ignore
         return layer.__proto__.constructor.name === 'SightLayer';
     }
-    //@ts-ignore
-    return layer.__proto__.constructor.name === 'SightLayer';
   });
 
-  ConditionalVisibility.initialize(sightLayer, getCanvas().hud.token);
+  ConditionalVisibility.initialize(sightLayer, getCanvas().hud?.token);
 
   // Add any additional hooks if necessary
   Hooks.on('renderTokenConfig', (tokenConfig, html, data) => {
@@ -63,6 +62,6 @@ export let readyHooks = async () => {
   });
 };
 
-export let initHooks = () => {
-  console.warn('Init Hooks processing');
+export const initHooks = () => {
+  warn('Init Hooks processing');
 };

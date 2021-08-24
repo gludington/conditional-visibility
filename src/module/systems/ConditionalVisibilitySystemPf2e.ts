@@ -13,7 +13,7 @@ export class ConditionalVisibilitySystemPf2e extends DefaultConditionalVisibilit
     if (status) {
       //const actor = effect.parent;
       //await actor.setFlag(MODULE_NAME, status.visibilityId, true);
-      let flag = 'flags.conditional-visibility.' + status.visibilityId;
+      const flag = 'flags.conditional-visibility.' + status.visibilityId;
       if (effect.parent.isToken) {
         ConditionalVisibility.INSTANCE.sceneUpdates.push({ _id: effect.parent.parent.id, ['actorData.' + flag]: true });
         ConditionalVisibility.INSTANCE.sceneUpdates.push({
@@ -33,7 +33,7 @@ export class ConditionalVisibilitySystemPf2e extends DefaultConditionalVisibilit
     if (status) {
       //const actor = effect.parent;
       //await actor.unsetFlag(MODULE_NAME, status.visibilityId, true);
-      let flag = 'flags.conditional-visibility.' + status.visibilityId;
+      const flag = 'flags.conditional-visibility.' + status.visibilityId;
       if (effect.parent.isToken) {
         ConditionalVisibility.INSTANCE.sceneUpdates.push({
           _id: effect.parent.parent.id,

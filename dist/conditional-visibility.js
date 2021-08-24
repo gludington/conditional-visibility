@@ -10,74 +10,62 @@
  * 					 determines how others may use and modify your module
  */
 // Import TypeScript modules
-import { getCanvas, getGame, MODULE_NAME, registerSettings } from './module/settings';
-import { preloadTemplates } from './module/preloadTemplates';
-import { ConditionalVisibility } from './module/ConditionalVisibility';
-import { readyHooks } from './module/Hooks';
-
-declare global {
-  interface Window {
-    Senses: ConditionalVisibility;
-  }
-}
-
+import { getGame, MODULE_NAME, registerSettings } from "./module/settings.js";
+import { preloadTemplates } from "./module/preloadTemplates.js";
+import { ConditionalVisibility } from "./module/ConditionalVisibility.js";
+import { readyHooks } from "./module/Hooks.js";
 export let debugEnabled = 0;
 // 0 = none, warnings = 1, debug = 2, all = 3
 export const debug = (...args) => {
-  if (debugEnabled > 1) console.log(`DEBUG:${MODULE_NAME} | `, ...args);
+    if (debugEnabled > 1)
+        console.log(`DEBUG:${MODULE_NAME} | `, ...args);
 };
 export const log = (...args) => console.log(`${MODULE_NAME} | `, ...args);
 export const warn = (...args) => {
-  if (debugEnabled > 0) console.warn(`${MODULE_NAME} | `, ...args);
+    if (debugEnabled > 0)
+        console.warn(`${MODULE_NAME} | `, ...args);
 };
 export const error = (...args) => console.error(`${MODULE_NAME} | `, ...args);
 export const timelog = (...args) => warn(`${MODULE_NAME} | `, Date.now(), ...args);
 export const i18n = (key) => {
-  return getGame().i18n.localize(key);
+    return getGame().i18n.localize(key);
 };
 export const i18nFormat = (key, data = {}) => {
-  return getGame().i18n.format(key, data);
+    return getGame().i18n.format(key, data);
 };
-
-export const setDebugLevel = (debugText: string) => {
-  debugEnabled = { none: 0, warn: 1, debug: 2, all: 3 }[debugText] || 0;
-  // 0 = none, warnings = 1, debug = 2, all = 3
-  if (debugEnabled >= 3) CONFIG.debug.hooks = true;
+export const setDebugLevel = (debugText) => {
+    debugEnabled = { none: 0, warn: 1, debug: 2, all: 3 }[debugText] || 0;
+    // 0 = none, warnings = 1, debug = 2, all = 3
+    if (debugEnabled >= 3)
+        CONFIG.debug.hooks = true;
 };
-
 /* ------------------------------------ */
 /* Initialize module					*/
 /* ------------------------------------ */
 Hooks.once('init', async function () {
-  //  if (getGame().modules.get("levels")?.active) {
-  //    return error("Conditional Visibility does not currently work with Levels module. Initialization stopped.");
-  //  }
-  log(' init ' + MODULE_NAME);
-  // Assign custom classes and constants here
-
-  // Register custom module settings
-  registerSettings();
-
-  // Preload Handlebars templates
-  await preloadTemplates();
-
-  // Register custom sheets (if any)
+    //  if (getGame().modules.get("levels")?.active) {
+    //    return error("Conditional Visibility does not currently work with Levels module. Initialization stopped.");
+    //  }
+    log(' init ' + MODULE_NAME);
+    // Assign custom classes and constants here
+    // Register custom module settings
+    registerSettings();
+    // Preload Handlebars templates
+    await preloadTemplates();
+    // Register custom sheets (if any)
 });
-
 Hooks.once('socketlib.ready', () => {
-  //@ts-ignore
-  ConditionalVisibility.SOCKET = socketlib.registerModule(MODULE_NAME);
+    //@ts-ignore
+    ConditionalVisibility.SOCKET = socketlib.registerModule(MODULE_NAME);
 });
-
 /* ------------------------------------ */
 /* Setup module							*/
 /* ------------------------------------ */
-Hooks.once('setup', function () {});
-
+Hooks.once('setup', function () { });
 /* ------------------------------------ */
 /* When ready							*/
 /* ------------------------------------ */
 Hooks.once('ready', async function () {
-  // Do anything once the module is ready
-  readyHooks();
+    // Do anything once the module is ready
+    readyHooks();
 });

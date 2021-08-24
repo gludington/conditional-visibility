@@ -3,7 +3,7 @@ import { ConditionalVisibilitySystemPf2e } from './systems/ConditionalVisibility
 import { ConditionalVisibilitySystem } from './systems/ConditionalVisibilitySystem';
 import { DefaultConditionalVisibilitySystem } from './systems/DefaultConditionalVisibilitySystem';
 import { ConditionalVisibilityFacade, ConditionalVisibilityFacadeImpl } from './ConditionalVisibilityFacade';
-import { i18n } from '../conditional-visibility';
+import { i18n, log, warn } from '../conditional-visibility';
 import { getCanvas, getGame, MODULE_NAME, StatusEffect } from './settings';
 
 export class ConditionalVisibility {
@@ -105,9 +105,9 @@ export class ConditionalVisibility {
     this._conditionalVisibilitySystem = ConditionalVisibility.newSystem();
     this._sightLayer = sightLayer;
 
-    console.log(MODULE_NAME + ' | starting against v0.7 or greater instance ' + getGame().data.version);
+    log(' starting against v0.7 or greater instance ' + getGame().data.version);
     this._getSrcTokens = () => {
-      let srcTokens = new Array<Token>();
+      const srcTokens:Token[] = [];
       if (this._sightLayer?.sources?.size ?? 0 > 0) {
         for (const key of this._sightLayer.sources.keys()) {
           if (key.startsWith('Token.')) {
@@ -120,7 +120,7 @@ export class ConditionalVisibility {
       } else {
         if (getGame().user?.isGM === false) {
           const activeTokenDocuments = <TokenDocument[]>getGame().user?.character?.getActiveTokens();
-          for (let tokenDocument of activeTokenDocuments) {
+          for (const tokenDocument of activeTokenDocuments) {
             const tok = getCanvas().tokens?.placeables.find((tok) => tok.id === tokenDocument.id);
             if (tok) {
               srcTokens.push(tok);
@@ -138,12 +138,12 @@ export class ConditionalVisibility {
       await this._sightLayer.initialize();
       await this._sightLayer.refresh();
     };
-    ConditionalVisibility.canSee = (token: Token, srcTokens = null, flags = null) => {
+    ConditionalVisibility.canSee = (token: Token, srcTokens:Token[]|null = null, flags = null) => {
       const _srcTokens = this._getSrcTokens();
       let output = false;
       //GM CASE
       if ((_srcTokens.length ?? 0) == 0) return true;
-      for (let sTok of _srcTokens) {
+      for (const sTok of _srcTokens) {
         const _flags = flags ?? this._conditionalVisibilitySystem.getVisionCapabilities(sTok);
         if (sTok) output = this._conditionalVisibilitySystem.canSee(token, _flags);
         if (output) return true;
@@ -152,7 +152,7 @@ export class ConditionalVisibility {
     };
     const realRestrictVisibility = sightLayer.restrictVisibility;
     this.restrictVisibility = (timeout) => {
-      console.warn('Restrict Calling');
+      warn('Restrict Calling');
       //realRestrictVisibility.call(this._sightLayer);
       //@ts-ignore
       let restricted = getCanvas().tokens.placeables.filter(
@@ -163,14 +163,14 @@ export class ConditionalVisibility {
         const srcTokens = this._getSrcTokens();
 
         if (srcTokens.length > 0) {
-          restricted = restricted.filter((t) => srcTokens.indexOf(t) < 0);
+          restricted = <Token[]>restricted.filter((t) => srcTokens.indexOf(t) < 0);
           //In case a selected token is also hidden
-          for (let t of restricted) {
+          for (const t of restricted) {
             t.visible = false;
           }
-          for (let sTok of srcTokens) {
+          for (const sTok of srcTokens) {
             const flags = this._conditionalVisibilitySystem.getVisionCapabilities(sTok);
-            for (let t of restricted) {
+            for (const t of restricted) {
               if (!t.visible) {
                 //@ts-ignore
                 t.visible = ConditionalVisibility.canSee(t, sTok, flags);
@@ -183,7 +183,7 @@ export class ConditionalVisibility {
             if (!this.updateQueued) {
               this.updateQueued = true;
               setTimeout(() => {
-                for (let t of this.tokensToUpdate) {
+                for (const t of this.tokensToUpdate) {
                   t.visible = false;
                   t.data.hidden = false;
                 }

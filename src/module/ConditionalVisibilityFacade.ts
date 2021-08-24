@@ -1,3 +1,4 @@
+import { log } from '../conditional-visibility';
 import { ConditionalVisibility } from './ConditionalVisibility';
 import { getGame, MODULE_NAME } from './settings';
 import { ConditionalVisibilitySystem } from './systems/ConditionalVisibilitySystem';
@@ -27,7 +28,7 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
 
   help(): void {
     if (getGame().user?.isGM) {
-      let conditions: any[] = [];
+      const conditions: any[] = [];
       this._system.effectsByCondition().forEach((value, key) => {
         conditions.push({ name: key, icon: value.icon });
       });
@@ -37,11 +38,11 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
         autoStealth: getGame().settings.get(MODULE_NAME, 'autoStealth'),
         conditions: conditions,
       }).then((content) => {
-        let d = new Dialog({
+        const d = new Dialog({
           title: 'Conditional Visibility',
           content: content,
           buttons: {},
-          close: () => console.log('This always is logged no matter which option is chosen'),
+          close: () => log('This always is logged no matter which option is chosen'),
           default: '',
         });
         d.render(true);
@@ -56,7 +57,7 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
    * @param value true or false
    */
   setCondition(tokens: Array<Token>, condition: string, value: boolean) {
-    let status = this._system.effectsByCondition().get(condition);
+    const status = this._system.effectsByCondition().get(condition);
     if (status) {
       const guard: Map<string, boolean> = new Map();
       tokens.forEach((token) => {
@@ -83,7 +84,7 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
    * @param condition the string condition
    */
   toggleCondition(tokens: Array<Token>, condition: string) {
-    let status = this._system.effectsByCondition().get(condition);
+    const status = this._system.effectsByCondition().get(condition);
     if (status) {
       const guard: Map<string, boolean> = new Map();
       tokens.forEach((token) => {
@@ -123,7 +124,7 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
       return;
     }
     if (this._system.effectsByCondition().has('hidden')) {
-      let hidden = this._system.effectsByCondition().get('hidden');
+      const hidden = this._system.effectsByCondition().get('hidden');
       const guard: Map<string, boolean> = new Map();
       tokens.forEach((token: Token) => {
         if (token.owner) {
@@ -134,10 +135,10 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
             } else {
               stealth = this._system.rollStealth(token).roll().total;
             }
-            let tokenActor = <Actor>token.document.actor;
+            const tokenActor = <Actor>token.document.actor;
             if (this.has(token, hidden) === true) {
               const update = { 'conditional-visibility': {} };
-              update[MODULE_NAME]._ste = stealth;
+              update[MODULE_NAME]['_ste'] = stealth;
               tokenActor.update({ flags: update });
             } else {
               if (!tokenActor.data.flags) {
@@ -162,7 +163,7 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
    */
   unHide(tokens: Array<Token>) {
     if (this._system.hasStealth()) {
-      let hidden = this._system.effectsByCondition().get('hidden');
+      const hidden = this._system.effectsByCondition().get('hidden');
       const guard: Map<string, boolean> = new Map();
       tokens.forEach((token) => {
         if (token.owner) {
@@ -183,7 +184,7 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
    */
   toggleHide(tokens: Array<Token>, value?: number) {
     if (this._system.hasStealth()) {
-      let hidden = this._system.effectsByCondition().get('hidden');
+      const hidden = this._system.effectsByCondition().get('hidden');
       const guard: Map<string, boolean> = new Map();
       tokens.forEach((token) => {
         if (token.owner) {
@@ -197,7 +198,7 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
             if (this.has(token, hidden) === true) {
               this.toggleEffect(token, hidden);
             } else {
-              let tokenActor = <Actor>token.document.actor;
+              const tokenActor = <Actor>token.document.actor;
               if (!tokenActor.data.flags) {
                 tokenActor.data.flags = {};
               }

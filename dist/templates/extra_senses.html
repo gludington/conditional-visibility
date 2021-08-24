@@ -1,0 +1,20 @@
+<hr/>
+<p class="notes">{{localize "conditional-visibility.ExtraSenseInstructions"}}</p>
+<div class="form-group">
+    <label>{{localize "conditional-visibility.blindsight"}}</label>
+    <input type="number" min=-1 step=1 {{#if blindsight}} value="{{blindsight}}" {{else}} value="0" {{/if}} name="flags.conditional-visibility.blindsight"/>
+    <label>{{localize "conditional-visibility.truesight"}}</label>
+    <input type="number" min=-1 step=1 {{#if truesight}} value="{{truesight}}" {{else}} value="0" {{/if}} name="flags.conditional-visibility.truesight"/>
+</div>
+<div class="form-group">
+    <label>{{localize "conditional-visibility.devilssight"}}</label>
+    <input type="number" min=-1 step=1 {{#if devilssight}} value="{{devilssight}}" {{else}} value="0" {{/if}} name="flags.conditional-visibility.devilssight"/>
+    <label>{{localize "conditional-visibility.tremorsense"}}</label>
+    <input type="number" min=-1 step=1 {{#if tremorsense}} value="{{tremorsense}}" {{else}} value="0" {{/if}} name="flags.conditional-visibility.tremorsense"/>
+</div>
+<div class="form-group">
+    <label>{{localize "conditional-visibility.seeinvisible"}}</label>
+    <input type="number" min=-1 step=1 {{#if seeinvisible}} value="{{seeinvisible}}" {{else}} value="0" {{/if}} name="flags.conditional-visibility.seeinvisible"/>
+    <label>&nbsp;</label>
+    <input type="checkbox" style="visibility: hidden;" disabled name="conditionalVisibility_justtolineup"/>
+</div>

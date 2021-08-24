@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.8] Merge update of [Teshynil](https://github.com/Teshynil)
+
+- Merge PR [Update, Cleaning and levels compatibility](https://github.com/p4535992/conditional-visibility/pull/2/)
+- Update, Cleaning and levels compatibility. Very special ty to  [Teshynil](https://github.com/Teshynil)
+- Applied prettier plugin (based on the common configuration of the league developer)
+- Some minor bug fix and update typescript library
+- Add eslint plugin (about time)
+
 ## [0.2.7] (Synchronized with [Szefo09](https://github.com/szefo09) fork)
 
 - Adde [socketlib](https://github.com/manuelVo/foundryvtt-socketlib) like requirement

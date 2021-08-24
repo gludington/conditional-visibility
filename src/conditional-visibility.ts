@@ -16,28 +16,34 @@ import { ConditionalVisibility } from './module/ConditionalVisibility';
 import { readyHooks } from './module/Hooks';
 
 declare global {
-  interface Window { Senses: ConditionalVisibility }
+  interface Window {
+    Senses: ConditionalVisibility;
+  }
 }
 
 export let debugEnabled = 0;
 // 0 = none, warnings = 1, debug = 2, all = 3
-export let debug = (...args) => { if (debugEnabled > 1) console.log(`DEBUG:${MODULE_NAME} | `, ...args) };
+export let debug = (...args) => {
+  if (debugEnabled > 1) console.log(`DEBUG:${MODULE_NAME} | `, ...args);
+};
 export let log = (...args) => console.log(`${MODULE_NAME} | `, ...args);
-export let warn = (...args) => { if (debugEnabled > 0) console.warn(`${MODULE_NAME} | `, ...args) };
+export let warn = (...args) => {
+  if (debugEnabled > 0) console.warn(`${MODULE_NAME} | `, ...args);
+};
 export let error = (...args) => console.error(`${MODULE_NAME} | `, ...args);
 export let timelog = (...args) => warn(`${MODULE_NAME} | `, Date.now(), ...args);
-export let i18n = key => {
+export let i18n = (key) => {
   return getGame().i18n.localize(key);
 };
 export let i18nFormat = (key, data = {}) => {
   return getGame().i18n.format(key, data);
-}
+};
 
 export let setDebugLevel = (debugText: string) => {
-  debugEnabled = { "none": 0, "warn": 1, "debug": 2, "all": 3 }[debugText] || 0;
+  debugEnabled = { none: 0, warn: 1, debug: 2, all: 3 }[debugText] || 0;
   // 0 = none, warnings = 1, debug = 2, all = 3
   if (debugEnabled >= 3) CONFIG.debug.hooks = true;
-}
+};
 
 /* ------------------------------------ */
 /* Initialize module					*/
@@ -58,7 +64,7 @@ Hooks.once('init', async function () {
   // Register custom sheets (if any)
 });
 
-Hooks.once("socketlib.ready", () => {
+Hooks.once('socketlib.ready', () => {
   //@ts-ignore
   ConditionalVisibility.SOCKET = socketlib.registerModule(MODULE_NAME);
 });
@@ -66,9 +72,7 @@ Hooks.once("socketlib.ready", () => {
 /* ------------------------------------ */
 /* Setup module							*/
 /* ------------------------------------ */
-Hooks.once('setup', function () {
-
-});
+Hooks.once('setup', function () {});
 
 /* ------------------------------------ */
 /* When ready							*/

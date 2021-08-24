@@ -1,13 +1,13 @@
-import { ConditionalVisibility } from "./ConditionalVisibility"
+import { ConditionalVisibility } from './ConditionalVisibility';
 
-export const MODULE_NAME:string = "conditional-visibility";
-export const DEFAULT_STEALTH:number = 10;
+export const MODULE_NAME: string = 'conditional-visibility';
+export const DEFAULT_STEALTH: number = 10;
 
 export interface StatusEffect {
-    id: string,
-    visibilityId: string,
-    label: string,
-    icon: string,
+  id: string;
+  visibilityId: string;
+  label: string;
+  icon: string;
 }
 
 /**
@@ -19,11 +19,11 @@ export interface StatusEffect {
  * So you will need to deal with the fact that there might not be an initialized canvas at any point in time.
  * @returns
  */
- export function getCanvas(): Canvas {
-	if (!(canvas instanceof Canvas) || !canvas.ready) {
-		throw new Error("Canvas Is Not Initialized");
-	}
-	return canvas;
+export function getCanvas(): Canvas {
+  if (!(canvas instanceof Canvas) || !canvas.ready) {
+    throw new Error('Canvas Is Not Initialized');
+  }
+  return canvas;
 }
 
 /**
@@ -35,32 +35,31 @@ export interface StatusEffect {
  * So you will need to deal with the fact that there might not be an initialized canvas at any point in time.
  * @returns
  */
- export function getGame(): Game {
-	if (!(game instanceof Game)) {
-		throw new Error("Game Is Not Initialized");
-	}
-	return game;
+export function getGame(): Game {
+  if (!(game instanceof Game)) {
+    throw new Error('Game Is Not Initialized');
+  }
+  return game;
 }
 
-export const registerSettings = function() {
+export const registerSettings = function () {
+  getGame().settings.register(MODULE_NAME, 'autoStealth', {
+    name: getGame().i18n.localize('conditional-visibility.settings.autoStealth.name'),
+    hint: getGame().i18n.localize('conditional-visibility.settings.autoStealth.hint'),
+    scope: 'world',
+    config: true,
+    type: Boolean,
+    default: false,
+    onChange: (value) => console.log(MODULE_NAME + ' | autoStealth set to ' + value),
+  });
 
-	getGame().settings.register(MODULE_NAME, "autoStealth", {
-		name: getGame().i18n.localize("conditional-visibility.settings.autoStealth.name"),
-		hint: getGame().i18n.localize("conditional-visibility.settings.autoStealth.hint"),
-		scope: "world",
-		config: true,
-		type: Boolean,
-		default: false,
-		onChange: value => console.log(MODULE_NAME + ' | autoStealth set to ' + value)
-	});
+  getGame().settings.register(MODULE_NAME, 'popup-version', {
+    scope: 'world',
+    config: false,
+    type: String,
+    default: '0.0.9',
+  });
 
-	getGame().settings.register(MODULE_NAME, "popup-version", {
-		scope: "world",
-		config: false,
-		type: String,
-		default: "0.0.9",
-	  });
-
-	// Register any custom module settings here
-	ConditionalVisibility.onInit();
-}
+  // Register any custom module settings here
+  ConditionalVisibility.onInit();
+};

@@ -44,12 +44,8 @@
     }
   ],
   "scripts": [],
-  "esmodules": [
-    "conditional-visibility.js"
-  ],
-  "styles": [
-    "templates/conditional-visibility.css"
-  ],
+  "esmodules": ["conditional-visibility.js"],
+  "styles": ["templates/conditional-visibility.css"],
   "packs": [
     {
       "name": "Conditional Visibility",

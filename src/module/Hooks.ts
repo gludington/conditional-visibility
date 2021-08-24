@@ -1,11 +1,24 @@
 import { ConditionalVisibility } from "./ConditionalVisibility";
-import { getCanvas, MODULE_NAME } from "./settings";
+import { getGame, getCanvas, MODULE_NAME } from "./settings";
 
 export let readyHooks = async () => {
 
     // setup all the hooks
     console.log(MODULE_NAME + ' | Ready ' + MODULE_NAME);
     const sightLayer = getCanvas().layers.find(layer => {
+        switch (getGame().system.id) {
+            case 'dnd5e':
+                //@ts-ignore
+                return layer.__proto__.constructor.name === 'SightLayer';
+                break;
+            case 'pf2e':
+                //@ts-ignore
+                return layer.__proto__.constructor.name === 'SightLayerPF2e';
+                break;
+            default:
+                //@ts-ignore
+                return layer.__proto__.constructor.name === 'SightLayer';
+        }
         //@ts-ignore
         return layer.__proto__.constructor.name === 'SightLayer';
     });
@@ -20,11 +33,25 @@ export let readyHooks = async () => {
         ConditionalVisibility.INSTANCE.onRenderTokenHUD(app, html, token);
     });
 
+    Hooks.on("sightRefresh", () => {
+        ConditionalVisibility.INSTANCE.restrictVisibility(32)
+    });
     //synthetic actors go through this
     // Hooks.on("preUpdateToken", ( token, update, options, userId) => {
     //     ConditionalVisibility.INSTANCE.onUpdateToken( token, update, options, userId);
     // });
     //real actors go through this
+    Hooks.on("updateToken", (token, updates) => {
+        if (
+            "elevation" in updates ||
+            "x" in updates ||
+            "y" in updates ||
+            "rotation" in updates
+        ) {
+            ConditionalVisibility.INSTANCE.restrictVisibility(100)
+            //token._object.visible = ConditionalVisibility.canSee(token._object);
+        }
+    });
     Hooks.on("createActiveEffect", (effect, options, userId) => {
         ConditionalVisibility.INSTANCE.onCreateEffect(effect, options, userId);
     });
@@ -43,6 +70,6 @@ export let readyHooks = async () => {
 }
 
 export let initHooks = () => {
-  console.warn("Init Hooks processing");
+    console.warn("Init Hooks processing");
 
 }

@@ -15,13 +15,14 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
         if (status) {
             //const actor = effect.parent;
             //await actor.setFlag(MODULE_NAME, status.visibilityId, true);
-            let flag = "flags.conditional-visibility."+status.visibilityId;
-            if(effect.parent.isToken){
-                ConditionalVisibility.INSTANCE.sceneUpdates.push({_id:effect.parent.parent.id,["actorData."+flag]:true})
+            let flag = "flags.conditional-visibility." + status.visibilityId;
+            if (effect.parent.isToken) {
+                ConditionalVisibility.INSTANCE.sceneUpdates.push({ _id: effect.parent.parent.id, ["actorData." + flag]: true })
+                ConditionalVisibility.INSTANCE.sceneUpdates.push({ _id: effect.parent.parent.id, ["actorData.flags.conditional-visibility.hasEffect"]: true });
             } else {
-                ConditionalVisibility.INSTANCE.actorUpdates.push({_id:effect.parent.id,[flag]:true})
+                ConditionalVisibility.INSTANCE.actorUpdates.push({ _id: effect.parent.id, [flag]: true })
             }
-            ConditionalVisibility.INSTANCE.debouncedUpdate;
+            ConditionalVisibility.INSTANCE.debouncedUpdate();
         }
     }
 
@@ -30,13 +31,17 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
         if (status) {
             //const actor = effect.parent;
             //await actor.unsetFlag(MODULE_NAME, status.visibilityId, true);
-            let flag = "flags.conditional-visibility."+status.visibilityId;
-            if(effect.parent.isToken){
-                ConditionalVisibility.INSTANCE.sceneUpdates.push({_id:effect.parent.parent.id,["actorData."+flag]:false})
-            }else{
-                ConditionalVisibility.INSTANCE.actorUpdates.push({_id:effect.parent.id,[flag]:false})
+            let flag = "flags.conditional-visibility." + status.visibilityId;
+            if (effect.parent.isToken) {
+                ConditionalVisibility.INSTANCE.sceneUpdates.push({ _id: effect.parent.parent.id, ["actorData." + flag]: false })
+                //Check if its the last effect that causes hidden status
+                if (Array.from(this.effectsByCondition().values()).filter(e => effect.parent.getFlag(MODULE_NAME, e.visibilityId) ?? false).length == 1) {
+                    ConditionalVisibility.INSTANCE.sceneUpdates.push({ _id: effect.parent.parent.id, ["actorData.flags.conditional-visibility.hasEffect"]: false });
+                }
+            } else {
+                ConditionalVisibility.INSTANCE.actorUpdates.push({ _id: effect.parent.id, [flag]: false })
             }
-            ConditionalVisibility.INSTANCE.debouncedUpdate;
+            ConditionalVisibility.INSTANCE.debouncedUpdate();
         }
     }
 
@@ -80,12 +85,12 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
      * Get the base vision capabilities, and add the maximum passive perception for any token in the list.
      * @param srcTokens tokens whos abilities to test
      */
-    getVisionCapabilities(srcToken: Token):any {
-        if (srcToken??false) {
+    getVisionCapabilities(srcToken: Array<Token> | Token): any {
+        if (srcToken ?? false) {
 
             const flags = super.getVisionCapabilities(srcToken);
             //@ts-ignore
-            flags.prc = srcToken?.actor?.data?.data?.skills?.prc?.passive??-1;
+            flags.prc = srcToken?.actor?.data?.data?.skills?.prc?.passive ?? -1;
             return flags;
         }
         return false;
@@ -166,7 +171,7 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
         return true;
     }
 
-    rollStealth(token:Token):Roll {
+    rollStealth(token: Token): Roll {
         if (token && token.actor) {
             //@ts-ignore
             return new Roll("1d20 + (" + token.actor.data.data.skills.ste.total + ")");

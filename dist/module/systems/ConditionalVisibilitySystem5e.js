@@ -119,12 +119,12 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
     }
     initializeOnToggleEffect(tokenHud) {
         const realOnToggleEffect = tokenHud._onToggleEffect.bind(tokenHud);
-        tokenHud._onToggleEffect = (event, opts) => {
+        tokenHud._onToggleEffect = async (event, opts) => {
             const icon = event.currentTarget;
             if (icon.src.endsWith('newspaper.svg')) {
                 const object = tokenHud.object;
                 if (icon.className.indexOf('active') < 0) {
-                    this.stealthHud(object).then((result) => {
+                    this.stealthHud(object).then(async (result) => {
                         if (!object.data.flags) {
                             object.data.flags = {};
                         }
@@ -142,18 +142,17 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
                             if (!object.actor.data.flags[CONDITIONAL_VISIBILITY_MODULE_NAME]) {
                                 object.actor.data.flags[CONDITIONAL_VISIBILITY_MODULE_NAME] = {};
                             }
-                            object.actor.setFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.PASSIVE_STEALTH, result);
+                            await object.actor.setFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.PASSIVE_STEALTH, result);
                         }
                         return realOnToggleEffect(event, opts);
                     });
                 }
                 else {
                     if (object.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.PASSIVE_STEALTH)) {
-                        object.unsetFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.PASSIVE_STEALTH);
+                        await object.unsetFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.PASSIVE_STEALTH);
                     }
-                    if (object.actor &&
-                        object.actor.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.PASSIVE_STEALTH)) {
-                        object.actor.unsetFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.PASSIVE_STEALTH);
+                    if (object.actor?.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.PASSIVE_STEALTH)) {
+                        await object.actor.unsetFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.PASSIVE_STEALTH);
                     }
                     return realOnToggleEffect(event, opts);
                 }

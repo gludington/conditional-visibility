@@ -106,7 +106,7 @@ export class ConditionalVisibilityFacadeImpl {
         if (this._system.effectsByCondition().has('hidden')) {
             const hidden = this._system.effectsByCondition().get('hidden');
             const guard = new Map();
-            tokens.forEach((token) => {
+            tokens.forEach(async (token) => {
                 if (token.owner) {
                     if (!this.actorAlreadyAdjusted(token, guard)) {
                         let stealth;
@@ -118,9 +118,16 @@ export class ConditionalVisibilityFacadeImpl {
                         }
                         const tokenActor = token.document.actor;
                         if (this.has(token, hidden) === true) {
-                            const update = { 'conditional-visibility': {} };
-                            update[CONDITIONAL_VISIBILITY_MODULE_NAME][StatusEffectSightFlags.PASSIVE_STEALTH] = stealth;
-                            tokenActor.update({ flags: update });
+                            //const update = { 'conditional-visibility': {} };
+                            //update[CONDITIONAL_VISIBILITY_MODULE_NAME][StatusEffectSightFlags.PASSIVE_STEALTH] = stealth;
+                            //tokenActor.update({ flags: update });
+                            if (!tokenActor.data.flags) {
+                                tokenActor.data.flags = {};
+                            }
+                            if (!tokenActor.data.flags[CONDITIONAL_VISIBILITY_MODULE_NAME]) {
+                                tokenActor.data.flags[CONDITIONAL_VISIBILITY_MODULE_NAME] = {};
+                            }
+                            await tokenActor.setFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.PASSIVE_STEALTH, stealth);
                         }
                         else {
                             if (!tokenActor.data.flags) {
@@ -129,7 +136,7 @@ export class ConditionalVisibilityFacadeImpl {
                             if (!tokenActor.data.flags[CONDITIONAL_VISIBILITY_MODULE_NAME]) {
                                 tokenActor.data.flags[CONDITIONAL_VISIBILITY_MODULE_NAME] = {};
                             }
-                            tokenActor.setFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.PASSIVE_STEALTH, stealth);
+                            await tokenActor.setFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.PASSIVE_STEALTH, stealth);
                             this.toggleEffect(token, hidden);
                         }
                     }
@@ -165,7 +172,7 @@ export class ConditionalVisibilityFacadeImpl {
         if (this._system.hasStealth()) {
             const hidden = this._system.effectsByCondition().get('hidden');
             const guard = new Map();
-            tokens.forEach((token) => {
+            tokens.forEach(async (token) => {
                 if (token.owner) {
                     if (!this.actorAlreadyAdjusted(token, guard)) {
                         let stealth;
@@ -186,7 +193,7 @@ export class ConditionalVisibilityFacadeImpl {
                             if (!tokenActor.data.flags[CONDITIONAL_VISIBILITY_MODULE_NAME]) {
                                 tokenActor.data.flags[CONDITIONAL_VISIBILITY_MODULE_NAME] = {};
                             }
-                            tokenActor.setFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.PASSIVE_STEALTH, stealth);
+                            await tokenActor.setFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.PASSIVE_STEALTH, stealth);
                             this.toggleEffect(token, hidden);
                         }
                     }

@@ -301,9 +301,7 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
   async stealthHud(token) {
     let initialValue;
     try {
-      initialValue = parseInt(
-        token.data.flags[CONDITIONAL_VISIBILITY_MODULE_NAME][StatusEffectSightFlags.PASSIVE_STEALTH],
-      );
+      initialValue = parseInt(token.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME,StatusEffectSightFlags.PASSIVE_STEALTH) );
     } catch (err) {
       initialValue === undefined;
     }

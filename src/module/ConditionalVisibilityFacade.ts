@@ -137,9 +137,16 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
             }
             const tokenActor = <Actor>token.document.actor;
             if (this.has(token, hidden) === true) {
-              const update = { 'conditional-visibility': {} };
-              update[CONDITIONAL_VISIBILITY_MODULE_NAME][StatusEffectSightFlags.PASSIVE_STEALTH] = stealth;
-              tokenActor.update({ flags: update });
+              //const update = { 'conditional-visibility': {} };
+              //update[CONDITIONAL_VISIBILITY_MODULE_NAME][StatusEffectSightFlags.PASSIVE_STEALTH] = stealth;
+              //tokenActor.update({ flags: update });
+              if (!tokenActor.data.flags) {
+                tokenActor.data.flags = {};
+              }
+              if (!tokenActor.data.flags[CONDITIONAL_VISIBILITY_MODULE_NAME]) {
+                tokenActor.data.flags[CONDITIONAL_VISIBILITY_MODULE_NAME] = {};
+              }
+              await tokenActor.setFlag(CONDITIONAL_VISIBILITY_MODULE_NAME,StatusEffectSightFlags.PASSIVE_STEALTH, stealth);
             } else {
               if (!tokenActor.data.flags) {
                 tokenActor.data.flags = {};
@@ -147,7 +154,6 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
               if (!tokenActor.data.flags[CONDITIONAL_VISIBILITY_MODULE_NAME]) {
                 tokenActor.data.flags[CONDITIONAL_VISIBILITY_MODULE_NAME] = {};
               }
-
               await tokenActor.setFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.PASSIVE_STEALTH, stealth);
               this.toggleEffect(token, hidden);
             }

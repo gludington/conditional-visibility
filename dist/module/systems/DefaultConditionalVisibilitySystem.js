@@ -46,17 +46,17 @@ export class DefaultConditionalVisibilitySystem {
         //return DefaultConditionalVisibilitySystem.BASE_EFFECTS;
         return new Array({
             id: CONDITIONAL_VISIBILITY_MODULE_NAME + '.invisible',
-            visibilityId: 'invisible',
+            visibilityId: StatusEffectStatusFlags.INVISIBLE,
             label: i18n(CONDITIONAL_VISIBILITY_MODULE_NAME + '.invisible'),
             icon: 'modules/' + CONDITIONAL_VISIBILITY_MODULE_NAME + '/icons/unknown.svg',
         }, {
             id: CONDITIONAL_VISIBILITY_MODULE_NAME + '.obscured',
-            visibilityId: 'obscured',
+            visibilityId: StatusEffectStatusFlags.OBSCURED,
             label: i18n(CONDITIONAL_VISIBILITY_MODULE_NAME + '.obscured'),
             icon: 'modules/' + CONDITIONAL_VISIBILITY_MODULE_NAME + '/icons/foggy.svg',
         }, {
             id: CONDITIONAL_VISIBILITY_MODULE_NAME + '.indarkness',
-            visibilityId: 'indarkness',
+            visibilityId: StatusEffectStatusFlags.IN_DARKNESS,
             label: i18n(CONDITIONAL_VISIBILITY_MODULE_NAME + '.indarkness'),
             icon: 'modules/' + CONDITIONAL_VISIBILITY_MODULE_NAME + '/icons/moon.svg',
         });
@@ -219,7 +219,7 @@ export class DefaultConditionalVisibilitySystem {
     async stealthHud(token) {
         let initialValue;
         try {
-            initialValue = parseInt(token.data.flags[CONDITIONAL_VISIBILITY_MODULE_NAME][StatusEffectSightFlags.PASSIVE_STEALTH]);
+            initialValue = parseInt(token.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.PASSIVE_STEALTH));
         }
         catch (err) {
             initialValue === undefined;

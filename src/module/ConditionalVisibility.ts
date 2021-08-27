@@ -283,20 +283,14 @@ export class ConditionalVisibility {
           }
           if (
             tokenActorData &&
-            tokenActorData.flags &&
-            tokenActorData.flags[CONDITIONAL_VISIBILITY_MODULE_NAME] &&
-            tokenActorData.flags[CONDITIONAL_VISIBILITY_MODULE_NAME]._ste &&
-            !isNaN(
-              parseInt(
-                tokenActorData.flags[CONDITIONAL_VISIBILITY_MODULE_NAME][StatusEffectSightFlags.PASSIVE_STEALTH],
-              ),
+            !isNaN(parseInt(token.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME,StatusEffectSightFlags.PASSIVE_STEALTH))
             )
           ) {
             title +=
               ' ' +
               i18n(CONDITIONAL_VISIBILITY_MODULE_NAME + '.currentstealth') +
               ': ' +
-              tokenActorData.flags[CONDITIONAL_VISIBILITY_MODULE_NAME][StatusEffectSightFlags.PASSIVE_STEALTH];
+              token.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME,StatusEffectSightFlags.PASSIVE_STEALTH);
           }
         } else {
           title = i18n(systemEffects.get(src)?.label);

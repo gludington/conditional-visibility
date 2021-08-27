@@ -172,10 +172,7 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
           if (object.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.PASSIVE_STEALTH)) {
             await object.unsetFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.PASSIVE_STEALTH);
           }
-          if (
-            object.actor &&
-            object.actor.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.PASSIVE_STEALTH)
-          ) {
+          if (object.actor?.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.PASSIVE_STEALTH)) {
             await object.actor.unsetFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.PASSIVE_STEALTH);
           }
           return realOnToggleEffect(event, opts);

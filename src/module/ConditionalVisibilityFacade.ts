@@ -126,7 +126,7 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
     if (this._system.effectsByCondition().has('hidden')) {
       const hidden = this._system.effectsByCondition().get('hidden');
       const guard: Map<string, boolean> = new Map();
-      tokens.forEach((token: Token) => {
+      tokens.forEach(async (token: Token) => {
         if (token.owner) {
           if (!this.actorAlreadyAdjusted(token, guard)) {
             let stealth;
@@ -148,7 +148,7 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
                 tokenActor.data.flags[CONDITIONAL_VISIBILITY_MODULE_NAME] = {};
               }
 
-              tokenActor.setFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.PASSIVE_STEALTH, stealth);
+              await tokenActor.setFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.PASSIVE_STEALTH, stealth);
               this.toggleEffect(token, hidden);
             }
           }
@@ -186,7 +186,7 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
     if (this._system.hasStealth()) {
       const hidden = this._system.effectsByCondition().get('hidden');
       const guard: Map<string, boolean> = new Map();
-      tokens.forEach((token) => {
+      tokens.forEach(async (token) => {
         if (token.owner) {
           if (!this.actorAlreadyAdjusted(token, guard)) {
             let stealth;
@@ -205,7 +205,7 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
               if (!tokenActor.data.flags[CONDITIONAL_VISIBILITY_MODULE_NAME]) {
                 tokenActor.data.flags[CONDITIONAL_VISIBILITY_MODULE_NAME] = {};
               }
-              tokenActor.setFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.PASSIVE_STEALTH, stealth);
+              await tokenActor.setFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.PASSIVE_STEALTH, stealth);
               this.toggleEffect(token, hidden);
             }
           }

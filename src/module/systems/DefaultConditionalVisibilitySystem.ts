@@ -86,19 +86,19 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
     return new Array<StatusEffect>(
       {
         id: CONDITIONAL_VISIBILITY_MODULE_NAME + '.invisible',
-        visibilityId: 'invisible',
+        visibilityId: StatusEffectStatusFlags.INVISIBLE, //'invisible',
         label: i18n(CONDITIONAL_VISIBILITY_MODULE_NAME + '.invisible'),
         icon: 'modules/' + CONDITIONAL_VISIBILITY_MODULE_NAME + '/icons/unknown.svg',
       },
       {
         id: CONDITIONAL_VISIBILITY_MODULE_NAME + '.obscured',
-        visibilityId: 'obscured',
+        visibilityId: StatusEffectStatusFlags.OBSCURED, //'obscured',
         label: i18n(CONDITIONAL_VISIBILITY_MODULE_NAME + '.obscured'),
         icon: 'modules/' + CONDITIONAL_VISIBILITY_MODULE_NAME + '/icons/foggy.svg',
       },
       {
         id: CONDITIONAL_VISIBILITY_MODULE_NAME + '.indarkness',
-        visibilityId: 'indarkness',
+        visibilityId: StatusEffectStatusFlags.IN_DARKNESS, // 'indarkness',
         label: i18n(CONDITIONAL_VISIBILITY_MODULE_NAME + '.indarkness'),
         icon: 'modules/' + CONDITIONAL_VISIBILITY_MODULE_NAME + '/icons/moon.svg',
       },

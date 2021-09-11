@@ -1,8 +1,7 @@
-import { log } from '../conditional-visibility';
+import { i18nFormat, log } from '../conditional-visibility';
 import { ConditionalVisibility } from './ConditionalVisibility';
 import { getGame, CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags } from './settings';
 import { ConditionalVisibilitySystem } from './systems/ConditionalVisibilitySystem';
-import { ConditionalVisibilitySystemPf2e } from './systems/ConditionalVisibilitySystemPf2e';
 
 export interface ConditionalVisibilityFacade {
   help(): void;
@@ -56,7 +55,7 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
    * @param condition the name of the condition
    * @param value true or false
    */
-  setCondition(tokens: Array<Token>, condition: string, value: boolean) {
+  setCondition(tokens: Array<Token>, condition: string, value: boolean): void {
     const status = this._system.effectsByCondition().get(condition);
     if (status) {
       const guard: Map<string, boolean> = new Map();
@@ -65,11 +64,11 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
           if (!this.actorAlreadyAdjusted(token, guard)) {
             if (value !== true) {
               if (this.has(token, status)) {
-                this.toggleEffect(token, status).then(() => {});
+                this.toggleEffect(token, status).then(() => { });
               }
             } else {
               if (!this.has(token, status)) {
-                this.toggleEffect(token, status).then(() => {});
+                this.toggleEffect(token, status).then(() => { });
               }
             }
           }
@@ -83,20 +82,21 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
    * @param tokens the tokens to affect
    * @param condition the string condition
    */
-  toggleCondition(tokens: Array<Token>, condition: string) {
+  toggleCondition(tokens: Array<Token>, condition: string): void {
     const status = this._system.effectsByCondition().get(condition);
     if (status) {
       const guard: Map<string, boolean> = new Map();
       tokens.forEach((token) => {
         if (token.owner) {
           if (!this.actorAlreadyAdjusted(token, guard)) {
-            this.toggleEffect(token, status).then(() => {});
+            this.toggleEffect(token, status).then(() => { });
           }
         }
       });
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   actorAlreadyAdjusted(token: any, guard: Map<string, boolean>): boolean {
     if (token.data.actorLink === true) {
       const actorId = token?.actor?.data?._id;
@@ -116,10 +116,10 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
    * @param tokens the list of tokens to affect.
    * @param value an optional numeric value to set for all tokens.  If unsupplied, will roll the ability the system defines.
    */
-  hide(tokens: Array<Token>, value?: number) {
+  hide(tokens: Array<Token>, value?: number): void {
     if (!this._system.hasStealth()) {
       ui.notifications?.error(
-        getGame().i18n.format('conditional-visibility.stealth.not.supported', { sysid: getGame().system.id }),
+        i18nFormat('conditional-visibility.stealth.not.supported', { sysid: getGame().system.id }),
       );
       return;
     }
@@ -146,7 +146,7 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
               if (!tokenActor.data.flags[CONDITIONAL_VISIBILITY_MODULE_NAME]) {
                 tokenActor.data.flags[CONDITIONAL_VISIBILITY_MODULE_NAME] = {};
               }
-              await tokenActor.setFlag(CONDITIONAL_VISIBILITY_MODULE_NAME,StatusEffectSightFlags.PASSIVE_STEALTH, stealth);
+              await tokenActor.setFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.PASSIVE_STEALTH, stealth);
             } else {
               if (!tokenActor.data.flags) {
                 tokenActor.data.flags = {};
@@ -167,7 +167,7 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
    * Removes the hide condition from the set of tokens.
    * @param tokens the list of tokens to affect
    */
-  unHide(tokens: Array<Token>) {
+  unHide(tokens: Array<Token>): void {
     if (this._system.hasStealth()) {
       const hidden = this._system.effectsByCondition().get('hidden');
       const guard: Map<string, boolean> = new Map();
@@ -188,7 +188,7 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
    * @param tokens the tokens to hide/unhide
    * @param value the optional value to use when hiding.  If ommitted, will roll stealth
    */
-  toggleHide(tokens: Array<Token>, value?: number) {
+  toggleHide(tokens: Array<Token>, value?: number): void {
     if (this._system.hasStealth()) {
       const hidden = this._system.effectsByCondition().get('hidden');
       const guard: Map<string, boolean> = new Map();
@@ -220,14 +220,17 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
     }
   }
 
-  toggleEffect(token, condition): Promise<any> {
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  toggleEffect(token: Token, condition: any): Promise<any> {
     return token.toggleEffect(condition);
   }
 
-  has(token, condition): boolean {
-    const flags = token.data.actorLink
-      ? token.actor?.data?.flags?.[CONDITIONAL_VISIBILITY_MODULE_NAME]
-      : token?.data?.flags?.[CONDITIONAL_VISIBILITY_MODULE_NAME];
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  has(token: Token, condition: any): boolean {
+    const flags: boolean | any = token.data.actorLink
+      ? token.actor?.data?.flags[CONDITIONAL_VISIBILITY_MODULE_NAME]
+      : token?.data?.flags[CONDITIONAL_VISIBILITY_MODULE_NAME]
+      ?? false;
     if (flags) {
       return flags[condition.visibilityId] === true;
     } else {

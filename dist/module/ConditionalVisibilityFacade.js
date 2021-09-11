@@ -1,4 +1,4 @@
-import { log } from "../conditional-visibility.js";
+import { i18nFormat, log } from "../conditional-visibility.js";
 import { getGame, CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags } from "./settings.js";
 /**
  * A class to expose macro-friendly messages on the window object.
@@ -80,6 +80,7 @@ export class ConditionalVisibilityFacadeImpl {
             });
         }
     }
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     actorAlreadyAdjusted(token, guard) {
         if (token.data.actorLink === true) {
             const actorId = token?.actor?.data?._id;
@@ -100,7 +101,7 @@ export class ConditionalVisibilityFacadeImpl {
      */
     hide(tokens, value) {
         if (!this._system.hasStealth()) {
-            ui.notifications?.error(getGame().i18n.format('conditional-visibility.stealth.not.supported', { sysid: getGame().system.id }));
+            ui.notifications?.error(i18nFormat('conditional-visibility.stealth.not.supported', { sysid: getGame().system.id }));
             return;
         }
         if (this._system.effectsByCondition().has('hidden')) {
@@ -201,13 +202,16 @@ export class ConditionalVisibilityFacadeImpl {
             });
         }
     }
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     toggleEffect(token, condition) {
         return token.toggleEffect(condition);
     }
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     has(token, condition) {
         const flags = token.data.actorLink
-            ? token.actor?.data?.flags?.[CONDITIONAL_VISIBILITY_MODULE_NAME]
-            : token?.data?.flags?.[CONDITIONAL_VISIBILITY_MODULE_NAME];
+            ? token.actor?.data?.flags[CONDITIONAL_VISIBILITY_MODULE_NAME]
+            : token?.data?.flags[CONDITIONAL_VISIBILITY_MODULE_NAME]
+                ?? false;
         if (flags) {
             return flags[condition.visibilityId] === true;
         }

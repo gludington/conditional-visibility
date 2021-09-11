@@ -51,7 +51,7 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
     });
   }
 
-  async onCreateEffect(effect, options, userId) {
+  async onCreateEffect(effect, options, userId): Promise<void> {
     const status = this.getEffectByIcon(effect);
     if (status) {
       const actor = effect.parent;
@@ -59,7 +59,7 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
     }
   }
 
-  async onDeleteEffect(effect, options, userId) {
+  async onDeleteEffect(effect, options, userId): Promise<void> {
     const status = this.getEffectByIcon(effect);
     if (status) {
       const actor = effect.parent;
@@ -67,10 +67,9 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
     }
   }
 
-  hasStatus(token: Token, id: string) {
+  hasStatus(token: Token, id: string): Boolean {
     return (
       token.actor?.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, id) === true ||
-      token.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, id) === true ||
       token.document?.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, id) === true
     );
   }
@@ -124,7 +123,7 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
     return <StatusEffect>this.effectsByIcon().get(effect.data?.icon);
   }
 
-  initializeStatusEffects() {
+  initializeStatusEffects(): void {
     log(' Initializing visibility system effects ' + this.gameSystemId() + ' for game system ' + getGame().system.id);
     this.effectsByIcon().forEach((value: StatusEffect, key: string) => {
       CONFIG.statusEffects.push({
@@ -138,19 +137,19 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
    * For subclasses to set up systsem specific hooks.
    * @todo unify initializeOnToggleEffect if possible
    */
-  initializeHooks(facade: ConditionalVisibilityFacade): void {}
+  initializeHooks(facade: ConditionalVisibilityFacade): void { }
 
   /**
    * Default system does not have any reaction to a condition change.  Subclasses override this to add behavior.
    * @param tokenHud the tokenHud to use
    */
-  initializeOnToggleEffect(tokenHud: any) {}
+  initializeOnToggleEffect(tokenHud: TokenHUD): void { }
 
-  getVisionCapabilities(srcToken: Array<Token> | Token) {
+  getVisionCapabilities(srcToken: Array<Token> | Token): VisionCapabilities {
     if (srcToken)
       //In case of sending an array only take the first element
       srcToken = srcToken instanceof Array ? srcToken[0] : srcToken;
-    const flags: any = {};
+    const flags: VisionCapabilities = new VisionCapabilities();
 
     let _seeinvisible =
       <number>(
@@ -185,8 +184,13 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
     flags.seeinvisible = Math.max(_seeinvisible, _blindsight, _tremorsense, _truesight, _devilssight);
     flags.seeobscured = Math.max(_blindsight, _tremorsense);
     flags.seeindarkness = Math.max(_blindsight, _devilssight, _tremorsense, _truesight);
-
-    flags.visionfrom = srcToken?.position ?? { x: 0, y: 0 };
+    //@ts-ignore
+    if (srcToken._movement !== null) {
+      //@ts-ignore
+      flags.visionfrom = srcToken._movement.B;
+    } else {
+      flags.visionfrom = srcToken?.position ?? { x: 0, y: 0 };
+    }
     return flags;
   }
 
@@ -195,8 +199,16 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
    * @param target the token whose visibility is being checked
    * @param flags the capabilities established by the sight layer
    */
-  canSee(target: Token, visionCapabilities: any): boolean {
-    const distance = this.distanceBeetweenTokens(visionCapabilities.visionfrom, target.position);
+  canSee(target: Token, visionCapabilities: VisionCapabilities): boolean {
+    let distance;
+    //@ts-ignore
+    if (target._movement !== null) {
+      //@ts-ignore
+      distance = this.distanceBeetweenTokens(visionCapabilities.visionfrom, target._movement.B);
+    } else {
+      distance = this.distanceBeetweenTokens(visionCapabilities.visionfrom, target.position);
+    }
+
     if (this.seeInvisible(target, visionCapabilities, distance) === false) {
       return false;
     }
@@ -212,10 +224,10 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
     return true;
   }
 
-  distanceBeetweenTokens(source, target) {
+  distanceBeetweenTokens(source: Point, target: Point): number {
     const segment = new Ray(source, target);
 
-    return getCanvas().grid?.measureDistances([{ ray: segment }], { gridSpaces: true });
+    return getCanvas().grid?.measureDistances([{ ray: segment }], { gridSpaces: true })[0] ?? 0;
   }
 
   /**
@@ -224,7 +236,7 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
    * @param effects the effects of that token
    * @param visionCapabilities the sight capabilities of the sight layer
    */
-  seeInvisible(target: Token, visionCapabilities: any, distance: any): boolean {
+  seeInvisible(target: Token, visionCapabilities: VisionCapabilities, distance: number): boolean {
     const invisible = this.hasStatus(target, StatusEffectStatusFlags.INVISIBLE); // 'invisible'
     if (invisible === true) {
       if (visionCapabilities.seeinvisible > 0) {
@@ -240,7 +252,7 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
    * @param target the token being seen (or not)
    * @param visionCapabilities the sight capabilities of the sight layer
    */
-  seeObscured(target: Token, visionCapabilities: any, distance: any): boolean {
+  seeObscured(target: Token, visionCapabilities: VisionCapabilities, distance: number): boolean {
     const obscured = this.hasStatus(target, StatusEffectStatusFlags.OBSCURED); // 'obscured'
     if (obscured === true) {
       if (visionCapabilities.seeobscured > 0) {
@@ -257,7 +269,7 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
    * @param effects the effects of that token
    * @param flags the sight capabilities of the sight layer
    */
-  seeInDarkness(target: Token, visionCapabilities: any, distance: any): boolean {
+  seeInDarkness(target: Token, visionCapabilities: VisionCapabilities, distance: number): boolean {
     const indarkness = this.hasStatus(target, StatusEffectStatusFlags.IN_DARKNESS); //'indarkness'
     if (indarkness === true) {
       if (visionCapabilities.seeindarkness > 0) {
@@ -275,11 +287,11 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
    * @param effects the effects of that token
    * @param visionCapabilities the sight capabilities of the sight layer
    */
-  seeContested(target: Token, flags: any): boolean {
+  seeContested(target: Token, visionCapabilities: VisionCapabilities): boolean {
     return true;
   }
 
-  hasStealth() {
+  hasStealth(): boolean {
     return false;
   }
 
@@ -298,10 +310,11 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
    * @param token the actor to whom this dialog refers
    * @returns a Promise<number> containing the value of the result, or -1 if unintelligble
    */
-  async stealthHud(token) {
+  async stealthHud(token: Token): Promise<number> {
     let initialValue;
     try {
-      initialValue = parseInt(token.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME,StatusEffectSightFlags.PASSIVE_STEALTH) );
+      //@ts-ignore
+      initialValue = parseInt(token.document.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.PASSIVE_STEALTH));
     } catch (err) {
       initialValue === undefined;
     }
@@ -353,4 +366,11 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
       hud.render(true);
     });
   }
+}
+export class VisionCapabilities {
+  public seeinvisible: number
+  public seeobscured: number
+  public seeindarkness: number
+  public visionfrom: Point
+  public prc: number
 }

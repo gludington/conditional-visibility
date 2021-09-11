@@ -7,46 +7,73 @@ import { ConditionalVisibility } from "../ConditionalVisibility.js";
  * stealth with passive perception.
  */
 export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilitySystem {
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     async onCreateEffect(effect, options, userId) {
         const status = this.getEffectByIcon(effect);
         if (status) {
             //const actor = effect.parent;
             //await actor.setFlag(MODULE_NAME, status.visibilityId, true);
-            const flag = 'flags.conditional-visibility.' + status.visibilityId;
+            const baseflag = 'flags.' + CONDITIONAL_VISIBILITY_MODULE_NAME + '.';
             if (effect.parent.isToken) {
-                ConditionalVisibility.INSTANCE.sceneUpdates.push({ _id: effect.parent.parent.id, ['actorData.' + flag]: true });
                 ConditionalVisibility.INSTANCE.sceneUpdates.push({
                     _id: effect.parent.parent.id,
-                    ['actorData.flags.conditional-visibility.hasEffect']: true,
+                    ['actorData.' + baseflag + status.visibilityId]: true
+                });
+                ConditionalVisibility.INSTANCE.sceneUpdates.push({
+                    _id: effect.parent.parent.id,
+                    ['actorData.' + baseflag + 'hasEffect']: true,
                 });
             }
-            else {
-                ConditionalVisibility.INSTANCE.actorUpdates.push({ _id: effect.parent.id, [flag]: true });
+            else if (effect.parent.isOwner) {
+                ConditionalVisibility.INSTANCE.actorUpdates.push({
+                    _id: effect.parent.id,
+                    [baseflag + status.visibilityId]: true
+                });
+                ConditionalVisibility.INSTANCE.actorUpdates.push({
+                    _id: effect.parent.id,
+                    [baseflag + 'hasEffect']: true,
+                });
             }
             ConditionalVisibility.INSTANCE.debouncedUpdate();
         }
     }
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     async onDeleteEffect(effect, options, userId) {
         const status = this.getEffectByIcon(effect);
         if (status) {
             //const actor = effect.parent;
             //await actor.unsetFlag(MODULE_NAME, status.visibilityId, true);
-            const flag = 'flags.conditional-visibility.' + status.visibilityId;
+            const baseflag = 'flags.' + CONDITIONAL_VISIBILITY_MODULE_NAME + '.';
             if (effect.parent.isToken) {
                 ConditionalVisibility.INSTANCE.sceneUpdates.push({
                     _id: effect.parent.parent.id,
-                    ['actorData.' + flag]: false,
+                    ['actorData.' + baseflag + status.visibilityId]: false
                 });
                 //Check if its the last effect that causes hidden status
                 if (Array.from(this.effectsByCondition().values()).filter((e) => effect.parent.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, e.visibilityId) ?? false).length == 1) {
                     ConditionalVisibility.INSTANCE.sceneUpdates.push({
                         _id: effect.parent.parent.id,
-                        ['actorData.flags.conditional-visibility.hasEffect']: false,
+                        ['actorData.' + baseflag + 'hasEffect']: false,
                     });
+                    setTimeout(() => { effect.parent.parent._object.alpha = 1; effect.parent.parent._object.visible = true; effect.parent.parent._object.data.hidden = false; }, 350);
                 }
             }
             else {
-                ConditionalVisibility.INSTANCE.actorUpdates.push({ _id: effect.parent.id, [flag]: false });
+                if (effect.parent.isOwner) {
+                    ConditionalVisibility.INSTANCE.actorUpdates.push({
+                        _id: effect.parent.id,
+                        [baseflag + status.visibilityId]: false
+                    });
+                }
+                if (Array.from(this.effectsByCondition().values()).filter((e) => effect.parent.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, e.visibilityId) ?? false).length == 1) {
+                    if (effect.parent.isOwner) {
+                        ConditionalVisibility.INSTANCE.actorUpdates.push({
+                            _id: effect.parent.id,
+                            [baseflag + 'hasEffect']: false,
+                        });
+                    }
+                    setTimeout(() => { effect.parent.getActiveTokens().forEach((e) => { e.alpha = 1; e.visible = true; e.data.hidden = false; }); }, 350);
+                }
             }
             ConditionalVisibility.INSTANCE.debouncedUpdate();
         }
@@ -118,43 +145,48 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
         return true;
     }
     initializeOnToggleEffect(tokenHud) {
+        //@ts-ignore
         const realOnToggleEffect = tokenHud._onToggleEffect.bind(tokenHud);
+        //@ts-ignore
         tokenHud._onToggleEffect = async (event, opts) => {
             const icon = event.currentTarget;
             if (icon.src.endsWith('newspaper.svg')) {
                 const object = tokenHud.object;
-                if (icon.className.indexOf('active') < 0) {
-                    this.stealthHud(object).then(async (result) => {
-                        if (!object.data.flags) {
-                            object.data.flags = {};
+                if (object) {
+                    if (icon.className.indexOf('active') < 0) {
+                        this.stealthHud(object).then(async (result) => {
+                            if (!object.data.flags) {
+                                object.data.flags = {};
+                            }
+                            if (!object.data.flags[CONDITIONAL_VISIBILITY_MODULE_NAME]) {
+                                object.data.flags[CONDITIONAL_VISIBILITY_MODULE_NAME] = {};
+                            }
+                            //object.setFlag(MODULE_NAME, StatusEffectSightFlags.PASSIVE_STEALTH, result);
+                            if (object.actor) {
+                                if (!object.actor.data) {
+                                    //@ts-ignore
+                                    object.actor.data = {};
+                                }
+                                if (!object.actor.data.flags) {
+                                    object.actor.data.flags = {};
+                                }
+                                if (!object.actor.data.flags[CONDITIONAL_VISIBILITY_MODULE_NAME]) {
+                                    object.actor.data.flags[CONDITIONAL_VISIBILITY_MODULE_NAME] = {};
+                                }
+                                await object.actor.setFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.PASSIVE_STEALTH, result);
+                            }
+                            return realOnToggleEffect(event, opts);
+                        });
+                    }
+                    else {
+                        if (object.document.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.PASSIVE_STEALTH)) {
+                            await object?.document.unsetFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.PASSIVE_STEALTH);
                         }
-                        if (!object.data.flags[CONDITIONAL_VISIBILITY_MODULE_NAME]) {
-                            object.data.flags[CONDITIONAL_VISIBILITY_MODULE_NAME] = {};
-                        }
-                        //object.setFlag(MODULE_NAME, StatusEffectSightFlags.PASSIVE_STEALTH, result);
-                        if (object.actor) {
-                            if (!object.actor.data) {
-                                object.actor.data = {};
-                            }
-                            if (!object.actor.data.flags) {
-                                object.actor.data.flags = {};
-                            }
-                            if (!object.actor.data.flags[CONDITIONAL_VISIBILITY_MODULE_NAME]) {
-                                object.actor.data.flags[CONDITIONAL_VISIBILITY_MODULE_NAME] = {};
-                            }
-                            await object.actor.setFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.PASSIVE_STEALTH, result);
+                        if (object.actor?.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.PASSIVE_STEALTH)) {
+                            await object.actor.unsetFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.PASSIVE_STEALTH);
                         }
                         return realOnToggleEffect(event, opts);
-                    });
-                }
-                else {
-                    if (object.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.PASSIVE_STEALTH)) {
-                        await object.unsetFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.PASSIVE_STEALTH);
                     }
-                    if (object.actor?.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.PASSIVE_STEALTH)) {
-                        await object.actor.unsetFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.PASSIVE_STEALTH);
-                    }
-                    return realOnToggleEffect(event, opts);
                 }
                 return false;
             }

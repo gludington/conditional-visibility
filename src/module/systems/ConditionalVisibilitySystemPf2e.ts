@@ -1,43 +1,53 @@
 import { i18n } from '../../conditional-visibility';
 import { CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffect, StatusEffectStatusFlags } from '../settings';
-import { DefaultConditionalVisibilitySystem } from './DefaultConditionalVisibilitySystem';
+import { DefaultConditionalVisibilitySystem, VisionCapabilities } from './DefaultConditionalVisibilitySystem';
 import { ConditionalVisibility } from '../ConditionalVisibility';
 // const MODULE_NAME = "conditional-visibility";
 /**
  * Conditional visibility system for pf2e.  Uses only the built in pf2e invisibility.
  */
 export class ConditionalVisibilitySystemPf2e extends DefaultConditionalVisibilitySystem {
-  async onCreateEffect(effect, options, userId) {
+  async onCreateEffect(effect: any, options: any, userId: string): Promise<void> {
     if (effect.type !== 'condition') return;
     const status = this.getEffectByIcon(effect);
     if (status) {
       //const actor = effect.parent;
       //await actor.setFlag(MODULE_NAME, status.visibilityId, true);
-      const flag = 'flags.conditional-visibility.' + status.visibilityId;
+      const baseflag = 'flags.' + CONDITIONAL_VISIBILITY_MODULE_NAME + '.';
       if (effect.parent.isToken) {
-        ConditionalVisibility.INSTANCE.sceneUpdates.push({ _id: effect.parent.parent.id, ['actorData.' + flag]: true });
         ConditionalVisibility.INSTANCE.sceneUpdates.push({
           _id: effect.parent.parent.id,
-          ['actorData.flags.conditional-visibility.hasEffect']: true,
+          ['actorData.' + baseflag + status.visibilityId]: true
         });
-      } else {
-        ConditionalVisibility.INSTANCE.actorUpdates.push({ _id: effect.parent.id, [flag]: true });
+        ConditionalVisibility.INSTANCE.sceneUpdates.push({
+          _id: effect.parent.parent.id,
+          ['actorData.' + baseflag + 'hasEffect']: true,
+        });
+      } else if (effect.parent.isOwner) {
+        ConditionalVisibility.INSTANCE.actorUpdates.push({
+          _id: effect.parent.id,
+          [baseflag + status.visibilityId]: true
+        });
+        ConditionalVisibility.INSTANCE.actorUpdates.push({
+          _id: effect.parent.id,
+          [baseflag + 'hasEffect']: true,
+        });
       }
       ConditionalVisibility.INSTANCE.debouncedUpdate();
     }
   }
 
-  async onDeleteEffect(effect, options, userId) {
+  async onDeleteEffect(effect: any, options: any, userId: string): Promise<void> {
     if (effect.type !== 'condition') return;
     const status = this.getEffectByIcon(effect);
     if (status) {
       //const actor = effect.parent;
       //await actor.unsetFlag(MODULE_NAME, status.visibilityId, true);
-      const flag = 'flags.conditional-visibility.' + status.visibilityId;
+      const baseflag = 'flags.' + CONDITIONAL_VISIBILITY_MODULE_NAME + '.';
       if (effect.parent.isToken) {
         ConditionalVisibility.INSTANCE.sceneUpdates.push({
           _id: effect.parent.parent.id,
-          ['actorData.' + flag]: false,
+          ['actorData.' + baseflag + status.visibilityId]: false
         });
         //Check if its the last effect that causes hidden status
         if (
@@ -47,11 +57,30 @@ export class ConditionalVisibilitySystemPf2e extends DefaultConditionalVisibilit
         ) {
           ConditionalVisibility.INSTANCE.sceneUpdates.push({
             _id: effect.parent.parent.id,
-            ['actorData.flags.conditional-visibility.hasEffect']: false,
+            ['actorData.' + baseflag + 'hasEffect']: false,
           });
+          setTimeout(() => { effect.parent.parent._object.alpha = 1; effect.parent.parent._object.visible = true; effect.parent.parent._object.data.hidden = false }, 350);
         }
       } else {
-        ConditionalVisibility.INSTANCE.actorUpdates.push({ _id: effect.parent.id, [flag]: false });
+        if (effect.parent.isOwner) {
+          ConditionalVisibility.INSTANCE.actorUpdates.push({
+            _id: effect.parent.id,
+            [baseflag + status.visibilityId]: false
+          });
+        }
+        if (
+          Array.from(this.effectsByCondition().values()).filter(
+            (e) => effect.parent.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, e.visibilityId) ?? false,
+          ).length == 1
+        ) {
+          if (effect.parent.isOwner) {
+            ConditionalVisibility.INSTANCE.actorUpdates.push({
+              _id: effect.parent.id,
+              [baseflag + 'hasEffect']: false,
+            });
+          }
+          setTimeout(() => { effect.parent.getActiveTokens().forEach((e) => { e.alpha = 1; e.visible = true; e.data.hidden = false }) }, 350);
+        }
       }
       ConditionalVisibility.INSTANCE.debouncedUpdate();
     }
@@ -69,7 +98,7 @@ export class ConditionalVisibilitySystemPf2e extends DefaultConditionalVisibilit
   /**
    * Use the base conditions, plus set up the icon for the "hidden" condition
    */
-  effects() {
+  effects(): StatusEffect[] {
     //return ConditionalVisibilitySystemPf2e.PF2E_BASE_EFFECTS;
     const effects = super.effects();
     effects.push({
@@ -81,15 +110,15 @@ export class ConditionalVisibilitySystemPf2e extends DefaultConditionalVisibilit
     return effects;
   }
 
-  effectsFromUpdate(update) {
+  effectsFromUpdate(update: any): any {
     return update.actorData?.items;
   }
 
-  getEffectByIcon(effect): StatusEffect {
+  getEffectByIcon(effect: any): StatusEffect {
     return <StatusEffect>this.effectsByIcon().get(effect.data.img);
   }
 
-  gameSystemId() {
+  gameSystemId(): string {
     return 'pf2e';
   }
 
@@ -98,7 +127,7 @@ export class ConditionalVisibilitySystemPf2e extends DefaultConditionalVisibilit
    * @param target the token being seen (or not)
    * @param visionCapabilities the sight capabilities of the sight layer
    */
-  seeInvisible(target: Token, visionCapabilities: any, distance: any): boolean {
+  seeInvisible(target: Token, visionCapabilities: VisionCapabilities, distance: number): boolean {
     const invisible = this.hasStatus(target, StatusEffectStatusFlags.INVISIBLE); // 'invisible'
     if (invisible === true) {
       if (visionCapabilities.seeinvisible > 0) {

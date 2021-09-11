@@ -2,7 +2,7 @@ import { log, warn } from '../conditional-visibility';
 import { ConditionalVisibility } from './ConditionalVisibility';
 import { getGame, getCanvas, CONDITIONAL_VISIBILITY_MODULE_NAME } from './settings';
 
-export const readyHooks = async () => {
+export const readyHooks = async (): Promise<void> => {
   // setup all the hooks
   log(' Ready ' + CONDITIONAL_VISIBILITY_MODULE_NAME);
   const sightLayer = getCanvas().layers.find((layer) => {
@@ -20,9 +20,20 @@ export const readyHooks = async () => {
         return layer.__proto__.constructor.name === 'SightLayer';
     }
   });
-
+  //@ts-ignore
   ConditionalVisibility.initialize(sightLayer, getCanvas().hud?.token);
-
+  //@ts-ignore
+  libWrapper.register(
+    CONDITIONAL_VISIBILITY_MODULE_NAME,
+    "Token.prototype._onMovementFrame",
+    _ConditionalVisibilityOnMovementFrame,
+    "WRAPPER"
+  );
+  function _ConditionalVisibilityOnMovementFrame(wrapped, ...args) {
+    wrapped(...args);
+    // Update the token copy
+    ConditionalVisibility.INSTANCE.restrictVisibility(100);
+  }
   // Add any additional hooks if necessary
   Hooks.on('renderTokenConfig', (tokenConfig, html, data) => {
     ConditionalVisibility.INSTANCE.onRenderTokenConfig(tokenConfig, html, data);
@@ -62,6 +73,6 @@ export const readyHooks = async () => {
   });
 };
 
-export const initHooks = () => {
+export const initHooks = (): void => {
   warn('Init Hooks processing');
 };

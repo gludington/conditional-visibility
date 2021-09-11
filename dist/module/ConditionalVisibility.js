@@ -11,6 +11,7 @@ export class ConditionalVisibility {
      * @param tokenHud the tokenHud to use
      */
     constructor(sightLayer, tokenHud) {
+        this.tokensToUpdate = [];
         this._conditionalVisibilitySystem = ConditionalVisibility.newSystem();
         this._sightLayer = sightLayer;
         log(' starting against v0.7 or greater instance ' + getGame().data.version);
@@ -48,7 +49,13 @@ export class ConditionalVisibility {
             await this._sightLayer.refresh();
         };
         ConditionalVisibility.canSee = (token, srcTokens = null, flags = null) => {
-            const _srcTokens = this._getSrcTokens();
+            let _srcTokens;
+            if (srcTokens instanceof Token) {
+                _srcTokens = [srcTokens];
+            }
+            else {
+                _srcTokens = srcTokens ?? this._getSrcTokens();
+            }
             let output = false;
             //GM CASE
             if ((_srcTokens.length ?? 0) == 0)
@@ -62,45 +69,79 @@ export class ConditionalVisibility {
             }
             return false;
         };
-        const realRestrictVisibility = sightLayer.restrictVisibility;
         this.restrictVisibility = (timeout) => {
             warn('Restrict Calling');
-            //realRestrictVisibility.call(this._sightLayer);
             //@ts-ignore
-            let restricted = getCanvas().tokens.placeables.filter((token) => ((token.data.actorData?.flags ?? [CONDITIONAL_VISIBILITY_MODULE_NAME])[CONDITIONAL_VISIBILITY_MODULE_NAME]
+            let restricted = getCanvas().tokens.placeables.filter((token) => (((token?.actor ? token.actor.data.flags : token.data.actorData?.flags) ?? [CONDITIONAL_VISIBILITY_MODULE_NAME])[CONDITIONAL_VISIBILITY_MODULE_NAME]
                 ?.hasEffect ??
-                false) &&
-                token.visible);
+                false));
             if (restricted && restricted.length > 0) {
                 const srcTokens = this._getSrcTokens();
                 if (srcTokens.length > 0) {
                     restricted = restricted.filter((t) => srcTokens.indexOf(t) < 0);
-                    //In case a selected token is also hidden
+                    //@ts-ignore
+                    restricted = restricted.filter((t) => !t._controlled);
+                    const preTokenUpdate = [];
                     for (const t of restricted) {
+                        preTokenUpdate[t.id] = { token: t, visible: false, hidden: t.data.hidden, alpha: t.alpha };
+                        t.alpha = 0.0;
                         t.visible = false;
                     }
                     for (const sTok of srcTokens) {
                         const flags = this._conditionalVisibilitySystem.getVisionCapabilities(sTok);
                         for (const t of restricted) {
-                            if (!t.visible) {
+                            if (!preTokenUpdate[t.id].visible) {
                                 //@ts-ignore
-                                t.visible = ConditionalVisibility.canSee(t, sTok, flags);
-                                t.data.hidden = !t.visible;
-                                //t.visible = this._conditionalVisibilitySystem.canSee(t, flags);
+                                preTokenUpdate[t.id].visible = ConditionalVisibility.canSee(t, sTok, flags);
+                                if (preTokenUpdate[t.id].visible) {
+                                    t.visible = true;
+                                    //@ts-ignore
+                                    t.ConditionalVisibilityVisible = true;
+                                    t.alpha = 1.0;
+                                }
+                                else {
+                                    //@ts-ignore
+                                    t.ConditionalVisibilityVisible = false;
+                                }
+                                // t.data.hidden = !t.visible;
+                                // t.alpha = t.visible ? t.alpha : 0.0;
                             }
                         }
-                        restricted = restricted.filter((t) => t.data.hidden);
-                        this.tokensToUpdate = restricted;
-                        if (!this.updateQueued) {
-                            this.updateQueued = true;
-                            setTimeout(() => {
-                                for (const t of this.tokensToUpdate) {
-                                    t.visible = false;
-                                    t.data.hidden = false;
-                                }
-                                this.updateQueued = false;
-                            }, timeout);
+                    }
+                    for (const key in preTokenUpdate) {
+                        const ptu = preTokenUpdate[key];
+                        if (ptu.visible !== undefined && !ptu.visible) {
+                            this.tokensToUpdate = this.tokensToUpdate.filter((t) => t.token.id !== ptu.token.id);
+                            this.tokensToUpdate.push(ptu);
                         }
+                    }
+                    if (!this.updateQueued) {
+                        this.updateQueued = true;
+                        setTimeout(() => {
+                            for (const ptu of this.tokensToUpdate) {
+                                ptu.token.visible = false;
+                                ptu.token.isVisible = false;
+                                ptu.token.data.hidden = ptu.hidden;
+                                ptu.token.alpha = ptu.alpha;
+                                //this.removeTokenOnLayer(this._backgroundLayer, ptu.token);
+                            }
+                            this.updateQueued = false;
+                            this.tokensToUpdate = [];
+                        }, timeout);
+                    }
+                    for (const t of srcTokens) { //Show all selected Tokens from player or all of them if none selected
+                        t.alpha = 1.0;
+                        t.visible = true;
+                        //@ts-ignore
+                        t.ConditionalVisibilityVisible = true;
+                    }
+                }
+                else { //GM CASE
+                    for (const t of restricted) {
+                        t.alpha = 1.0;
+                        t.visible = true;
+                        //@ts-ignore
+                        t.ConditionalVisibilityVisible = true;
                     }
                 }
             }
@@ -179,6 +220,7 @@ export class ConditionalVisibility {
      * A static method that will be replaced after initialization with the appropriate system specific method.
      * @param token the token to test
      */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     static canSee(token, srcTokens = null, flags = null) {
         return false;
     }
@@ -214,22 +256,46 @@ export class ConditionalVisibility {
         //@ts-ignore
         window.ConditionalVisibility = facade;
         ConditionalVisibility.INSTANCE._conditionalVisibilitySystem.initializeHooks(facade);
+        //@ts-ignore
+        this.INSTANCE._backgroundLayer = getCanvas().layers.find((layer) => { return layer.__proto__.constructor.name === 'BackgroundLayer'; });
     }
+    removeTokenOnLayer(layer, token) {
+        //@ts-ignore
+        if (layer.children == null || layer.children.length == 0) {
+            if (layer.name == token.id)
+                layer.parent.removeChild(layer);
+        }
+        if (layer instanceof BackgroundLayer) {
+            layer.children.forEach((e) => this.removeTokenOnLayer(e, token));
+        }
+        else {
+            //@ts-ignore
+            if (layer.children !== null) {
+                //@ts-ignore
+                layer.children.forEach((e) => this.removeTokenOnLayer(e, token));
+            }
+        }
+    }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     onRenderTokenConfig(tokenConfig, jQuery, data) {
         const visionTab = $('div.tab[data-tab="vision"]');
-        renderTemplate('modules/' + CONDITIONAL_VISIBILITY_MODULE_NAME + '/templates/extra_senses.html', tokenConfig.object.data.flags[CONDITIONAL_VISIBILITY_MODULE_NAME] || {}).then((extraSenses) => {
+        renderTemplate('modules/' + CONDITIONAL_VISIBILITY_MODULE_NAME + '/templates/extra_senses.html', 
+        //@ts-ignore
+        tokenConfig.object.data.flags[CONDITIONAL_VISIBILITY_MODULE_NAME] ?? {}).then((extraSenses) => {
             visionTab.append(extraSenses);
         });
     }
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     onRenderTokenHUD(app, html, token) {
         const systemEffects = this._conditionalVisibilitySystem.effectsByIcon();
         html.find('img.effect-control').each((idx, icon) => {
+            //@ts-ignore
             const src = icon.attributes.src.value;
             if (systemEffects.has(src)) {
                 let title;
                 if (systemEffects.get(src)?.visibilityId === StatusEffectStatusFlags.HIDDEN) {
                     // 'hidden'
-                    title = i18n(systemEffects.get(src)?.label);
+                    title = i18n(systemEffects.get(src)?.label ?? "");
                     let tokenActorData;
                     if (!token.actorData?.flags) {
                         tokenActorData = getGame().actors?.get(token.actorId)?.data;
@@ -237,26 +303,30 @@ export class ConditionalVisibility {
                     else {
                         tokenActorData = token.actorData;
                     }
+                    const _ste = tokenActorData?.document?.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.PASSIVE_STEALTH) ??
+                        tokenActorData.flags[CONDITIONAL_VISIBILITY_MODULE_NAME][StatusEffectSightFlags.PASSIVE_STEALTH] ?? NaN;
                     if (tokenActorData &&
-                        !isNaN(parseInt(token.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.PASSIVE_STEALTH)))) {
+                        !isNaN(parseInt(_ste))) {
                         title +=
                             ' ' +
                                 i18n(CONDITIONAL_VISIBILITY_MODULE_NAME + '.currentstealth') +
                                 ': ' +
-                                token.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.PASSIVE_STEALTH);
+                                _ste;
                     }
                 }
                 else {
-                    title = i18n(systemEffects.get(src)?.label);
+                    title = i18n(systemEffects.get(src)?.label ?? "");
                 }
                 icon.setAttribute('title', title);
             }
         });
     }
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     async onCreateEffect(effect, options, userId) {
         await this._conditionalVisibilitySystem.onCreateEffect(effect, options, userId);
         //this.refresh();
     }
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     async onDeleteEffect(effect, options, userId) {
         await this._conditionalVisibilitySystem.onDeleteEffect(effect, options, userId);
         //this.refresh();

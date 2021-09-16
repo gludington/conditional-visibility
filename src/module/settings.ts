@@ -60,7 +60,7 @@ export function getGame(): Game {
   return game;
 }
 
-export const registerSettings = function () {
+export const registerSettings = function (): void {
   getGame().settings.register(CONDITIONAL_VISIBILITY_MODULE_NAME, 'autoStealth', {
     name: getGame().i18n.localize('conditional-visibility.settings.autoStealth.name'),
     hint: getGame().i18n.localize('conditional-visibility.settings.autoStealth.hint'),

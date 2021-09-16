@@ -33,7 +33,6 @@ export class DefaultConditionalVisibilitySystem {
     }
     hasStatus(token, id) {
         return (token.actor?.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, id) === true ||
-            token.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, id) === true ||
             token.document?.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, id) === true);
     }
     gameSystemId() {
@@ -100,7 +99,7 @@ export class DefaultConditionalVisibilitySystem {
         if (srcToken)
             //In case of sending an array only take the first element
             srcToken = srcToken instanceof Array ? srcToken[0] : srcToken;
-        const flags = {};
+        const flags = new VisionCapabilities();
         let _seeinvisible = (srcToken?.data?.document?.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.SEE_INVISIBLE)) ?? 0; // 'seeinvisible'
         let _blindsight = (srcToken?.data?.document?.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.BLIND_SIGHT)) ?? 0; // 'blindsight'
         let _tremorsense = (srcToken?.data?.document?.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.TREMOR_SENSE)) ?? 0; // 'tremorsense'
@@ -114,7 +113,14 @@ export class DefaultConditionalVisibilitySystem {
         flags.seeinvisible = Math.max(_seeinvisible, _blindsight, _tremorsense, _truesight, _devilssight);
         flags.seeobscured = Math.max(_blindsight, _tremorsense);
         flags.seeindarkness = Math.max(_blindsight, _devilssight, _tremorsense, _truesight);
-        flags.visionfrom = srcToken?.position ?? { x: 0, y: 0 };
+        //@ts-ignore
+        if (srcToken._movement !== null) {
+            //@ts-ignore
+            flags.visionfrom = srcToken._movement.B;
+        }
+        else {
+            flags.visionfrom = srcToken?.position ?? { x: 0, y: 0 };
+        }
         return flags;
     }
     /**
@@ -123,7 +129,15 @@ export class DefaultConditionalVisibilitySystem {
      * @param flags the capabilities established by the sight layer
      */
     canSee(target, visionCapabilities) {
-        const distance = this.distanceBeetweenTokens(visionCapabilities.visionfrom, target.position);
+        let distance;
+        //@ts-ignore
+        if (target._movement !== null) {
+            //@ts-ignore
+            distance = this.distanceBeetweenTokens(visionCapabilities.visionfrom, target._movement.B);
+        }
+        else {
+            distance = this.distanceBeetweenTokens(visionCapabilities.visionfrom, target.position);
+        }
         if (this.seeInvisible(target, visionCapabilities, distance) === false) {
             return false;
         }
@@ -140,7 +154,7 @@ export class DefaultConditionalVisibilitySystem {
     }
     distanceBeetweenTokens(source, target) {
         const segment = new Ray(source, target);
-        return getCanvas().grid?.measureDistances([{ ray: segment }], { gridSpaces: true });
+        return getCanvas().grid?.measureDistances([{ ray: segment }], { gridSpaces: true })[0] ?? 0;
     }
     /**
      * Tests whether a token is invisible, and if it can be seen.
@@ -196,7 +210,7 @@ export class DefaultConditionalVisibilitySystem {
      * @param effects the effects of that token
      * @param visionCapabilities the sight capabilities of the sight layer
      */
-    seeContested(target, flags) {
+    seeContested(target, visionCapabilities) {
         return true;
     }
     hasStealth() {
@@ -219,7 +233,8 @@ export class DefaultConditionalVisibilitySystem {
     async stealthHud(token) {
         let initialValue;
         try {
-            initialValue = parseInt(token.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.PASSIVE_STEALTH));
+            //@ts-ignore
+            initialValue = parseInt(token.document.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.PASSIVE_STEALTH));
         }
         catch (err) {
             initialValue === undefined;
@@ -272,4 +287,6 @@ export class DefaultConditionalVisibilitySystem {
             hud.render(true);
         });
     }
+}
+export class VisionCapabilities {
 }

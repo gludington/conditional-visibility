@@ -10,7 +10,7 @@
  * 					 determines how others may use and modify your module
  */
 // Import TypeScript modules
-import { getCanvas, getGame, CONDITIONAL_VISIBILITY_MODULE_NAME, registerSettings } from './module/settings';
+import { getGame, CONDITIONAL_VISIBILITY_MODULE_NAME, registerSettings } from './module/settings';
 import { preloadTemplates } from './module/preloadTemplates';
 import { ConditionalVisibility } from './module/ConditionalVisibility';
 import { readyHooks } from './module/Hooks';
@@ -23,23 +23,23 @@ declare global {
 
 export let debugEnabled = 0;
 // 0 = none, warnings = 1, debug = 2, all = 3
-export const debug = (...args) => {
+export const debug = (...args: any[]): void => {
   if (debugEnabled > 1) console.log(`DEBUG:${CONDITIONAL_VISIBILITY_MODULE_NAME} | `, ...args);
 };
-export const log = (...args) => console.log(`${CONDITIONAL_VISIBILITY_MODULE_NAME} | `, ...args);
-export const warn = (...args) => {
+export const log = (...args: any[]): void => console.log(`${CONDITIONAL_VISIBILITY_MODULE_NAME} | `, ...args);
+export const warn = (...args: any[]): void => {
   if (debugEnabled > 0) console.warn(`${CONDITIONAL_VISIBILITY_MODULE_NAME} | `, ...args);
 };
-export const error = (...args) => console.error(`${CONDITIONAL_VISIBILITY_MODULE_NAME} | `, ...args);
-export const timelog = (...args) => warn(`${CONDITIONAL_VISIBILITY_MODULE_NAME} | `, Date.now(), ...args);
-export const i18n = (key) => {
+export const error = (...args: any[]): void => console.error(`${CONDITIONAL_VISIBILITY_MODULE_NAME} | `, ...args);
+export const timelog = (...args: any[]): void => warn(`${CONDITIONAL_VISIBILITY_MODULE_NAME} | `, Date.now(), ...args);
+export const i18n = (key: string): string => {
   return getGame().i18n.localize(key);
 };
-export const i18nFormat = (key, data = {}) => {
+export const i18nFormat = (key: string, data = {}): string => {
   return getGame().i18n.format(key, data);
 };
 
-export const setDebugLevel = (debugText: string) => {
+export const setDebugLevel = (debugText: string): void => {
   debugEnabled = { none: 0, warn: 1, debug: 2, all: 3 }[debugText] || 0;
   // 0 = none, warnings = 1, debug = 2, all = 3
   if (debugEnabled >= 3) CONFIG.debug.hooks = true;
@@ -72,7 +72,7 @@ Hooks.once('socketlib.ready', () => {
 /* ------------------------------------ */
 /* Setup module							*/
 /* ------------------------------------ */
-Hooks.once('setup', function () {});
+Hooks.once('setup', function () { });
 
 /* ------------------------------------ */
 /* When ready							*/

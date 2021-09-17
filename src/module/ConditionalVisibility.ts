@@ -334,7 +334,7 @@ export class ConditionalVisibility {
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   onRenderTokenHUD(app: TokenHUD, html: JQuery, token: any): void {
     const systemEffects = this._conditionalVisibilitySystem.effectsByIcon();
-    html.find('img.effect-control').each((idx, icon) => {
+    html.find('img.effect-control')?.each((idx, icon) => {
       //@ts-ignore
       const src = icon.attributes.src.value;
       if (systemEffects.has(src)) {
@@ -353,7 +353,7 @@ export class ConditionalVisibility {
               CONDITIONAL_VISIBILITY_MODULE_NAME,
               StatusEffectSightFlags.PASSIVE_STEALTH,
             ) ??
-            tokenActorData.flags[CONDITIONAL_VISIBILITY_MODULE_NAME][StatusEffectSightFlags.PASSIVE_STEALTH] ??
+            tokenActorData.document.flags[CONDITIONAL_VISIBILITY_MODULE_NAME][StatusEffectSightFlags.PASSIVE_STEALTH] ??
             NaN;
           if (tokenActorData && !isNaN(parseInt(_ste))) {
             title += ' ' + i18n(`${CONDITIONAL_VISIBILITY_MODULE_NAME}.currentstealth`) + ': ' + _ste;

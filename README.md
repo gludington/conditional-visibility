@@ -1,8 +1,6 @@
-![https://img.shields.io/badge/Foundry%20VTT-0.7.9%2B-green](https://img.shields.io/badge/Foundry%20VTT-0.7.9%2B-green)
+![https://img.shields.io/badge/Foundry%20VTT-0.8.9%2B-green](https://img.shields.io/badge/Foundry%20VTT-0.8.9%2B-green)
 
-# Conditional Visibility (maintenance version) 
-
-## THIS PROJECT IS IN BETA BUT IL TRY TO MAKE A "STABLE" VERSION FOR FOUNDRYVTT 0.8.6 AND NEWER
+# Conditional Visibility
 
 ## NOTE: If you are a javascript developer and not a typescript developer, you can just use the javascript files under the dist folder
 

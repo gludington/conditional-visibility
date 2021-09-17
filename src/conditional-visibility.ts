@@ -72,7 +72,7 @@ Hooks.once('socketlib.ready', () => {
 /* ------------------------------------ */
 /* Setup module							*/
 /* ------------------------------------ */
-Hooks.once('setup', function () { });
+Hooks.once('setup', function () {});
 
 /* ------------------------------------ */
 /* When ready							*/

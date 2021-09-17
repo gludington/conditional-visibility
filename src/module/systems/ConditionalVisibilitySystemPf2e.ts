@@ -17,7 +17,7 @@ export class ConditionalVisibilitySystemPf2e extends DefaultConditionalVisibilit
       if (effect.parent.isToken) {
         ConditionalVisibility.INSTANCE.sceneUpdates.push({
           _id: effect.parent.parent.id,
-          ['actorData.' + baseflag + status.visibilityId]: true
+          ['actorData.' + baseflag + status.visibilityId]: true,
         });
         ConditionalVisibility.INSTANCE.sceneUpdates.push({
           _id: effect.parent.parent.id,
@@ -26,7 +26,7 @@ export class ConditionalVisibilitySystemPf2e extends DefaultConditionalVisibilit
       } else if (effect.parent.isOwner) {
         ConditionalVisibility.INSTANCE.actorUpdates.push({
           _id: effect.parent.id,
-          [baseflag + status.visibilityId]: true
+          [baseflag + status.visibilityId]: true,
         });
         ConditionalVisibility.INSTANCE.actorUpdates.push({
           _id: effect.parent.id,
@@ -47,7 +47,7 @@ export class ConditionalVisibilitySystemPf2e extends DefaultConditionalVisibilit
       if (effect.parent.isToken) {
         ConditionalVisibility.INSTANCE.sceneUpdates.push({
           _id: effect.parent.parent.id,
-          ['actorData.' + baseflag + status.visibilityId]: false
+          ['actorData.' + baseflag + status.visibilityId]: false,
         });
         //Check if its the last effect that causes hidden status
         if (
@@ -59,13 +59,17 @@ export class ConditionalVisibilitySystemPf2e extends DefaultConditionalVisibilit
             _id: effect.parent.parent.id,
             ['actorData.' + baseflag + 'hasEffect']: false,
           });
-          setTimeout(() => { effect.parent.parent._object.alpha = 1; effect.parent.parent._object.visible = true; effect.parent.parent._object.data.hidden = false }, 350);
+          setTimeout(() => {
+            effect.parent.parent._object.alpha = 1;
+            effect.parent.parent._object.visible = true;
+            effect.parent.parent._object.data.hidden = false;
+          }, 350);
         }
       } else {
         if (effect.parent.isOwner) {
           ConditionalVisibility.INSTANCE.actorUpdates.push({
             _id: effect.parent.id,
-            [baseflag + status.visibilityId]: false
+            [baseflag + status.visibilityId]: false,
           });
         }
         if (
@@ -79,7 +83,13 @@ export class ConditionalVisibilitySystemPf2e extends DefaultConditionalVisibilit
               [baseflag + 'hasEffect']: false,
             });
           }
-          setTimeout(() => { effect.parent.getActiveTokens().forEach((e) => { e.alpha = 1; e.visible = true; e.data.hidden = false }) }, 350);
+          setTimeout(() => {
+            effect.parent.getActiveTokens().forEach((e) => {
+              e.alpha = 1;
+              e.visible = true;
+              e.data.hidden = false;
+            });
+          }, 350);
         }
       }
       ConditionalVisibility.INSTANCE.debouncedUpdate();

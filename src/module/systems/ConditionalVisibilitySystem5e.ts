@@ -26,7 +26,7 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
       if (effect.parent.isToken) {
         ConditionalVisibility.INSTANCE.sceneUpdates.push({
           _id: effect.parent.parent.id,
-          ['actorData.' + baseflag + status.visibilityId]: true
+          ['actorData.' + baseflag + status.visibilityId]: true,
         });
         ConditionalVisibility.INSTANCE.sceneUpdates.push({
           _id: effect.parent.parent.id,
@@ -35,7 +35,7 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
       } else if (effect.parent.isOwner) {
         ConditionalVisibility.INSTANCE.actorUpdates.push({
           _id: effect.parent.id,
-          [baseflag + status.visibilityId]: true
+          [baseflag + status.visibilityId]: true,
         });
         ConditionalVisibility.INSTANCE.actorUpdates.push({
           _id: effect.parent.id,
@@ -56,7 +56,7 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
       if (effect.parent.isToken) {
         ConditionalVisibility.INSTANCE.sceneUpdates.push({
           _id: effect.parent.parent.id,
-          ['actorData.' + baseflag + status.visibilityId]: false
+          ['actorData.' + baseflag + status.visibilityId]: false,
         });
         //Check if its the last effect that causes hidden status
         if (
@@ -68,13 +68,17 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
             _id: effect.parent.parent.id,
             ['actorData.' + baseflag + 'hasEffect']: false,
           });
-          setTimeout(() => { effect.parent.parent._object.alpha = 1; effect.parent.parent._object.visible = true; effect.parent.parent._object.data.hidden = false }, 350);
+          setTimeout(() => {
+            effect.parent.parent._object.alpha = 1;
+            effect.parent.parent._object.visible = true;
+            effect.parent.parent._object.data.hidden = false;
+          }, 350);
         }
       } else {
         if (effect.parent.isOwner) {
           ConditionalVisibility.INSTANCE.actorUpdates.push({
             _id: effect.parent.id,
-            [baseflag + status.visibilityId]: false
+            [baseflag + status.visibilityId]: false,
           });
         }
         if (
@@ -88,7 +92,13 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
               [baseflag + 'hasEffect']: false,
             });
           }
-          setTimeout(() => { effect.parent.getActiveTokens().forEach((e) => { e.alpha = 1; e.visible = true; e.data.hidden = false }) }, 350);
+          setTimeout(() => {
+            effect.parent.getActiveTokens().forEach((e) => {
+              e.alpha = 1;
+              e.visible = true;
+              e.data.hidden = false;
+            });
+          }, 350);
         }
       }
       ConditionalVisibility.INSTANCE.debouncedUpdate();
@@ -198,13 +208,20 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
                 if (!object.actor.data.flags[CONDITIONAL_VISIBILITY_MODULE_NAME]) {
                   object.actor.data.flags[CONDITIONAL_VISIBILITY_MODULE_NAME] = {};
                 }
-                await object.actor.setFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.PASSIVE_STEALTH, result);
+                await object.actor.setFlag(
+                  CONDITIONAL_VISIBILITY_MODULE_NAME,
+                  StatusEffectSightFlags.PASSIVE_STEALTH,
+                  result,
+                );
               }
               return realOnToggleEffect(event, opts);
             });
           } else {
             if (object.document.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.PASSIVE_STEALTH)) {
-              await object?.document.unsetFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.PASSIVE_STEALTH);
+              await object?.document.unsetFlag(
+                CONDITIONAL_VISIBILITY_MODULE_NAME,
+                StatusEffectSightFlags.PASSIVE_STEALTH,
+              );
             }
             if (object.actor?.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.PASSIVE_STEALTH)) {
               await object.actor.unsetFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.PASSIVE_STEALTH);

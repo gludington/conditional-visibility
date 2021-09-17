@@ -137,13 +137,13 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
    * For subclasses to set up systsem specific hooks.
    * @todo unify initializeOnToggleEffect if possible
    */
-  initializeHooks(facade: ConditionalVisibilityFacade): void { }
+  initializeHooks(facade: ConditionalVisibilityFacade): void {}
 
   /**
    * Default system does not have any reaction to a condition change.  Subclasses override this to add behavior.
    * @param tokenHud the tokenHud to use
    */
-  initializeOnToggleEffect(tokenHud: TokenHUD): void { }
+  initializeOnToggleEffect(tokenHud: TokenHUD): void {}
 
   getVisionCapabilities(srcToken: Array<Token> | Token): VisionCapabilities {
     if (srcToken)
@@ -314,7 +314,9 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
     let initialValue;
     try {
       //@ts-ignore
-      initialValue = parseInt(token.document.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.PASSIVE_STEALTH));
+      initialValue = parseInt(
+        <string>token.document.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.PASSIVE_STEALTH),
+      );
     } catch (err) {
       initialValue === undefined;
     }
@@ -327,12 +329,9 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
         result = CONDITIONAL_VISIBILITY_DEFAULT_STEALTH;
       }
     }
-    const content = await renderTemplate(
-      'modules/' + CONDITIONAL_VISIBILITY_MODULE_NAME + '/templates/stealth_hud.html',
-      {
-        initialValue: result,
-      },
-    );
+    const content = await renderTemplate(`modules/${CONDITIONAL_VISIBILITY_MODULE_NAME}/templates/stealth_hud.html`, {
+      initialValue: result,
+    });
     return new Promise((resolve, reject) => {
       const hud = new Dialog({
         title: i18n(CONDITIONAL_VISIBILITY_MODULE_NAME + '.hidden'),
@@ -368,9 +367,9 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
   }
 }
 export class VisionCapabilities {
-  public seeinvisible: number
-  public seeobscured: number
-  public seeindarkness: number
-  public visionfrom: Point
-  public prc: number
+  public seeinvisible: number;
+  public seeobscured: number;
+  public seeindarkness: number;
+  public visionfrom: Point;
+  public prc: number;
 }

@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.2.9] Merge another update of [Teshynil](https://github.com/Teshynil)
+
+- Merge PR [Cleaning, formatting and bug corrections](https://github.com/p4535992/conditional-visibility/pull/3)
+- Cleaning of some functions and use of the constants added by 4535992
+- Remove deprecations for v9 of foundry
+- Expand in the workaround for levels
+- Fixing hidden status and vision for linked actors and non representing tokens
+- Added a variable to the tokens for future usage in compatibility layers with other modules
+- Testing of async and await on set/unset flag: works well, no problems encounter
+- Remove dist folder
+- Update typescript library
+- Replace string with variables using instead single quote ' the backtip ` because is a "good practices"
+- Removed package-lock.json
+
 ## [0.2.8] Merge update of [Teshynil](https://github.com/Teshynil)
 
 - Merge PR [Update, Cleaning and levels compatibility](https://github.com/p4535992/conditional-visibility/pull/2/)

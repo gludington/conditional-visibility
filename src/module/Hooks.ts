@@ -25,9 +25,9 @@ export const readyHooks = async (): Promise<void> => {
   //@ts-ignore
   libWrapper.register(
     CONDITIONAL_VISIBILITY_MODULE_NAME,
-    "Token.prototype._onMovementFrame",
+    'Token.prototype._onMovementFrame',
     _ConditionalVisibilityOnMovementFrame,
-    "WRAPPER"
+    'WRAPPER',
   );
   function _ConditionalVisibilityOnMovementFrame(wrapped, ...args) {
     wrapped(...args);

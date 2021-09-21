@@ -225,7 +225,9 @@ export class ConditionalVisibility {
             setTimeout(() => {
               for (const ptu of this.tokensToUpdate) {
                 ptu.token.visible = false;
-                ptu.token.isVisible = false;
+                // TODO Need foundry 9 for the setter method
+                //ptu.token.isVisible = false;
+                setProperty(ptu.token,'isVisible', false);
                 ptu.token.data.hidden = ptu.hidden;
                 ptu.token.alpha = ptu.alpha;
                 //this.removeTokenOnLayer(this._backgroundLayer, ptu.token);

@@ -11,8 +11,7 @@
 			"ES2020"
     	],
 		"types": [
-			"@league-of-foundry-developers/foundry-vtt-types",
-			"@types/jest"
+			"@league-of-foundry-developers/foundry-vtt-types"
 		],
     "strictNullChecks": true
 	}

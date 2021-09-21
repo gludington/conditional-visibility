@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.2.11] 
+
+- Small fix property "isVisible" is not settable directly
+
 ## [0.2.10] 
 
 - Some very small fix

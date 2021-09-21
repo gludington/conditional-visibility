@@ -133,10 +133,12 @@ export class ConditionalVisibility {
       } else {
         if (getGame().user?.isGM === false) {
           const activeTokenDocuments = <TokenDocument[]>getGame().user?.character?.getActiveTokens();
-          for (const tokenDocument of activeTokenDocuments) {
-            const tok = getCanvas().tokens?.placeables.find((tok) => tok.id === tokenDocument.id);
-            if (tok) {
-              srcTokens.push(tok);
+          if(activeTokenDocuments){
+            for (const tokenDocument of activeTokenDocuments) {
+              const tok = getCanvas().tokens?.placeables.find((tok) => tok.id === tokenDocument.id);
+              if (tok) {
+                srcTokens.push(tok);
+              }
             }
           }
         }

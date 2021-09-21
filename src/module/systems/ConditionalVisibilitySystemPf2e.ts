@@ -84,7 +84,7 @@ export class ConditionalVisibilitySystemPf2e extends DefaultConditionalVisibilit
             });
           }
           setTimeout(() => {
-            effect.parent.getActiveTokens().forEach((e) => {
+            effect.parent.getActiveTokens()?.forEach((e) => {
               e.alpha = 1;
               e.visible = true;
               e.data.hidden = false;

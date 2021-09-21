@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.2.10] 
+
+- Some very small fix
+- Add github workflow
+
 ## [0.2.9] Merge another update of [Teshynil](https://github.com/Teshynil)
 
 - Merge PR [Cleaning, formatting and bug corrections](https://github.com/p4535992/conditional-visibility/pull/3)

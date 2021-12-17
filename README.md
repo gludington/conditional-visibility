@@ -10,9 +10,9 @@
 
 [![Foundry Hub Endorsements](https://img.shields.io/endpoint?logoColor=white&url=https%3A%2F%2Fwww.foundryvtt-hub.com%2Fwp-json%2Fhubapi%2Fv1%2Fpackage%2Fconditional-visibility%2Fshield%2Fendorsements&style=for-the-badge)](https://www.foundryvtt-hub.com/package/conditional-visibility/)
 
-## NOTE: If you are a javascript developer and not a typescript developer, you can just use the javascript files under the dist folder
+![GitHub all releases](https://img.shields.io/github/downloads/p4535992/conditional-visibility/total?style=for-the-badge)
 
-**Author**: Greg Ludington
+## THIS MODULE IS ABBANDONED ANYONE IS FREE TO TAKE CHARGE ON THIS
 
 Invisible Stalkers should only be seen by players that have cast See Invisibility.  Stealthy Goblins should only be seen by players with high perception.
 And when that Drow casts Darkness, players should need Devil's Sight to see any tokens inside.

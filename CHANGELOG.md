@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.2.12] (ABBANDONED THE PROJECT)
+
+- Abandoned the project
+- Add [CHANGELOGS & CONFLICTS](https://github.com/theripper93/libChangelogs) hooks for better management of the conflicts
+
 ## [0.2.11] 
 
 - Small fix property "isVisible" is not settable directly

@@ -186,7 +186,7 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
     tokenHud._onToggleEffect = async (event, opts) => {
       const icon = event.currentTarget;
       if (icon.src.endsWith('newspaper.svg')) {
-        const object: Token | null = tokenHud.object;
+        const object: Token | undefined = tokenHud.object;
         if (object) {
           if (icon.className.indexOf('active') < 0) {
             this.stealthHud(object).then(async (result) => {

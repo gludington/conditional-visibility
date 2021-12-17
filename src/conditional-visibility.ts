@@ -81,3 +81,8 @@ Hooks.once('ready', async function () {
   // Do anything once the module is ready
   readyHooks();
 });
+
+Hooks.once('libChangelogsReady', function () {
+  //@ts-ignore
+  libChangelogs.register(CONDITIONAL_VISIBILITY_MODULE_NAME, '- Add [CHANGELOGS & CONFLICTS](https://github.com/theripper93/libChangelogs) hooks for better management of the conflicts', 'minor');
+});

@@ -146,50 +146,52 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
   initializeOnToggleEffect(tokenHud: TokenHUD): void {}
 
   getVisionCapabilities(srcToken: Array<Token> | Token): VisionCapabilities {
-    if (srcToken)
+    const flags: VisionCapabilities = new VisionCapabilities();
+    if (srcToken){
       //In case of sending an array only take the first element
       srcToken = srcToken instanceof Array ? srcToken[0] : srcToken;
-    const flags: VisionCapabilities = new VisionCapabilities();
+    }
+    if (srcToken){
+      let _seeinvisible =
+        <number>(
+          srcToken?.data?.document?.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.SEE_INVISIBLE)
+        ) ?? 0; // 'seeinvisible'
 
-    let _seeinvisible =
-      <number>(
-        srcToken?.data?.document?.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.SEE_INVISIBLE)
-      ) ?? 0; // 'seeinvisible'
+      let _blindsight =
+        <number>(
+          srcToken?.data?.document?.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.BLIND_SIGHT)
+        ) ?? 0; // 'blindsight'
 
-    let _blindsight =
-      <number>(
-        srcToken?.data?.document?.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.BLIND_SIGHT)
-      ) ?? 0; // 'blindsight'
+      let _tremorsense =
+        <number>(
+          srcToken?.data?.document?.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.TREMOR_SENSE)
+        ) ?? 0; // 'tremorsense'
 
-    let _tremorsense =
-      <number>(
-        srcToken?.data?.document?.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.TREMOR_SENSE)
-      ) ?? 0; // 'tremorsense'
+      let _truesight =
+        <number>(
+          srcToken?.data?.document?.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.TRUE_SIGHT)
+        ) ?? 0; // 'truesight'
 
-    let _truesight =
-      <number>(
-        srcToken?.data?.document?.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.TRUE_SIGHT)
-      ) ?? 0; // 'truesight'
+      let _devilssight =
+        <number>(
+          srcToken?.data?.document?.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.DEVILS_SIGHT)
+        ) ?? 0; // 'devilssight'
+      _seeinvisible = _seeinvisible < 0 ? 100000 : _seeinvisible;
+      _blindsight = _blindsight < 0 ? 100000 : _blindsight;
+      _tremorsense = _tremorsense < 0 ? 100000 : _tremorsense;
+      _truesight = _truesight < 0 ? 100000 : _truesight;
+      _devilssight = _devilssight < 0 ? 100000 : _devilssight;
 
-    let _devilssight =
-      <number>(
-        srcToken?.data?.document?.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.DEVILS_SIGHT)
-      ) ?? 0; // 'devilssight'
-    _seeinvisible = _seeinvisible < 0 ? 100000 : _seeinvisible;
-    _blindsight = _blindsight < 0 ? 100000 : _blindsight;
-    _tremorsense = _tremorsense < 0 ? 100000 : _tremorsense;
-    _truesight = _truesight < 0 ? 100000 : _truesight;
-    _devilssight = _devilssight < 0 ? 100000 : _devilssight;
-
-    flags.seeinvisible = Math.max(_seeinvisible, _blindsight, _tremorsense, _truesight, _devilssight);
-    flags.seeobscured = Math.max(_blindsight, _tremorsense);
-    flags.seeindarkness = Math.max(_blindsight, _devilssight, _tremorsense, _truesight);
-    //@ts-ignore
-    if (srcToken._movement !== null) {
+      flags.seeinvisible = Math.max(_seeinvisible, _blindsight, _tremorsense, _truesight, _devilssight);
+      flags.seeobscured = Math.max(_blindsight, _tremorsense);
+      flags.seeindarkness = Math.max(_blindsight, _devilssight, _tremorsense, _truesight);
       //@ts-ignore
-      flags.visionfrom = srcToken._movement.B;
-    } else {
-      flags.visionfrom = srcToken?.position ?? { x: 0, y: 0 };
+      if (srcToken?._movement !== null) {
+        //@ts-ignore
+        flags.visionfrom = srcToken._movement.B;
+      } else {
+        flags.visionfrom = srcToken?.position ?? { x: 0, y: 0 };
+      }
     }
     return flags;
   }

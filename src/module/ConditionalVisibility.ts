@@ -36,9 +36,46 @@ export class ConditionalVisibility {
    */
   static onInit(): void {
     const system = ConditionalVisibility.newSystem();
+    if (!getGame().modules.get('levels')?.active) {
+      //@ts-ignore
+      const realIsVisible: any = Object.getOwnPropertyDescriptor(Token.prototype, 'isVisible').get;
+      Object.defineProperty(Token.prototype, 'isVisible', {
+        get: function () {
+          const isVisible = realIsVisible.call(this);
+          if (isVisible === false) {
+            return false;
+          }
+          if (getGame().user?.isGM || this.owner || !getCanvas().sight?.tokenVision) {
+            return true;
+          }
+          return ConditionalVisibility.canSee(this);
+        },
+      });
+    } else {
+      //@ts-ignore
+      libWrapper.ignore_conflicts(
+        CONDITIONAL_VISIBILITY_MODULE_NAME,
+        ['perfect-vision'],
+        'Levels.prototype.overrideVisibilityTest',
+      );
+      //@ts-ignore
+      const lw = libWrapper.register(
+        CONDITIONAL_VISIBILITY_MODULE_NAME,
+        'Levels.prototype.overrideVisibilityTest',
+        ConditionalVisibility.overrideVisibilityTestCV,
+        'MIXED',
+      );
+    }
     system.initializeStatusEffects();
   }
-
+  static overrideVisibilityTestCV(wrapped, ...args) {
+    const targetToken = args[1];
+    const flags = ConditionalVisibility.INSTANCE._conditionalVisibilitySystem.getVisionCapabilities(
+      ConditionalVisibility.INSTANCE._getSrcTokens(),
+    );
+    const isCVVisible = ConditionalVisibility.INSTANCE._conditionalVisibilitySystem.canSee(targetToken, flags);
+    return isCVVisible ? wrapped(...args) : false;
+  }
   isSemvarGreater(first: string, second: string): Boolean {
     const firstSemVar = this.splitOnDot(first);
     const secondSemVar = this.splitOnDot(second);
@@ -117,7 +154,7 @@ export class ConditionalVisibility {
   constructor(sightLayer: SightLayer, tokenHud: TokenHUD) {
     this._conditionalVisibilitySystem = ConditionalVisibility.newSystem();
     this._sightLayer = sightLayer;
-
+    // TO BE REMOVED 2021-12-20 in favor of levels dependencies
     log(' starting against v0.7 or greater instance ' + getGame().data.version);
     this._getSrcTokens = () => {
       const srcTokens: Token[] = [];
@@ -252,6 +289,26 @@ export class ConditionalVisibility {
             t.ConditionalVisibilityVisible = true;
           }
         }
+      }
+    };
+    // END REMOVED 2021-12-20 in favor of levels dependencies
+    if(!getGame().modules.get("levels")?.active){
+      const realRestrictVisibility = sightLayer.restrictVisibility;
+      this._sightLayer.restrictVisibility = () => {
+          this._capabilities = this._conditionalVisibilitySystem.getVisionCapabilities(this._getSrcTokens());
+          realRestrictVisibility.call(this._sightLayer);
+          const restricted = getCanvas().tokens?.placeables.filter(token => token.visible);
+          if (restricted && restricted.length > 0) {
+              const srcTokens = this._getSrcTokens();
+              if (srcTokens.length > 0) {
+                  const flags = this._conditionalVisibilitySystem.getVisionCapabilities(srcTokens);
+                  for (const t of restricted) {
+                      if (srcTokens.indexOf(t) < 0) {
+                          t.visible = this._conditionalVisibilitySystem.canSee(t, flags);
+                      }
+                  }
+              }
+          }
       }
     };
     const realTestVisiblity = sightLayer.testVisibility;

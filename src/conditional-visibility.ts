@@ -49,9 +49,6 @@ export const setDebugLevel = (debugText: string): void => {
 /* Initialize module					*/
 /* ------------------------------------ */
 Hooks.once('init', async function () {
-  //  if (getGame().modules.get("levels")?.active) {
-  //    return error("Conditional Visibility does not currently work with Levels module. Initialization stopped.");
-  //  }
   log(' init ' + CONDITIONAL_VISIBILITY_MODULE_NAME);
   // Assign custom classes and constants here
 
@@ -86,7 +83,10 @@ Hooks.once('libChangelogsReady', function () {
   //@ts-ignore
   libChangelogs.register(
     CONDITIONAL_VISIBILITY_MODULE_NAME,
-    '- Sync with [szefo09](https://github.com/szefo09/conditional-visibility) (2021-12-20)',
+    `
+    - Sync with [szefo09](https://github.com/szefo09/conditional-visibility) (2021-12-20)
+    - Add some little check for typescript code
+    `,
     'minor',
   );
 });

@@ -12,7 +12,7 @@
 
 ![GitHub all releases](https://img.shields.io/github/downloads/p4535992/conditional-visibility/total?style=for-the-badge)
 
-## THIS MODULE IS ABBANDONED ANYONE IS FREE TO TAKE CHARGE ON THIS
+## THIS MODULE IS ABBANDONED (OR AT LEAST I WILL NOT DEVELOPING SOMETHING ON THE SHORT TERM) ANYONE IS FREE TO TAKE CHARGE ON THIS
 
 Invisible Stalkers should only be seen by players that have cast See Invisibility.  Stealthy Goblins should only be seen by players with high perception.
 And when that Drow casts Darkness, players should need Devil's Sight to see any tokens inside.

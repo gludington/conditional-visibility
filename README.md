@@ -105,12 +105,6 @@ When this setting is true, then rolling stealth from that token's character shee
 
 [![Watch the video](https://img.youtube.com/vi/U308ksxblZU/hqdefault.jpg)](https://youtu.be/U308ksxblZU)
 
-## Installation
-
-1. Navigate to the Foundry Setup screen and click on the Modules tab
-2. Click Install Module and paste the module.json link from the latest release into the box.  (Currently, https://github.com/p4535992/conditional-visibility/releases/download/v0.0.6/module.json )
-3. Once the **conditional-visibility** module is installed, open your desired world and navigate to the `Game Settings` > `Configure Settings` > `Module Settings` and enable the module
-
 ## Note for Combat Utility Belt Users
 If you use Combat Utility Belt and check "Remove Default Status Effects," it will remove those Status Effects necessary for this module to function.  They can be re-added using Combat Utility Belt's Condition Lab:
 
@@ -162,6 +156,6 @@ Bootstrapped with League of Extraordinary FoundryVTT Developers  [foundry-vtt-ty
 
 Thanks to anyone who helps me with this code! I appreciate the user community's feedback on this project!
 
-Very special ty to [Szefo09](https://github.com/szefo09) for make a full operational patch for Dnd5e with FoundryVtt 0.8.6
+Very special ty to [Szefo09](https://github.com/szefo09) for make a full operational patch for Dnd5e with FoundryVtt 0.8.6 and 9
 
 Very special ty to [Teshynil](https://github.com/Teshynil) for make many and many test with bug fix

@@ -45,7 +45,7 @@
   ],
   "scripts": [],
   "esmodules": ["conditional-visibility.js"],
-  "styles": ["templates/conditional-visibility.css"],
+  "styles": ["styles/conditional-visibility.css"],
   "packs": [
     {
       "name": "Conditional Visibility",
@@ -58,7 +58,7 @@
   ],
 
   "minimumCoreVersion": "0.8.6",
-  "compatibleCoreVersion": "0.8.9",
+  "compatibleCoreVersion": "9",
   "manifestPlusVersion": "1.2.0",
   "url": "https://github.com/p4535992/conditional-visibility",
   "manifest": "https://github.com/p4535992/conditional-visibility/releases/latest/download/module.json",

@@ -133,7 +133,7 @@ export class ConditionalVisibility {
       } else {
         if (getGame().user?.isGM === false) {
           const activeTokenDocuments = <Token[]>getGame().user?.character?.getActiveTokens();
-          if(activeTokenDocuments){
+          if (activeTokenDocuments) {
             for (const tokenDocument of activeTokenDocuments) {
               const tok = getCanvas().tokens?.placeables.find((tok) => tok.id === tokenDocument.id);
               if (tok) {
@@ -150,7 +150,7 @@ export class ConditionalVisibility {
     this.sceneUpdates = [];
     this.debouncedUpdate = debounce(async () => await this.applyChanges(), 300);
     this._draw = async () => {
-      await this._sightLayer.initialize();
+      // await this._sightLayer.initialize();
       await this._sightLayer.refresh();
     };
     ConditionalVisibility.canSee = (token: Token, srcTokens: Token[] | null = null, flags = null) => {
@@ -227,7 +227,7 @@ export class ConditionalVisibility {
                 ptu.token.visible = false;
                 // TODO Need foundry 9 for the setter method
                 //ptu.token.isVisible = false;
-                setProperty(ptu.token,'isVisible', false);
+                setProperty(ptu.token, 'isVisible', false);
                 ptu.token.data.hidden = ptu.hidden;
                 ptu.token.alpha = ptu.alpha;
                 //this.removeTokenOnLayer(this._backgroundLayer, ptu.token);

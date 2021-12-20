@@ -84,5 +84,9 @@ Hooks.once('ready', async function () {
 
 Hooks.once('libChangelogsReady', function () {
   //@ts-ignore
-  libChangelogs.register(CONDITIONAL_VISIBILITY_MODULE_NAME, '- Add [CHANGELOGS & CONFLICTS](https://github.com/theripper93/libChangelogs) hooks for better management of the conflicts', 'minor');
+  libChangelogs.register(
+    CONDITIONAL_VISIBILITY_MODULE_NAME,
+    '- Sync with [szefo09](https://github.com/szefo09/conditional-visibility) (2021-12-20)',
+    'minor',
+  );
 });

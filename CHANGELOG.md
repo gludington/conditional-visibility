@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.2.13] Sync with [szefo09](https://github.com/szefo09/conditional-visibility)
+
+- Sync with [szefo09](https://github.com/szefo09/conditional-visibility) (2021-12-20)
+
 ## [0.2.12] (ABBANDONED THE PROJECT)
 
 - Abandoned the project

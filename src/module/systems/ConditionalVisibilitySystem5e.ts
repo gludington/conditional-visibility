@@ -217,12 +217,12 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
               return realOnToggleEffect(event, opts);
             });
           } else {
-            if (object.document.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.PASSIVE_STEALTH)) {
-              await object?.document.unsetFlag(
-                CONDITIONAL_VISIBILITY_MODULE_NAME,
-                StatusEffectSightFlags.PASSIVE_STEALTH,
-              );
-            }
+            // if (object.document.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.PASSIVE_STEALTH)) {
+            //   await object?.document.unsetFlag(
+            //     CONDITIONAL_VISIBILITY_MODULE_NAME,
+            //     StatusEffectSightFlags.PASSIVE_STEALTH,
+            //   );
+            // }
             if (object.actor?.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.PASSIVE_STEALTH)) {
               await object.actor.unsetFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.PASSIVE_STEALTH);
             }

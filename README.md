@@ -20,6 +20,11 @@ And when that Drow casts Darkness, players should need Devil's Sight to see any 
 Conditional Visibility allows you to set conditions on tokens that will display them only to players whose senses meet the conditions necessary to see
 the token.
 
+## Suggestion for future developing for anyone want to help
+
+- A integration with the 'levels' module it's seem to be the right road to follow, we can use the method `overrideVisibilityTets(sourceToken, token){}` of levels for override the levels visibility test
+- Sync the status with the flags on the token
+
 ## Installation
 
 It's always easiest to install modules from the in game add-on browser.

@@ -1,5 +1,11 @@
 # Changelog
 
+
+## [0.3.0] Sync with [szefo09](https://github.com/szefo09/conditional-visibility)
+
+- Sync with [szefo09](https://github.com/szefo09/conditional-visibility) (2021-12-20)
+- Add some little check for typescript code
+
 ## [0.2.13] Sync with [szefo09](https://github.com/szefo09/conditional-visibility)
 
 - Sync with [szefo09](https://github.com/szefo09/conditional-visibility) (2021-12-20)

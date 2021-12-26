@@ -20,10 +20,15 @@ And when that Drow casts Darkness, players should need Devil's Sight to see any 
 Conditional Visibility allows you to set conditions on tokens that will display them only to players whose senses meet the conditions necessary to see
 the token.
 
+## What fork i must use this or the one from [Szefo09](https://github.com/szefo09/conditional-visibility/) ?
+
+ As for the forks mine or that of szefo09 have no particular differences, they were just born a little in contrast with each other. I wanted to update the official one in typescript to help gludington while szefo09 had it rearranged on its own with the classic javascript.
+
 ## Suggestion for future developing for anyone want to help
 
 - A integration with the 'levels' module it's seem to be the right road to follow, we can use the method `overrideVisibilityTets(sourceToken, token){}` of levels for override the levels visibility test
 - Sync the status with the flags on the token
+- With the advent of foundry version 9 it could be done much better by synchronizing it with modules like levels and Active Token Effect.
 
 ## Installation
 

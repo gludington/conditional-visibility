@@ -60,7 +60,7 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
     if (status) {
       const guard: Map<string, boolean> = new Map();
       tokens.forEach((token) => {
-        if (token.owner) {
+        if (token.document.owner) {
           if (!this.actorAlreadyAdjusted(token, guard)) {
             if (value !== true) {
               if (this.has(token, status)) {
@@ -87,7 +87,7 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
     if (status) {
       const guard: Map<string, boolean> = new Map();
       tokens.forEach((token) => {
-        if (token.owner) {
+        if (token.document.owner) {
           if (!this.actorAlreadyAdjusted(token, guard)) {
             this.toggleEffect(token, status).then(() => {});
           }
@@ -116,7 +116,7 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
    * @param tokens the list of tokens to affect.
    * @param value an optional numeric value to set for all tokens.  If unsupplied, will roll the ability the system defines.
    */
-  hide(tokens: Array<Token>, value?: number): void {
+  async hide(tokens: Array<Token>, value?: number): Promise<void> {
     if (!this._system.hasStealth()) {
       ui.notifications?.error(
         i18nFormat('conditional-visibility.stealth.not.supported', { sysid: getGame().system.id }),
@@ -126,8 +126,8 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
     if (this._system.effectsByCondition().has('hidden')) {
       const hidden = this._system.effectsByCondition().get('hidden');
       const guard: Map<string, boolean> = new Map();
-      tokens.forEach(async (token: Token) => {
-        if (token.owner) {
+      await tokens.forEach(async (token: Token) => {
+        if (token.document.owner) {
           if (!this.actorAlreadyAdjusted(token, guard)) {
             let stealth;
             if (value) {
@@ -139,7 +139,7 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
             if (this.has(token, hidden) === true) {
               //const update = { 'conditional-visibility': {} };
               //update[CONDITIONAL_VISIBILITY_MODULE_NAME][StatusEffectSightFlags.PASSIVE_STEALTH] = stealth;
-              //tokenActor.update({ flags: update });
+              //await tokenActor.update({ flags: update });
               if (!tokenActor.data.flags) {
                 tokenActor.data.flags = {};
               }
@@ -163,11 +163,14 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
                 StatusEffectSightFlags.PASSIVE_STEALTH,
                 stealth,
               );
-              this.toggleEffect(token, hidden);
+              // this.toggleEffect(token, hidden); // removed on foundry 9
+              //@ts-ignore
+              this.toggleCondition([token], hidden.visibilityId);
             }
           }
         }
       });
+      await ConditionalVisibility.SOCKET.executeForEveryone('refresh');
     }
   }
 
@@ -180,7 +183,7 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
       const hidden = this._system.effectsByCondition().get('hidden');
       const guard: Map<string, boolean> = new Map();
       tokens.forEach((token) => {
-        if (token.owner) {
+        if (token.document.owner) {
           if (!this.actorAlreadyAdjusted(token, guard)) {
             if (this.has(token, hidden)) {
               this.toggleEffect(token, hidden);
@@ -196,18 +199,19 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
    * @param tokens the tokens to hide/unhide
    * @param value the optional value to use when hiding.  If ommitted, will roll stealth
    */
-  toggleHide(tokens: Array<Token>, value?: number): void {
+  async toggleHide(tokens: Array<Token>, value?: number): Promise<void> {
     if (this._system.hasStealth()) {
       const hidden = this._system.effectsByCondition().get('hidden');
       const guard: Map<string, boolean> = new Map();
       tokens.forEach(async (token) => {
-        if (token.owner) {
+        if (token.document.owner) {
           if (!this.actorAlreadyAdjusted(token, guard)) {
             let stealth;
             if (value) {
               stealth = value;
             } else {
-              stealth = this._system.rollStealth(token).roll().total;
+              const roll = await this._system.rollStealth(token);
+              stealth = roll.total;
             }
             if (this.has(token, hidden) === true) {
               this.toggleEffect(token, hidden);

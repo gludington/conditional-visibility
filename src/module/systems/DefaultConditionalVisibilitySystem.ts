@@ -147,11 +147,11 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
 
   getVisionCapabilities(srcToken: Array<Token> | Token): VisionCapabilities {
     const flags: VisionCapabilities = new VisionCapabilities();
-    if (srcToken){
+    if (srcToken) {
       //In case of sending an array only take the first element
       srcToken = srcToken instanceof Array ? srcToken[0] : srcToken;
     }
-    if (srcToken){
+    if (srcToken) {
       let _seeinvisible =
         <number>(
           srcToken?.data?.document?.getFlag(CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags.SEE_INVISIBLE)
@@ -303,7 +303,8 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
    * @return a Roll
    */
   rollStealth(token: Token): Roll {
-    return new Roll('1d20');
+    const roll = new Roll('1d20').roll();
+    return roll;
   }
 
   /**
@@ -325,7 +326,8 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
     let result = initialValue;
     if (initialValue === undefined || isNaN(parseInt(initialValue))) {
       try {
-        result = this.rollStealth(token).roll().total;
+        const roll = await this.rollStealth(token);
+        result = roll.total;
       } catch (err) {
         warn('Error rolling stealth, check formula for system');
         result = CONDITIONAL_VISIBILITY_DEFAULT_STEALTH;

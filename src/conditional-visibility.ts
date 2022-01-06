@@ -83,10 +83,7 @@ Hooks.once('libChangelogsReady', function () {
   //@ts-ignore
   libChangelogs.register(
     CONDITIONAL_VISIBILITY_MODULE_NAME,
-    `
-    - Sync with [szefo09](https://github.com/szefo09/conditional-visibility) (2021-12-20)
-    - Add some little check for typescript code
-    `,
+    `- Sync with [szefo09](https://github.com/szefo09/conditional-visibility) (2022-01-06)`,
     'minor',
   );
 });

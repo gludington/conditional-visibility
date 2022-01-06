@@ -134,7 +134,8 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
         if (message.data.speaker.token) {
           const tokenId = message.data.speaker.token;
           const token = getCanvas().tokens?.placeables.find((tok) => tok.id === tokenId);
-          if (token && token.owner) {
+          //only execute for token owner or GM, not both
+          if (token && token.owner && (!getGame().users?.find((x) => x.isGM)?.active || getGame().user?.isGM)) {
             facade.hide([token], message._roll.total);
           }
         }
@@ -243,7 +244,8 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
   rollStealth(token: Token): Roll {
     if (token && token.actor) {
       //@ts-ignore
-      return new Roll('1d20 + (' + token.actor.data.data.skills.ste.total + ')');
+      const roll = new Roll('1d20 + (' + token.actor.data.data.skills.ste.total + ')').roll();
+      return roll;
     } else {
       return super.rollStealth(token);
     }

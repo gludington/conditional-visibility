@@ -84,7 +84,7 @@ Hooks.once('libChangelogsReady', function () {
   //@ts-ignore
   libChangelogs.register(
     CONDITIONAL_VISIBILITY_MODULE_NAME,
-    `- Sync with [szefo09](https://github.com/szefo09/conditional-visibility) (2022-01-06)`,
+    `- Add gulp-replace on the build process, for replace all the `getGame()` in `game` and `getCanvas()` in `canvas`, so the javascript in similar to the vanilla javascript used from other developer`,
     'minor',
   );
 });

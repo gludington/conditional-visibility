@@ -1,12 +1,13 @@
 import { log, warn } from '../conditional-visibility';
 import { ConditionalVisibility } from './ConditionalVisibility';
-import { getGame, getCanvas, CONDITIONAL_VISIBILITY_MODULE_NAME } from './settings';
+import { CONDITIONAL_VISIBILITY_MODULE_NAME } from './settings';
+import { canvas, game } from './settings';
 
 export const readyHooks = async (): Promise<void> => {
   // setup all the hooks
   log(' Ready ' + CONDITIONAL_VISIBILITY_MODULE_NAME);
-  const sightLayer = getCanvas().layers.find((layer) => {
-    switch (getGame().system.id) {
+  const sightLayer = canvas.layers.find((layer) => {
+    switch (game.system.id) {
       case 'dnd5e':
         //@ts-ignore
         return layer.__proto__.constructor.name === 'SightLayer';
@@ -21,7 +22,7 @@ export const readyHooks = async (): Promise<void> => {
     }
   });
   //@ts-ignore
-  ConditionalVisibility.initialize(sightLayer, getCanvas().hud?.token);
+  ConditionalVisibility.initialize(sightLayer, canvas.hud?.token);
   //@ts-ignore
   libWrapper.register(
     CONDITIONAL_VISIBILITY_MODULE_NAME,

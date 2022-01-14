@@ -2,14 +2,13 @@ import { i18n, log, warn } from '../../conditional-visibility';
 import { ConditionalVisibilityFacade } from '../ConditionalVisibilityFacade';
 import {
   CONDITIONAL_VISIBILITY_DEFAULT_STEALTH,
-  getCanvas,
-  getGame,
   CONDITIONAL_VISIBILITY_MODULE_NAME,
   StatusEffect,
   StatusEffectSightFlags,
   StatusEffectStatusFlags,
 } from '../settings';
 import { ConditionalVisibilitySystem } from './ConditionalVisibilitySystem';
+import { canvas, game } from '../settings';
 // const MODULE_NAME = "conditional-visibility";
 /**
  * The DefaultConditionalVisibilitySystem, to use when no visibility system can be found for the game system.
@@ -124,7 +123,7 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
   }
 
   initializeStatusEffects(): void {
-    log(' Initializing visibility system effects ' + this.gameSystemId() + ' for game system ' + getGame().system.id);
+    log(' Initializing visibility system effects ' + this.gameSystemId() + ' for game system ' + game.system.id);
     this.effectsByIcon().forEach((value: StatusEffect, key: string) => {
       CONFIG.statusEffects.push({
         id: value.id,
@@ -229,7 +228,7 @@ export class DefaultConditionalVisibilitySystem implements ConditionalVisibility
   distanceBeetweenTokens(source: Point, target: Point): number {
     const segment = new Ray(source, target);
 
-    return getCanvas().grid?.measureDistances([{ ray: segment }], { gridSpaces: true })[0] ?? 0;
+    return canvas.grid?.measureDistances([{ ray: segment }], { gridSpaces: true })[0] ?? 0;
   }
 
   /**

@@ -1,7 +1,5 @@
 import { DefaultConditionalVisibilitySystem, VisionCapabilities } from './DefaultConditionalVisibilitySystem';
 import {
-  getCanvas,
-  getGame,
   CONDITIONAL_VISIBILITY_MODULE_NAME,
   StatusEffectStatusFlags,
   StatusEffectSightFlags,
@@ -10,6 +8,7 @@ import {
 import { i18n } from '../../conditional-visibility';
 import { ConditionalVisibility } from '../ConditionalVisibility';
 import { ConditionalVisibilityFacade } from '../ConditionalVisibilityFacade';
+import { canvas, game } from '../settings';
 
 /**
  * Conditional visibility system for dnd5e.  Uses the same base conditions, plus adds hidden, which compares
@@ -126,16 +125,16 @@ export class ConditionalVisibilitySystem5e extends DefaultConditionalVisibilityS
   initializeHooks(facade: ConditionalVisibilityFacade): void {
     Hooks.on('createChatMessage', (message, jQuery, speaker) => {
       if (
-        getGame().settings.get(CONDITIONAL_VISIBILITY_MODULE_NAME, 'autoStealth') === true &&
+        game.settings.get(CONDITIONAL_VISIBILITY_MODULE_NAME, 'autoStealth') === true &&
         message.data.flags.dnd5e &&
         message.data.flags.dnd5e.roll &&
         message.data.flags.dnd5e.roll.skillId === 'ste'
       ) {
         if (message.data.speaker.token) {
           const tokenId = message.data.speaker.token;
-          const token = getCanvas().tokens?.placeables.find((tok) => tok.id === tokenId);
+          const token = canvas.tokens?.placeables.find((tok) => tok.id === tokenId);
           //only execute for token owner or GM, not both
-          if (token && token.owner && (!getGame().users?.find((x) => x.isGM)?.active || getGame().user?.isGM)) {
+          if (token && token.owner && (!game.users?.find((x) => x.isGM)?.active || game.user?.isGM)) {
             facade.hide([token], message._roll.total);
           }
         }

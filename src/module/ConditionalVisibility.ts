@@ -4,13 +4,8 @@ import { ConditionalVisibilitySystem } from './systems/ConditionalVisibilitySyst
 import { DefaultConditionalVisibilitySystem } from './systems/DefaultConditionalVisibilitySystem';
 import { ConditionalVisibilityFacadeImpl } from './ConditionalVisibilityFacade';
 import { i18n, log, warn } from '../conditional-visibility';
-import {
-  getCanvas,
-  getGame,
-  CONDITIONAL_VISIBILITY_MODULE_NAME,
-  StatusEffectSightFlags,
-  StatusEffectStatusFlags,
-} from './settings';
+import { CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags, StatusEffectStatusFlags } from './settings';
+import { canvas, game } from './settings';
 
 export class ConditionalVisibility {
   static INSTANCE: ConditionalVisibility;
@@ -36,7 +31,7 @@ export class ConditionalVisibility {
    */
   static onInit(): void {
     const system = ConditionalVisibility.newSystem();
-    if (!getGame().modules.get('levels')?.active) {
+    if (!game.modules.get('levels')?.active) {
       //@ts-ignore
       const realIsVisible: any = Object.getOwnPropertyDescriptor(Token.prototype, 'isVisible').get;
       Object.defineProperty(Token.prototype, 'isVisible', {
@@ -45,7 +40,7 @@ export class ConditionalVisibility {
           if (isVisible === false) {
             return false;
           }
-          if (getGame().user?.isGM || this.owner || !getCanvas().sight?.tokenVision) {
+          if (game.user?.isGM || this.owner || !canvas.sight?.tokenVision) {
             return true;
           }
           return ConditionalVisibility.canSee(this);
@@ -109,7 +104,7 @@ export class ConditionalVisibility {
    */
   static newSystem(): ConditionalVisibilitySystem {
     let system;
-    switch (getGame().system.id) {
+    switch (game.system.id) {
       case 'dnd5e':
         system = new ConditionalVisibilitySystem5e();
         break;
@@ -140,7 +135,7 @@ export class ConditionalVisibility {
     window.ConditionalVisibility = facade;
     ConditionalVisibility.INSTANCE._conditionalVisibilitySystem.initializeHooks(facade);
     //@ts-ignore
-    this.INSTANCE._backgroundLayer = getCanvas().layers.find((layer) => {
+    this.INSTANCE._backgroundLayer = canvas.layers.find((layer) => {
       //@ts-ignore
       return layer.__proto__.constructor.name === 'BackgroundLayer';
     });
@@ -155,24 +150,24 @@ export class ConditionalVisibility {
     this._conditionalVisibilitySystem = ConditionalVisibility.newSystem();
     this._sightLayer = sightLayer;
     // TO BE REMOVED 2021-12-20 in favor of levels dependencies
-    log(' starting against v0.7 or greater instance ' + getGame().data.version);
+    log(' starting against v0.7 or greater instance ' + game.data.version);
     this._getSrcTokens = () => {
       const srcTokens: Token[] = [];
       if (this._sightLayer?.sources?.size ?? 0 > 0) {
         for (const key of this._sightLayer.sources.keys()) {
           if (key.startsWith('Token.')) {
-            const tok = getCanvas().tokens?.placeables.find((tok) => tok.id === key.substring('Token.'.length));
+            const tok = canvas.tokens?.placeables.find((tok) => tok.id === key.substring('Token.'.length));
             if (tok) {
               srcTokens.push(tok);
             }
           }
         }
       } else {
-        if (getGame().user?.isGM === false) {
-          const activeTokenDocuments = <Token[]>getGame().user?.character?.getActiveTokens();
+        if (game.user?.isGM === false) {
+          const activeTokenDocuments = <Token[]>game.user?.character?.getActiveTokens();
           if (activeTokenDocuments) {
             for (const tokenDocument of activeTokenDocuments) {
-              const tok = getCanvas().tokens?.placeables.find((tok) => tok.id === tokenDocument.id);
+              const tok = canvas.tokens?.placeables.find((tok) => tok.id === tokenDocument.id);
               if (tok) {
                 srcTokens.push(tok);
               }
@@ -210,7 +205,7 @@ export class ConditionalVisibility {
     this.restrictVisibility = (timeout) => {
       warn('Restrict Calling');
       //@ts-ignore
-      let restricted = getCanvas().tokens.placeables.filter(
+      let restricted = canvas.tokens.placeables.filter(
         (token) =>
           ((token?.actor ? token.actor.data.flags : token.data.actorData?.flags) ?? [
             CONDITIONAL_VISIBILITY_MODULE_NAME,
@@ -292,12 +287,12 @@ export class ConditionalVisibility {
       }
     };
     // END REMOVED 2021-12-20 in favor of levels dependencies
-    if (!getGame().modules.get('levels')?.active) {
+    if (!game.modules.get('levels')?.active) {
       const realRestrictVisibility = sightLayer.restrictVisibility;
       this._sightLayer.restrictVisibility = () => {
         this._capabilities = this._conditionalVisibilitySystem.getVisionCapabilities(this._getSrcTokens());
         realRestrictVisibility.call(this._sightLayer);
-        const restricted = getCanvas().tokens?.placeables.filter((token) => token.visible);
+        const restricted = canvas.tokens?.placeables.filter((token) => token.visible);
         if (restricted && restricted.length > 0) {
           const srcTokens = this._getSrcTokens();
           if (srcTokens.length > 0) {
@@ -319,7 +314,7 @@ export class ConditionalVisibility {
     this._tokenHud = tokenHud;
     this._conditionalVisibilitySystem.initializeOnToggleEffect(this._tokenHud);
 
-    getGame().socket?.on('modifyEmbeddedDocument', async (message) => {
+    game.socket?.on('modifyEmbeddedDocument', async (message) => {
       const result = message.result.some((result) => {
         return result?.flags?.[CONDITIONAL_VISIBILITY_MODULE_NAME] || result?.actorData?.effects !== undefined;
       });
@@ -333,8 +328,8 @@ export class ConditionalVisibility {
 
     // REMOVED
     /*
-        const popupVersion = getGame().settings.get(MODULE_NAME, "popup-version");
-        const currentVersion = getGame().modules.get(MODULE_NAME).data.version === "v0.2.0" ? "0.0.9" : getGame().modules.get(MODULE_NAME).data.version;
+        const popupVersion = game.settings.get(MODULE_NAME, "popup-version");
+        const currentVersion = game.modules.get(MODULE_NAME).data.version === "v0.2.0" ? "0.0.9" : game.modules.get(MODULE_NAME).data.version;
 
         if (this.isSemvarGreater(currentVersion, popupVersion)) {
         renderTemplate(`modules/${MODULE_NAME}/templates/version_popup.html`, {
@@ -346,12 +341,12 @@ export class ConditionalVisibility {
                 buttons: {
                     one: {
                         icon: '<i class="fas fa-check"></i>',
-                        label: getGame().i18n.localize(MODULE_NAME+'.popup.dismissuntilupdated'),
-                        callback: () => getGame().settings.set(MODULE_NAME, 'popup-version', currentVersion)
+                        label: game.i18n.localize(MODULE_NAME+'.popup.dismissuntilupdated'),
+                        callback: () => game.settings.set(MODULE_NAME, 'popup-version', currentVersion)
                        },
                        two: {
                         icon: '<i class="fas fa-times"></i>',
-                        label: getGame().i18n.localize(MODULE_NAME+'.popup.close')
+                        label: game.i18n.localize(MODULE_NAME+'.popup.close')
                        }
                 },
                 default: ""
@@ -405,7 +400,7 @@ export class ConditionalVisibility {
           title = i18n(systemEffects.get(src)?.label ?? '');
           let tokenActorData;
           if (!token.actorData?.flags) {
-            tokenActorData = getGame().actors?.get(token.actorId)?.data;
+            tokenActorData = game.actors?.get(token.actorId)?.data;
           } else {
             tokenActorData = token.actorData;
           }
@@ -445,7 +440,7 @@ export class ConditionalVisibility {
 
   async applyChanges(): Promise<void> {
     if (ConditionalVisibility.INSTANCE.sceneUpdates.length) {
-      await getCanvas().scene?.updateEmbeddedDocuments('Token', ConditionalVisibility.INSTANCE.sceneUpdates);
+      await canvas.scene?.updateEmbeddedDocuments('Token', ConditionalVisibility.INSTANCE.sceneUpdates);
       ConditionalVisibility.INSTANCE.sceneUpdates.length = 0;
     }
     if (ConditionalVisibility.INSTANCE.actorUpdates.length) {

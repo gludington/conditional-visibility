@@ -1,6 +1,9 @@
 import { log } from '../conditional-visibility';
 import { ConditionalVisibility } from './ConditionalVisibility';
 
+export const game = getGame();
+export const canvas = getCanvas();
+
 export const CONDITIONAL_VISIBILITY_MODULE_NAME = 'conditional-visibility';
 export const CONDITIONAL_VISIBILITY_DEFAULT_STEALTH = 10;
 
@@ -37,7 +40,7 @@ export enum StatusEffectStatusFlags {
  * So you will need to deal with the fact that there might not be an initialized canvas at any point in time.
  * @returns
  */
-export function getCanvas(): Canvas {
+function getCanvas(): Canvas {
   if (!(canvas instanceof Canvas) || !canvas.ready) {
     throw new Error('Canvas Is Not Initialized');
   }
@@ -53,7 +56,7 @@ export function getCanvas(): Canvas {
  * So you will need to deal with the fact that there might not be an initialized canvas at any point in time.
  * @returns
  */
-export function getGame(): Game {
+function getGame(): Game {
   if (!(game instanceof Game)) {
     throw new Error('Game Is Not Initialized');
   }
@@ -61,9 +64,9 @@ export function getGame(): Game {
 }
 
 export const registerSettings = function (): void {
-  getGame().settings.register(CONDITIONAL_VISIBILITY_MODULE_NAME, 'autoStealth', {
-    name: getGame().i18n.localize('conditional-visibility.settings.autoStealth.name'),
-    hint: getGame().i18n.localize('conditional-visibility.settings.autoStealth.hint'),
+  game.settings.register(CONDITIONAL_VISIBILITY_MODULE_NAME, 'autoStealth', {
+    name: game.i18n.localize('conditional-visibility.settings.autoStealth.name'),
+    hint: game.i18n.localize('conditional-visibility.settings.autoStealth.hint'),
     scope: 'world',
     config: true,
     type: Boolean,
@@ -71,7 +74,7 @@ export const registerSettings = function (): void {
     onChange: (value) => log(' autoStealth set to ' + value),
   });
 
-  getGame().settings.register(CONDITIONAL_VISIBILITY_MODULE_NAME, 'popup-version', {
+  game.settings.register(CONDITIONAL_VISIBILITY_MODULE_NAME, 'popup-version', {
     scope: 'world',
     config: false,
     type: String,

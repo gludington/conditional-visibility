@@ -10,10 +10,11 @@
  * 					 determines how others may use and modify your module
  */
 // Import TypeScript modules
-import { getGame, CONDITIONAL_VISIBILITY_MODULE_NAME, registerSettings } from './module/settings';
+import { CONDITIONAL_VISIBILITY_MODULE_NAME, registerSettings } from './module/settings';
 import { preloadTemplates } from './module/preloadTemplates';
 import { ConditionalVisibility } from './module/ConditionalVisibility';
 import { readyHooks } from './module/Hooks';
+import { game } from './module/settings';
 
 declare global {
   interface Window {
@@ -33,10 +34,10 @@ export const warn = (...args: any[]): void => {
 export const error = (...args: any[]): void => console.error(`${CONDITIONAL_VISIBILITY_MODULE_NAME} | `, ...args);
 export const timelog = (...args: any[]): void => warn(`${CONDITIONAL_VISIBILITY_MODULE_NAME} | `, Date.now(), ...args);
 export const i18n = (key: string): string => {
-  return getGame().i18n.localize(key);
+  return game.i18n.localize(key);
 };
 export const i18nFormat = (key: string, data = {}): string => {
-  return getGame().i18n.format(key, data);
+  return game.i18n.format(key, data);
 };
 
 export const setDebugLevel = (debugText: string): void => {

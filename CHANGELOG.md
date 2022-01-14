@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.3.3]
+
+- Add gulp-replace on the build process, for replace all the `getGame()` in `game` and `getCanvas()` in `canvas`, so the javascript in similar to the vanilla javascript used from other developer
+
 ## [0.3.2]
 
 - Bug fix [[BUG] Error message "Cannot redefine property: isVisible"](https://github.com/p4535992/conditional-visibility/issues/6)

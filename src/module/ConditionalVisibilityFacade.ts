@@ -1,7 +1,8 @@
 import { i18nFormat, log } from '../conditional-visibility';
 import { ConditionalVisibility } from './ConditionalVisibility';
-import { getGame, CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags } from './settings';
+import { CONDITIONAL_VISIBILITY_MODULE_NAME, StatusEffectSightFlags } from './settings';
 import { ConditionalVisibilitySystem } from './systems/ConditionalVisibilitySystem';
+import { game } from './settings';
 
 export interface ConditionalVisibilityFacade {
   help(): void;
@@ -26,15 +27,15 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
   }
 
   help(): void {
-    if (getGame().user?.isGM) {
+    if (game.user?.isGM) {
       const conditions: any[] = [];
       this._system.effectsByCondition().forEach((value, key) => {
         conditions.push({ name: key, icon: value.icon });
       });
       renderTemplate(`modules/${CONDITIONAL_VISIBILITY_MODULE_NAME}/templates/help_dialog.html`, {
-        gamesystem: getGame().system.id,
+        gamesystem: game.system.id,
         hasStealth: this._system.hasStealth(),
-        autoStealth: getGame().settings.get(CONDITIONAL_VISIBILITY_MODULE_NAME, 'autoStealth'),
+        autoStealth: game.settings.get(CONDITIONAL_VISIBILITY_MODULE_NAME, 'autoStealth'),
         conditions: conditions,
       }).then((content) => {
         const d = new Dialog({
@@ -118,9 +119,7 @@ export class ConditionalVisibilityFacadeImpl implements ConditionalVisibilityFac
    */
   async hide(tokens: Array<Token>, value?: number): Promise<void> {
     if (!this._system.hasStealth()) {
-      ui.notifications?.error(
-        i18nFormat('conditional-visibility.stealth.not.supported', { sysid: getGame().system.id }),
-      );
+      ui.notifications?.error(i18nFormat('conditional-visibility.stealth.not.supported', { sysid: game.system.id }));
       return;
     }
     if (this._system.effectsByCondition().has('hidden')) {

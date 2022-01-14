@@ -1,4 +1,4 @@
-import { getGame } from '../settings';
+import { game } from '../settings';
 import Effect from './effect';
 
 /**
@@ -58,7 +58,7 @@ export default class StatusEffects {
       event.preventDefault();
       event.stopPropagation();
       const effectName = statusEffectId.replace('Convenient Effect: ', '');
-      getGame()[this.moduleName].effectInterface.toggleEffect(effectName, token.actor.uuid);
+      game[this.moduleName].effectInterface.toggleEffect(effectName, token.actor.uuid);
     } else {
       wrapper(...args);
     }
@@ -106,7 +106,7 @@ export default class StatusEffects {
       // NOTE: changed key from src to id
       obj[id] = {
         id: e.id ?? '',
-        title: e.label ? getGame().i18n.localize(e.label) : null,
+        title: e.label ? game.i18n.localize(e.label) : null,
         src,
         isActive,
         isOverlay,

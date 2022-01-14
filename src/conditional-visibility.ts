@@ -84,7 +84,7 @@ Hooks.once('libChangelogsReady', function () {
   //@ts-ignore
   libChangelogs.register(
     CONDITIONAL_VISIBILITY_MODULE_NAME,
-    `- Add gulp-replace on the build process, for replace all the getGame() in game and getCanvas() in canvas, so the javascript in similar to the vanilla javascript used from other developer`,
+    `- Patch for onload of levels module [[BUG] Console error on startup](https://github.com/p4535992/conditional-visibility/issues/7)`,
     'minor',
   );
 });

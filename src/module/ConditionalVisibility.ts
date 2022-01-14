@@ -289,28 +289,32 @@ export class ConditionalVisibility {
     // END REMOVED 2021-12-20 in favor of levels dependencies
     if (!game.modules.get('levels')?.active) {
       const realRestrictVisibility = sightLayer.restrictVisibility;
-      this._sightLayer.restrictVisibility = () => {
-        this._capabilities = this._conditionalVisibilitySystem.getVisionCapabilities(this._getSrcTokens());
-        realRestrictVisibility.call(this._sightLayer);
-        const restricted = canvas.tokens?.placeables.filter((token) => token.visible);
-        if (restricted && restricted.length > 0) {
-          const srcTokens = this._getSrcTokens();
-          if (srcTokens.length > 0) {
-            const flags = this._conditionalVisibilitySystem.getVisionCapabilities(srcTokens);
-            for (const t of restricted) {
-              if (srcTokens.indexOf(t) < 0) {
-                t.visible = this._conditionalVisibilitySystem.canSee(t, flags);
+      if (this._sightLayer && this._sightLayer.restrictVisibility) {
+        this._sightLayer.restrictVisibility = () => {
+          this._capabilities = this._conditionalVisibilitySystem.getVisionCapabilities(this._getSrcTokens());
+          realRestrictVisibility.call(this._sightLayer);
+          const restricted = canvas.tokens?.placeables.filter((token) => token.visible);
+          if (restricted && restricted.length > 0) {
+            const srcTokens = this._getSrcTokens();
+            if (srcTokens.length > 0) {
+              const flags = this._conditionalVisibilitySystem.getVisionCapabilities(srcTokens);
+              for (const t of restricted) {
+                if (srcTokens.indexOf(t) < 0) {
+                  t.visible = this._conditionalVisibilitySystem.canSee(t, flags);
+                }
               }
             }
           }
-        }
+        };
+      }
+    }
+
+    const realTestVisiblity = sightLayer.testVisibility;
+    if (this._sightLayer && this._sightLayer.testVisibility) {
+      this._sightLayer.testVisibility = (point, options) => {
+        return realTestVisiblity.call(this._sightLayer, point, options);
       };
     }
-    const realTestVisiblity = sightLayer.testVisibility;
-    this._sightLayer.testVisibility = (point, options) => {
-      return realTestVisiblity.call(this._sightLayer, point, options);
-    };
-
     this._tokenHud = tokenHud;
     this._conditionalVisibilitySystem.initializeOnToggleEffect(this._tokenHud);
 

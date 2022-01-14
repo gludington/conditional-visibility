@@ -30,7 +30,7 @@ the token.
 - Sync the status with the flags on the token
 - With the advent of foundry version 9 it could be done much better by synchronizing it with modules like levels and Active Token Effect.
 
-## NOTE: If you are a javascript developer and not a typescript developer, you can just use the javascript files under the dist folderS
+## NOTE: If you are a javascript developer and not a typescript developer, you can just use the javascript files under the dist folder
 
 ## Installation
 

@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.3.2]
+
+- Bug fix [[BUG] Error message "Cannot redefine property: isVisible"](https://github.com/p4535992/conditional-visibility/issues/6)
+- Bug fix [[BUG] Some times when a condition is removed the token stays invisible](https://github.com/p4535992/conditional-visibility/issues/4)
 ## [0.3.1] Sync with [szefo09](https://github.com/szefo09/conditional-visibility)
 
 - Sync with [szefo09](https://github.com/szefo09/conditional-visibility) (2022-01-06)

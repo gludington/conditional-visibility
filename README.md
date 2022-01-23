@@ -14,6 +14,11 @@
 
 ## THIS MODULE IS IN MAINTENANCE MODE (OR AT LEAST I WILL NOT DEVELOPING SOMETHING ON THE SHORT TERM) ANYONE IS FREE TO TAKE CHARGE ON THIS
 
+## I am very slowly integrating an update of this module for anyone who wants to help here are the links.
+
+- If you are a typescript developer: https://github.com/p4535992/conditional-visibility-new
+- If you are a javascript developer: https://github.com/p4535992/conditional-visibility-new-vanilla
+
 Invisible Stalkers should only be seen by players that have cast See Invisibility.  Stealthy Goblins should only be seen by players with high perception.
 And when that Drow casts Darkness, players should need Devil's Sight to see any tokens inside.
 
@@ -26,7 +31,7 @@ the token.
 
 ## Suggestion for future developing for anyone want to help
 
-- A integration with the 'levels' module it's seem to be the right road to follow, we can use the method `overrideVisibilityTets(sourceToken, token){}` of levels for override the levels visibility test
+- A integration with the 'levels' module it's seem to be the right road to follow, we can use the method `overrideVisibilityTest(sourceToken, token){}` of levels for override the levels visibility test
 - Sync the status with the flags on the token
 - With the advent of foundry version 9 it could be done much better by synchronizing it with modules like levels and Active Token Effect.
 

@@ -12,7 +12,7 @@
 
 ![GitHub all releases](https://img.shields.io/github/downloads/p4535992/conditional-visibility/total?style=for-the-badge)
 
-## THIS MODULE IS IN MAINTENANCE MODE (OR AT LEAST I WILL NOT DEVELOPING SOMETHING ON THE SHORT TERM) ANYONE IS FREE TO TAKE CHARGE ON THIS
+## THIS MODULE IS IN MAINTENANCE MODE (OR AT LEAST I WILL NOT DEVELOPING SOMETHING ON THE SHORT TERM) ANYONE IS FREE TO TAKE CHARGE ON THIS, FOR ANYONE IS WILLING TO SUPPORTTHE BOUNTY HERE THE LINK TO THE [TRELLO COMMINSSION](https://trello.com/c/JKii1g7H/335-conditional-visibility-rewrite-2022)
 
 ## I am very slowly integrating an update of this module for anyone who wants to help here are the links.
 

@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.3.5] Sync with [szefo09](https://github.com/szefo09/conditional-visibility)
+
+- Synce with [szefo09](https://github.com/szefo09/conditional-visibility) (2022-02-01)
+
 ## [0.3.4]
 
 - Patch for onload of levels module [[BUG] Console error on startup](https://github.com/p4535992/conditional-visibility/issues/7)

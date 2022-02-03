@@ -421,7 +421,7 @@ export class ConditionalVisibility {
             ) ??
             <boolean>tokenActorData.flags[CONDITIONAL_VISIBILITY_MODULE_NAME]?.[StatusEffectStatusFlags.HIDDEN] ??
             false;
-          if (tokenActorData && !hidden && !isNaN(parseInt(_ste))) {
+          if (tokenActorData && tokenActorData.flags && tokenActorData.flags[CONDITIONAL_VISIBILITY_MODULE_NAME] && hidden && _ste && !isNaN(parseInt(_ste))) {
             title += ' ' + i18n(`${CONDITIONAL_VISIBILITY_MODULE_NAME}.currentstealth`) + ': ' + _ste;
           }
         } else {

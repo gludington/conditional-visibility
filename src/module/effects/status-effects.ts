@@ -1,5 +1,7 @@
+import CONSTANTS from '../constants';
 import { game } from '../settings';
 import Effect from './effect';
+import EffectInterface from './effect-interface';
 
 /**
  * Handles the status effects present on the token HUD
@@ -9,7 +11,10 @@ export default class StatusEffects {
   moduleName: string;
 
   constructor(moduleName) {
-    if (!game[moduleName].effects) {
+    if (!game[moduleName]) {
+      game[moduleName] = {};
+    }
+    if (!game[moduleName]?.effects) {
       game[moduleName].effects = {};
     }
     if (!game[moduleName].effects.customEffects) {
@@ -35,10 +40,22 @@ export default class StatusEffects {
   _fetchStatusEffects(): any[] {
     return CONFIG.statusEffects //this._settings.statusEffectNames
       .map((name) => {
+        // const effect = this._customEffectsHandler
+        //   .getCustomEffects()
+        //   .find((effect) => effect.name == name);
+
+        // if (effect) return effect;
+
+        // return game.dfreds.effects.all.find((effect) => effect.name == name);
+
+        // return
+        //   <Effect>(<EffectInterface>game[CONSTANTS.MODULE_NAME].API.effectInterface)
+        //     .findEffectByName(name);
+
         const effect = <Effect>this._customEffects.find((effect: Effect) => effect.name == name.label);
         return effect;
       })
-      .filter((effect) => effect)
+      .filter((effect: Effect) => effect)
       .map((effect: Effect) => effect.convertToActiveEffectData());
   }
 
@@ -58,7 +75,11 @@ export default class StatusEffects {
       event.preventDefault();
       event.stopPropagation();
       const effectName = statusEffectId.replace('Convenient Effect: ', '');
-      game[this.moduleName].effectInterface.toggleEffect(effectName, token.actor.uuid);
+
+      game[CONSTANTS.MODULE_NAME].API.effectInterface.toggleEffect(effectName, {
+        overlay: args.length > 1 && args[1]?.overlay,
+        uuids: [token.actor.uuid],
+      });
     } else {
       wrapper(...args);
     }
@@ -95,13 +116,13 @@ export default class StatusEffects {
     const tokenEffects = foundry.utils.deepClone(token.data.effects) || [];
     if (token.data.overlayEffect) tokenEffects.push(token.data.overlayEffect);
     return CONFIG.statusEffects.concat(tokenEffects).reduce((obj, e) => {
+      const id = e.id; // NOTE: added this
+
       const src = e.icon ?? e;
-      if (src in obj) return obj;
+      if (id in obj) return obj; // NOTE: changed from src to id
       const status = statuses[e.id] || {};
       const isActive = !!status.id || token.data.effects.includes(src);
       const isOverlay = !!status.overlay || token.data.overlayEffect === src;
-
-      const id = e.id;
 
       // NOTE: changed key from src to id
       obj[id] = {

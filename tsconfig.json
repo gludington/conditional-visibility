@@ -1,6 +1,5 @@
 {
 	"compilerOptions": {
-		"esModuleInterop": true,
 		"moduleResolution": "node",
 		"noEmit": false,
 		"strict": false,
@@ -10,9 +9,7 @@
 			"ES6",
 			"ES2020"
     	],
-		"types": [
-			"@league-of-foundry-developers/foundry-vtt-types"
-		],
-    "strictNullChecks": true
+		"types": ["@league-of-foundry-developers/foundry-vtt-types"],
+		"strictNullChecks": true,
 	}
 }

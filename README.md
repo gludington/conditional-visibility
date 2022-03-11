@@ -100,10 +100,10 @@ If each condition is added to the CUB set, Conditional Visibility will again fun
 
 | image | effectId | image path | 
 | --- | --- | --- |
-| <img src="https://raw.githubusercontent.com/p4535992/conditional-visibility/main/src/icons/hidden.jpg" alt="" style="height: 50px; width:50px;"></img> | Hidden | modules/conditional-visibility/icons/newspaper.jpg | 
-| <img src="https://raw.githubusercontent.com/p4535992/conditional-visibility/main/src/icons/invisible.jpg" alt="" style="height: 50px; width:50px;"></img> | Invisible | modules/conditional-visibility/icons/unknown.jpg | 
-| <img src="https://raw.githubusercontent.com/p4535992/conditional-visibility/main/src/icons/obscured.jpg" alt="" style="height: 50px; width:50px;"></img> | Obscured | modules/conditional-visibility/icons/foggy.jpg | 
-| <img src="https://raw.githubusercontent.com/p4535992/conditional-visibility/main/src/icons/indarkness.jpg" alt="" style="height: 50px; width:50px;"></img> | In Darkness | modules/conditional-visibility/icons/moon.jpg | 
+| <img src="https://raw.githubusercontent.com/p4535992/conditional-visibility/master/main/src/icons/hidden.jpg" alt="" style="height: 50px; width:50px;"></img> | Hidden | modules/conditional-visibility/icons/newspaper.jpg | 
+| <img src="https://raw.githubusercontent.com/p4535992/conditional-visibility/master/main/src/icons/invisible.jpg" alt="" style="height: 50px; width:50px;"></img> | Invisible | modules/conditional-visibility/icons/unknown.jpg | 
+| <img src="https://raw.githubusercontent.com/p4535992/conditional-visibility/master/main/src/icons/obscured.jpg" alt="" style="height: 50px; width:50px;"></img> | Obscured | modules/conditional-visibility/icons/foggy.jpg | 
+| <img src="https://raw.githubusercontent.com/p4535992/conditional-visibility/master/main/src/icons/indarkness.jpg" alt="" style="height: 50px; width:50px;"></img> | In Darkness | modules/conditional-visibility/icons/moon.jpg | 
 
 ### Apply sense and condition from Token Config
 

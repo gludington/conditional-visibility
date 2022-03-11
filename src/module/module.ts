@@ -401,12 +401,15 @@ const module = {
       if (!game.settings.get(CONSTANTS.MODULE_NAME, 'enableHud')) {
         return;
       }
+      if(!app?.object?.document){
+        return;
+      }
       const buttonPos = game.settings.get(CONSTANTS.MODULE_NAME, 'hudPos');
       //const hiddenValue = app.object.document.getFlag(CONSTANTS.MODULE_NAME, AtcvEffectConditionFlags.HIDDEN);
       const atcvEffectFlagData = <AtcvEffectFlagData>(
         app.object.document.getFlag(CONSTANTS.MODULE_NAME, AtcvEffectConditionFlags.HIDDEN)
       );
-      const hiddenValue = atcvEffectFlagData.visionLevelValue ?? 0;
+      const hiddenValue = atcvEffectFlagData?.visionLevelValue ?? 0;
       const borderButton = `<div class="control-icon toggleStealth ${
         hiddenValue && hiddenValue != 0 ? 'active' : ''
       }" ${

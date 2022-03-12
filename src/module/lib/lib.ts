@@ -949,7 +949,7 @@ export async function toggleStealth(event) {
   const atcvEffectFlagData = <AtcvEffectFlagData>(
     this.object.document.getFlag(CONSTANTS.MODULE_NAME, AtcvEffectConditionFlags.HIDDEN)
   );
-  const stealthedWithHiddenConditionOri = atcvEffectFlagData.visionLevelValue ?? 0;
+  const stealthedWithHiddenConditionOri = atcvEffectFlagData?.visionLevelValue ?? 0;
   let stealthedWithHiddenCondition = duplicate(stealthedWithHiddenConditionOri);
   if (stealthedWithHiddenCondition == 0 && getProperty(this.object.document, `data.${API.STEALTH_PASSIVE_SKILL}`)) {
     stealthedWithHiddenCondition = getProperty(this.object.document, `data.${API.STEALTH_PASSIVE_SKILL}`);

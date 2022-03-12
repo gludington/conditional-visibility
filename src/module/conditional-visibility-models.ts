@@ -83,6 +83,7 @@ export interface SenseData {
   conditionSources: string[]; // [OPTIONAL] force to apply the check only for these sources (you can set this but is used only from condition)
   effectCustomId: string; // [OPTIONAL] if you use the module 'DFreds Convenient Effects', you can associate a custom active effect by using the customId string of the DFred effect
   conditionTargetImage: string; // [OPTIONAL] string path to the image applied on target token and used from the source token (the one you click on) for replace only for that player with a special sight
+  conditionDistance: number; // [OPTIONAL] set a maximum distance for check the sight with this effect
 }
 
 export enum AtcvEffectSenseFlags {
@@ -294,19 +295,6 @@ export class VisionCapabilities {
           let conditionTargets: string[] = atcvEffectFlagData.visionTargets || [];
           let conditionSources: string[] = atcvEffectFlagData.visionSources || [];
           let conditionTargetImage = atcvEffectFlagData.visionTargetImage || '';
-          // if (!visionLevelValue || visionLevelValue == 0) {
-          // try to serach on active effect
-          // if (await API.hasEffectAppliedOnToken(this.token.id, i18n(statusSight.name), true)) {
-          // const ae = <ActiveEffect>await API.findEffectByNameOnToken(this.token.id, i18n(statusSight.name));
-          // if(ae){
-          //   conditionElevation = retrieveAtcvElevationFromActiveEffect(ae.data.changes);
-          //   conditionTargets = retrieveAtcvTargetsFromActiveEffect(ae.data.changes);
-          //   conditionSources = retrieveAtcvSourcesFromActiveEffect(ae.data.changes);
-          //   visionLevelValue = retrieveAtcvVisionLevelFromActiveEffect(ae, statusSight);
-          //   visionDistanceValue = retrieveAtcvVisionLevelDistanceFromActiveEffect(ae);
-          // }
-          // }
-          // }
 
           const statusEffect = <AtcvEffect>{
             visionElevation: conditionElevation ?? false,
@@ -359,19 +347,6 @@ export class VisionCapabilities {
           let conditionTargets: string[] = atcvEffectFlagData.visionTargets || [];
           let conditionSources: string[] = atcvEffectFlagData.visionSources || [];
           let conditionTargetImage = atcvEffectFlagData.visionTargetImage || '';
-          // if (!visionLevelValue || visionLevelValue == 0) {
-          // try to serach on active effect
-          // if (await API.hasEffectAppliedOnToken(this.token.id, i18n(statusSight.name), true)) {
-          // const ae = <ActiveEffect>await API.findEffectByNameOnToken(this.token.id, i18n(statusSight.name));
-          // if(ae){
-          //   conditionElevation = retrieveAtcvElevationFromActiveEffect(ae.data.changes);
-          //   conditionTargets = retrieveAtcvTargetsFromActiveEffect(ae.data.changes);
-          //   conditionSources = retrieveAtcvSourcesFromActiveEffect(ae.data.changes);
-          //   visionLevelValue = retrieveAtcvVisionLevelFromActiveEffect(ae, statusSight);
-          //   visionDistanceValue = retrieveAtcvVisionLevelDistanceFromActiveEffect(ae);
-          // }
-          // }
-          // }
 
           const statusEffect = <AtcvEffect>{
             visionElevation: conditionElevation ?? false,

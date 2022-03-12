@@ -52,7 +52,8 @@ There three type of these AE used and supported from this module:
 
 | Key Syntax                      | Type    | Description                         | Examples Active Effect Data [Key = value] |
 | :------------------------------:|:-------:|:-----------------------------------:|:--------:|
-| `ATCV.conditionTargetImage`     | string  | string path to the image applied on target token and used from the source token (the one you click on) for replace only for that player with a special sight
+| `ATCV.conditionTargetImage`     | string  | string path to the image applied on target token and used from the source token (the one you click on) for replace only for that player with a special sight |
+| `ATCV.conditionDistance`  | number | set a maximum distance for check the sight with this effect | `ATCV.conditionDistance = 12` |
 
 ## Can i add my custom sense or condition on it ?
 
@@ -70,6 +71,8 @@ ConditionalVisibility.API.registerSense({
     conditionTargets:string[]; // [OPTIONAL] force to apply the check only for these sources (you can set this but is used only from sense active effect)
     conditionSources:string[]; // [OPTIONAL] force to apply the check only for these sources (you can set this but is used only from condition active effect)
     effectCustomId:string;  // [OPTIONAL] if you use the module 'DFreds Convenient Effects', you can associate a custom active effect by using the customId string of the DFred effect
+    conditionTargetImage: string; // [OPTIONAL] string path to the image applied on target token and used from the source token (the one you click on) for replace only for that player with a special sight
+    conditionDistance: number; // [OPTIONAL] set a maximum distance for check the sight with this effect
 });
 ```
 

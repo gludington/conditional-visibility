@@ -26,7 +26,7 @@ export let conditionalVisibilitySocket;
 
 export function registerSocket() {
   debug('Registered conditionalVisibilitySocket');
-  if(conditionalVisibilitySocket){
+  if (conditionalVisibilitySocket) {
     return conditionalVisibilitySocket;
   }
   //@ts-ignore

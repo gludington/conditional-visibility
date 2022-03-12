@@ -1,5 +1,9 @@
 
-# 0.4.15-16-17-18 [BETA READY]
+### 0.4.19
+
+- Add new active effect change `ATCV.conditionDistance` for a distance check to add to the active effect.
+
+### 0.4.15-16-17-18 [BETA READY]
 
 - Complete rewrite of the code,api desgin pattern ecc.
 - For backward compatibility and integration with the Levels module, the new logic must remain bound to the flags already existing in the current module.
@@ -9,22 +13,22 @@
 - Hope to have a multisystem integration, but for now PF2, DND5e are the first one requested.
 - Possible integration with the [levels](https://github.com/theripper93/Levels) it's seem to be the right road to follow, we can use the method `overrideVisibilityTest(sourceToken, token){}` of levels for override the levels visibility test.
 
-## 0.4.13-14
+### 0.4.13-14
 
 - bug fixing, update instead remove the effect
 
-## 0.4.9
+### 0.4.9
 
 - Bug fixing recovery actor from token
 
-## 0.4.8
+### 0.4.8
 
 - Bug fixing recovery actor from token
 
-## 0.4.7
+### 0.4.7
 
 - Bug fixing recovery actro from token
 
-## 0.4.6
+### 0.4.6
 
 - Beta ready for feedback

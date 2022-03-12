@@ -125,6 +125,10 @@ When this setting is true, then rolling stealth form the HUD config of that toke
 
 **NOTE:** if the system no have the property set on the module setting or the system no support a stealth enviroment it's just roll classic 1d20, you can still manually insert the desired value
 
+### Set up a distance checking for see hidden tokens like for _lantern of revealing_
+
+![feature_distance](./wiki/video/feature_distance.gif)
+
 ### [On developing or maybe never...] Integration with [Combat utility belt](https://github.com/death-save/combat-utility-belt)
 
 CUB already manage the connection with active effect and a management with the [DFreds Convenient Effects](https://github.com/DFreds/dfreds-convenient-effects) add a third module is just redundancy, but if anyone has some suggestion just open a issue or better a PR.

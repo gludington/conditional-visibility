@@ -194,7 +194,7 @@ const module = {
             } else {
               cur = <AtcvEffect>{};
               cur.statusSight = isSense;
-              cur.visionDistanceValue = 0;
+              cur.visionDistanceValue = isSense.conditionDistance;
               cur.visionElevation = isSense.conditionElevation;
               cur.visionLevelValue = <number>senseOrConditionValue.visionLevelValue;
               cur.visionSources = isSense.conditionSources;
@@ -210,7 +210,7 @@ const module = {
             } else {
               cur = <AtcvEffect>{};
               cur.statusSight = isCondition;
-              cur.visionDistanceValue = 0;
+              cur.visionDistanceValue = isCondition.conditionDistance;
               cur.visionElevation = isCondition.conditionElevation;
               cur.visionLevelValue = <number>senseOrConditionValue.visionLevelValue;
               cur.visionSources = isCondition.conditionSources;
@@ -401,7 +401,7 @@ const module = {
       if (!game.settings.get(CONSTANTS.MODULE_NAME, 'enableHud')) {
         return;
       }
-      if(!app?.object?.document){
+      if (!app?.object?.document) {
         return;
       }
       const buttonPos = game.settings.get(CONSTANTS.MODULE_NAME, 'hudPos');

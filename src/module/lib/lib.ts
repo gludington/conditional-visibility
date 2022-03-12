@@ -408,6 +408,7 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
   const sourceVisionLevelsValid: AtcvEffect[] = [];
 
   const visibleForTypeOfSenseByIndex = [...sourceVisionLevels].map((sourceVisionLevel: AtcvEffect) => {
+    // Check elevation
     if (sourceVisionLevel?.visionElevation) {
       const tokenElevation = getElevationToken(sourceToken);
       const targetElevation = getElevationToken(targetToken);
@@ -415,6 +416,14 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
         return false;
       }
     }
+    // Check distance
+    if (sourceVisionLevel?.visionDistanceValue && sourceVisionLevel?.visionDistanceValue > 0) {
+      const tokenDistance = getUnitTokenDist(sourceToken, targetToken);
+      if (sourceVisionLevel?.visionDistanceValue < tokenDistance) {
+        return false;
+      }
+    }
+    // Check list of sources and targets
     const resultsOnTarget = targetVisionLevels.map((targetVisionLevel) => {
       if (!targetVisionLevel || !targetVisionLevel.statusSight) {
         sourceVisionLevelsValid.push(sourceVisionLevel);
@@ -931,15 +940,22 @@ export function retrieveAtcvVisionLevelDistanceFromActiveEffect(effectChanges: E
   //   return atcvValue;
   // }
   const effectEntityChanges = effectChanges.sort((a, b) => <number>a.priority - <number>b.priority);
+  const conditionDistanceAE = effectEntityChanges.find(
+    (aee) => isStringEquals(aee.key, 'ATCV.conditionDistance') && aee.value,
+  );
+  const conditionDistance = Number(conditionDistanceAE?.value);
+  if (conditionDistance > 0) {
+    distance = conditionDistance;
+  }
   // if is a AE with the label of the module (no id sorry)
   //Look up for ATL dim and bright sight to manage distance
-  const dimSightAE = effectEntityChanges.find((aee) => isStringEquals(aee.key, 'ATL.dimSight') && aee.value);
-  const brightSightAE = effectEntityChanges.find((aee) => isStringEquals(aee.key, 'ATL.brightSight') && aee.value);
-  const brightSight = Number(brightSightAE?.value);
-  const dimSight = Number(dimSightAE?.value);
-  if (brightSight || dimSight) {
-    distance = Math.max(brightSight, dimSight);
-  }
+  // const dimSightAE = effectEntityChanges.find((aee) => isStringEquals(aee.key, 'ATL.dimSight') && aee.value);
+  // const brightSightAE = effectEntityChanges.find((aee) => isStringEquals(aee.key, 'ATL.brightSight') && aee.value);
+  // const brightSight = Number(brightSightAE?.value);
+  // const dimSight = Number(dimSightAE?.value);
+  // if (brightSight || dimSight) {
+  //   distance = Math.max(brightSight, dimSight);
+  // }
   return distance;
 }
 
@@ -1054,6 +1070,94 @@ export async function toggleStealth(event) {
     default: 'close',
   });
   hud.render(true);
+}
+
+export function getDistanceSightFromToken(token: Token) {
+  let sightDistance = 0;
+  // if (token.hasSight) {
+
+  // 1) check sight with perfect vision
+  if (game.modules.get('perfect-vision')?.active) {
+    sightDistance = getPerfectVisionVisionRange(token);
+  }
+  // 2) check acotr effects
+  const actorEffects = <EmbeddedCollection<typeof ActiveEffect, ActorData>>token.actor?.data.effects;
+  for (const ae of actorEffects) {
+    let sightDistanceEffect = 0;
+    const effectChanges = ae.data.changes;
+    const effectEntityChanges = effectChanges.sort((a, b) => <number>a.priority - <number>b.priority);
+    // if is a AE with the label of the module (no id sorry)
+    //Look up for ATL dim and bright sight to manage distance
+    const dimSightAE = effectEntityChanges.find((aee) => isStringEquals(aee.key, 'ATL.dimSight') && aee.value);
+    const brightSightAE = effectEntityChanges.find((aee) => isStringEquals(aee.key, 'ATL.brightSight') && aee.value);
+    const conditionDistanceAE = effectEntityChanges.find(
+      (aee) => isStringEquals(aee.key, 'ATCV.conditionDistance') && aee.value,
+    );
+    const brightSight = Number(brightSightAE?.value);
+    const dimSight = Number(dimSightAE?.value);
+    const conditionDistance = Number(conditionDistanceAE?.value);
+    if (brightSight || dimSight || conditionDistance) {
+      sightDistanceEffect = Math.max(brightSight, dimSight, conditionDistance);
+    } else {
+      sightDistanceEffect = Math.max(token.data.dimSight, token.data.brightSight);
+    }
+    if (sightDistanceEffect > sightDistance) {
+      sightDistance = sightDistanceEffect;
+    }
+  }
+  // 3) check standard token sight
+  if (sightDistance <= 0) {
+    sightDistance = Math.max(token.data.dimSight, token.data.brightSight);
+  }
+  // }
+}
+
+function getPerfectVisionVisionRange(token: Token): number {
+  let sightLimit = parseFloat(<string>token.document.getFlag('perfect-vision', 'sightLimit'));
+
+  if (Number.isNaN(sightLimit)) {
+    sightLimit = parseFloat(<string>canvas.scene?.getFlag('perfect-vision', 'sightLimit'));
+  }
+  return sightLimit;
+}
+
+export function getUnitTokenDist(token1: Token, token2: Token) {
+  const unitsToPixel = <number>canvas.dimensions?.size / <number>canvas.dimensions?.distance;
+  const x1 = token1.center.x;
+  const y1 = token1.center.y;
+  const z1 = getTokenLOSheight(token1) * unitsToPixel;
+  const x2 = token2.center.x;
+  const y2 = token2.center.y;
+  const z2 = getTokenLOSheight(token2) * unitsToPixel;
+
+  const d = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2) + Math.pow(z2 - z1, 2)) / unitsToPixel;
+  return d;
+}
+
+/**
+ * Get the total LOS height for a token
+ * @param {Object} token - a token object
+ * @returns {Integer} returns token elevation plus the LOS height stored in the flags
+ **/
+
+function getTokenLOSheight(token) {
+  let losDiff;
+  if (game.modules.get('levels')?.active) {
+    const defaultTokenHeight = game.settings.get('levels', 'defaultLosHeight') || 6;
+    const autoLOSHeight = game.settings.get('levels', 'autoLOSHeight') || false;
+    const divideBy = token.data.flags.levelsautocover?.ducking ? 3 : 1;
+    if (autoLOSHeight) {
+      losDiff =
+        token.data.flags.levels?.tokenHeight ||
+        //@ts-ignore
+        canvas.scene?.dimensions.distance * Math.max(token.data.width, token.data.height) * token.data.scale;
+    } else {
+      losDiff = token.data.flags.levels?.tokenHeight || defaultTokenHeight;
+    }
+    return token.data.elevation + losDiff / divideBy;
+  } else {
+    return getElevationToken(token) || token.data.elevation;
+  }
 }
 
 // ========================================================================================

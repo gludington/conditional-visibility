@@ -1,5 +1,5 @@
 
-# 0.4.15-16 [BETA READY]
+# 0.4.15-16-17 [BETA READY]
 
 - Complete rewrite of the code,api desgin pattern ecc.
 - For backward compatibility and integration with the Levels module, the new logic must remain bound to the flags already existing in the current module.

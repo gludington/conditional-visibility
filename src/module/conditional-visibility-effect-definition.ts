@@ -100,7 +100,7 @@ export class ConditionalVisibilityEffectDefinitions {
     const senses = await API.getAllSensesAndConditions();
     let effectFounded: Effect | undefined = undefined;
     for (const senseData of senses) {
-      if (effect?.customId == senseData.id || i18n(effect.name) == i18n(senseData.name)) {
+      if (isStringEquals(effect?.customId, senseData.id) || isStringEquals(i18n(effect.name), i18n(senseData.name))) {
         effectFounded = effect;
         break;
       }

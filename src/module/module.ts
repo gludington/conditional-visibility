@@ -338,7 +338,8 @@ const module = {
         for (const tok of tokenArray) {
           const sense = (await API.getAllSensesAndConditions()).find((sense: SenseData) => {
             return (
-              i18n(sense.name) == i18n(<string>activeEffect.name) || i18n(sense.name) == i18n(activeEffect.data.label)
+              isStringEquals(i18n(sense.name), i18n(<string>activeEffect.name)) ||
+              isStringEquals(i18n(sense.name), i18n(activeEffect.data.label))
             );
           });
           if (sense?.id) {
@@ -359,7 +360,7 @@ const module = {
         for (const effect of effects) {
           // I also added this for specifically checking for custom effects.
           // It will return undefined if it doesn't exist:
-          const effectToFoundByName = i18n(effect.name) + ' (CV)';
+          const effectToFoundByName = i18n(effect.name);
           //@ts-ignore
           const effectFounded = <Effect>game.dfreds.effectInterface.findCustomEffectByName(effectToFoundByName);
           if (!effectFounded) {
@@ -381,8 +382,6 @@ const module = {
               effect.transfer = !disabled;
             }
             const data = effect.convertToActiveEffectData({ origin, overlay });
-            data.name = data.name + ' (CV)';
-            data.label = data.label + ' (CV)';
             activeEffectsData.push(data);
           }
         }

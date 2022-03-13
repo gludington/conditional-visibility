@@ -1,3 +1,6 @@
+### 0.4.21
+
+- Rename all effects with suffix `(CV)`, for better clarification with other modules
 
 ### 0.4.20
 

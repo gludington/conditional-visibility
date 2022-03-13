@@ -641,7 +641,9 @@ const API = {
     visionLevel: number | undefined,
   ) {
     const tokens = <Token[]>canvas.tokens?.placeables;
-    const token = <Token>tokens.find((token) => token.name == i18n(tokenNameOrId) || token.id == tokenNameOrId);
+    const token = <Token>tokens.find((token) => {
+      return isStringEquals(token.name, i18n(tokenNameOrId)) || isStringEquals(token.id, tokenNameOrId);
+    });
 
     if (!token) {
       warn(`No token found with reference '${tokenNameOrId}'`, true);
@@ -673,7 +675,7 @@ const API = {
       }
       if (senseDataId == sense.id) {
         effect = <Effect>effectsDefinition.find((effect: Effect) => {
-          return effect.customId == sense.id || i18n(effect.name) == i18n(sense.name);
+          return isStringEquals(effect.customId, sense.id) || isStringEquals(i18n(effect.name), i18n(sense.name));
         });
         senseData = sense;
         break;
@@ -686,13 +688,13 @@ const API = {
         isStringEquals(i18n(sense.name), i18n((<SenseData>senseData).name))
       );
     });
-    // const isSense = API.SENSES.find((sense: SenseData) => {
-    //   return sense.id == (<SenseData>senseData).id || i18n(sense.name) == i18n((<SenseData>senseData).name);
-    // });
 
     if (!effect) {
       const senseOrCondition = <SenseData>sensesAndConditionOrderByName.find((sense: SenseData) => {
-        return sense.id == (<SenseData>senseData).id || i18n(sense.name) == i18n((<SenseData>senseData).name);
+        return (
+          isStringEquals(sense.id, (<SenseData>senseData).id) ||
+          isStringEquals(i18n(sense.name), i18n((<SenseData>senseData).name))
+        );
       });
       if (senseOrCondition) {
         const atcvChanges = [

@@ -115,10 +115,12 @@ export function cleanUpString(stringToCleanUp: string) {
 
 export function isStringEquals(stringToCheck1: string, stringToCheck2: string, startsWith = true): boolean {
   if (stringToCheck1 && stringToCheck2) {
+    const s1 = cleanUpString(stringToCheck1) ?? '';
+    const s2 = cleanUpString(stringToCheck2) ?? '';
     if (startsWith) {
-      return cleanUpString(stringToCheck1).startsWith(cleanUpString(stringToCheck2));
+      return s1.startsWith(s2) || s2.startsWith(s1);
     } else {
-      return cleanUpString(stringToCheck1) === cleanUpString(stringToCheck2);
+      return s1 === s2;
     }
   } else {
     return stringToCheck1 === stringToCheck2;
@@ -1157,6 +1159,25 @@ function getTokenLOSheight(token) {
     return token.data.elevation + losDiff / divideBy;
   } else {
     return getElevationToken(token) || token.data.elevation;
+  }
+}
+
+/**
+ * Find out if a token is in the range of a particular object
+ * @param {Object} token - a token
+ * @param {Object} object - a tile/drawing/light/note
+ * @returns {Boolean} - true if in range, false if not
+ **/
+export function isTokenInRange(token: Token, object: Tile | Drawing | AmbientLight | Note) {
+  if (game.modules.get('levels')?.active) {
+    let rangeTop = <number>object.document.getFlag('levels', 'rangeTop');
+    let rangeBottom = <number>object.document.getFlag('levels', 'rangeBottom');
+    if (!rangeTop && rangeTop !== 0) rangeTop = Infinity;
+    if (!rangeBottom && rangeBottom !== 0) rangeBottom = -Infinity;
+    const elevation = token.data.elevation;
+    return elevation <= rangeTop && elevation >= rangeBottom;
+  } else {
+    // TODO maybe active aura integration
   }
 }
 

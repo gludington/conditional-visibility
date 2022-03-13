@@ -1,4 +1,9 @@
 
+### 0.4.20
+
+- Some bug fix
+- Add hook for when you add the active effect
+
 ### 0.4.19
 
 - Add new active effect change `ATCV.conditionDistance` for a distance check to add to the active effect.

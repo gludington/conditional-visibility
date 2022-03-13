@@ -109,6 +109,10 @@ export const readyHooks = async (): Promise<void> => {
     module.updateToken(document, change, options, userId);
   });
 
+  Hooks.on('addActiveEffect', async (effect, options) => {
+    module.updateActiveEffect(effect, options, false);
+  });
+
   Hooks.on('updateActiveEffect', async (effect, options) => {
     module.updateActiveEffect(effect, options, false);
   });
@@ -175,7 +179,7 @@ const module = {
         const senseOrConditionIdKey = key;
         const senseOrConditionValue = <AtcvEffectFlagData>p[key];
         const senseOrConditionId = senseOrConditionIdKey.replace('-=', '');
-        if (senseOrConditionValue?.visionLevelValue != 0) {
+        if (senseOrConditionValue?.visionLevelValue && senseOrConditionValue?.visionLevelValue != 0) {
           const isSense = <SenseData>API.SENSES.find((sense: SenseData) => {
             return (
               isStringEquals(sense.id, senseOrConditionId) || isStringEquals(i18n(sense.name), i18n(senseOrConditionId))

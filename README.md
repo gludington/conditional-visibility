@@ -115,7 +115,11 @@ Depends on the value you set the module will automatically create, updated and r
 
 **NOTE:** Limitation do not use multiple active effects with the same key on the change values `ATCV.<sense or condtion id>`, checkout the [Active effect paragraph on the tutorial](./wiki/tutorial.md)
 
-### Auto-applied from Stealth Rolls and auto appplied hidden
+### Auto-applied the 'hidden' condition from Stealth Rolls like the old "auto appplied hidden"
+
+![autostealth](./wiki/video/feature_autostealth_2_cut.gif)
+
+### Apply sense and condition from Token HUD
 
 Conditional Visibility contains an setting to auto-apply the hidden condition based on a stealth roll. The reuslt can be differnete depends on the current game system ,contributions for other systems are welcomed.
 

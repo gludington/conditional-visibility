@@ -1,3 +1,8 @@
+### 0.4.22
+
+- Some bug fix
+- Autostealth now it should work like expected
+
 ### 0.4.21
 
 - Rename all effects with suffix `(CV)`, for better clarification with other modules

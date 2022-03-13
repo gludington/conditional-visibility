@@ -396,12 +396,9 @@ const module = {
     }
   },
   async renderTokenHUD(...args) {
-    if (game.settings.get(CONSTANTS.MODULE_NAME, 'autoStealth')) {
+    if (game.settings.get(CONSTANTS.MODULE_NAME, 'enableHud')) {
       const [app, html, data] = args;
       if (!game.user?.isGM) {
-        return;
-      }
-      if (!game.settings.get(CONSTANTS.MODULE_NAME, 'enableHud')) {
         return;
       }
       if (!app?.object?.document) {

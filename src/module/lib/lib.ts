@@ -894,27 +894,6 @@ export function retrieveAtcvVisionLevelValueFromActiveEffect(effectChanges: Effe
   return Number(atcvValue.value);
 }
 
-// export function retrieveAtcvVisionLevelFromActiveEffect(effectEntity: ActiveEffect, effectSightId: string): number {
-//   //Look up for ATCV to manage vision level
-//   let atcvValue: any = 0;
-//   const effectNameToSet = effectEntity.name ? effectEntity.name : effectEntity.data.label;
-//   if (!effectNameToSet) {
-//     return atcvValue;
-//   }
-//   const effectEntityChanges = EffectSupport.retrieveChangesOrderedByPriorityFromAE(effectEntity);
-//   //atcvValue = effectEntity.data.changes.find((aee) => {
-//   atcvValue = effectEntityChanges.find((aee) => {
-//     if (isStringEquals(aee.key, 'ATCV.' + effectSightId) && aee.value) {
-//       return aee;
-//     }
-//   });
-//   if (!atcvValue) {
-//     // Ignore ???
-//     return 0;
-//   }
-//   return Number(atcvValue.value);
-// }
-
 export function retrieveAtcvVisionTargetImageFromActiveEffect(effectChanges: EffectChangeData[]): string {
   //Look up for ATCV to manage vision level
   let atcvValue: any = '';
@@ -1180,5 +1159,7 @@ export function isTokenInRange(token: Token, object: Tile | Drawing | AmbientLig
     // TODO maybe active aura integration
   }
 }
+
+
 
 // ========================================================================================

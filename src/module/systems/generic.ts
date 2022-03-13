@@ -7,6 +7,7 @@ export default {
   PERCEPTION_PASSIVE_SKILL: ``,
   STEALTH_PASSIVE_SKILL: ``,
   STEALTH_ACTIVE_SKILL: ``,
+  STEALTH_ID_SKILL: ``,
   NPC_TYPE: ``,
   SENSES: <SenseData[]>[],
   CONDITIONS: <SenseData[]>[

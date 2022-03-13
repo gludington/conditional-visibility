@@ -275,6 +275,14 @@ function defaultSettings(apply = false) {
       default: apply && SYSTEMS.DATA ? SYSTEMS.DATA.STEALTH_ACTIVE_SKILL : '',
       type: String,
     },
+    idStealthSkill: {
+      name: `${CONSTANTS.MODULE_NAME}.setting.idStealthSkill.name`,
+      hint: `${CONSTANTS.MODULE_NAME}.setting.idStealthSkill.hint`,
+      scope: 'world',
+      config: true,
+      default: apply && SYSTEMS.DATA ? SYSTEMS.DATA.STEALTH_ID_SKILL : '',
+      type: String,
+    },
   };
 }
 

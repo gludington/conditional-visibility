@@ -7,6 +7,7 @@ export default {
   PERCEPTION_PASSIVE_SKILL: `data.skills.prc.passive`,
   STEALTH_PASSIVE_SKILL: `data.skills.ste.passive`,
   STEALTH_ACTIVE_SKILL: `data.skills.ste.total`,
+  STEALTH_ID_SKILL: `ste`,
   NPC_TYPE: `npc`,
   SENSES: <SenseData[]>[
     {
@@ -71,6 +72,15 @@ export default {
     },
   ],
   CONDITIONS: <SenseData[]>[
+    // {
+    //   id: AtcvEffectConditionFlags.STEALTHED,
+    //   name: `${CONSTANTS.MODULE_NAME}.${AtcvEffectConditionFlags.STEALTHED}`,
+    //   path: ``, //`data.skills.ste.passive`,
+    //   img: `modules/${CONSTANTS.MODULE_NAME}/icons/blue_35.jpg`,
+    //   visionLevelMinIndex: 0,
+    //   visionLevelMaxIndex: 1,
+    //   conditionElevation: false,
+    // },
     {
       id: AtcvEffectConditionFlags.HIDDEN,
       name: `${CONSTANTS.MODULE_NAME}.${AtcvEffectConditionFlags.HIDDEN}`,

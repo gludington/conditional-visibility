@@ -58,8 +58,8 @@ const API = {
    *
    * @returns {String}
    */
-  get PERCEPTION_PASSIVE_SKILL() {
-    return game.settings.get(CONSTANTS.MODULE_NAME, 'passivePerceptionSkill');
+  get PERCEPTION_PASSIVE_SKILL():string {
+    return <string>game.settings.get(CONSTANTS.MODULE_NAME, 'passivePerceptionSkill');
   },
 
   /**
@@ -67,8 +67,8 @@ const API = {
    *
    * @returns {String}
    */
-  get STEALTH_PASSIVE_SKILL() {
-    return game.settings.get(CONSTANTS.MODULE_NAME, 'passiveStealthSkill');
+  get STEALTH_PASSIVE_SKILL():string {
+    return <string>game.settings.get(CONSTANTS.MODULE_NAME, 'passiveStealthSkill');
   },
 
   /**
@@ -76,8 +76,17 @@ const API = {
    *
    * @returns {String}
    */
-  get STEALTH_ACTIVE_SKILL() {
-    return game.settings.get(CONSTANTS.MODULE_NAME, 'activeStealthSkill');
+  get STEALTH_ACTIVE_SKILL():string {
+    return <string>game.settings.get(CONSTANTS.MODULE_NAME, 'activeStealthSkill');
+  },
+
+  /**
+   * The attributes used to track dynamic attributes in this system
+   *
+   * @returns {array}
+   */
+  get STEALTH_ID_SKILL(): string {
+    return <string>game.settings.get(CONSTANTS.MODULE_NAME, 'idStealthSkill');
   },
 
   /**

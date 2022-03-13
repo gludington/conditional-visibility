@@ -1,7 +1,7 @@
 {
   "conditional-visibility.setting.autoStealth.name": "Auto hide on stealth rolls",
-  "conditional-visibility.setting.autoStealth.hint": "[Not recommended now you can manage everything and better with AE] On supported game systems, set the hidden condition on a token's stealth roll",
-
+  "conditional-visibility.setting.autoStealth.hint": "[Not recommended now you can manage everything and better with AE] On supported game systems, set the 'hidden' condition on a token's stealth roll",
+  
   "conditional-visibility.setting.useEagleEye.name": "Use eagle eye (Experimental)",
   "conditional-visibility.setting.useEagleEye.hint": "A embedded version of the module https://github.com/trioderegion/eagle-eye/",
 
@@ -25,7 +25,7 @@
   "conditional-visibility.setting.enableSightCheckForGM.hint": "Can be useful for debugging",
 
   "conditional-visibility.setting.enableHud.name": "CV HUD element",
-  "conditional-visibility.setting.enableHud.hint": "Add Token HUD element to disable/enable hidden condition",
+  "conditional-visibility.setting.enableHud.hint": "If checked it will enable the hud buttton for apply sense and condition",
   "conditional-visibility.setting.hudPos.name": "CV Control HUD Position",
   "conditional-visibility.setting.hudPos.hint": "HUD position of the hidden button on the token",
   "conditional-visibility.setting.disableForNonHostileNpc.name": "Disable for non hostile npc",
@@ -118,7 +118,7 @@
   "conditional-visibility.dialogs.stealth.not.supported": "Conditional Visibility does not support the hidden condition/stealth for {sysid}",
   "conditional-visibility.dialogs.currentstealth": "Current Stealth",
   "conditional-visibility.dialogs.stealthroll": "Stealh Roll, for unlimited range use <= -1, for disable/remove use 0",
-  "conditional-visibility.dialogs.stealthrolldescription": "This value will be compared with sense value from the source token (if present on the system) as long is the token is hiding.  Non-numeric entries will result in the initial value being taken",
+  "conditional-visibility.dialogs.stealthrolldescription": "This value will be compared with 'sense' (active effect) value from the source token (if present on the system) as long is the token is hiding.  Non-numeric entries will result in the initial value being taken",
 
   "conditional-visibility.dialogs.resetsettings.title": "Reset Module Settings",
   "conditional-visibility.dialogs.resetsettings.content": "Are you sure you want to reset all of the module settings to the current system's defaults? <strong>THIS CANNOT BE UNDONE!</strong>",

@@ -2,19 +2,32 @@
 
 ## How the active effect name is checked on the module ?
 
-You can use any active effect where the name is founded from the following code of the module:
+You can use any active effect where the name is founded from the following code `isStringEquals` of the module:
 
 ```
-const effectNameToCheck = 'blinded';
-// For each active effects on the token/actor
-let result = false;
-for(const effect of effects){
-    // regex expression to match all non-alphanumeric characters in string
-    const regex = /[^A-Za-z0-9]/g;
-    result  = effectNameToCheck.replace(regex, "").toLowerCase().startsWith(effectIdOfTheModule.replace(regex, "").toLowerCase());S
-    if(result)break;
+export function isStringEquals(stringToCheck1: string, stringToCheck2: string, startsWith = true): boolean {
+  if (stringToCheck1 && stringToCheck2) {
+    const s1 = cleanUpString(stringToCheck1) ?? '';
+    const s2 = cleanUpString(stringToCheck2) ?? '';
+    if (startsWith) {
+      return s1.startsWith(s2) || s2.startsWith(s1);
+    } else {
+      return s1 === s2;
+    }
+  } else {
+    return stringToCheck1 === stringToCheck2;
+  }
 }
-return result;
+
+export function cleanUpString(stringToCleanUp: string) {
+  // regex expression to match all non-alphanumeric characters in string
+  const regex = /[^A-Za-z0-9]/g;
+  if (stringToCleanUp) {
+    return i18n(stringToCleanUp).replace(regex, '').toLowerCase();
+  } else {
+    return stringToCleanUp;
+  }
+}
 ```
 
 ## How the conditional visibility check is calculated on the module ?

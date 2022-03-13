@@ -1,3 +1,8 @@
+### 0.4.24
+
+- (Again) Bug fix multiple AE for missed unsetflag when delete a AE
+- Removed refresh function seem not necessary anymore
+
 ### 0.4.23
 
 - Buf fix multiple AE for missed unsetflag when delete a AE

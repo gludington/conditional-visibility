@@ -178,7 +178,10 @@ const module = {
       for (const key in p) {
         const senseOrConditionIdKey = key;
         const senseOrConditionValue = <AtcvEffectFlagData>p[key];
-        const senseOrConditionId = senseOrConditionIdKey.replace('-=', '');
+        if(senseOrConditionIdKey.includes('-=')){
+          return;
+        }
+        const senseOrConditionId = senseOrConditionIdKey;//senseOrConditionIdKey.replace('-=', '');
         if (senseOrConditionValue?.visionLevelValue && senseOrConditionValue?.visionLevelValue != 0) {
           const isSense = <SenseData>API.SENSES.find((sense: SenseData) => {
             return (
@@ -226,7 +229,7 @@ const module = {
         }
         if (sourceVisionCapabilities.hasSenses() || sourceVisionCapabilities.hasConditions()) {
           // const sourceVisionLevels = getSensesFromToken(<Token>document.object);
-          prepareActiveEffectForConditionalVisibility(token, sourceVisionCapabilities);
+          await prepareActiveEffectForConditionalVisibility(token, sourceVisionCapabilities);
           // const sourceVisionLevels = getSensesFromToken(<Token>document.object);
         } else {
           for (const senseData of await API.getAllSensesAndConditions()) {

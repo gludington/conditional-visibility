@@ -528,7 +528,7 @@ export async function prepareActiveEffectForConditionalVisibility(
       //// const actve = retrieveAtcvVisionLevelFromActiveEffect(activeEffectToRemove,senseData);
       //const actve = sourceToken.document?.getFlag(CONSTANTS.MODULE_NAME, senseData.id);
       const atcvEffectFlagData = <AtcvEffectFlagData>sourceToken.document?.getFlag(CONSTANTS.MODULE_NAME, senseData.id);
-      const actve = atcvEffectFlagData.visionLevelValue;
+      const actve = atcvEffectFlagData?.visionLevelValue;
       if (actve == 0 || actve == null || actve == undefined) {
         await API.removeEffectFromIdOnToken(<string>sourceToken.id, <string>activeEffectToRemove.id);
       }
@@ -681,8 +681,8 @@ export async function prepareActiveEffectForConditionalVisibility(
   // }
 
   // Refresh the flags (this is necessary for retrocompatibility)
-  visionCapabilities.refreshSenses();
-  visionCapabilities.refreshConditions();
+  // visionCapabilities.refreshSenses();
+  // visionCapabilities.refreshConditions();
 }
 
 export function getSensesFromToken(token: Token): AtcvEffect[] {

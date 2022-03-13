@@ -127,6 +127,9 @@ When this setting is true, then rolling stealth form the HUD config of that toke
 
 ### Set up a distance checking for see hidden tokens like for _lantern of revealing_
 
+Add new active effect change `ATCV.conditionDistance` for a distance check to add to the active effect.
+Just edit the active effect data and apply the `ATCV.conditionDistance` change with a numeric value that value is used like unit distance for the distance checking.
+
 ![feature_distance](./wiki/video/feature_distance.gif)
 
 ### [On developing or maybe never...] Integration with [Combat utility belt](https://github.com/death-save/combat-utility-belt)

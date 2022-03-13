@@ -1,3 +1,7 @@
+### 0.4.23
+
+- Buf fix multiple AE for missed unsetflag when delete a AE
+
 ### 0.4.22
 
 - Some bug fix

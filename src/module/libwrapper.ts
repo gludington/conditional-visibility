@@ -1,4 +1,9 @@
-import { AtcvEffect, AtcvEffectConditionFlags, AtcvEffectFlagData, AtcvEffectSenseFlags } from './conditional-visibility-models';
+import {
+  AtcvEffect,
+  AtcvEffectConditionFlags,
+  AtcvEffectFlagData,
+  AtcvEffectSenseFlags,
+} from './conditional-visibility-models';
 import API from './api';
 import CONSTANTS from './constants';
 import { debug, getSensesFromToken, i18n, log, shouldIncludeVision, templateTokens, warn } from './lib/lib';
@@ -17,10 +22,12 @@ export function registerLibwrappers() {
   // WITH NO LEVELS
   // ================
   //@ts-ignore
-  libWrapper.register(CONSTANTS.MODULE_NAME, 
-    'CONFIG.Actor.documentClass.prototype.rollSkill', 
-    rollSkillHandler, 
-    "MIXED");
+  libWrapper.register(
+    CONSTANTS.MODULE_NAME,
+    'CONFIG.Actor.documentClass.prototype.rollSkill',
+    rollSkillHandler,
+    'MIXED',
+  );
 
   //@ts-ignore
   libWrapper.register(
@@ -501,7 +508,7 @@ let rollChatTotal = '';
 Hooks.on('renderChatMessage', async (message: ChatMessage, html: JQuery<HTMLElement>, speakerInfo) => {
   tokenChatId = <string>speakerInfo.message.speaker.token;
   actorChatId = <string>speakerInfo.message.speaker.actor;
-  if(speakerInfo.message.roll){
+  if (speakerInfo.message.roll) {
     rollChatTotal = JSON.parse(<string>speakerInfo.message.roll)?.total || '0';
   }
 });
@@ -513,67 +520,68 @@ async function rollSkillHandler(wrapped, skillId, options, ...rest) {
 
   // const [skillId, options, rest] = args;
   const actor = <Actor>this;
-  if(!tokenChatId){
+  if (!tokenChatId) {
     tokenChatId = <string>actor.getActiveTokens()[0].id;
   }
-  
-  if(skillId === API.STEALTH_ID_SKILL 
-      && game.settings.get(CONSTANTS.MODULE_NAME,'autoStealth')
-      && actorChatId === actor.id){
 
-      //@ts-ignore
-      const passiveStealth = getProperty(actor.data, <string>API.STEALTH_PASSIVE_SKILL) || 0;
-      const valCurrentstealth = getProperty(actor.data, <string>API.STEALTH_ACTIVE_SKILL) || 0;
-      //@ts-ignore
-      let valStealthRoll = parseInt(rollChatTotal);
-      if (isNaN(valStealthRoll)) {
-        valStealthRoll = 0;
-      }
-      if(passiveStealth > valStealthRoll){
-        valStealthRoll = passiveStealth;
-      }
-      const senseId = AtcvEffectSenseFlags.NONE;
-      const conditionId = AtcvEffectConditionFlags.HIDDEN;
+  if (
+    skillId === API.STEALTH_ID_SKILL &&
+    game.settings.get(CONSTANTS.MODULE_NAME, 'autoStealth') &&
+    actorChatId === actor.id
+  ) {
+    //@ts-ignore
+    const passiveStealth = getProperty(actor.data, <string>API.STEALTH_PASSIVE_SKILL) || 0;
+    const valCurrentstealth = getProperty(actor.data, <string>API.STEALTH_ACTIVE_SKILL) || 0;
+    //@ts-ignore
+    let valStealthRoll = parseInt(rollChatTotal);
+    if (isNaN(valStealthRoll)) {
+      valStealthRoll = 0;
+    }
+    if (passiveStealth > valStealthRoll) {
+      valStealthRoll = passiveStealth;
+    }
+    const senseId = AtcvEffectSenseFlags.NONE;
+    const conditionId = AtcvEffectConditionFlags.HIDDEN;
 
-      let selectedTokens = <Token[]>actor.getActiveTokens();
-      if (!selectedTokens || selectedTokens.length == 0) {
-        selectedTokens = [this.object];
-      }
-      for (const selectedToken of selectedTokens) {
-        if (senseId != AtcvEffectSenseFlags.NONE && senseId != AtcvEffectSenseFlags.NORMAL) {
-          const effect = <Effect>await ConditionalVisibilityEffectDefinitions.effect(senseId);
-          if (effect) {
-            if (valStealthRoll == 0) {
-              await API.removeEffectOnToken(selectedToken.id, i18n(<string>effect?.name));
-              await selectedToken.document.unsetFlag(CONSTANTS.MODULE_NAME, senseId);
-            } else {
-              //await selectedToken.document.setFlag(CONSTANTS.MODULE_NAME, senseId, valStealthRoll);
-              const atcvEffectFlagData = AtcvEffectFlagData.fromEffect(effect);
-              atcvEffectFlagData.visionLevelValue = valStealthRoll;
-              await selectedToken.document.setFlag(CONSTANTS.MODULE_NAME, senseId, atcvEffectFlagData);
-            }
+    let selectedTokens = <Token[]>actor.getActiveTokens();
+    if (!selectedTokens || selectedTokens.length == 0) {
+      selectedTokens = [this.object];
+    }
+    for (const selectedToken of selectedTokens) {
+      if (senseId != AtcvEffectSenseFlags.NONE && senseId != AtcvEffectSenseFlags.NORMAL) {
+        const effect = <Effect>await ConditionalVisibilityEffectDefinitions.effect(senseId);
+        if (effect) {
+          if (valStealthRoll == 0) {
+            await API.removeEffectOnToken(selectedToken.id, i18n(<string>effect?.name));
+            await selectedToken.document.unsetFlag(CONSTANTS.MODULE_NAME, senseId);
           } else {
-            warn(`Can't find effect definition for '${senseId}'`, true);
+            //await selectedToken.document.setFlag(CONSTANTS.MODULE_NAME, senseId, valStealthRoll);
+            const atcvEffectFlagData = AtcvEffectFlagData.fromEffect(effect);
+            atcvEffectFlagData.visionLevelValue = valStealthRoll;
+            await selectedToken.document.setFlag(CONSTANTS.MODULE_NAME, senseId, atcvEffectFlagData);
           }
-        }
-        //@ts-ignore
-        if (conditionId != AtcvEffectConditionFlags.NONE) {
-          const effect = <Effect>await ConditionalVisibilityEffectDefinitions.effect(conditionId);
-          if (effect) {
-            if (valStealthRoll == 0) {
-              await API.removeEffectOnToken(selectedToken.id, i18n(<string>effect?.name));
-              await selectedToken.document.unsetFlag(CONSTANTS.MODULE_NAME, conditionId);
-            } else {
-              //await selectedToken.document.setFlag(CONSTANTS.MODULE_NAME, conditionId, valStealthRoll);
-              const atcvEffectFlagData = AtcvEffectFlagData.fromEffect(effect);
-              atcvEffectFlagData.visionLevelValue = valStealthRoll;
-              await selectedToken.document.setFlag(CONSTANTS.MODULE_NAME, conditionId, atcvEffectFlagData);
-            }
-          } else {
-            warn(`Can't find effect definition for '${conditionId}'`, true);
-          }
+        } else {
+          warn(`Can't find effect definition for '${senseId}'`, true);
         }
       }
+      //@ts-ignore
+      if (conditionId != AtcvEffectConditionFlags.NONE) {
+        const effect = <Effect>await ConditionalVisibilityEffectDefinitions.effect(conditionId);
+        if (effect) {
+          if (valStealthRoll == 0) {
+            await API.removeEffectOnToken(selectedToken.id, i18n(<string>effect?.name));
+            await selectedToken.document.unsetFlag(CONSTANTS.MODULE_NAME, conditionId);
+          } else {
+            //await selectedToken.document.setFlag(CONSTANTS.MODULE_NAME, conditionId, valStealthRoll);
+            const atcvEffectFlagData = AtcvEffectFlagData.fromEffect(effect);
+            atcvEffectFlagData.visionLevelValue = valStealthRoll;
+            await selectedToken.document.setFlag(CONSTANTS.MODULE_NAME, conditionId, atcvEffectFlagData);
+          }
+        } else {
+          warn(`Can't find effect definition for '${conditionId}'`, true);
+        }
+      }
+    }
   }
   return result;
 }

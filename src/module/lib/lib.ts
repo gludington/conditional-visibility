@@ -1160,6 +1160,4 @@ export function isTokenInRange(token: Token, object: Tile | Drawing | AmbientLig
   }
 }
 
-
-
 // ========================================================================================

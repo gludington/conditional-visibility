@@ -267,8 +267,11 @@ const module = {
     const atcvEffects = totalEffects.filter(
       (entity) => !!entity.data.changes.find((effect) => effect.key.includes('ATCV')),
     );
-    if (activeEffect.data.disabled) {
-      atcvEffects.push(activeEffect);
+    if (activeEffect.data.disabled || isRemoved) {
+      const atcvEffectsChanges = activeEffect.data.changes.filter((entity) => entity.key.includes('ATCV'));
+      if (atcvEffectsChanges && atcvEffectsChanges.length > 0) {
+        atcvEffects.push(activeEffect);
+      }
     }
 
     const entity = <Actor>activeEffect.parent;
@@ -325,6 +328,11 @@ const module = {
                     } else {
                       setProperty(tokenToSet.document, <string>statusSight?.path, change.value);
                     }
+                  }
+                } else {
+                  // Strange bug fixing
+                  if (isRemoved && activeEffect.id === atcvEffect.id) {
+                    await tokenToSet?.document.unsetFlag(CONSTANTS.MODULE_NAME, updateKey);
                   }
                 }
               }

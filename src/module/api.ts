@@ -1,5 +1,5 @@
 import CONSTANTS from './constants';
-import { dialogWarning, error, i18n, info, isStringEquals, mergeByProperty, warn } from './lib/lib';
+import { dialogWarning, error, getConditionsFromToken, getSensesFromToken, i18n, info, isStringEquals, mergeByProperty, warn } from './lib/lib';
 import EffectInterface from './effects/effect-interface';
 import { AtcvEffectFlagData, SenseData } from './conditional-visibility-models';
 import HOOKS from './hooks';
@@ -591,47 +591,6 @@ const API = {
     return result;
   },
 
-  /*
-  static async addEffectConditionalVisibilityOnActor(
-    actorNameOrId: string,
-    effectName: string,
-    distance: number | undefined,
-    visionLevel: number | undefined,
-  ) {
-    const actor = <Actor>game.actors?.get(actorNameOrId) || <Actor>game.actors?.getName(i18n(actorNameOrId));
-
-    if (!actor) {
-      warn(`No actor found with reference '${actorNameOrId}'`, true);
-    }
-
-    if (!distance) {
-      distance = 0;
-    }
-
-    if (!visionLevel) {
-      visionLevel = 0;
-    }
-
-    let effect: Effect | undefined = undefined;
-    const sensesOrderByName = <StatusSight[]>API.SENSES.sort((a, b) => a.name.localeCompare(b.name));
-    sensesOrderByName.forEach((a: StatusSight) => {
-      if (a.id == effectName || i18n(a.name) == effectName) {
-        effect = <Effect>EffectDefinitions.all(distance, visionLevel).find((e: Effect) => {
-          return e.customId == a.id;
-        });
-      }
-    });
-
-    if (!effect) {
-      warn(`No effect found with reference '${effectName}'`, true);
-    }
-
-    if (actor && effect) {
-      await API.effectInterface.addEffectOnActor(effectName, <string>actor.id, effect);
-    }
-  }
-  */
-
   async setCondition(
     tokenNameOrId: string,
     senseDataId: string,
@@ -676,7 +635,8 @@ const API = {
       // Check for dfred convenient effect and retrieve the effect with the specific name
       // https://github.com/DFreds/dfreds-convenient-effects/issues/110
       //@ts-ignore
-      if (sense.effectCustomId && game.dfreds) {
+      //if (sense.effectCustomId && game.dfreds) {
+      if (sense.id && game.dfreds) {
         //@ts-ignore
         effect = <Effect>await game.dfreds.effectInterface.findCustomEffectByName(sense.name);
         senseData = sense;
@@ -691,12 +651,13 @@ const API = {
       }
     }
 
-    const isSense = API.SENSES.find((sense: SenseData) => {
-      return (
-        isStringEquals(sense.id, (<SenseData>senseData).id) ||
-        isStringEquals(i18n(sense.name), i18n((<SenseData>senseData).name))
-      );
-    });
+    // const isSense = API.SENSES.find((sense: SenseData) => {
+    //   return (
+    //     isStringEquals(sense.id, (<SenseData>senseData).id) ||
+    //     isStringEquals(i18n(sense.name), i18n((<SenseData>senseData).name))
+    //   );
+    // });
+    const isSense = (<SenseData>senseData).conditionType === 'sense';
 
     if (!effect) {
       const senseOrCondition = <SenseData>sensesAndConditionOrderByName.find((sense: SenseData) => {
@@ -740,12 +701,47 @@ const API = {
     }
   },
 
-  async getAllSensesAndConditions(): Promise<SenseData[]> {
+  async getAllDefaultSensesAndConditions(token:Token): Promise<SenseData[]> {
     let allSensesAndConditions: SenseData[] = [];
     const senses = API.SENSES;
     const conditions = API.CONDITIONS;
     allSensesAndConditions = mergeByProperty(allSensesAndConditions, senses, 'id');
     allSensesAndConditions = mergeByProperty(allSensesAndConditions, conditions, 'id');
+
+    for(const atcvEffect of getSensesFromToken(token)){
+      const sData:SenseData = {
+        id: atcvEffect.visionId,
+        name: atcvEffect.visionName,
+        path: '', // TODO to integrate
+        img: '', // TODO to integrate
+        visionLevelMinIndex: atcvEffect.visionLevelMinIndex,
+        visionLevelMaxIndex: atcvEffect.visionLevelMaxIndex,
+        conditionElevation: atcvEffect.visionElevation,
+        conditionTargets: atcvEffect.visionTargets,
+        conditionSources: atcvEffect.visionSources,
+        conditionTargetImage: atcvEffect.visionTargetImage,
+        conditionDistance: <number>atcvEffect.visionDistanceValue,
+        conditionType: atcvEffect.visionType
+      };
+      mergeByProperty(allSensesAndConditions, [sData], 'id');
+    }
+    for(const atcvEffect of getConditionsFromToken(token)){
+      const sData:SenseData = {
+        id: atcvEffect.visionId,
+        name: atcvEffect.visionName,
+        path: '', // TODO to integrate
+        img: '', // TODO to integrate
+        visionLevelMinIndex: atcvEffect.visionLevelMinIndex,
+        visionLevelMaxIndex: atcvEffect.visionLevelMaxIndex,
+        conditionElevation: atcvEffect.visionElevation,
+        conditionTargets: atcvEffect.visionTargets,
+        conditionSources: atcvEffect.visionSources,
+        conditionTargetImage: atcvEffect.visionTargetImage,
+        conditionDistance: <number>atcvEffect.visionDistanceValue,
+        conditionType: atcvEffect.visionType
+      };
+      mergeByProperty(allSensesAndConditions, [sData], 'id');
+    }
     const sensesOrderByName = <SenseData[]>allSensesAndConditions.sort((a, b) => a.name.localeCompare(b.name));
     return sensesOrderByName;
   },
@@ -838,25 +834,25 @@ const API = {
   },
 
   async rollStealth(token: Token): Promise<number> {
-    let total = 0;
+    let mytotal = 0;
     if (token && token.actor) {
       const stealthActiveSetting = API.STEALTH_ACTIVE_SKILL; //game.settings.get(CONSTANTS.MODULE_NAME, 'passiveStealthSkill');
       const stealthActive = <number>getProperty(token.actor, `data.${stealthActiveSetting}`);
       if (stealthActiveSetting && stealthActive && !isNaN(stealthActive)) {
         const roll = await new Roll('1d20 + (' + stealthActive + ')').roll();
-        total = roll._total;
+        mytotal = <number>roll.total;
       }
       const roll = await new Roll('1d20').roll();
-      total = roll._total;
+      mytotal = <number>roll.total;
     } else {
       const roll = await new Roll('1d20').roll();
-      total = roll._total;
+      mytotal = <number>roll.total;
     }
     // This is atrick only for cv module
-    if (total < 0) {
-      total = 0;
+    if (mytotal < 0) {
+      mytotal = 0;
     }
-    return total;
+    return mytotal;
   },
 };
 

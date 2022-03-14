@@ -2,7 +2,7 @@ import API from './api';
 import { AtcvEffectSenseFlags, AtcvEffectConditionFlags, SenseData } from './conditional-visibility-models';
 import CONSTANTS from './constants';
 import Effect, { Constants } from './effects/effect';
-import { debug, i18n, i18nFormat, isStringEquals, warn } from './lib/lib';
+import { debug, i18n, i18nFormat, isStringEquals, mergeByProperty, warn } from './lib/lib';
 import { canvas, game } from './settings';
 
 /**
@@ -97,9 +97,14 @@ export class ConditionalVisibilityEffectDefinitions {
       warn(`Not founded effect with name ${nameOrCustomId}`, true);
       return undefined;
     }
-    const senses = await API.getAllSensesAndConditions();
+    //const senses = await API.getAllDefaultSensesAndConditions();
+    let allSensesAndConditions: SenseData[] = [];
+    const senses = API.SENSES;
+    const conditions = API.CONDITIONS;
+    allSensesAndConditions = mergeByProperty(allSensesAndConditions, senses, 'id');
+    allSensesAndConditions = mergeByProperty(allSensesAndConditions, conditions, 'id');
     let effectFounded: Effect | undefined = undefined;
-    for (const senseData of senses) {
+    for (const senseData of allSensesAndConditions) {
       if (isStringEquals(effect?.customId, senseData.id) || isStringEquals(i18n(effect.name), i18n(senseData.name))) {
         effectFounded = effect;
         break;

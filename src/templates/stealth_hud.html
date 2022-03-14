@@ -1,12 +1,18 @@
 <div class="form-group">
   <label>{{localize "conditional-visibility.dialogs.currentstealth"}}</label>
   <input readonly="true" id="conditional-visibility.currentstealth" value="{{currentstealth}}" />
+  <p class="notes">{{localize "conditional-visibility.dialogs.currentstealthdescription"}}</p>
 </div>
 <div class="form-group">
   <label>{{localize "conditional-visibility.dialogs.stealthroll"}}</label>
   <input id="conditional-visibility.stealthroll" type="number" min=-1 step=1 {{#if stealthroll}} value="{{stealthroll}}"
   {{else}} value="0" {{/if}} />
   <p class="notes">{{localize "conditional-visibility.dialogs.stealthrolldescription"}}</p>
+</div>
+<div class="form-group">
+    <label>{{localize "conditional-visibility.dialogs.disablepassiverecovery"}}</label>
+    <input id="conditional-visibility.disablepassiverecovery" type="checkbox" value="false" />
+    <p class="notes">{{localize "conditional-visibility.dialogs.disablepassiverecoverydescription"}}</p>
 </div>
 <div class="form-group">
   <legend><label>{{localize "conditional-visibility.token.config.senses.title"}}</label></legend>

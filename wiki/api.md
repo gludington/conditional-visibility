@@ -178,7 +178,6 @@ ConditionalVisibility.API.registerSense({
   conditionElevation: true,
   conditionTargets: ['invisible','hidden'],
   conditionSources: [],
-  effectCustomId: '',
 })
 ```
 
@@ -193,7 +192,6 @@ game.conditional-visibility.API.registerSense({
   conditionElevation: true,
   conditionTargets: ['invisible','hidden'],
   conditionSources: [],
-  effectCustomId: '',
 })
 ```
 
@@ -218,7 +216,6 @@ ConditionalVisibility.API.registerCondition({
   conditionElevation: true,
   conditionTargets: [],
   conditionSources: ['darkvision'],
-  effectCustomId: '',
 })
 ```
 
@@ -233,7 +230,6 @@ game.conditional-visibility.API.registerCondition({
   conditionElevation: true,
   conditionTargets: [],
   conditionSources: ['darkvision'],
-  effectCustomId: '',
 })
 ```
 
@@ -290,7 +286,6 @@ This is the model used for register a custom sense or condition to the module
   conditionElevation: boolean; // [OPTIONAL] force to check the elevation between the source token and the target token, useful when using module like 'Levels'
   conditionTargets: string[]; // [OPTIONAL] force to apply the check only for these sources (you can set this but is used only from sense)
   conditionSources: string[]; // [OPTIONAL] force to apply the check only for these sources (you can set this but is used only from condition)
-  effectCustomId: string; // [OPTIONAL] if you use the module 'DFreds Convenient Effects', you can associate a custom active effect by using the customId string of the DFred effect
   conditionTargetImage: string; // [OPTIONAL] string path to the image applied on target token and used from the source token (the one you click on) for replace only for that player with a special sight
   conditionDistance: number; // [OPTIONAL] set a maximum distance for check the sight with this effect
 }

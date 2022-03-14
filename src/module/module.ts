@@ -17,6 +17,7 @@ import {
   retrieveAtcvTargetsFromActiveEffect,
   retrieveAtcvVisionLevelDistanceFromActiveEffect,
   toggleStealth,
+  warn,
 } from './lib/lib';
 import API from './api';
 import EffectInterface from './effects/effect-interface';
@@ -33,7 +34,6 @@ import {
 } from './conditional-visibility-models';
 import {
   EffectChangeData,
-  EffectChangeDataSource,
 } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/data.mjs/effectChangeData';
 import { EffectSupport } from './effects/effect';
 import { ActiveEffectData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/module.mjs';
@@ -132,7 +132,10 @@ export const readyHooks = async (): Promise<void> => {
 const module = {
   onRenderTokenConfig(tokenConfig: TokenConfig, jQuery: JQuery, data: object): void {
     const visionTab = $('div.tab[data-tab="vision"]');
+    // TODO TO CHECK IF I CAN ADD MY CUSTOMIZED ONES WITHOUT THE NEED OF REGISTERED
     const senses = API.SENSES ?? [];
+    const conditions = API.CONDITIONS ?? [];
+
     const sensesTemplateData: any[] = [];
     for (const s of senses) {
       if (s.id != AtcvEffectSenseFlags.NONE && s.id != AtcvEffectSenseFlags.NORMAL) {
@@ -147,7 +150,7 @@ const module = {
         sensesTemplateData.push(s2);
       }
     }
-    const conditions = API.CONDITIONS ?? [];
+
     const conditionsTemplateData: any[] = [];
     for (const s of conditions) {
       if (s.id != AtcvEffectSenseFlags.NONE && s.id != AtcvEffectSenseFlags.NORMAL) {
@@ -183,56 +186,71 @@ const module = {
         }
         const senseOrConditionId = senseOrConditionIdKey;//senseOrConditionIdKey.replace('-=', '');
         if (senseOrConditionValue?.visionLevelValue && senseOrConditionValue?.visionLevelValue != 0) {
-          const isSense = <SenseData>API.SENSES.find((sense: SenseData) => {
+          // const isSense = <SenseData>API.SENSES.find((sense: SenseData) => {
+          //   return (
+          //     isStringEquals(sense.id, senseOrConditionId) || isStringEquals(i18n(sense.name), i18n(senseOrConditionId))
+          //   );
+          // });
+          // const isCondition = <SenseData>API.CONDITIONS.find((sense: SenseData) => {
+          //   return (
+          //     isStringEquals(sense.id, senseOrConditionId) || isStringEquals(i18n(sense.name), i18n(senseOrConditionId))
+          //   );
+          // });
+
+          const isSense = <AtcvEffect>getSensesFromToken(token).find((sense: AtcvEffect) => {
             return (
-              isStringEquals(sense.id, senseOrConditionId) || isStringEquals(i18n(sense.name), i18n(senseOrConditionId))
+              isStringEquals(<string>sense.visionId, senseOrConditionId) || isStringEquals(<string>sense.visionName, senseOrConditionId)
             );
           });
-          const isCondition = <SenseData>API.CONDITIONS.find((sense: SenseData) => {
+          const isCondition = <AtcvEffect>getConditionsFromToken(token).find((sense: AtcvEffect) => {
             return (
-              isStringEquals(sense.id, senseOrConditionId) || isStringEquals(i18n(sense.name), i18n(senseOrConditionId))
+              isStringEquals(<string>sense.visionId, senseOrConditionId) || isStringEquals(<string>sense.visionName, senseOrConditionId)
             );
           });
+          if(!isSense && !isCondition){
+            warn(`The effect found for id '${senseOrConditionId}' on the token '${document.name}' is not a 'sense' or a 'condition', this is impossible check out the active effect changes on the token`, true);
+            return;
+          }
           if (isSense) {
-            let cur = <AtcvEffect>sourceVisionCapabilities.senses.get(senseOrConditionId);
+            const cur = <AtcvEffect>sourceVisionCapabilities.senses.get(senseOrConditionId);
             if (cur) {
               cur.visionLevelValue = <number>senseOrConditionValue.visionLevelValue;
               sourceVisionCapabilities.senses.set(senseOrConditionId, cur);
             } else {
-              cur = <AtcvEffect>{};
-              cur.statusSight = isSense;
-              cur.visionDistanceValue = isSense.conditionDistance;
-              cur.visionElevation = isSense.conditionElevation;
-              cur.visionLevelValue = <number>senseOrConditionValue.visionLevelValue;
-              cur.visionSources = isSense.conditionSources;
-              cur.visionTargets = isSense.conditionTargets;
-              cur.visionTargetImage = isSense.conditionTargetImage;
+              // cur = <AtcvEffect>{};
+              // cur.statusSight = isSense;
+              // cur.visionDistanceValue = isSense.conditionDistance;
+              // cur.visionElevation = isSense.conditionElevation;
+              // cur.visionLevelValue = <number>senseOrConditionValue.visionLevelValue;
+              // cur.visionSources = isSense.conditionSources;
+              // cur.visionTargets = isSense.conditionTargets;
+              // cur.visionTargetImage = isSense.conditionTargetImage;
+              // cur.visionType = isSense.conditionType || 'sense';
               sourceVisionCapabilities.senses.set(senseOrConditionId, cur);
             }
           } else {
-            let cur = <AtcvEffect>sourceVisionCapabilities.conditions.get(senseOrConditionId);
+            const cur = <AtcvEffect>sourceVisionCapabilities.conditions.get(senseOrConditionId);
             if (cur) {
               cur.visionLevelValue = <number>senseOrConditionValue.visionLevelValue;
               sourceVisionCapabilities.conditions.set(senseOrConditionId, cur);
             } else {
-              cur = <AtcvEffect>{};
-              cur.statusSight = isCondition;
-              cur.visionDistanceValue = isCondition.conditionDistance;
-              cur.visionElevation = isCondition.conditionElevation;
-              cur.visionLevelValue = <number>senseOrConditionValue.visionLevelValue;
-              cur.visionSources = isCondition.conditionSources;
-              cur.visionTargets = isCondition.conditionTargets;
-              cur.visionTargetImage = isCondition.conditionTargetImage;
+              // cur = <AtcvEffect>{};
+              // cur.statusSight = isCondition;
+              // cur.visionDistanceValue = isCondition.conditionDistance;
+              // cur.visionElevation = isCondition.conditionElevation;
+              // cur.visionLevelValue = <number>senseOrConditionValue.visionLevelValue;
+              // cur.visionSources = isCondition.conditionSources;
+              // cur.visionTargets = isCondition.conditionTargets;
+              // cur.visionTargetImage = isCondition.conditionTargetImage;
+              // cur.visionType = isCondition.conditionType || 'condition';
               sourceVisionCapabilities.conditions.set(senseOrConditionId, cur);
             }
           }
         }
         if (sourceVisionCapabilities.hasSenses() || sourceVisionCapabilities.hasConditions()) {
-          // const sourceVisionLevels = getSensesFromToken(<Token>document.object);
           await prepareActiveEffectForConditionalVisibility(token, sourceVisionCapabilities);
-          // const sourceVisionLevels = getSensesFromToken(<Token>document.object);
         } else {
-          for (const senseData of await API.getAllSensesAndConditions()) {
+          for (const senseData of await API.getAllDefaultSensesAndConditions(token)) {
             const effectNameToCheckOnActor = i18n(<string>senseData?.name);
             if (await API.hasEffectAppliedOnToken(<string>token.id, effectNameToCheckOnActor, true)) {
               const activeEffectToRemove = <ActiveEffect>(
@@ -305,23 +323,19 @@ const module = {
             continue;
           }
           const updateKey = change.key.slice(5);
-          const sensesData = await API.getAllSensesAndConditions();
-          for (const statusSight of sensesData) {
-            if (updateKey === statusSight.id) {
-              // TODO TO CHECK IF WE NEED TO FILTER THE TOKENS AGAIN MAYBE WITH A ADDITIONAL ATCV active change data effect ?
-              for (const tokenToSet of tokenArray) {
+          for (const tokenToSet of tokenArray) {
+            const sensesData = await API.getAllDefaultSensesAndConditions(tokenToSet);
+            for (const statusSight of sensesData) {
+              if (updateKey === statusSight.id) {
+                // TODO TO CHECK IF WE NEED TO FILTER THE TOKENS AGAIN MAYBE WITH A ADDITIONAL ATCV active change data effect ?
                 const currentAtcvEffectFlagData = <AtcvEffectFlagData>(
                   tokenToSet?.document.getFlag(CONSTANTS.MODULE_NAME, updateKey)
                 );
                 const currentValue = String(<number>currentAtcvEffectFlagData.visionLevelValue) ?? '0';
                 if (change.value != currentValue) {
                   if (isRemoved) {
-                    //await tokenToSet?.document.setFlag(CONSTANTS.MODULE_NAME, updateKey, 0);
-                    //// setProperty(tokenToSet.document, `data.flags.${CONSTANTS.MODULE_NAME}.${statusSight.id}`, 0);
                     await tokenToSet?.document.unsetFlag(CONSTANTS.MODULE_NAME, updateKey);
                   } else {
-                    //await tokenToSet?.document.setFlag(CONSTANTS.MODULE_NAME, updateKey, change.value);
-                    //// setProperty(tokenToSet.document, `data.flags.${CONSTANTS.MODULE_NAME}.${statusSight.id}`, change.value);
                     const atcvEffectFlagData = AtcvEffectFlagData.fromActiveEffect(atcvEffect);
                     await tokenToSet?.document.setFlag(CONSTANTS.MODULE_NAME, updateKey, atcvEffectFlagData);
                   }
@@ -338,8 +352,8 @@ const module = {
                     await tokenToSet?.document.unsetFlag(CONSTANTS.MODULE_NAME, updateKey);
                   }
                 }
+                break;
               }
-              break;
             }
           }
         }
@@ -347,7 +361,7 @@ const module = {
     } else {
       if (isRemoved) {
         for (const tok of tokenArray) {
-          const sense = (await API.getAllSensesAndConditions()).find((sense: SenseData) => {
+          const sense = (await API.getAllDefaultSensesAndConditions(tok)).find((sense: SenseData) => {
             return (
               isStringEquals(i18n(sense.name), i18n(<string>activeEffect.name)) ||
               isStringEquals(i18n(sense.name), i18n(activeEffect.data.label))

@@ -13,16 +13,27 @@ import {
   retrieveAtcvSourcesFromActiveEffect,
   retrieveAtcvVisionLevelValueFromActiveEffect,
   retrieveAtcvVisionTargetImageFromActiveEffect,
+  retrieveAtcvTypeFromActiveEffect,
+  getSensesFromToken,
+  getConditionsFromToken,
+  isStringEquals,
+  retrieveAtcvLevelMaxIndexFromActiveEffect,
+  retrieveAtcvLevelMinIndexFromActiveEffect,
 } from './lib/lib';
 
 export interface AtcvEffect {
+  visionId: string;
+  visionName: string;
   visionElevation: boolean;
-  statusSight: SenseData | undefined;
+  // statusSight: SenseData | undefined;
   visionLevelValue: number | undefined;
   visionDistanceValue: number | undefined;
   visionTargets: string[];
   visionSources: string[];
   visionTargetImage: string;
+  visionType: string;
+  visionLevelMinIndex: number;
+  visionLevelMaxIndex: number;
 }
 
 export class AtcvEffectFlagData {
@@ -32,6 +43,9 @@ export class AtcvEffectFlagData {
   visionSources: string[];
   visionTargets: string[];
   visionTargetImage: string;
+  visionType: string;
+  visionLevelMinIndex: number;
+  visionLevelMaxIndex: number;
 
   constructor() {}
 
@@ -43,6 +57,9 @@ export class AtcvEffectFlagData {
     res.visionSources = atcvEffect.visionSources;
     res.visionTargets = atcvEffect.visionTargets;
     res.visionTargetImage = atcvEffect.visionTargetImage;
+    res.visionType = atcvEffect.visionType;
+    res.visionLevelMinIndex = atcvEffect.visionLevelMinIndex;
+    res.visionLevelMaxIndex = atcvEffect.visionLevelMaxIndex;
     return res;
   }
 
@@ -55,6 +72,9 @@ export class AtcvEffectFlagData {
     res.visionSources = retrieveAtcvSourcesFromActiveEffect(effectChanges);
     res.visionTargets = retrieveAtcvTargetsFromActiveEffect(effectChanges);
     res.visionTargetImage = retrieveAtcvVisionTargetImageFromActiveEffect(effectChanges);
+    res.visionType = retrieveAtcvTypeFromActiveEffect(effectChanges);
+    res.visionLevelMinIndex = retrieveAtcvLevelMinIndexFromActiveEffect(effectChanges)
+    res.visionLevelMaxIndex = retrieveAtcvLevelMaxIndexFromActiveEffect(effectChanges)
     return res;
   }
 
@@ -67,6 +87,9 @@ export class AtcvEffectFlagData {
     res.visionSources = retrieveAtcvSourcesFromActiveEffect(effectChanges);
     res.visionTargets = retrieveAtcvTargetsFromActiveEffect(effectChanges);
     res.visionTargetImage = retrieveAtcvVisionTargetImageFromActiveEffect(effectChanges);
+    res.visionType = retrieveAtcvTypeFromActiveEffect(effectChanges);
+    res.visionLevelMinIndex = retrieveAtcvLevelMinIndexFromActiveEffect(effectChanges)
+    res.visionLevelMaxIndex = retrieveAtcvLevelMaxIndexFromActiveEffect(effectChanges)
     return res;
   }
 }
@@ -81,9 +104,9 @@ export interface SenseData {
   conditionElevation: boolean; // [OPTIONAL] force to check the elevation between the source token and the target token, useful when using module like 'Levels'
   conditionTargets: string[]; // [OPTIONAL] force to apply the check only for these sources (you can set this but is used only from sense)
   conditionSources: string[]; // [OPTIONAL] force to apply the check only for these sources (you can set this but is used only from condition)
-  effectCustomId: string; // [OPTIONAL] if you use the module 'DFreds Convenient Effects', you can associate a custom active effect by using the customId string of the DFred effect
   conditionTargetImage: string; // [OPTIONAL] string path to the image applied on target token and used from the source token (the one you click on) for replace only for that player with a special sight
   conditionDistance: number; // [OPTIONAL] set a maximum distance for check the sight with this effect
+  conditionType:string; // indicate the type of CV usually they are or 'sense' or 'condition' not both, **THIS IS ESSENTIAL FOR USE SENSE AND CONDITION NOT REGISTERED ON THE MODULE IF NOT FOUNDED BY DEFAULT IS CONSIDERED A SENSE**, so now you can just modify the AE and you are not forced to call the registered macro of the module CV, this is very useful for integration with other modules.
 }
 
 export enum AtcvEffectSenseFlags {
@@ -112,34 +135,12 @@ export enum AtcvEffectConditionFlags {
   IN_DARKNESS = 'indarkness',
   HIDDEN = 'hidden',
   IN_MAGICAL_DARKNESS = 'inmagicaldarkness',
-  // STEALTHED = 'stealthed', // TODO to think about it
 }
-
-// export enum ConditionalVisibilityFlags {
-//   STEALTHED = 'stealthed'
-// }
 
 /**
  * This is system indipendent utility class
  */
 export class VisionCapabilities {
-  // seeinvisible: number;
-  // seeobscured: number;
-  // seeindarkness: number;
-  // seehidden: number;
-  // seeinmagicaldarkness: number;
-
-  // _darkvision: number;
-  // _seeinvisible: number;
-  // _blindsight: number;
-  // _tremorsense: number;
-  // _truesight: number;
-  // _devilssight: number;
-  // _passivestealth: number;
-  // _passiveperception: number;
-  // _greaterdarkvision: number;
-  // _lowlightvision: number;
-  // _blinded: number;
 
   senses: Map<string, AtcvEffect>;
   conditions: Map<string, AtcvEffect>;
@@ -156,82 +157,22 @@ export class VisionCapabilities {
       // CONDITIONS
       this.addConditions();
 
-      // this.senses.set(StatusEffectSenseFlags.DARKVISION,_darkvisionTmp);
-      // this.senses.set(StatusEffectSenseFlags.SEE_INVISIBLE, _seeinvisibleTmp);
-      // this.senses.set(StatusEffectSenseFlags.BLIND_SIGHT, _blindsightTmp);
-      // this.senses.set(StatusEffectSenseFlags.TREMOR_SENSE,  _tremorsenseTmp);
-      // this.senses.set(StatusEffectSenseFlags.TRUE_SIGHT, _truesightTmp);
-      // this.senses.set(StatusEffectSenseFlags.DEVILS_SIGHT, _devilssightTmp);
-      // this.senses.set(StatusEffectSenseFlags.GREATER_DARKVISION, _greaterdarkvisionTmp);
-      // this.senses.set(StatusEffectSenseFlags.LOW_LIGHT_VISION, _lowlightvisionTmp);
-      // this.senses.set(StatusEffectSenseFlags.BLINDED, _blindedTmp);
+      getSensesFromToken(srcToken).forEach((sense: AtcvEffect) => {
+        if(sense.visionType === 'sense' && !this.senses.has(sense.visionId)){
+          this.senses.set(sense.visionId,sense);
+        }
+      });
+      getConditionsFromToken(srcToken).forEach((condition: AtcvEffect) => {
+        if(condition.visionType === 'condition' && !this.senses.has(condition.visionId)){
+          this.senses.set(condition.visionId,condition);
+        }
+      });
 
-      // this.senses.set(StatusEffectSenseFlags.PASSIVE_STEALTH, _passivestealthTmp);
-      // this.senses.set(StatusEffectSenseFlags.PASSIVE_PERCEPTION,  _passiveperceptionTmp);
-
-      // this._darkvision = _darkvisionTmp; //< 0 ? 100000 : _darkvisionTmp;
-      // this._seeinvisible = _seeinvisibleTmp; // < 0 ? 100000 : _seeinvisibleTmp;
-      // this._blindsight = _blindsightTmp; // < 0 ? 100000 : _blindsightTmp;
-      // this._tremorsense = _tremorsenseTmp; // < 0 ? 100000 : _tremorsenseTmp;
-      // this._truesight = _truesightTmp; // < 0 ? 100000 : _truesightTmp;
-      // this._devilssight = _devilssightTmp; // < 0 ? 100000 : _devilssightTmp;
-      // this._greaterdarkvision = _greaterdarkvisionTmp; // < 0 ? 100000 : _greaterdarkvisionTmp;
-      // this._lowlightvision = _lowlightvisionTmp; // < 0 ? 100000 : _lowlightvisionTmp;
-      // this._blinded = _blindedTmp; // < 0 ? 100000 : _blindedTmp;
-
-      // this._passivestealth = _passivestealthTmp; // < 0 ? 100000 : _passivestealthTmp;
-      // this._passiveperception = _passiveperceptionTmp; //srcToken?.actor?.data?.data?.skills?.prc?.passive
-
-      // CONDITION
-
-      // this.seeinvisible = Math.max(_seeinvisible, _blindsight, _tremorsense, _truesight, _devilssight);
-      // this.seeobscured = Math.max(_blindsight, _tremorsense);
-      // this.seeindarkness = Math.max(_blindsight, _devilssight, _tremorsense, _truesight);
-
-      // //@ts-ignore
-      // if (srcToken?._movement !== null) {
-      //   //@ts-ignore
-      //   this.visionfrom = srcToken._movement.B;
-      // } else {
-      //   this.visionfrom = srcToken?.position ?? { x: 0, y: 0 };
-      // }
     } else {
       error('No token found for get the visual capatibilities');
     }
   }
 
-  // async initialize(){
-  //   // SENSES
-  //   await this.addSenses();
-
-  //   // CONDITIONS
-  //   await this.addConditions();
-  // }
-
-  // canSee(statusEffectSight: StatusEffectSightFlags) {
-
-  // }
-
-  // canSeeInvisible() {
-  //   return Math.max(this._seeinvisible, this._blindsight, this._tremorsense, this._truesight, this._devilssight);
-  // }
-  // canSeeObscured() {
-  //   return Math.max(this._blindsight, this._tremorsense);
-  // }
-  // canSeeInDarkness() {
-  //   return Math.max(this._blindsight, this._devilssight, this._tremorsense, this._truesight);
-  // }
-  // canSeeInMagicalDarkness() {
-  //   return Math.max(this._blindsight, this._devilssight, this._tremorsense, this._truesight);
-  // }
-  // hasStealth(): boolean {
-  //   return true;
-  // }
-  // rollStealth(): Roll {
-  //   //@ts-ignore
-  //   const roll = await new Roll('1d20 + (' + this.token.actor.data.data.skills.ste.total + ')').roll();
-  //   return roll;
-  // }
   hasSenses() {
     if (this.senses.size > 0) {
       return true;
@@ -255,6 +196,7 @@ export class VisionCapabilities {
         sensesTmp.set(key, value);
       }
     }
+
     return sensesTmp;
   }
 
@@ -271,17 +213,17 @@ export class VisionCapabilities {
   //   }
   // }
 
-  retrieveSenseValue(statusSense: string): number | undefined {
-    let sense: number | undefined = undefined;
-    for (const statusEffect of this.senses.values()) {
-      const statusSight = <SenseData>statusEffect.statusSight;
-      if (statusSense == statusSight.id) {
-        sense = this.senses.get(statusSense)?.visionLevelValue;
-        break;
-      }
-    }
-    return sense;
-  }
+  // retrieveSenseValue(statusSense: string): number | undefined {
+  //   let sense: number | undefined = undefined;
+  //   for (const statusEffect of this.senses.values()) {
+  //     const statusSight = <SenseData>statusEffect.statusSight;
+  //     if (statusSense == statusSight.id) {
+  //       sense = this.senses.get(statusSense)?.visionLevelValue;
+  //       break;
+  //     }
+  //   }
+  //   return sense;
+  // }
 
   addSenses() {
     Promise.all(
@@ -296,15 +238,23 @@ export class VisionCapabilities {
           let conditionTargets: string[] = atcvEffectFlagData.visionTargets || [];
           let conditionSources: string[] = atcvEffectFlagData.visionSources || [];
           let conditionTargetImage = atcvEffectFlagData.visionTargetImage || '';
+          let conditionType = atcvEffectFlagData.visionType || 'sense';
+          let conditionLevelMinIndex = atcvEffectFlagData.visionLevelMinIndex || 0;
+          let conditionLevelMaxIndex = atcvEffectFlagData.visionLevelMaxIndex || 10;
 
           const statusEffect = <AtcvEffect>{
+            visionId: statusSight.id,
+            visionName: statusSight.name,
             visionElevation: conditionElevation ?? false,
             visionTargets: conditionTargets ?? [],
             visionSources: conditionSources ?? [],
             visionLevelValue: visionLevelValue ?? 0,
             visionDistanceValue: visionDistanceValue ?? 0,
             visionTargetImage: conditionTargetImage ?? '',
-            statusSight: statusSight,
+            // statusSight: statusSight,
+            visionType: conditionType,
+            visionLevelMinIndex: conditionLevelMinIndex,
+            visionLevelMaxIndex: conditionLevelMaxIndex
           };
           this.senses.set(statusSight.id, statusEffect);
         }
@@ -348,15 +298,23 @@ export class VisionCapabilities {
           let conditionTargets: string[] = atcvEffectFlagData.visionTargets || [];
           let conditionSources: string[] = atcvEffectFlagData.visionSources || [];
           let conditionTargetImage = atcvEffectFlagData.visionTargetImage || '';
+          let conditionType = atcvEffectFlagData.visionType || 'condition';
+          let conditionLevelMinIndex = atcvEffectFlagData.visionLevelMinIndex || 0;
+          let conditionLevelMaxIndex = atcvEffectFlagData.visionLevelMaxIndex || 10;
 
           const statusEffect = <AtcvEffect>{
+            visionId: statusSight.id,
+            visionName: statusSight.name,
             visionElevation: conditionElevation ?? false,
             visionTargets: conditionTargets ?? [],
             visionSources: conditionSources ?? [],
             visionLevelValue: visionLevelValue ?? 0,
             visionDistanceValue: visionDistanceValue ?? 0,
             visionTargetImage: conditionTargetImage ?? '',
-            statusSight: statusSight,
+            // statusSight: statusSight,
+            visionType: conditionType,
+            visionLevelMinIndex: conditionLevelMinIndex,
+            visionLevelMaxIndex: conditionLevelMaxIndex
           };
           this.conditions.set(statusSight.id, statusEffect);
         }
@@ -364,15 +322,15 @@ export class VisionCapabilities {
     );
   }
 
-  retrieveConditionValue(statusSense: string): number | undefined {
-    let sense: number | undefined = undefined;
-    for (const statusEffect of this.conditions.values()) {
-      const statusSight = <SenseData>statusEffect.statusSight;
-      if (statusSense == statusSight.id) {
-        sense = this.senses.get(statusSense)?.visionLevelValue;
-        break;
-      }
-    }
-    return sense;
-  }
+  // retrieveConditionValue(statusSense: string): number | undefined {
+  //   let sense: number | undefined = undefined;
+  //   for (const statusEffect of this.conditions.values()) {
+  //     const statusSight = <SenseData>statusEffect.statusSight;
+  //     if (statusSense == statusSight.id) {
+  //       sense = this.senses.get(statusSense)?.visionLevelValue;
+  //       break;
+  //     }
+  //   }
+  //   return sense;
+  // }
 }

@@ -73,8 +73,8 @@ export class AtcvEffectFlagData {
     res.visionTargets = retrieveAtcvTargetsFromActiveEffect(effectChanges);
     res.visionTargetImage = retrieveAtcvVisionTargetImageFromActiveEffect(effectChanges);
     res.visionType = retrieveAtcvTypeFromActiveEffect(effectChanges);
-    res.visionLevelMinIndex = retrieveAtcvLevelMinIndexFromActiveEffect(effectChanges)
-    res.visionLevelMaxIndex = retrieveAtcvLevelMaxIndexFromActiveEffect(effectChanges)
+    res.visionLevelMinIndex = retrieveAtcvLevelMinIndexFromActiveEffect(effectChanges);
+    res.visionLevelMaxIndex = retrieveAtcvLevelMaxIndexFromActiveEffect(effectChanges);
     return res;
   }
 
@@ -88,8 +88,8 @@ export class AtcvEffectFlagData {
     res.visionTargets = retrieveAtcvTargetsFromActiveEffect(effectChanges);
     res.visionTargetImage = retrieveAtcvVisionTargetImageFromActiveEffect(effectChanges);
     res.visionType = retrieveAtcvTypeFromActiveEffect(effectChanges);
-    res.visionLevelMinIndex = retrieveAtcvLevelMinIndexFromActiveEffect(effectChanges)
-    res.visionLevelMaxIndex = retrieveAtcvLevelMaxIndexFromActiveEffect(effectChanges)
+    res.visionLevelMinIndex = retrieveAtcvLevelMinIndexFromActiveEffect(effectChanges);
+    res.visionLevelMaxIndex = retrieveAtcvLevelMaxIndexFromActiveEffect(effectChanges);
     return res;
   }
 }
@@ -106,7 +106,7 @@ export interface SenseData {
   conditionSources: string[]; // [OPTIONAL] force to apply the check only for these sources (you can set this but is used only from condition)
   conditionTargetImage: string; // [OPTIONAL] string path to the image applied on target token and used from the source token (the one you click on) for replace only for that player with a special sight
   conditionDistance: number; // [OPTIONAL] set a maximum distance for check the sight with this effect
-  conditionType:string; // indicate the type of CV usually they are or 'sense' or 'condition' not both, **THIS IS ESSENTIAL FOR USE SENSE AND CONDITION NOT REGISTERED ON THE MODULE IF NOT FOUNDED BY DEFAULT IS CONSIDERED A SENSE**, so now you can just modify the AE and you are not forced to call the registered macro of the module CV, this is very useful for integration with other modules.
+  conditionType: string; // indicate the type of CV usually they are or 'sense' or 'condition' not both, **THIS IS ESSENTIAL FOR USE SENSE AND CONDITION NOT REGISTERED ON THE MODULE IF NOT FOUNDED BY DEFAULT IS CONSIDERED A SENSE**, so now you can just modify the AE and you are not forced to call the registered macro of the module CV, this is very useful for integration with other modules.
 }
 
 export enum AtcvEffectSenseFlags {
@@ -141,7 +141,6 @@ export enum AtcvEffectConditionFlags {
  * This is system indipendent utility class
  */
 export class VisionCapabilities {
-
   senses: Map<string, AtcvEffect>;
   conditions: Map<string, AtcvEffect>;
   token: Token;
@@ -158,16 +157,15 @@ export class VisionCapabilities {
       this.addConditions();
 
       getSensesFromToken(srcToken).forEach((sense: AtcvEffect) => {
-        if(sense.visionType === 'sense' && !this.senses.has(sense.visionId)){
-          this.senses.set(sense.visionId,sense);
+        if (sense.visionType === 'sense' && !this.senses.has(sense.visionId)) {
+          this.senses.set(sense.visionId, sense);
         }
       });
       getConditionsFromToken(srcToken).forEach((condition: AtcvEffect) => {
-        if(condition.visionType === 'condition' && !this.senses.has(condition.visionId)){
-          this.senses.set(condition.visionId,condition);
+        if (condition.visionType === 'condition' && !this.senses.has(condition.visionId)) {
+          this.senses.set(condition.visionId, condition);
         }
       });
-
     } else {
       error('No token found for get the visual capatibilities');
     }
@@ -254,7 +252,7 @@ export class VisionCapabilities {
             // statusSight: statusSight,
             visionType: conditionType,
             visionLevelMinIndex: conditionLevelMinIndex,
-            visionLevelMaxIndex: conditionLevelMaxIndex
+            visionLevelMaxIndex: conditionLevelMaxIndex,
           };
           this.senses.set(statusSight.id, statusEffect);
         }
@@ -314,7 +312,7 @@ export class VisionCapabilities {
             // statusSight: statusSight,
             visionType: conditionType,
             visionLevelMinIndex: conditionLevelMinIndex,
-            visionLevelMaxIndex: conditionLevelMaxIndex
+            visionLevelMaxIndex: conditionLevelMaxIndex,
           };
           this.conditions.set(statusSight.id, statusEffect);
         }

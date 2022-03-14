@@ -1,5 +1,15 @@
 import CONSTANTS from './constants';
-import { dialogWarning, error, getConditionsFromToken, getSensesFromToken, i18n, info, isStringEquals, mergeByProperty, warn } from './lib/lib';
+import {
+  dialogWarning,
+  error,
+  getConditionsFromToken,
+  getSensesFromToken,
+  i18n,
+  info,
+  isStringEquals,
+  mergeByProperty,
+  warn,
+} from './lib/lib';
 import EffectInterface from './effects/effect-interface';
 import { AtcvEffectFlagData, SenseData } from './conditional-visibility-models';
 import HOOKS from './hooks';
@@ -701,15 +711,15 @@ const API = {
     }
   },
 
-  async getAllDefaultSensesAndConditions(token:Token): Promise<SenseData[]> {
+  async getAllDefaultSensesAndConditions(token: Token): Promise<SenseData[]> {
     let allSensesAndConditions: SenseData[] = [];
     const senses = API.SENSES;
     const conditions = API.CONDITIONS;
     allSensesAndConditions = mergeByProperty(allSensesAndConditions, senses, 'id');
     allSensesAndConditions = mergeByProperty(allSensesAndConditions, conditions, 'id');
 
-    for(const atcvEffect of getSensesFromToken(token)){
-      const sData:SenseData = {
+    for (const atcvEffect of getSensesFromToken(token)) {
+      const sData: SenseData = {
         id: atcvEffect.visionId,
         name: atcvEffect.visionName,
         path: '', // TODO to integrate
@@ -721,12 +731,12 @@ const API = {
         conditionSources: atcvEffect.visionSources,
         conditionTargetImage: atcvEffect.visionTargetImage,
         conditionDistance: <number>atcvEffect.visionDistanceValue,
-        conditionType: atcvEffect.visionType
+        conditionType: atcvEffect.visionType,
       };
       mergeByProperty(allSensesAndConditions, [sData], 'id');
     }
-    for(const atcvEffect of getConditionsFromToken(token)){
-      const sData:SenseData = {
+    for (const atcvEffect of getConditionsFromToken(token)) {
+      const sData: SenseData = {
         id: atcvEffect.visionId,
         name: atcvEffect.visionName,
         path: '', // TODO to integrate
@@ -738,7 +748,7 @@ const API = {
         conditionSources: atcvEffect.visionSources,
         conditionTargetImage: atcvEffect.visionTargetImage,
         conditionDistance: <number>atcvEffect.visionDistanceValue,
-        conditionType: atcvEffect.visionType
+        conditionType: atcvEffect.visionType,
       };
       mergeByProperty(allSensesAndConditions, [sData], 'id');
     }

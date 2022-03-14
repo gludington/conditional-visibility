@@ -32,9 +32,7 @@ import {
   SenseData,
   VisionCapabilities,
 } from './conditional-visibility-models';
-import {
-  EffectChangeData,
-} from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/data.mjs/effectChangeData';
+import { EffectChangeData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/data.mjs/effectChangeData';
 import { EffectSupport } from './effects/effect';
 import { ActiveEffectData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/module.mjs';
 import StatusEffects from './effects/status-effects';
@@ -181,10 +179,10 @@ const module = {
       for (const key in p) {
         const senseOrConditionIdKey = key;
         const senseOrConditionValue = <AtcvEffectFlagData>p[key];
-        if(senseOrConditionIdKey.includes('-=')){
+        if (senseOrConditionIdKey.includes('-=')) {
           return;
         }
-        const senseOrConditionId = senseOrConditionIdKey;//senseOrConditionIdKey.replace('-=', '');
+        const senseOrConditionId = senseOrConditionIdKey; //senseOrConditionIdKey.replace('-=', '');
         if (senseOrConditionValue?.visionLevelValue && senseOrConditionValue?.visionLevelValue != 0) {
           // const isSense = <SenseData>API.SENSES.find((sense: SenseData) => {
           //   return (
@@ -199,16 +197,21 @@ const module = {
 
           const isSense = <AtcvEffect>getSensesFromToken(token).find((sense: AtcvEffect) => {
             return (
-              isStringEquals(<string>sense.visionId, senseOrConditionId) || isStringEquals(<string>sense.visionName, senseOrConditionId)
+              isStringEquals(<string>sense.visionId, senseOrConditionId) ||
+              isStringEquals(<string>sense.visionName, senseOrConditionId)
             );
           });
           const isCondition = <AtcvEffect>getConditionsFromToken(token).find((sense: AtcvEffect) => {
             return (
-              isStringEquals(<string>sense.visionId, senseOrConditionId) || isStringEquals(<string>sense.visionName, senseOrConditionId)
+              isStringEquals(<string>sense.visionId, senseOrConditionId) ||
+              isStringEquals(<string>sense.visionName, senseOrConditionId)
             );
           });
-          if(!isSense && !isCondition){
-            warn(`The effect found for id '${senseOrConditionId}' on the token '${document.name}' is not a 'sense' or a 'condition', this is impossible check out the active effect changes on the token`, true);
+          if (!isSense && !isCondition) {
+            warn(
+              `The effect found for id '${senseOrConditionId}' on the token '${document.name}' is not a 'sense' or a 'condition', this is impossible check out the active effect changes on the token`,
+              true,
+            );
             return;
           }
           if (isSense) {

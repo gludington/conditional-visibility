@@ -393,7 +393,7 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
   }
 
   for (const sourceStatusEffect of sourceVisionLevels) {
-    if (isStringEquals(sourceStatusEffect.visionId,AtcvEffectSenseFlags.BLINDED)) {
+    if (isStringEquals(sourceStatusEffect.visionId, AtcvEffectSenseFlags.BLINDED)) {
       // Someone is blind
       return false;
     }
@@ -448,8 +448,8 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
         }
       }
       if (
-        isStringEquals(targetVisionLevel.visionId,AtcvEffectSenseFlags.NORMAL) ||
-        isStringEquals(targetVisionLevel.visionId,AtcvEffectSenseFlags.NONE)
+        isStringEquals(targetVisionLevel.visionId, AtcvEffectSenseFlags.NORMAL) ||
+        isStringEquals(targetVisionLevel.visionId, AtcvEffectSenseFlags.NONE)
       ) {
         sourceVisionLevelsValid.push(sourceVisionLevel);
         return true;
@@ -460,10 +460,8 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
       //   <number>sourceVisionLevel?.statusSight?.visionLevelMaxIndex >=
       //     <number>targetVisionLevel.statusSight?.visionLevelMaxIndex;
       const result =
-        <number>sourceVisionLevel?.visionLevelMinIndex <=
-          <number>targetVisionLevel?.visionLevelMinIndex &&
-        <number>sourceVisionLevel?.visionLevelMaxIndex >=
-          <number>targetVisionLevel?.visionLevelMaxIndex;
+        <number>sourceVisionLevel?.visionLevelMinIndex <= <number>targetVisionLevel?.visionLevelMinIndex &&
+        <number>sourceVisionLevel?.visionLevelMaxIndex >= <number>targetVisionLevel?.visionLevelMaxIndex;
       if (result) {
         sourceVisionLevelsValid.push(sourceVisionLevel);
       }
@@ -492,8 +490,8 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
         return true;
       }
       if (
-        isStringEquals(targetVisionLevel.visionId,AtcvEffectSenseFlags.NORMAL) ||
-        isStringEquals(targetVisionLevel.visionId,AtcvEffectSenseFlags.NONE)
+        isStringEquals(targetVisionLevel.visionId, AtcvEffectSenseFlags.NORMAL) ||
+        isStringEquals(targetVisionLevel.visionId, AtcvEffectSenseFlags.NONE)
       ) {
         return true;
       }
@@ -779,7 +777,7 @@ export function getConditionsFromToken(token: Token): AtcvEffect[] {
   return _getCVFromToken(token, false);
 }
 
-function _getCVFromToken(token: Token, isSense:boolean): AtcvEffect[] {
+function _getCVFromToken(token: Token, isSense: boolean): AtcvEffect[] {
   if (!token) {
     info(`No token found`);
     return [];
@@ -807,50 +805,50 @@ function _getCVFromToken(token: Token, isSense:boolean): AtcvEffect[] {
     // });
     // if is a AE with the label of the module (no id sorry)
 
-      const atcvCustomId = retrieveAtcvVisionLevelKeyFromActiveEffect(effectEntity.data.changes) || '';
-      const atcvVisionElevation = retrieveAtcvElevationFromActiveEffect(effectEntity.data.changes) || true;
-      const atcvConditionTargets = retrieveAtcvTargetsFromActiveEffect(effectEntity.data.changes) || [];
-      const atcvConditionSources = retrieveAtcvSourcesFromActiveEffect(effectEntity.data.changes) || [];
-      const atcvDistance = retrieveAtcvVisionLevelDistanceFromActiveEffect(effectEntity.data.changes) || 0;
-      const atcvValue = retrieveAtcvVisionLevelValueFromActiveEffect(effectEntity.data.changes) || 0;
-      const atcvTargetImage = retrieveAtcvVisionTargetImageFromActiveEffect(effectEntity.data.changes) || '';
-      const atcvType = retrieveAtcvTypeFromActiveEffect(effectEntity.data.changes) || '';
-      const atcvLevelMinIndex = retrieveAtcvLevelMinIndexFromActiveEffect(effectEntity.data.changes) || 0;
-      const atcvLevelMaxIndex = retrieveAtcvLevelMaxIndexFromActiveEffect(effectEntity.data.changes) || 10;
+    const atcvCustomId = retrieveAtcvVisionLevelKeyFromActiveEffect(effectEntity.data.changes) || '';
+    const atcvVisionElevation = retrieveAtcvElevationFromActiveEffect(effectEntity.data.changes) || true;
+    const atcvConditionTargets = retrieveAtcvTargetsFromActiveEffect(effectEntity.data.changes) || [];
+    const atcvConditionSources = retrieveAtcvSourcesFromActiveEffect(effectEntity.data.changes) || [];
+    const atcvDistance = retrieveAtcvVisionLevelDistanceFromActiveEffect(effectEntity.data.changes) || 0;
+    const atcvValue = retrieveAtcvVisionLevelValueFromActiveEffect(effectEntity.data.changes) || 0;
+    const atcvTargetImage = retrieveAtcvVisionTargetImageFromActiveEffect(effectEntity.data.changes) || '';
+    const atcvType = retrieveAtcvTypeFromActiveEffect(effectEntity.data.changes) || '';
+    const atcvLevelMinIndex = retrieveAtcvLevelMinIndexFromActiveEffect(effectEntity.data.changes) || 0;
+    const atcvLevelMaxIndex = retrieveAtcvLevelMaxIndexFromActiveEffect(effectEntity.data.changes) || 10;
 
-      if(isSense && atcvType != 'sense'){
-        continue;
-      }
-      if(!isSense && atcvType != 'condition'){
-        continue;
-      }
+    if (isSense && atcvType != 'sense') {
+      continue;
+    }
+    if (!isSense && atcvType != 'condition') {
+      continue;
+    }
 
-      // if (effectSight && isSense) {
-      //   // look up if you have not basic AE and if the check elevation is not enabled
-      //   if (
-      //     !effectSight.conditionElevation &&
-      //     effectSight.id != AtcvEffectSenseFlags.NONE &&
-      //     effectSight.id != AtcvEffectSenseFlags.NORMAL &&
-      //     effectSight.id != AtcvEffectSenseFlags.BLINDED
-      //   ) {
-      //     atcvVisionElevation = false;
-      //   }
-      // }
+    // if (effectSight && isSense) {
+    //   // look up if you have not basic AE and if the check elevation is not enabled
+    //   if (
+    //     !effectSight.conditionElevation &&
+    //     effectSight.id != AtcvEffectSenseFlags.NONE &&
+    //     effectSight.id != AtcvEffectSenseFlags.NORMAL &&
+    //     effectSight.id != AtcvEffectSenseFlags.BLINDED
+    //   ) {
+    //     atcvVisionElevation = false;
+    //   }
+    // }
 
-      statusEffects.push({
-        visionId: atcvCustomId,
-        visionName: effectNameToSet,
-        visionElevation: atcvVisionElevation,
-        visionTargets: atcvConditionTargets,
-        visionSources: atcvConditionSources,
-        // statusSight: effectSight,
-        visionDistanceValue: atcvDistance,
-        visionLevelValue: atcvValue,
-        visionTargetImage: atcvTargetImage,
-        visionType: atcvType,
-        visionLevelMinIndex: atcvLevelMinIndex,
-        visionLevelMaxIndex: atcvLevelMaxIndex
-      });
+    statusEffects.push({
+      visionId: atcvCustomId,
+      visionName: effectNameToSet,
+      visionElevation: atcvVisionElevation,
+      visionTargets: atcvConditionTargets,
+      visionSources: atcvConditionSources,
+      // statusSight: effectSight,
+      visionDistanceValue: atcvDistance,
+      visionLevelValue: atcvValue,
+      visionTargetImage: atcvTargetImage,
+      visionType: atcvType,
+      visionLevelMinIndex: atcvLevelMinIndex,
+      visionLevelMaxIndex: atcvLevelMaxIndex,
+    });
   }
   return statusEffects;
 }
@@ -867,7 +865,6 @@ export function retrieveAtcvVisionLevelKeyFromActiveEffect(effectChanges: Effect
   atcvKey = atcvKeyChange.key.slice(5);
   return atcvKey;
 }
-
 
 export function retrieveAtcvElevationFromActiveEffect(effectChanges: EffectChangeData[]): boolean {
   let checkElevationAcvt = false;
@@ -1079,7 +1076,7 @@ export async function toggleStealth(event) {
           const conditionId = String(html.find('#conditional-visibility.conditions')?.value);
           //@ts-ignore
           const disablePassiveRecovery = Boolean(html.find('#conditional-visibility.disablepassiverecovery')?.value);
-          if(valStealthRoll < stealthedPassive && !disablePassiveRecovery){
+          if (valStealthRoll < stealthedPassive && !disablePassiveRecovery) {
             valStealthRoll = stealthedPassive;
           }
 
@@ -1126,10 +1123,7 @@ export async function toggleStealth(event) {
       },
     },
     close: async (html: JQuery<HTMLElement>) => {
-      event.currentTarget.classList.toggle(
-        'active',
-        stealthedWithHiddenCondition && stealthedWithHiddenCondition != 0,
-      );
+      event.currentTarget.classList.toggle('active', stealthedWithHiddenCondition && stealthedWithHiddenCondition != 0);
     },
     default: 'close',
   });

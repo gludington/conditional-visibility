@@ -7,7 +7,6 @@ import Effect from './effects/effect';
 import {
   error,
   retrieveAtcvVisionLevelDistanceFromActiveEffect,
-  i18n,
   retrieveAtcvTargetsFromActiveEffect,
   retrieveAtcvElevationFromActiveEffect,
   retrieveAtcvSourcesFromActiveEffect,
@@ -16,16 +15,20 @@ import {
   retrieveAtcvTypeFromActiveEffect,
   getSensesFromToken,
   getConditionsFromToken,
-  isStringEquals,
   retrieveAtcvLevelMaxIndexFromActiveEffect,
   retrieveAtcvLevelMinIndexFromActiveEffect,
+  retrieveAtcvVisionLevelKeyFromActiveEffect,
+  i18n,
 } from './lib/lib';
 
 export interface AtcvEffect {
+  // Effect Base
   visionId: string;
   visionName: string;
-  visionElevation: boolean;
+
+  // Effect changes
   // statusSight: SenseData | undefined;
+  visionElevation: boolean;
   visionLevelValue: number | undefined;
   visionDistanceValue: number | undefined;
   visionTargets: string[];
@@ -37,6 +40,9 @@ export interface AtcvEffect {
 }
 
 export class AtcvEffectFlagData {
+  visionId: string;
+  visionName: string;
+
   visionLevelValue: number | undefined;
   visionDistanceValue: number | undefined;
   visionElevation: boolean;
@@ -51,6 +57,9 @@ export class AtcvEffectFlagData {
 
   static fromAtcvEffect(atcvEffect: AtcvEffect) {
     const res = new AtcvEffectFlagData();
+    res.visionId = atcvEffect.visionId;
+    res.visionName = atcvEffect.visionName;
+
     res.visionLevelValue = atcvEffect.visionLevelValue;
     res.visionDistanceValue = atcvEffect.visionDistanceValue;
     res.visionElevation = atcvEffect.visionElevation;
@@ -64,8 +73,24 @@ export class AtcvEffectFlagData {
   }
 
   static fromEffect(effect: Effect) {
-    const effectChanges = effect._handleIntegrations();
+    const effectChanges: EffectChangeData[] = [];//effect.changes || [];
+    // ======
+    if (effect.atlChanges.length > 0) {
+      effectChanges.push(...effect.atlChanges);
+    }
+
+    if (effect.tokenMagicChanges.length > 0) {
+      effectChanges.push(...effect.tokenMagicChanges);
+    }
+
+    if (effect.atcvChanges.length > 0) {
+      effectChanges.push(...effect.atcvChanges);
+    }
+    // ======
     const res = new AtcvEffectFlagData();
+    res.visionId = retrieveAtcvVisionLevelKeyFromActiveEffect(effectChanges);
+    res.visionName = i18n(effect.name);
+
     res.visionLevelValue = retrieveAtcvVisionLevelValueFromActiveEffect(effectChanges);
     res.visionDistanceValue = retrieveAtcvVisionLevelDistanceFromActiveEffect(effectChanges);
     res.visionElevation = retrieveAtcvElevationFromActiveEffect(effectChanges);
@@ -81,6 +106,9 @@ export class AtcvEffectFlagData {
   static fromActiveEffect(activeEffect: ActiveEffect) {
     const effectChanges = activeEffect.data.changes;
     const res = new AtcvEffectFlagData();
+    res.visionId = retrieveAtcvVisionLevelKeyFromActiveEffect(effectChanges);
+    res.visionName = activeEffect.data.label;
+
     res.visionLevelValue = retrieveAtcvVisionLevelValueFromActiveEffect(effectChanges);
     res.visionDistanceValue = retrieveAtcvVisionLevelDistanceFromActiveEffect(effectChanges);
     res.visionElevation = retrieveAtcvElevationFromActiveEffect(effectChanges);
@@ -162,8 +190,8 @@ export class VisionCapabilities {
         }
       });
       getConditionsFromToken(srcToken).forEach((condition: AtcvEffect) => {
-        if (condition.visionType === 'condition' && !this.senses.has(condition.visionId)) {
-          this.senses.set(condition.visionId, condition);
+        if (condition.visionType === 'condition' && !this.conditions.has(condition.visionId)) {
+          this.conditions.set(condition.visionId, condition);
         }
       });
     } else {

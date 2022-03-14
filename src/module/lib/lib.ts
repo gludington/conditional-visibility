@@ -18,9 +18,7 @@ import {
   TokenData,
 } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/module.mjs';
 import Effect from '../effects/effect.js';
-import StatusEffects from '../effects/status-effects.js';
 import { ConditionalVisibilityEffectDefinitions } from '../conditional-visibility-effect-definition';
-import { data } from 'jquery';
 
 // =============================
 // Module Generic function
@@ -571,13 +569,7 @@ export async function prepareActiveEffectForConditionalVisibility(
           );
         }
       } else {
-        await API.addEffectConditionalVisibilityOnToken(
-          <string>sourceToken.id,
-          <string>sense.visionId,
-          false,
-          sense.visionDistanceValue,
-          sense.visionLevelValue,
-        );
+        await API.addEffectConditionalVisibilityOnToken(<string>sourceToken.id, sense, false);
       }
       // }
     } else {
@@ -643,10 +635,8 @@ export async function prepareActiveEffectForConditionalVisibility(
       } else {
         await API.addEffectConditionalVisibilityOnToken(
           <string>sourceToken.id,
-          condition.visionId, //<string>condition.statusSight?.id,
+          condition, //<string>condition.statusSight?.id,
           false,
-          condition.visionDistanceValue,
-          condition.visionLevelValue,
         );
       }
       //}
@@ -812,16 +802,32 @@ function _getCVFromToken(token: Token, isSense: boolean): AtcvEffect[] {
     const atcvDistance = retrieveAtcvVisionLevelDistanceFromActiveEffect(effectEntity.data.changes) || 0;
     const atcvValue = retrieveAtcvVisionLevelValueFromActiveEffect(effectEntity.data.changes) || 0;
     const atcvTargetImage = retrieveAtcvVisionTargetImageFromActiveEffect(effectEntity.data.changes) || '';
-    const atcvType = retrieveAtcvTypeFromActiveEffect(effectEntity.data.changes) || '';
+    let atcvType = retrieveAtcvTypeFromActiveEffect(effectEntity.data.changes) || '';
     const atcvLevelMinIndex = retrieveAtcvLevelMinIndexFromActiveEffect(effectEntity.data.changes) || 0;
     const atcvLevelMaxIndex = retrieveAtcvLevelMaxIndexFromActiveEffect(effectEntity.data.changes) || 10;
 
-    if (isSense && atcvType != 'sense') {
-      continue;
+    const effectSightSense = API.SENSES.find((a: SenseData) => {
+      return isStringEquals(effectNameToSet, a.id) || isStringEquals(effectNameToSet, a.name);
+    });
+    const effectSightCondition = API.CONDITIONS.find((a: SenseData) => {
+      return isStringEquals(effectNameToSet, a.id) || isStringEquals(effectNameToSet, a.name);
+    });
+    if (effectSightSense && !atcvType) {
+      atcvType = 'sense';
     }
-    if (!isSense && atcvType != 'condition') {
-      continue;
+    if (effectSightCondition && !atcvType) {
+      atcvType = 'condition';
     }
+    if (isSense && !atcvType) {
+      atcvType = 'sense';
+    }
+    if (!isSense && !atcvType) {
+      atcvType = 'condition';
+    }
+    // TODO CHECK OUT
+    // if (!isSense && !atcvType) {
+    //   atcvType = 'condition';
+    // }
 
     // if (effectSight && isSense) {
     //   // look up if you have not basic AE and if the check elevation is not enabled
@@ -849,6 +855,34 @@ function _getCVFromToken(token: Token, isSense: boolean): AtcvEffect[] {
       visionLevelMinIndex: atcvLevelMinIndex,
       visionLevelMaxIndex: atcvLevelMaxIndex,
     });
+  }
+  let sensesOrConditions: SenseData[] = [];
+  if (isSense) {
+    sensesOrConditions = API.SENSES;
+  } else {
+    sensesOrConditions = API.CONDITIONS;
+  }
+  for (const senseData of sensesOrConditions) {
+    const alreadyPresent = statusEffects.find((e) => {
+      return isStringEquals(e.visionId, senseData.id);
+    });
+    if (!alreadyPresent) {
+      const atcvEffect: AtcvEffect = {
+        visionId: senseData.id,
+        visionName: senseData.name,
+        visionElevation: senseData.conditionElevation,
+        visionTargets: senseData.conditionTargets,
+        visionSources: senseData.conditionSources,
+        // statusSight: effectSight,
+        visionDistanceValue: senseData.conditionDistance,
+        visionLevelValue: 0,
+        visionTargetImage: senseData.conditionTargetImage,
+        visionType: senseData.conditionType,
+        visionLevelMinIndex: senseData.visionLevelMinIndex,
+        visionLevelMaxIndex: senseData.visionLevelMaxIndex,
+      };
+      statusEffects.push(atcvEffect);
+    }
   }
   return statusEffects;
 }

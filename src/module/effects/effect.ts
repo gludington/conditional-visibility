@@ -285,20 +285,20 @@ export class EffectSupport {
     });
   }
 
-  static _handleIntegrations(changes: any[]): EffectChangeData[] {
-    let arrChanges: EffectChangeData[] = [];
-    // if (this.atlChanges.length > 0) {
-    //   arrChanges.push(...this.atlChanges);
-    // }
+  static _handleIntegrations(effect:Effect): EffectChangeData[] {
+    const arrChanges: EffectChangeData[] = [];
+    if (effect.atlChanges.length > 0) {
+      arrChanges.push(...effect.atlChanges);
+    }
 
-    // if (this.tokenMagicChanges.length > 0) {
-    //   arrChanges.push(...this.tokenMagicChanges);
-    // }
+    if (effect.tokenMagicChanges.length > 0) {
+      arrChanges.push(...effect.tokenMagicChanges);
+    }
 
-    // if (this.atcvChanges.length > 0) {
-    //   arrChanges.push(...this.atcvChanges);
-    // }
-    arrChanges = EffectSupport.retrieveChangesOrderedByPriority(changes);
+    if (effect.atcvChanges.length > 0) {
+      arrChanges.push(...effect.atcvChanges);
+    }
+    // arrChanges = EffectSupport.retrieveChangesOrderedByPriority(arrChanges);
     return arrChanges;
   }
 
@@ -414,23 +414,65 @@ export class EffectSupport {
       origin: origin ? origin : p.origin ? p.origin : '', // MOD 4535992
       transfer: p.transfer ?? false,
       //changes: p.changes, // MOD 4535992
-      changes: EffectSupport._handleIntegrations(p.changes),
+      changes: p.changes,
     });
   }
 
-  static retrieveChangesOrderedByPriority(changesTmp: EffectChangeData[]) {
-    // Organize non-disabled effects by their application priority
-    const changes = <EffectChangeData[]>changesTmp.reduce((changes) => {
-      return changes.map((c: EffectChangeData) => {
-        const c2 = <EffectChangeData>duplicate(c);
-        // c2.effect = e;
-        c2.priority = <number>c2.priority ?? c2.mode * 10;
-        return c2;
-      });
-    }, []);
-    changes.sort((a, b) => <number>a.priority - <number>b.priority);
-    return changes;
+/**
+   * Converts the effect data to an active effect data object
+   *
+   * @param {object} params - the params to use for conversion
+   * @param {string} params.origin - the origin to add to the effect
+   * @param {boolean} params.overlay - whether the effect is an overlay or not
+   * @returns {object} The active effect data object for this effect
+   */
+  public static convertToActiveEffectData(effect:Effect): Record<string, unknown> {
+    const isPassive = !effect.isTemporary;
+    return {
+      id: effect._id,
+      name: i18n(effect.name),
+      label: i18n(effect.name),
+      description: i18n(effect.description), // 4535992 this not make sense, but it doesn't hurt either
+      icon: effect.icon,
+      tint: effect.tint,
+      duration: effect._getDurationData(),
+      flags: foundry.utils.mergeObject(effect.flags, {
+        core: {
+          statusId: isPassive ? undefined : effect._id,
+          overlay: effect.overlay ? effect.overlay : false,
+        },
+        isConvenient: true,
+        convenientDescription: i18n(effect.description),
+        dae: this._isEmptyObject(effect.dae)
+          ? isPassive
+            ? { stackable: false, specialDuration: [], transfer: true }
+            : {}
+          : effect.dae,
+      }),
+      origin: origin ? origin : effect.origin ? effect.origin : '', // MOD 4535992
+      transfer: isPassive ? false : effect.transfer,
+      //changes: this.changes, // MOD 4535992
+      changes: EffectSupport._handleIntegrations(effect),
+      // 4535992 these are not under data
+      // isDisabled: this.isDisabled ?? false,
+      // isTemporary: this.isTemporary ?? false,
+      // isSuppressed: this.isSuppressed ?? false,
+    };
   }
+
+  // static retrieveChangesOrderedByPriority(changesTmp: EffectChangeData[]) {
+  //   // Organize non-disabled effects by their application priority
+  //   const changes = <EffectChangeData[]>changesTmp.reduce((changes) => {
+  //     return changes.map((c: EffectChangeData) => {
+  //       const c2 = <EffectChangeData>duplicate(c);
+  //       // c2.effect = e;
+  //       c2.priority = <number>c2.priority ?? c2.mode * 10;
+  //       return c2;
+  //     });
+  //   }, []);
+  //   changes.sort((a, b) => <number>a.priority - <number>b.priority);
+  //   return changes;
+  // }
 
   static retrieveChangesOrderedByPriorityFromAE(effectEntity: ActiveEffect) {
     // Organize non-disabled effects by their application priority

@@ -1,7 +1,7 @@
 import API from './api';
 import { AtcvEffectSenseFlags, AtcvEffectConditionFlags, SenseData } from './conditional-visibility-models';
 import CONSTANTS from './constants';
-import Effect, { Constants } from './effects/effect';
+import Effect from './effects/effect';
 import { debug, i18n, i18nFormat, isStringEquals, mergeByProperty, warn } from './lib/lib';
 import { canvas, game } from './settings';
 

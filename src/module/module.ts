@@ -11,11 +11,6 @@ import {
   i18n,
   isStringEquals,
   prepareActiveEffectForConditionalVisibility,
-  retrieveAtcvElevationFromActiveEffect,
-  retrieveAtcvSourcesFromActiveEffect,
-  retrieveAtcvTargetImageFromActiveEffect,
-  retrieveAtcvTargetsFromActiveEffect,
-  retrieveAtcvVisionLevelDistanceFromActiveEffect,
   toggleStealth,
   warn,
 } from './lib/lib';
@@ -33,9 +28,6 @@ import {
   VisionCapabilities,
 } from './conditional-visibility-models';
 import { EffectChangeData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/data.mjs/effectChangeData';
-import { EffectSupport } from './effects/effect';
-import { ActiveEffectData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/module.mjs';
-import StatusEffects from './effects/status-effects';
 
 export const initHooks = async (): Promise<void> => {
   // registerSettings();
@@ -217,6 +209,9 @@ const module = {
           if (isSense) {
             const cur = <AtcvEffect>sourceVisionCapabilities.senses.get(senseOrConditionId);
             if (cur) {
+              if (!cur.visionType) {
+                cur.visionType = 'sense';
+              }
               cur.visionLevelValue = <number>senseOrConditionValue.visionLevelValue;
               sourceVisionCapabilities.senses.set(senseOrConditionId, cur);
             } else {
@@ -229,11 +224,18 @@ const module = {
               // cur.visionTargets = isSense.conditionTargets;
               // cur.visionTargetImage = isSense.conditionTargetImage;
               // cur.visionType = isSense.conditionType || 'sense';
-              sourceVisionCapabilities.senses.set(senseOrConditionId, cur);
+              //cur.conditionType = isSense.visionType || 'sense';
+              if (!isSense.visionType) {
+                isSense.visionType = 'sense';
+              }
+              sourceVisionCapabilities.senses.set(senseOrConditionId, isSense);
             }
           } else {
             const cur = <AtcvEffect>sourceVisionCapabilities.conditions.get(senseOrConditionId);
             if (cur) {
+              if (!cur.visionType) {
+                cur.visionType = 'condition';
+              }
               cur.visionLevelValue = <number>senseOrConditionValue.visionLevelValue;
               sourceVisionCapabilities.conditions.set(senseOrConditionId, cur);
             } else {
@@ -246,7 +248,10 @@ const module = {
               // cur.visionTargets = isCondition.conditionTargets;
               // cur.visionTargetImage = isCondition.conditionTargetImage;
               // cur.visionType = isCondition.conditionType || 'condition';
-              sourceVisionCapabilities.conditions.set(senseOrConditionId, cur);
+              if (!isCondition.visionType) {
+                isCondition.visionType = 'condition';
+              }
+              sourceVisionCapabilities.conditions.set(senseOrConditionId, isCondition);
             }
           }
         }
@@ -334,16 +339,16 @@ const module = {
                 const currentAtcvEffectFlagData = <AtcvEffectFlagData>(
                   tokenToSet?.document.getFlag(CONSTANTS.MODULE_NAME, updateKey)
                 );
-                const currentValue = String(<number>currentAtcvEffectFlagData.visionLevelValue) ?? '0';
+                const currentValue = String(<number>currentAtcvEffectFlagData?.visionLevelValue) ?? '0';
                 if (change.value != currentValue) {
-                  if (isRemoved) {
+                  if (isRemoved || currentValue == '0') {
                     await tokenToSet?.document.unsetFlag(CONSTANTS.MODULE_NAME, updateKey);
                   } else {
                     const atcvEffectFlagData = AtcvEffectFlagData.fromActiveEffect(atcvEffect);
                     await tokenToSet?.document.setFlag(CONSTANTS.MODULE_NAME, updateKey, atcvEffectFlagData);
                   }
                   if (statusSight?.path) {
-                    if (isRemoved) {
+                    if (isRemoved || currentValue == '0') {
                       setProperty(tokenToSet.document, <string>statusSight?.path, 0);
                     } else {
                       setProperty(tokenToSet.document, <string>statusSight?.path, change.value);
@@ -388,7 +393,10 @@ const module = {
         for (const effect of effects) {
           // I also added this for specifically checking for custom effects.
           // It will return undefined if it doesn't exist:
-          const effectToFoundByName = i18n(effect.name);
+          let effectToFoundByName = i18n(effect.name);
+          if (!effectToFoundByName.endsWith('(CV)')) {
+            effectToFoundByName = effectToFoundByName + ' (CV)';
+          }
           //@ts-ignore
           const effectFounded = <Effect>game.dfreds.effectInterface.findCustomEffectByName(effectToFoundByName);
           if (!effectFounded) {
@@ -408,6 +416,9 @@ const module = {
                 effect.transfer = false;
               }
               effect.transfer = !disabled;
+              if (!i18n(effect.name).endsWith('(CV)')) {
+                effect.name = i18n(effect.name) + ' (CV)';
+              }
             }
             const data = effect.convertToActiveEffectData({ origin, overlay });
             activeEffectsData.push(data);

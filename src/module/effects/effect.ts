@@ -285,7 +285,7 @@ export class EffectSupport {
     });
   }
 
-  static _handleIntegrations(effect:Effect): EffectChangeData[] {
+  static _handleIntegrations(effect: Effect): EffectChangeData[] {
     const arrChanges: EffectChangeData[] = [];
     if (effect.atlChanges.length > 0) {
       arrChanges.push(...effect.atlChanges);
@@ -418,7 +418,7 @@ export class EffectSupport {
     });
   }
 
-/**
+  /**
    * Converts the effect data to an active effect data object
    *
    * @param {object} params - the params to use for conversion
@@ -426,7 +426,7 @@ export class EffectSupport {
    * @param {boolean} params.overlay - whether the effect is an overlay or not
    * @returns {object} The active effect data object for this effect
    */
-  public static convertToActiveEffectData(effect:Effect): Record<string, unknown> {
+  public static convertToActiveEffectData(effect: Effect): Record<string, unknown> {
     const isPassive = !effect.isTemporary;
     return {
       id: effect._id,
@@ -449,7 +449,7 @@ export class EffectSupport {
             : {}
           : effect.dae,
       }),
-      origin: origin ? origin : effect.origin ? effect.origin : '', // MOD 4535992
+      origin: effect.origin ? effect.origin : '', // MOD 4535992
       transfer: isPassive ? false : effect.transfer,
       //changes: this.changes, // MOD 4535992
       changes: EffectSupport._handleIntegrations(effect),

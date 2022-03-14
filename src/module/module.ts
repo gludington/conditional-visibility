@@ -202,7 +202,6 @@ const module = {
           if (!isSense && !isCondition) {
             warn(
               `The effect found for id '${senseOrConditionId}' on the token '${document.name}' is not a 'sense' or a 'condition', this is impossible check out the active effect changes on the token`,
-              true,
             );
             return;
           }
@@ -413,7 +412,11 @@ const module = {
               if (isSense) {
                 effect.isTemporary = false; // passive ae
                 // effect.dae = { stackable: false, specialDuration: [], transfer: true }
-                effect.transfer = false;
+              } else {
+                effect.isTemporary = true;
+                if (!effect.flags.core.statusId) {
+                  effect.flags.core.statusId = effect._id;
+                }
               }
               effect.transfer = !disabled;
               if (!i18n(effect.name).endsWith('(CV)')) {

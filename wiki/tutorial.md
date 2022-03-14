@@ -42,7 +42,9 @@ The calculation for the vision checks is in three points (these check are enable
    3) A npc Hostile can see other Hostile npc (check out the AE from known the state of this)
 4) Check if the source token has at least a active effect marked with key `ATCV.<sense or condition id>` 
 5) Check if the source token has the active effect `blinded` active, if is true, you cannot see anything.
-6) Check if the source token has at least a index value between the index of some active effect of the conditions, this will check the elevation too if the active effect key `ATCV.conditionElevation` is set to true, check out the [TABLES](./tables.md) for details, you can skip this check by using the AE key `ATCV.conditionTargets` explained below.
+6) Check if the source token has at least a index value between the index of some active effect of the conditions, this will check the elevation too if the active effect key:
+   1)  `ATCV.conditionElevation` if set to true, will check if the token are at the same level .
+   2)  `ATCV.conditionDistance` is set to a numeric value, will check if the tokens are near enough to remain hidden
 7) Check if the vision level value of the sense is a number > = of the vision level value of the condition, if the sense is set to `-1` this check is automatically skipped. If the condition and the sesne are both set with value `-1` the condition won.
 
 ## What active effect data changes are used from this module ?
@@ -62,6 +64,8 @@ There three type of these AE used and supported from this module:
 | `ATCV.conditionSources`         | list of string | This is used for explicitly tell to the checker what AE can be see from this AE based on the custom id used from this module, check out the [TABLES](./tables.md) for details, **this is basically a override of the point 6. checker based on the indexes given to the condition  |  `ATCV.conditionSources=darkvision,tremorsense` |
 | `ATCV.conditionDistance`  | number | set a maximum distance for check the sight with this effect | `ATCV.conditionDistance = 12` |
 | `ATCV.conditionType`  | string | indicate the type of CV usually they are or 'sense' or 'condition' not both, **THIS IS ESSENTIAL FOR USE SENSE AND CONDITION NOT REGISTERED ON THE MODULE IF NOT FOUNDED BY DEFAULT IS CONSIDERED A SENSE**, so now you can just modify the AE and you are not forced to call the registered macro of the module CV, this is very useful for integration with other modules. | ``ATCV.conditionType = sense, ATCV.conditionType = condition` |
+| `ATCV.conditionLevelMinIndex`  | number | set the lower level index for setup the range between sense and condtion, **you need this only for very strange use case.. but you can do everything now** | `ATCV.conditionLevelMinIndex = 1` |
+| `ATCV.conditionLevelMaxIndex`  | number | set the upper level index for setup the range between sense and condtion, **you need this only for very strange use case.. but you can do everything now** | `ATCV.conditionLevelMaxIndex = 10` |
 
 
 

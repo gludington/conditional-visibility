@@ -57,7 +57,7 @@ This module uses the [ATE](https://github.com/kandashi/Active-Token-Lighting) li
 
 ## Usage
 
-A usage documentation is reachable [here](./wiki/tutorial.md)
+A usage documentation on how the active effect are managed is reachable [here](./wiki/tutorial.md), before anything giveit a look there and let me know howmuch bad is the documentation.
 
 These modules are suggested for a better user experience with this one :
 

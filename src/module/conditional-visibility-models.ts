@@ -73,7 +73,7 @@ export class AtcvEffectFlagData {
   }
 
   static fromEffect(effect: Effect) {
-    const effectChanges: EffectChangeData[] = [];//effect.changes || [];
+    const effectChanges: EffectChangeData[] = []; //effect.changes || [];
     // ======
     if (effect.atlChanges.length > 0) {
       effectChanges.push(...effect.atlChanges);

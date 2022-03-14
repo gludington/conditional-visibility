@@ -604,7 +604,6 @@ const API = {
   },
 
   async addEffectConditionalVisibilityOnToken(tokenNameOrId: string, senseDataEffect: AtcvEffect, disabled: boolean) {
-    
     const tokens = <Token[]>canvas.tokens?.placeables;
     const token = <Token>tokens.find((token) => {
       return isStringEquals(token.name, i18n(tokenNameOrId)) || isStringEquals(token.id, tokenNameOrId);
@@ -657,7 +656,6 @@ const API = {
     //   }
     // }
 
-
     // Check for dfred convenient effect and retrieve the effect with the specific name
     // https://github.com/DFreds/dfreds-convenient-effects/issues/110
     //@ts-ignore
@@ -665,9 +663,12 @@ const API = {
       //@ts-ignore
       effect = <Effect>await game.dfreds.effectInterface.findCustomEffectByName(effectToFoundByName);
     }
-    if(!effect){
+    if (!effect) {
       effect = <Effect>effectsDefinition.find((effect: Effect) => {
-        return isStringEquals(effect.customId, senseDataEffect.visionId) || isStringEquals(effect.name, senseDataEffect.visionName);
+        return (
+          isStringEquals(effect.customId, senseDataEffect.visionId) ||
+          isStringEquals(effect.name, senseDataEffect.visionName)
+        );
       });
     }
 
@@ -704,7 +705,7 @@ const API = {
       warn(`No effect found with reference '${senseDataId}'`, true);
     } else {
       let foundedFlagVisionValue = false;
-      if(!effect.atcvChanges){
+      if (!effect.atcvChanges) {
         effect.atcvChanges = [];
       }
       for (const obj of effect.atcvChanges) {
@@ -722,14 +723,18 @@ const API = {
           priority: 5,
         });
       }
-      
+
       if (isSense) {
         effect.isTemporary = false; // passive ae
         // effect.dae = { stackable: false, specialDuration: [], transfer: true }
-        effect.transfer = false;
+      } else {
+        effect.isTemporary = true;
+        if (!effect.flags.core.statusId) {
+          effect.flags.core.statusId = effect._id;
+        }
       }
       effect.transfer = !disabled;
-      
+
       const nameToUse = effectToFoundByName ? effectToFoundByName : effect?.name;
       await this.effectInterface.addEffectOnToken(nameToUse, <string>token.id, effect);
       //await token?.document?.setFlag(CONSTANTS.MODULE_NAME, (<Effect>effect).customId, visionLevel);

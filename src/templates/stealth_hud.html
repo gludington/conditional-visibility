@@ -11,7 +11,12 @@
 </div>
 <div class="form-group">
   <label>{{localize "conditional-visibility.dialogs.disablepassiverecovery"}}</label>
-  <input id="conditional-visibility.disablepassiverecovery" type="checkbox" value="false" />
+  <input
+    id="conditional-visibility.disablepassiverecovery"
+    type="checkbox"
+    value="false"
+    onclick="$(this).attr('value', this.checked ? true : false)"
+  />
   <p class="notes">{{localize "conditional-visibility.dialogs.disablepassiverecoverydescription"}}</p>
 </div>
 <div class="form-group">

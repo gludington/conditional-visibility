@@ -1,3 +1,7 @@
+### 0.4.27
+
+- Update lang
+
 ### 0.4.26
 
 - Bug fix for check with passice perception when no source sense is present

@@ -731,7 +731,7 @@ const API = {
       }
       //@ts-ignore
       effect = <Effect>await game.dfreds.effectInterface.findCustomEffectByName(effectToFoundByName);
-      if(effect){
+      if (effect) {
         let foundedFlagVisionValue = false;
         if (!effect.atcvChanges) {
           effect.atcvChanges = [];

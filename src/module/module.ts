@@ -169,7 +169,7 @@ const module = {
   },
   async updateToken(document: TokenDocument, change, options, userId) {
     const sourceToken = <Token>document.object;
-    if(!sourceToken){
+    if (!sourceToken) {
       return;
     }
     if (change.flags && change.flags[CONSTANTS.MODULE_NAME]) {

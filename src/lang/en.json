@@ -1,6 +1,10 @@
 {
   "conditional-visibility.setting.autoStealth.name": "Auto hide on stealth rolls",
-  "conditional-visibility.setting.autoStealth.hint": "[Not recommended now you can manage everything and better with AE] On supported game systems, set the 'hidden' condition on a token's stealth roll",
+  "conditional-visibility.setting.autoStealth.hint": "[This is system dependent] On supported game systems, set the 'hidden' condition on a token's stealth roll",
+
+  "conditional-visibility.setting.autoPassivePerception.name": "Auto check with passive percpetion",
+  "conditional-visibility.setting.autoPassivePerception.hint": "[This is system dependent] On supported game systems, if checked the passive percpetion attribure is used as a 'sense' active effect",
+
 
   "conditional-visibility.setting.useEagleEye.name": "Use eagle eye (Experimental)",
   "conditional-visibility.setting.useEagleEye.hint": "A embedded version of the module https://github.com/trioderegion/eagle-eye/",
@@ -13,11 +17,11 @@
   "conditional-visibility.setting.debug.hint": " ",
 
   "conditional-visibility.setting.passivePerceptionSkill.name": "Passive perception skill",
-  "conditional-visibility.setting.passivePerceptionSkill.hint": "[Not recommended now you can manage everything and better with AE] Make sense only with 'Auto hide on stealth rolls' setting set to true. Here you can configure what the attribute path is for each actor's passive perception. For example, in D&D5e system, each actor's passive perception is stored in the item's \"actor.data.data.skills.prc.passive\" attribute, so you'd put \"data.skills.prc.passive\" in this setting.",
+  "conditional-visibility.setting.passivePerceptionSkill.hint": "[This is system dependent] Make sense only with 'Auto hide on stealth rolls' setting set to true. Here you can configure what the attribute path is for each actor's passive perception. For example, in D&D5e system, each actor's passive perception is stored in the item's \"actor.data.data.skills.prc.passive\" attribute, so you'd put \"data.skills.prc.passive\" in this setting.",
   "conditional-visibility.setting.passiveStealthSkill.name": "Passive stealth skill",
-  "conditional-visibility.setting.passiveStealthSkill.hint": "[Not recommended now you can manage everything and better with AE] Make sense only with 'Auto hide on stealth rolls' setting set to true. Here you can configure what the attribute path is for each actor's passive stealth. For example, in D&D5e system, each actor's passive stealth is stored in the item's \"actor.data.data.skills.ste.passive\" attribute, so you'd put \"data.skills.ste.passive\" in this setting.",
+  "conditional-visibility.setting.passiveStealthSkill.hint": "[This is system dependent] Make sense only with 'Auto hide on stealth rolls' setting set to true. Here you can configure what the attribute path is for each actor's passive stealth. For example, in D&D5e system, each actor's passive stealth is stored in the item's \"actor.data.data.skills.ste.passive\" attribute, so you'd put \"data.skills.ste.passive\" in this setting.",
   "conditional-visibility.setting.activeStealthSkill.name": "Active stealth skill",
-  "conditional-visibility.setting.activeStealthSkill.hint": "[Not recommended now you can manage everything and better with AE] Make sense only with 'Auto hide on stealth rolls' setting set to true. Here you can configure what the attribute path is for each actor's passive stealth. For example, in D&D5e system, each actor's active stealth is stored in the item's \"actor.data.data.skills.ste.total\" attribute, so you'd put \"data.skills.ste.total\" in this setting.",
+  "conditional-visibility.setting.activeStealthSkill.hint": "[This is system dependent] Make sense only with 'Auto hide on stealth rolls' setting set to true. Here you can configure what the attribute path is for each actor's passive stealth. For example, in D&D5e system, each actor's active stealth is stored in the item's \"actor.data.data.skills.ste.total\" attribute, so you'd put \"data.skills.ste.total\" in this setting.",
 
   "conditional-visibility.setting.npcType.name": "NPC actor type",
   "conditional-visibility.setting.npcType.hint": "Here you can configure what the type of NPC actor of your system for the sight check. For example, in D&D5e system, the type is on the property \"actor.type\" an is value is 'npc', so you'd put \"npc\" in this setting.",

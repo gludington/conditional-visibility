@@ -120,6 +120,15 @@ export const registerSettings = function (): void {
     type: Boolean,
   });
 
+  game.settings.register(CONSTANTS.MODULE_NAME, 'autoPassivePerception', {
+    name: `${CONSTANTS.MODULE_NAME}.setting.autoPassivePerception.name`,
+    hint: `${CONSTANTS.MODULE_NAME}.setting.autoPassivePerception.hint`,
+    scope: 'world',
+    config: true,
+    default: true,
+    type: Boolean,
+  });
+
   // ========================================================================
 
   game.settings.register(CONSTANTS.MODULE_NAME, 'debug', {
@@ -332,6 +341,84 @@ function otherSettings(apply = false) {
       default: false,
       type: Boolean,
     },
+
+    // =======================================
+
+    useEagleEye: {
+      name: `${CONSTANTS.MODULE_NAME}.setting.useEagleEye.name`,
+      hint: `${CONSTANTS.MODULE_NAME}.setting.useEagleEye.hint`,
+      scope: 'world',
+      config: true,
+      default: false,
+      type: Boolean,
+    },
+  
+    enableSightCheckForGM: {
+      name: `${CONSTANTS.MODULE_NAME}.setting.enableSightCheckForGM.name`,
+      hint: `${CONSTANTS.MODULE_NAME}.setting.enableSightCheckForGM.hint`,
+      scope: 'world',
+      config: true,
+      default: true,
+      type: Boolean,
+    },
+  
+    enableHud: {
+      name: `${CONSTANTS.MODULE_NAME}.setting.enableHud.name`,
+      hint: `${CONSTANTS.MODULE_NAME}.setting.enableHud.hint`,
+      scope: 'world',
+      config: true,
+      default: false,
+      type: Boolean,
+    },
+  
+    hudPos: {
+      name: `${CONSTANTS.MODULE_NAME}.setting.hudPos.name`,
+      hint: `${CONSTANTS.MODULE_NAME}.setting.hudPos.hint`,
+      scope: 'world',
+      config: true,
+      default: '.left',
+      type: String,
+      choices: {
+        '.right': 'Right',
+        '.left': 'Left',
+      },
+    },
+  
+    disableForNonHostileNpc: {
+      name: `${CONSTANTS.MODULE_NAME}.setting.disableForNonHostileNpc.name`,
+      hint: `${CONSTANTS.MODULE_NAME}.setting.disableForNonHostileNpc.hint`,
+      scope: 'world',
+      config: true,
+      default: false,
+      type: Boolean,
+    },
+  
+    disableDCEAutomaticImport: {
+      name: `${CONSTANTS.MODULE_NAME}.setting.disableDCEAutomaticImport.name`,
+      hint: `${CONSTANTS.MODULE_NAME}.setting.disableDCEAutomaticImport.hint`,
+      scope: 'world',
+      config: true,
+      default: false,
+      type: Boolean,
+    },
+  
+    autoStealth: {
+      name: `${CONSTANTS.MODULE_NAME}.setting.autoStealth.name`,
+      hint: `${CONSTANTS.MODULE_NAME}.setting.autoStealth.hint`,
+      scope: 'world',
+      config: true,
+      default: false,
+      type: Boolean,
+    },
+  
+    autoPassivePerception: {
+      name: `${CONSTANTS.MODULE_NAME}.setting.autoPassivePerception.name`,
+      hint: `${CONSTANTS.MODULE_NAME}.setting.autoPassivePerception.hint`,
+      scope: 'world',
+      config: true,
+      default: true,
+      type: Boolean,
+    }
   };
 }
 

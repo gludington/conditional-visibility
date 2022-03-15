@@ -80,6 +80,8 @@ There three type of these AE used and supported from this module:
 
 You can add a custom sense or condition by using these code (it' the same of the module [DFreds Convenient Effects](https://github.com/DFreds/dfreds-convenient-effects))
 
+### Option 1 : You can register the sense or the condition with the apposite API
+
 ```  
 ConditionalVisibility.API.registerSense({
     id: string;     // This is the unique id used for sync all the senses and conditions (please no strange character, no whitespace and all in lowercase...)
@@ -96,4 +98,29 @@ ConditionalVisibility.API.registerSense({
 });
 ```
 
+```  
+ConditionalVisibility.API.registerCondition({
+    id: string;     // This is the unique id used for sync all the senses and conditions (please no strange character, no whitespace and all in lowercase...)
+    name: string;   // This is the unique name used for sync all the senses and conditions (here you cna put any dirty character you want)
+    path: string;   // This is the path to the property you want to associate with this sense e.g. data.skills.prc.passive
+    img: string;    // [OPTIONAL] Image to associate to this sense
+    conditionLevelMinIndex: number; // [OPTIONAL] check a min index for filter a range of sense can see these conditions, or viceversa conditions can be seen only from this sense
+    conditionLevelMaxIndex: number; // [OPTIONAL] check a max index for filter a range of sense can see these conditions, or viceversa conditions can be seen only from this sense
+    conditionElevation: boolean; // [OPTIONAL] force to check the elevation between the source token and the target token, useful when using module like 'Levels'
+    conditionTargets:string[]; // [OPTIONAL] force to apply the check only for these sources (you can set this but is used only from sense active effect)
+    conditionSources:string[]; // [OPTIONAL] force to apply the check only for these sources (you can set this but is used only from condition active effect)
+    conditionTargetImage: string; // [OPTIONAL] string path to the image applied on target token and used from the source token (the one you click on) for replace only for that player with a special sight
+    conditionDistance: number; // [OPTIONAL] set a maximum distance for check the sight with this effect
+});
+```
+
 checkout more details on the [API](./api.md) documentation.
+
+### Option 2: Simply create a new active effect wihtout use the register method
+
+Just create a active effect with these two minimal change
+
+| Key Syntax                      | Type    | Description                         | Examples Active Effect Data [Key = value] |
+| :------------------------------:|:-------:|:-----------------------------------:|:--------:|
+| `ATCV.<sense or condition id>`  | number  | Identify the "vision level" of the sense/condition | `ATCV.invisible = 12`, `ATCV.darkvision = 13` |
+| `ATCV.conditionType`  | string | indicate the type of CV usually they are or 'sense' or 'condition' not both, **THIS IS ESSENTIAL FOR USE SENSE AND CONDITION NOT REGISTERED ON THE MODULE IF NOT FOUNDED BY DEFAULT IS CONSIDERED A SENSE**, so now you can just modify the AE and you are not forced to call the registered macro of the module CV, this is very useful for integration with other modules. | ``ATCV.conditionType = sense, ATCV.conditionType = condition` |

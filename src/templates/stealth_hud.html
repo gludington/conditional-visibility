@@ -28,7 +28,7 @@
   <legend><label>{{localize "conditional-visibility.token.config.senses.title"}}</label></legend>
   <select id="conditional-visibility.senses" name="senses" data-dtype="String" is="ms-dropdown-cv">
     {{#each senses as |sense|}}
-    <option data-image="{{sense.img}}" value="{{sense.id}}">{{localize sense.name}}</option>
+    <option data-image="{{sense.visionIcon}}" value="{{sense.visionId}}">{{localize sense.visionName}}</option>
     {{/each}}
   </select>
   <p class="notes">{{localize "conditional-visibility.token.config.extraSenseInstructions"}}</p>
@@ -37,7 +37,7 @@
   <legend><label>{{localize "conditional-visibility.token.config.conditions.title"}}</label></legend>
   <select id="conditional-visibility.conditions" name="conditions" data-dtype="String" is="ms-dropdown-cv">
     {{#each conditions as |condition|}}
-    <option data-image="{{condition.img}}" value="{{condition.id}}">{{localize condition.name}}</option>
+    <option data-image="{{condition.visionIcon}}" value="{{condition.visionId}}">{{localize condition.visionName}}</option>
     {{/each}}
   </select>
   <p class="notes">{{localize "conditional-visibility.token.config.extraConditionInstructions"}}</p>

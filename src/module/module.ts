@@ -125,8 +125,8 @@ const module = {
     // TODO TO CHECK IF I CAN ADD MY CUSTOMIZED ONES WITHOUT THE NEED OF REGISTERED
     // const senses = API.SENSES ?? [];
     // const conditions = API.CONDITIONS ?? [];
-    const senses = getSensesFromToken(this.object).sort((a, b) => a.visionName.localeCompare(b.visionName));
-    const conditions = getConditionsFromToken(this.object).sort((a, b) => a.visionName.localeCompare(b.visionName));
+    const senses = getSensesFromToken(tokenConfig.token).sort((a, b) => a.visionName.localeCompare(b.visionName));
+    const conditions = getConditionsFromToken(tokenConfig.token).sort((a, b) => a.visionName.localeCompare(b.visionName));
 
     const sensesTemplateData: any[] = [];
     for (const s of senses) {
@@ -182,8 +182,8 @@ const module = {
         const senseOrConditionId = senseOrConditionIdKey; //senseOrConditionIdKey.replace('-=', '');
         if (
           senseOrConditionValue?.visionLevelValue &&
-          senseOrConditionValue?.visionLevelValue != 0 &&
-          senseOrConditionValue?.visionLevelValue != currentValueOfFlag
+          senseOrConditionValue?.visionLevelValue != 0
+          //senseOrConditionValue?.visionLevelValue != currentValueOfFlag //not neeed this
         ) {
           // const isSense = <SenseData>API.SENSES.find((sense: SenseData) => {
           //   return (
@@ -196,13 +196,13 @@ const module = {
           //   );
           // });
 
-          const isSense = <AtcvEffect>getSensesFromToken(token).find((sense: AtcvEffect) => {
+          const isSense = <AtcvEffect>getSensesFromToken(token.document).find((sense: AtcvEffect) => {
             return (
               isStringEquals(<string>sense.visionId, senseOrConditionId) ||
               isStringEquals(<string>sense.visionName, senseOrConditionId)
             );
           });
-          const isCondition = <AtcvEffect>getConditionsFromToken(token).find((sense: AtcvEffect) => {
+          const isCondition = <AtcvEffect>getConditionsFromToken(token.document).find((sense: AtcvEffect) => {
             return (
               isStringEquals(<string>sense.visionId, senseOrConditionId) ||
               isStringEquals(<string>sense.visionName, senseOrConditionId)
@@ -243,24 +243,27 @@ const module = {
               sourceVisionCapabilities.conditions.set(senseOrConditionId, isCondition);
             }
           }
-        }
-        if (sourceVisionCapabilities.hasSenses() || sourceVisionCapabilities.hasConditions()) {
-          await prepareActiveEffectForConditionalVisibility(token, sourceVisionCapabilities);
-          // TODO CHECK IF We don't need the modification of the effect start this anyway
-          // const mapFlagsToUpdated = <Map<string,AtcvEffect>>await prepareActiveEffectForConditionalVisibility(token, sourceVisionCapabilities);
-          // for (const [atcvEffectKey, atcvEffectValue] of mapFlagsToUpdated) {
-          //   await token?.document?.setFlag(CONSTANTS.MODULE_NAME, atcvEffectKey,  atcvEffectValue);
-          // }
-        } else {
-          for (const senseData of await API.getAllDefaultSensesAndConditions(token)) {
-            const effectNameToCheckOnActor = i18n(<string>senseData?.visionName);
-            if (await API.hasEffectAppliedOnToken(<string>token.id, effectNameToCheckOnActor, true)) {
+          if (sourceVisionCapabilities.hasSenses() || sourceVisionCapabilities.hasConditions()) {
+            await prepareActiveEffectForConditionalVisibility(token, sourceVisionCapabilities);
+            // TODO CHECK IF We don't need the modification of the effect start this anyway
+            // const mapFlagsToUpdated = <Map<string,AtcvEffect>>await prepareActiveEffectForConditionalVisibility(token, sourceVisionCapabilities);
+            // for (const [atcvEffectKey, atcvEffectValue] of mapFlagsToUpdated) {
+            //   await token?.document?.setFlag(CONSTANTS.MODULE_NAME, atcvEffectKey,  atcvEffectValue);
+            // }
+          }
+        } else if(senseOrConditionValue.visionLevelValue === 0) {
+          //for (const senseData of await API.getAllDefaultSensesAndConditions(token)) {
+          //  const effectNameToCheckOnActor = i18n(<string>senseData?.visionName);
+          const effectNameToCheckOnActor = i18n(senseOrConditionValue.visionName)
+            //if (await API.hasEffectAppliedOnToken(<string>token.id, effectNameToCheckOnActor, true)) {
               const activeEffectToRemove = <ActiveEffect>(
                 await API.findEffectByNameOnToken(<string>token.id, effectNameToCheckOnActor)
               );
-              await API.removeEffectFromIdOnToken(<string>token.id, <string>activeEffectToRemove.id);
-            }
-          }
+              if(activeEffectToRemove){
+                await API.removeEffectFromIdOnToken(<string>token.id, <string>activeEffectToRemove.id);
+              }
+            //}
+          //}
         }
       } // Fine for
     }

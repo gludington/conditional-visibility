@@ -1,7 +1,7 @@
 import { ActiveEffectDataProperties } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/data.mjs/activeEffectData';
 import { EffectChangeData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/data.mjs/effectChangeData';
-import { EffectDurationData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/data.mjs/effectDurationData';
 import { PropertiesToSource } from '@league-of-foundry-developers/foundry-vtt-types/src/types/helperTypes';
+import { SenseData } from '../conditional-visibility-models';
 import { i18n } from '../lib/lib';
 import { canvas, game } from '../settings';
 
@@ -249,18 +249,21 @@ export class Constants {
 
 export class EffectSupport {
   static buildDefault(
-    effectData: any,
+    // effectData: Effect,
+    id:string,
+    name:string,
+    icon:string,
     isPassive: boolean,
-    changes: any[] = [],
-    atlChanges: any[] = [],
-    tokenMagicChanges: any[] = [],
-    atcvChanges: any[] = [],
+    changes: EffectChangeData[] = [],
+    atlChanges: EffectChangeData[] = [],
+    tokenMagicChanges: EffectChangeData[] = [],
+    atcvChanges: EffectChangeData[] = [],
   ): Effect {
     return new Effect({
-      customId: effectData.id,
-      name: i18n(effectData.name),
+      customId: id,
+      name: i18n(name),
       description: ``,
-      icon: effectData.img,
+      icon: icon,
       tint: undefined,
       seconds: 0,
       rounds: 0,
@@ -269,7 +272,7 @@ export class EffectSupport {
         {},
         {
           core: {
-            statusId: isPassive ? undefined : effectData.id,
+            statusId: isPassive ? undefined : id,
             overlay: false,
           },
           isConvenient: true,
@@ -287,15 +290,15 @@ export class EffectSupport {
 
   static _handleIntegrations(effect: Effect): EffectChangeData[] {
     const arrChanges: EffectChangeData[] = [];
-    if (effect.atlChanges.length > 0) {
+    if (effect.atlChanges && effect.atlChanges.length > 0) {
       arrChanges.push(...effect.atlChanges);
     }
 
-    if (effect.tokenMagicChanges.length > 0) {
+    if (effect.tokenMagicChanges && effect.tokenMagicChanges.length > 0) {
       arrChanges.push(...effect.tokenMagicChanges);
     }
 
-    if (effect.atcvChanges.length > 0) {
+    if (effect.atcvChanges && effect.atcvChanges.length > 0) {
       arrChanges.push(...effect.atcvChanges);
     }
     // arrChanges = EffectSupport.retrieveChangesOrderedByPriority(arrChanges);

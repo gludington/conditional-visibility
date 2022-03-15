@@ -1,8 +1,9 @@
-### 0.4.25
+### 0.4.25 [BREAKING CHANGES]
 
 - Add new active effect change `ATCV.conditionType` for indicate the type of CV usually they are or 'sense' or 'condition' not both, **THIS IS ESSENTIAL FOR USE SENSE AND CONDITION NOT REGISTERED ON THE MODULE IF NOT FOUNDED BY DEFAULT IS CONSIDERED A SENSE**, so now you can just modify the AE and you are not forced to call the registered macro of the module CV, this is very useful for integration with other modules.
 - Add new active effect change `ATCV.conditionLevelMinIndex` and `ATCV.conditionLevelMaxIndex` for setup range of senses and coditions, you mus use some math for get what you want.
-- Big clean up of the code , should be faster now...
+- First integration for full customize the AE with custom icon path, ecc. if not found the default preset is been loaded.
+- Big clean up of the code , should be faster and better now...
 - Many bug fix
 
 ### 0.4.24

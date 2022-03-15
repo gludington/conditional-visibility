@@ -691,17 +691,13 @@ const API = {
       visionLevel = 0;
     }
 
-    // const sensesAndConditionOrderByName = <SenseData[]>await this.getAllDefaultSensesAndConditions(token);
     const effectsDefinition = <Effect[]>ConditionalVisibilityEffectDefinitions.all(distance, visionLevel);
 
     let effect: Effect | undefined = undefined;
     //let senseData: SenseData | undefined = undefined;
-    let effectToFoundByName = i18n(senseDataEffect.visionName);
-    if (!effectToFoundByName.endsWith('(CV)')) {
-      effectToFoundByName = effectToFoundByName + ' (CV)';
-    }
 
-    const senseDataId = senseDataEffect.visionId;
+
+    // const senseDataId = senseDataEffect.visionId;
     // for (const sense of sensesAndConditionOrderByName) {
     //   // Check for dfred convenient effect and retrieve the effect with the specific name
     //   // https://github.com/DFreds/dfreds-convenient-effects/issues/110
@@ -727,8 +723,31 @@ const API = {
     // https://github.com/DFreds/dfreds-convenient-effects/issues/110
     //@ts-ignore
     if (game.dfreds) {
+      let effectToFoundByName = i18n(senseDataEffect.visionName);
+      if (!effectToFoundByName.endsWith('(CV)')) {
+        effectToFoundByName = effectToFoundByName + ' (CV)';
+      }
       //@ts-ignore
       effect = <Effect>await game.dfreds.effectInterface.findCustomEffectByName(effectToFoundByName);
+      let foundedFlagVisionValue = false;
+      if (!effect.atcvChanges) {
+        effect.atcvChanges = [];
+      }
+      for (const obj of effect.atcvChanges) {
+        if (obj.key === 'ATCV.' + senseDataEffect.visionId && obj.value != String(senseDataEffect.visionLevelValue)) {
+          obj.value = String(senseDataEffect.visionLevelValue);
+          foundedFlagVisionValue = true;
+          break;
+        }
+      }
+      if (!foundedFlagVisionValue) {
+        effect.atcvChanges.push(<any>{
+          key: 'ATCV.' + senseDataEffect.visionId,
+          mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+          value: String(senseDataEffect.visionLevelValue),
+          priority: 5,
+        });
+      }
     }
     if (!effect) {
       effect = <Effect>effectsDefinition.find((effect: Effect) => {
@@ -742,42 +761,59 @@ const API = {
     // const isSense = API.SENSES.find((sense: SenseData) => {
     //   return (
     //     isStringEquals(sense.id, (<SenseData>senseData).id) ||
-    //     isStringEquals(i18n(sense.name), i18n((<SenseData>senseData).name))
+    //     isStringEquals(sense.name, (<SenseData>senseData).name)
     //   );
     // });
+    
     const isSense = senseDataEffect.visionType === 'sense';
-
     if (!effect) {
-      const sensesAndConditionOrderByName = <SenseData[]>await this.getAllDefaultSensesAndConditions(token);
-      const senseOrCondition = <SenseData>sensesAndConditionOrderByName.find((sense: SenseData) => {
+      const sensesAndConditionOrderByName = <AtcvEffect[]>await this.getAllDefaultSensesAndConditions(token);
+      const senseOrCondition = <AtcvEffect>sensesAndConditionOrderByName.find((sense: AtcvEffect) => {
         return (
-          isStringEquals(sense.id, senseDataEffect.visionId) ||
-          isStringEquals(i18n(sense.name), i18n(senseDataEffect.visionName))
+          isStringEquals(sense.visionId, senseDataEffect.visionId) ||
+          isStringEquals(sense.visionName, senseDataEffect.visionName)
         );
       });
       if (senseOrCondition) {
-        const atcvChanges = [
+        const atcvChanges = <any[]>[
           {
-            key: 'ATCV.' + senseOrCondition.id,
+            key: 'ATCV.' + senseOrCondition.visionId,
             mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
-            value: String(visionLevel),
+            value: String(senseDataEffect.visionLevelValue),
             priority: 5,
           },
         ];
-        effect = EffectSupport.buildDefault(senseOrCondition, !!isSense, [], [], [], atcvChanges);
+        effect = EffectSupport.buildDefault(
+          senseOrCondition.visionId, senseOrCondition.visionName, senseOrCondition.visionIcon, 
+          !!isSense, [], [], [], atcvChanges);
+      }else{
+        const atcvChanges = <any[]>[
+          {
+            key: 'ATCV.' + senseDataEffect.visionId,
+            mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+            value: String(senseDataEffect.visionLevelValue),
+            priority: 5,
+          },
+        ];
+        effect = EffectSupport.buildDefault(
+          senseDataEffect.visionId, senseDataEffect.visionName, senseDataEffect.visionIcon, 
+          !!isSense, [], [], [], atcvChanges);
       }
     }
     // Add some feature if is a sense or a condition
     if (!effect) {
-      warn(`No effect found with reference '${senseDataId}'`, true);
+      warn(
+        `No effect found with reference '${senseDataEffect.visionId}' and name '${senseDataEffect.visionName}', please create this active effect on the actor or on dfred convinient effects with the AE change 'ATCV.${senseDataEffect.visionId}' with any numeric value`
+      , true);
       return undefined;
     } else {
+      /*
       let foundedFlagVisionValue = false;
       if (!effect.atcvChanges) {
         effect.atcvChanges = [];
       }
       for (const obj of effect.atcvChanges) {
-        if (obj.key === 'ATCV.' + senseDataId && obj.value != String(visionLevel)) {
+        if (obj.key === 'ATCV.' + senseDataEffect.visionId && obj.value != String(visionLevel)) {
           obj.value = String(visionLevel);
           foundedFlagVisionValue = true;
           break;
@@ -785,13 +821,13 @@ const API = {
       }
       if (!foundedFlagVisionValue) {
         effect.atcvChanges.push(<any>{
-          key: 'ATCV.' + senseDataId,
+          key: 'ATCV.' + senseDataEffect.visionId,
           mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
           value: String(visionLevel),
           priority: 5,
         });
       }
-
+      */
       if (isSense) {
         effect.isTemporary = false; // passive ae
         // effect.dae = { stackable: false, specialDuration: [], transfer: true }
@@ -802,7 +838,11 @@ const API = {
         }
       }
       effect.transfer = !disabled;
-
+      
+      let effectToFoundByName = i18n(senseDataEffect.visionName);
+      if (!effectToFoundByName.endsWith('(CV)')) {
+        effectToFoundByName = effectToFoundByName + ' (CV)';
+      }
       const nameToUse = effectToFoundByName ? effectToFoundByName : effect?.name;
       await (<EffectInterface>this.effectInterface).addEffectOnToken(nameToUse, <string>token.id, effect);
       //await token?.document?.setFlag(CONSTANTS.MODULE_NAME, (<Effect>effect).customId, visionLevel);
@@ -813,110 +853,10 @@ const API = {
     }
   },
 
-  // async addEffectConditionalVisibilityOnToken(
-  //   tokenNameOrId: string,
-  //   senseDataId: string,
-  //   disabled: boolean,
-  //   distance: number | undefined,
-  //   visionLevel: number | undefined,
-  // ) {
-  //   const tokens = <Token[]>canvas.tokens?.placeables;
-  //   const token = <Token>tokens.find((token) => {
-  //     return isStringEquals(token.name, i18n(tokenNameOrId)) || isStringEquals(token.id, tokenNameOrId);
-  //   });
-
-  //   if (!token) {
-  //     warn(`No token found with reference '${tokenNameOrId}'`, true);
-  //   }
-
-  //   if (!distance) {
-  //     distance = 0;
-  //   }
-
-  //   if (!visionLevel) {
-  //     visionLevel = 0;
-  //   }
-
-  //   const sensesAndConditionOrderByName = <SenseData[]>await this.getAllDefaultSensesAndConditions(token);
-  //   const effectsDefinition = <Effect[]>ConditionalVisibilityEffectDefinitions.all(distance, visionLevel);
-
-  //   let effect: Effect | undefined = undefined;
-  //   let senseData: SenseData | undefined = undefined;
-
-  //   for (const sense of sensesAndConditionOrderByName) {
-  //     // Check for dfred convenient effect and retrieve the effect with the specific name
-  //     // https://github.com/DFreds/dfreds-convenient-effects/issues/110
-  //     //@ts-ignore
-  //     //if (sense.effectCustomId && game.dfreds) {
-  //     if (sense.id && game.dfreds) {
-  //       //@ts-ignore
-  //       effect = <Effect>await game.dfreds.effectInterface.findCustomEffectByName(sense.name);
-  //       senseData = sense;
-  //       break;
-  //     }
-  //     if (senseDataId == sense.id) {
-  //       effect = <Effect>effectsDefinition.find((effect: Effect) => {
-  //         return isStringEquals(effect.customId, sense.id) || isStringEquals(i18n(effect.name), i18n(sense.name));
-  //       });
-  //       senseData = sense;
-  //       break;
-  //     }
-  //   }
-
-  //   // const isSense = API.SENSES.find((sense: SenseData) => {
-  //   //   return (
-  //   //     isStringEquals(sense.id, (<SenseData>senseData).id) ||
-  //   //     isStringEquals(i18n(sense.name), i18n((<SenseData>senseData).name))
-  //   //   );
-  //   // });
-  //   const isSense = (<SenseData>senseData).conditionType === 'sense';
-
-  //   if (!effect) {
-  //     const senseOrCondition = <SenseData>sensesAndConditionOrderByName.find((sense: SenseData) => {
-  //       return (
-  //         isStringEquals(sense.id, (<SenseData>senseData).id) ||
-  //         isStringEquals(i18n(sense.name), i18n((<SenseData>senseData).name))
-  //       );
-  //     });
-  //     if (senseOrCondition) {
-  //       const atcvChanges = [
-  //         {
-  //           key: 'ATCV.' + senseOrCondition.id,
-  //           mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
-  //           value: String(visionLevel),
-  //           priority: 5,
-  //         },
-  //       ];
-  //       effect = EffectSupport.buildDefault(senseOrCondition, !!isSense, [], [], [], atcvChanges);
-  //     }
-  //   }
-  //   // Add some feature if is a sense or a condition
-  //   if (effect) {
-  //     if (isSense) {
-  //       effect.isTemporary = false; // passive ae
-  //       // effect.dae = { stackable: false, specialDuration: [], transfer: true }
-  //       effect.transfer = false;
-  //     }
-  //     effect.transfer = !disabled;
-  //   }
-
-  //   if (!effect) {
-  //     warn(`No effect found with reference '${senseDataId}'`, true);
-  //   } else {
-  //     if (token && effect) {
-  //       const nameToUse = senseData?.name ? senseData?.name : effect?.name;
-  //       await (<EffectInterface>this.effectInterface).addEffectOnToken(nameToUse, <string>token.id, effect);
-  //       //await token?.document?.setFlag(CONSTANTS.MODULE_NAME, (<Effect>effect).customId, visionLevel);
-  //       const atcvEffectFlagData = AtcvEffectFlagData.fromEffect(effect);
-  //       await token?.document?.setFlag(CONSTANTS.MODULE_NAME, (<Effect>effect).customId, atcvEffectFlagData);
-  //     }
-  //   }
-  // },
-
   async getAllDefaultSensesAndConditions(token: Token): Promise<AtcvEffect[]> {
     const allSensesAndConditions: AtcvEffect[] = [];
-    allSensesAndConditions.push(...getSensesFromToken(token));
-    allSensesAndConditions.push(...getConditionsFromToken(token));
+    allSensesAndConditions.push(...getSensesFromToken(token.document));
+    allSensesAndConditions.push(...getConditionsFromToken(token.document));
     /*
     allSensesAndConditions = mergeByProperty(allSensesAndConditions, senses, 'id');
     allSensesAndConditions = mergeByProperty(allSensesAndConditions, conditions, 'id');
@@ -1012,9 +952,9 @@ const API = {
       warn(`Cannot register the ${valueComment} with name empty or null`, true);
       return;
     }
-    const sensesAndConditionDataList = <SenseData[]>await this.getAllDefaultSensesAndConditions(null);
-    const senseAlreadyExistsId = sensesAndConditionDataList.find((a: SenseData) => a.id == senseData.id);
-    const senseAlreadyExistsName = sensesAndConditionDataList.find((a: SenseData) => a.name == senseData.name);
+    const sensesAndConditionDataList = <AtcvEffect[]>await this.getAllDefaultSensesAndConditions(null);
+    const senseAlreadyExistsId = sensesAndConditionDataList.find((a: AtcvEffect) => a.visionId == senseData.id);
+    const senseAlreadyExistsName = sensesAndConditionDataList.find((a: AtcvEffect) => a.visionName == senseData.name);
     if (senseAlreadyExistsId) {
       warn(`Cannot register the ${valueComment} with id '${senseData.id}' because already exists`, true);
       return;
@@ -1036,16 +976,16 @@ const API = {
       warn(`Cannot unregister the ${valueComment} with id empty or null`, true);
       return;
     }
-    const sensesAndConditionDataList = <SenseData[]>await this.getAllDefaultSensesAndConditions(null);
-    const senseAlreadyExistsId = <SenseData>(
-      sensesAndConditionDataList.find((a: SenseData) => a.id == senseDataIdOrName || a.name == senseDataIdOrName)
+    const sensesAndConditionDataList = <AtcvEffect[]>await this.getAllDefaultSensesAndConditions(null);
+    const senseAlreadyExistsId = <AtcvEffect>(
+      sensesAndConditionDataList.find((a: AtcvEffect) => a.visionId == senseDataIdOrName || a.visionName == senseDataIdOrName)
     );
     if (!senseAlreadyExistsId) {
       warn(`Cannot unregister the ${valueComment} with id '${senseDataIdOrName}' because is not exists exists`, true);
       return;
     }
     sensesDataList = sensesDataList.filter(function (el) {
-      return el.id != senseAlreadyExistsId.id;
+      return el.id != senseAlreadyExistsId.visionId;
     });
     return sensesDataList;
   },

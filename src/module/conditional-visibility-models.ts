@@ -28,7 +28,7 @@ export class AtcvEffect {
   static fromSenseData(senseData: SenseData, visionLevelValue: number, isSense: boolean) {
     const res = new AtcvEffect();
     res.visionId = senseData.id;
-    res.visionName = senseData.name;
+    res.visionName = i18n(senseData.name);
     res.visionPath = senseData.path;
     res.visionIcon = senseData.img;
 
@@ -47,7 +47,7 @@ export class AtcvEffect {
   static fromEffect(effect: Effect) {
     const effectChanges: EffectChangeData[] = EffectSupport._handleIntegrations(effect) || [];
 
-    const res = retrieveAtcvEffectFromActiveEffect(effectChanges, effect.name, effect.icon, undefined);
+    const res = retrieveAtcvEffectFromActiveEffect(effectChanges, i18n(effect.name), effect.icon, undefined);
     return res;
   }
 
@@ -55,7 +55,7 @@ export class AtcvEffect {
     const effectChanges = activeEffect.data.changes;
     const res = retrieveAtcvEffectFromActiveEffect(
       effectChanges,
-      activeEffect.data.label,
+      i18n(activeEffect.data.label),
       <string>activeEffect.data.icon,
       undefined,
     );
@@ -212,12 +212,12 @@ export class VisionCapabilities {
       // CONDITIONS
       this.addConditions();
 
-      getSensesFromToken(srcToken).forEach((sense: AtcvEffect) => {
+      getSensesFromToken(srcToken.document).forEach((sense: AtcvEffect) => {
         if (sense.visionType === 'sense' && !this.senses.has(sense.visionId)) {
           this.senses.set(sense.visionId, sense);
         }
       });
-      getConditionsFromToken(srcToken).forEach((condition: AtcvEffect) => {
+      getConditionsFromToken(srcToken.document).forEach((condition: AtcvEffect) => {
         if (condition.visionType === 'condition' && !this.conditions.has(condition.visionId)) {
           this.conditions.set(condition.visionId, condition);
         }

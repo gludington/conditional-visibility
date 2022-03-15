@@ -327,7 +327,7 @@ export function sightLayerPrototypeTestVisibilityHandler(wrapped, ...args) {
 
 export const tokenPrototypeDrawHandler = function (wrapped, ...args) {
   const tokenData: Token = this as Token;
-  const atcvEffects = getSensesFromToken(tokenData);
+  const atcvEffects = getSensesFromToken(tokenData.document);
   let currentActvEffect: AtcvEffect | undefined = undefined;
   // Get the one with major priority they already are sorted for priority so the first one is the right one
   for (const atcvEffect of atcvEffects) {

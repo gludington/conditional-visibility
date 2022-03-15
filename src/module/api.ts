@@ -894,8 +894,8 @@ const API = {
         const sData: SenseData = {
           id: atcvEffect.visionId,
           name: atcvEffect.visionName,
-          path: '', // TODO to integrate
-          img: '', // TODO to integrate
+          path: '', // to integrate
+          img: '', // to integrate
           conditionLevelMinIndex: atcvEffect.visionLevelMinIndex,
           conditionLevelMaxIndex: atcvEffect.visionLevelMaxIndex,
           conditionElevation: atcvEffect.visionElevation,
@@ -911,8 +911,8 @@ const API = {
         const sData: SenseData = {
           id: atcvEffect.visionId,
           name: atcvEffect.visionName,
-          path: '', // TODO to integrate
-          img: '', // TODO to integrate
+          path: '', // to integrate
+          img: '', // to integrate
           conditionLevelMinIndex: atcvEffect.visionLevelMinIndex,
           conditionLevelMaxIndex: atcvEffect.visionLevelMaxIndex,
           conditionElevation: atcvEffect.visionElevation,

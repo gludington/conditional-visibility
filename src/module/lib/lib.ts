@@ -778,6 +778,9 @@ function _getCVFromToken(token: Token, isSense: boolean, filterValueNoZero = fal
       continue;
     }
     const atcvEffectTmp = retrieveAtcvEffectFromActiveEffect(effectEntity.data.changes, effectNameToSet,<string>effectEntity.data.icon, undefined);
+    if(!atcvEffectTmp.visionId){
+      continue;
+    }
     if(isSense && atcvEffectTmp.visionType === 'sense'){
       statusEffects.push(atcvEffectTmp);
     }else if(!isSense && atcvEffectTmp.visionType === 'condition'){
@@ -1031,7 +1034,7 @@ export function retrieveAtcvEffectFromActiveEffect(effectChanges: EffectChangeDa
           atcvEffect.visionType = 'condition';
         }
       } else {
-        // TODO this cannot be happening
+        // this cannot be happening
       }
     }
   }else{
@@ -1041,7 +1044,7 @@ export function retrieveAtcvEffectFromActiveEffect(effectChanges: EffectChangeDa
     }else if(!atcvEffect.visionType && !isSense){
       atcvEffect.visionType = 'condition';
     }else{
-      // TODO this cannot be happening
+      // this cannot be happening
     }
   }
 
@@ -1255,11 +1258,26 @@ export async function toggleStealth(event) {
   }
 
   // TODO TO CHECK IF I CAN ADD MY CUSTOMIZED ONES WITHOUT THE NEED OF REGISTERED
-  const sensesOrderByName = <SenseData[]>API.SENSES; //.sort((a, b) => a.name.localeCompare(b.name));
-  const conditionsOrderByName = <SenseData[]>API.CONDITIONS; //.sort((a, b) => a.name.localeCompare(b.name));
+  //const sensesOrderByName = <SenseData[]>API.SENSES; //.sort((a, b) => a.name.localeCompare(b.name));
+  //const conditionsOrderByName = <SenseData[]>API.CONDITIONS; //.sort((a, b) => a.name.localeCompare(b.name));
+  const sensesOrderByName = getSensesFromToken(this.object).sort((a, b) => a.visionName.localeCompare(b.visionName));
+  const conditionsOrderByName = getConditionsFromToken(this.object).sort((a, b) => a.visionName.localeCompare(b.visionName));
+  sensesOrderByName.forEach(function(item,i){
+    if(item.visionId === AtcvEffectSenseFlags.NONE){
+      sensesOrderByName.splice(i, 1);
+      sensesOrderByName.unshift(item);
+    }
+  });
+  conditionsOrderByName.forEach(function(item,i){
+    if(item.visionId === AtcvEffectConditionFlags.NONE){
+      conditionsOrderByName.splice(i, 1);
+      conditionsOrderByName.unshift(item);
+    }
+  });
 
   const stealthedActive = await API.rollStealth(this.object);
   const content = await renderTemplate(`modules/${CONSTANTS.MODULE_NAME}/templates/stealth_hud.html`, {
+    passivestealth: stealthedPassive,
     currentstealth: stealthedWithHiddenCondition,
     stealthroll: stealthedActive,
     senses: sensesOrderByName,
@@ -1274,20 +1292,23 @@ export async function toggleStealth(event) {
         label: 'OK',
         callback: async (html: JQuery<HTMLElement>) => {
           //@ts-ignore
-          const valCurrentstealth = parseInt(html.find('div.form-group').children()[1]?.value);
+          const passivestealth = parseInt(html.find('div.form-group').children()[1]?.value);
           //@ts-ignore
-          let valStealthRoll = parseInt(html.find('div.form-group').children()[4]?.value);
+          const currentstealth = parseInt(html.find('div.form-group').children()[4]?.value);
+          //@ts-ignore
+          let valStealthRoll = parseInt(html.find('div.form-group').children()[7]?.value);
           if (isNaN(valStealthRoll)) {
             valStealthRoll = 0;
           }
           //@ts-ignore
-          const senseId = String(html.find('div.form-group').children()[10]?.value);
+          const disablePassiveRecovery = html.find('div.form-group').children()[10]?.value === 'true';
           //@ts-ignore
-          const conditionId = String(html.find('div.form-group').children()[14]?.value);
+          const senseId = String(html.find('div.form-group').children()[14]?.value);
           //@ts-ignore
-          const disablePassiveRecovery = html.find('div.form-group').children()[7]?.value === 'true';
-          if (valStealthRoll < stealthedPassive && !disablePassiveRecovery) {
-            valStealthRoll = stealthedPassive;
+          const conditionId = String(html.find('div.form-group').children()[18]?.value);
+
+          if (valStealthRoll < passivestealth && !disablePassiveRecovery) {
+            valStealthRoll = passivestealth;
           }
 
           let selectedTokens = <Token[]>canvas.tokens?.controlled;
@@ -1308,7 +1329,7 @@ export async function toggleStealth(event) {
                   await selectedToken.document.setFlag(CONSTANTS.MODULE_NAME, senseId, atcvEffectFlagData);
                 }
               } else {
-                warn(`Can't find effect definition for '${senseId}'`, true);
+                warn(`Can't find effect definition for '${senseId}', maybe you forgot to registered that ?`, true);
               }
             }
             if (conditionId != AtcvEffectConditionFlags.NONE) {
@@ -1324,7 +1345,7 @@ export async function toggleStealth(event) {
                   await selectedToken.document.setFlag(CONSTANTS.MODULE_NAME, conditionId, atcvEffectFlagData);
                 }
               } else {
-                warn(`Can't find effect definition for '${conditionId}'`, true);
+                warn(`Can't find effect definition for '${conditionId}', maybe you forgot to registered that ?`, true);
               }
             }
           }

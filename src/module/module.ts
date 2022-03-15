@@ -123,15 +123,17 @@ const module = {
   onRenderTokenConfig(tokenConfig: TokenConfig, jQuery: JQuery, data: object): void {
     const visionTab = $('div.tab[data-tab="vision"]');
     // TODO TO CHECK IF I CAN ADD MY CUSTOMIZED ONES WITHOUT THE NEED OF REGISTERED
-    const senses = API.SENSES ?? [];
-    const conditions = API.CONDITIONS ?? [];
+    // const senses = API.SENSES ?? [];
+    // const conditions = API.CONDITIONS ?? [];
+    const senses = getSensesFromToken(this.object).sort((a, b) => a.visionName.localeCompare(b.visionName));
+    const conditions = getConditionsFromToken(this.object).sort((a, b) => a.visionName.localeCompare(b.visionName));
 
     const sensesTemplateData: any[] = [];
     for (const s of senses) {
-      if (s.id != AtcvEffectSenseFlags.NONE && s.id != AtcvEffectSenseFlags.NORMAL) {
+      if (s.visionId != AtcvEffectSenseFlags.NONE && s.visionId != AtcvEffectSenseFlags.NORMAL) {
         const s2: any = duplicate(s);
         //s2.value = tokenConfig.object.getFlag(CONSTANTS.MODULE_NAME, s.id);
-        const currentAtcvEffectFlagData = <AtcvEffect>tokenConfig.object.getFlag(CONSTANTS.MODULE_NAME, s.id);
+        const currentAtcvEffectFlagData = <AtcvEffect>tokenConfig.object.getFlag(CONSTANTS.MODULE_NAME, s.visionId);
         if (currentAtcvEffectFlagData) {
           s2.value = currentAtcvEffectFlagData.visionLevelValue ?? 0;
         } else {
@@ -143,10 +145,10 @@ const module = {
 
     const conditionsTemplateData: any[] = [];
     for (const s of conditions) {
-      if (s.id != AtcvEffectSenseFlags.NONE && s.id != AtcvEffectSenseFlags.NORMAL) {
+      if (s.visionId != AtcvEffectConditionFlags.NONE) {
         const s2: any = duplicate(s);
         //s2.value = tokenConfig.object.getFlag(CONSTANTS.MODULE_NAME, s.id);
-        const currentAtcvEffectFlagData = <AtcvEffect>tokenConfig.object.getFlag(CONSTANTS.MODULE_NAME, s.id);
+        const currentAtcvEffectFlagData = <AtcvEffect>tokenConfig.object.getFlag(CONSTANTS.MODULE_NAME, s.visionId);
         if (currentAtcvEffectFlagData) {
           s2.value = currentAtcvEffectFlagData.visionLevelValue ?? 0;
         } else {

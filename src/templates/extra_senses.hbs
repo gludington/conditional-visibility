@@ -4,8 +4,8 @@
     <p class="notes">{{localize "conditional-visibility.token.config.extraSenseInstructions"}}</p>
     {{#each senses as |sense|}}
         <div class="form-group">
-            <label style="display:flex"><img src="{{sense.img}}" style="height:25px; width:25px; margin: 3px;"/>{{localize sense.name}}</label>
-            <input type="number" min=-1 step=1 {{#if sense.value}} value="{{sense.value}}" {{else}} value="0" {{/if}} name="flags.conditional-visibility.{{sense.id}}.visionLevelValue"/>
+            <label style="display:flex"><img src="{{sense.visionIcon}}" style="height:25px; width:25px; margin: 3px;"/>{{localize sense.visionName}}</label>
+            <input type="number" min=-1 step=1 {{#if sense.visionLevelValue}} value="{{sense.visionLevelValue}}" {{else}} value="0" {{/if}} name="flags.conditional-visibility.{{sense.visionId}}.visionLevelValue"/>
         </div>
     {{/each}}
 </fieldset>
@@ -15,8 +15,8 @@
     <p class="notes">{{localize "conditional-visibility.token.config.extraConditionInstructions"}}</p>
     {{#each conditions as |condition|}}
         <div class="form-group">
-            <label style="display:flex"><img src="{{condition.img}}" style="height:25px; width:25px; margin: 3px; background: #454545"/>{{localize condition.name}}</label>
-            <input type="number" min=-1 step=1 {{#if condition.value}} value="{{condition.value}}" {{else}} value="0" {{/if}} name="flags.conditional-visibility.{{condition.id}}.visionLevelValue"/>
+            <label style="display:flex"><img src="{{condition.visionIcon}}" style="height:25px; width:25px; margin: 3px; background: #454545"/>{{localize condition.visionName}}</label>
+            <input type="number" min=-1 step=1 {{#if condition.visionLevelValue}} value="{{condition.visionLevelValue}}" {{else}} value="0" {{/if}} name="flags.conditional-visibility.{{condition.visionId}}.visionLevelValue"/>
         </div>
     {{/each}}
 </fieldset>

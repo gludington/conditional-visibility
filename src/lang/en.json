@@ -117,11 +117,14 @@
   "conditional-visibility.dialogs.title.hidden": "Roll stealth",
   "conditional-visibility.dialogs.stealth.not.supported": "Conditional Visibility does not support the hidden condition/stealth for {sysid}",
 
+  "conditional-visibility.dialogs.passivestealth": "Passive Stealth",
+  "conditional-visibility.dialogs.passivestealthdescription": "This value depend on the system, but usually is the 'passive stealth' attribute of the first token from the token array you have currently selected.",
+
   "conditional-visibility.dialogs.currentstealth": "Current Stealth",
-  "conditional-visibility.dialogs.currentstealthdescription": "This value depend on the system, but usually is the 'passive stealth' attribute of the first token from the token array you have currently selected.",
+  "conditional-visibility.dialogs.currentstealthdescription": "This value depend on the system, but usually is the 'current stealth' attribute of the first token from the token array you have currently selected.",
 
   "conditional-visibility.dialogs.stealthroll": "Stealh Roll, for unlimited range use <= -1, for disable/remove use 0",
-  "conditional-visibility.dialogs.stealthrolldescription": "This value will be compared with 'sense' (active effect) value from the source token (if present on the system) as long is the token is hiding.  Non-numeric entries will result in the initial value being taken",
+  "conditional-visibility.dialogs.stealthrolldescription": "This value will be compared with the other 'sense' (active effect) value from the source token (if present on the system). Non-numeric entries will result in the initial value being taken",
 
   "conditional-visibility.dialogs.disablepassiverecovery": "Disable the passive recovery",
   "conditional-visibility.dialogs.disablepassiverecoverydescription": "If you check this box and your roll is a number lower than the passive one it will be taken anyway. By default the value go back to the passive one",

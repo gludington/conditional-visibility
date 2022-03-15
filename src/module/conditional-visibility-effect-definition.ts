@@ -89,8 +89,8 @@ export class ConditionalVisibilityEffectDefinitions {
   static async effect(nameOrCustomId: string, distance = 0, visionLevel = 0): Promise<Effect | undefined> {
     const effect = <Effect>ConditionalVisibilityEffectDefinitions.all(distance, visionLevel).find((effect: Effect) => {
       return (
-        effect.name.toLowerCase() === nameOrCustomId.toLowerCase() ||
-        effect.customId.toLowerCase() === nameOrCustomId.toLowerCase()
+        isStringEquals(effect.name,nameOrCustomId) ||
+        isStringEquals(effect.customId,nameOrCustomId)
       );
     });
     if (!effect) {
@@ -105,7 +105,7 @@ export class ConditionalVisibilityEffectDefinitions {
     allSensesAndConditions = mergeByProperty(allSensesAndConditions, conditions, 'id');
     let effectFounded: Effect | undefined = undefined;
     for (const senseData of allSensesAndConditions) {
-      if (isStringEquals(effect?.customId, senseData.id) || isStringEquals(i18n(effect.name), i18n(senseData.name))) {
+      if (isStringEquals(effect?.customId, senseData.id) || isStringEquals(effect.name, senseData.name)) {
         effectFounded = effect;
         break;
       }

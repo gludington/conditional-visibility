@@ -4,13 +4,7 @@ import { ActiveEffectData } from '@league-of-foundry-developers/foundry-vtt-type
 import API from './api';
 import CONSTANTS from './constants';
 import Effect, { EffectSupport } from './effects/effect';
-import {
-  error,
-  getSensesFromToken,
-  getConditionsFromToken,
-  i18n,
-  retrieveAtcvEffectFromActiveEffect,
-} from './lib/lib';
+import { error, getSensesFromToken, getConditionsFromToken, i18n, retrieveAtcvEffectFromActiveEffect } from './lib/lib';
 
 export class AtcvEffect {
   // Effect Base
@@ -31,7 +25,7 @@ export class AtcvEffect {
   visionDistanceValue: number | undefined;
   visionType: string;
 
-  static fromSenseData(senseData: SenseData, visionLevelValue:number, isSense:boolean) {
+  static fromSenseData(senseData: SenseData, visionLevelValue: number, isSense: boolean) {
     const res = new AtcvEffect();
     res.visionId = senseData.id;
     res.visionName = senseData.name;
@@ -53,13 +47,18 @@ export class AtcvEffect {
   static fromEffect(effect: Effect) {
     const effectChanges: EffectChangeData[] = EffectSupport._handleIntegrations(effect) || [];
 
-    const res = retrieveAtcvEffectFromActiveEffect(effectChanges,effect.name,effect.icon, undefined);
+    const res = retrieveAtcvEffectFromActiveEffect(effectChanges, effect.name, effect.icon, undefined);
     return res;
   }
 
   static fromActiveEffect(activeEffect: ActiveEffect) {
     const effectChanges = activeEffect.data.changes;
-    const res = retrieveAtcvEffectFromActiveEffect(effectChanges,activeEffect.data.label,<string>activeEffect.data.icon, undefined);
+    const res = retrieveAtcvEffectFromActiveEffect(
+      effectChanges,
+      activeEffect.data.label,
+      <string>activeEffect.data.icon,
+      undefined,
+    );
     return res;
   }
 }
@@ -283,9 +282,7 @@ export class VisionCapabilities {
   addSenses() {
     Promise.all(
       API.SENSES.map(async (statusSight) => {
-        const atcvEffectFlagData = <AtcvEffect>(
-          this.token?.document?.getFlag(CONSTANTS.MODULE_NAME, statusSight.id)
-        );
+        const atcvEffectFlagData = <AtcvEffect>this.token?.document?.getFlag(CONSTANTS.MODULE_NAME, statusSight.id);
         if (atcvEffectFlagData) {
           let visionLevelValue = atcvEffectFlagData.visionLevelValue || 0;
           let visionDistanceValue = atcvEffectFlagData.visionDistanceValue || 0;
@@ -343,9 +340,7 @@ export class VisionCapabilities {
   addConditions() {
     Promise.all(
       API.CONDITIONS.map(async (statusSight) => {
-        const atcvEffectFlagData = <AtcvEffect>(
-          this.token.document?.getFlag(CONSTANTS.MODULE_NAME, statusSight.id)
-        );
+        const atcvEffectFlagData = <AtcvEffect>this.token.document?.getFlag(CONSTANTS.MODULE_NAME, statusSight.id);
         if (atcvEffectFlagData) {
           let visionLevelValue = atcvEffectFlagData.visionLevelValue || 0;
           let visionDistanceValue = atcvEffectFlagData.visionDistanceValue || 0;

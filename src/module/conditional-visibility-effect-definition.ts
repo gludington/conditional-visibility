@@ -88,10 +88,7 @@ export class ConditionalVisibilityEffectDefinitions {
 
   static async effect(nameOrCustomId: string, distance = 0, visionLevel = 0): Promise<Effect | undefined> {
     const effect = <Effect>ConditionalVisibilityEffectDefinitions.all(distance, visionLevel).find((effect: Effect) => {
-      return (
-        isStringEquals(effect.name,nameOrCustomId) ||
-        isStringEquals(effect.customId,nameOrCustomId)
-      );
+      return isStringEquals(effect.name, nameOrCustomId) || isStringEquals(effect.customId, nameOrCustomId);
     });
     if (!effect) {
       warn(`Not founded effect with name ${nameOrCustomId}`, true);

@@ -124,14 +124,13 @@ export default class EffectInterface {
     //   if (!effect) return; // dialog closed without selecting one
     // }
 
-
     if (isGMConnected()) {
       return this._socket.executeAsGM('toggleEffect', effectName, {
         overlay,
         uuids,
       });
     } else {
-      return this._effectHandler.toggleEffect(effectName, {overlay, uuids});
+      return this._effectHandler.toggleEffect(effectName, { overlay, uuids });
     }
   }
 
@@ -185,7 +184,7 @@ export default class EffectInterface {
         uuid,
       });
     } else {
-      return this._effectHandler.removeEffect({effectName, uuid});
+      return this._effectHandler.removeEffect({ effectName, uuid });
     }
   }
 
@@ -225,7 +224,7 @@ export default class EffectInterface {
         uuid,
         origin,
         overlay,
-        metadata
+        metadata,
       });
     } else {
       return this._effectHandler.addEffect({
@@ -234,7 +233,7 @@ export default class EffectInterface {
         uuid,
         origin,
         overlay,
-        metadata
+        metadata,
       });
     }
   }
@@ -271,7 +270,7 @@ export default class EffectInterface {
         origin,
         overlay,
       });
-    }else{
+    } else {
       return this._effectHandler.addEffect({
         effectName: undefined,
         effectData,
@@ -548,7 +547,6 @@ export default class EffectInterface {
     } else {
       return this._effectHandler.hasEffectAppliedOnToken(effectName, uuid, includeDisabled);
     }
-
   }
 
   /**

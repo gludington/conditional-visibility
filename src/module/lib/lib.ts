@@ -404,18 +404,18 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
   // 2 - Check for the correct status sight
   // =========================================
 
-  const sourceVisionLevelsValid: Map<string,AtcvEffect> = new Map<string,AtcvEffect>();
+  const sourceVisionLevelsValid: Map<string, AtcvEffect> = new Map<string, AtcvEffect>();
 
   const visibleForTypeOfSenseByIndex = [...sourceVisionLevels].map((sourceVisionLevel: AtcvEffect) => {
     // Check list of sources and targets
     const resultsOnTarget = targetVisionLevels.map((targetVisionLevel) => {
       if (!targetVisionLevel || !targetVisionLevel.visionId) {
-        sourceVisionLevelsValid.set(sourceVisionLevel.visionId,sourceVisionLevel);
+        sourceVisionLevelsValid.set(sourceVisionLevel.visionId, sourceVisionLevel);
         return true;
       }
       if (sourceVisionLevel?.visionTargets?.length > 0) {
         if (sourceVisionLevel?.visionTargets.includes(<string>targetVisionLevel.visionId)) {
-          sourceVisionLevelsValid.set(sourceVisionLevel.visionId,sourceVisionLevel);
+          sourceVisionLevelsValid.set(sourceVisionLevel.visionId, sourceVisionLevel);
           return true;
         } else {
           return false;
@@ -423,7 +423,7 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
       }
       if (targetVisionLevel?.visionSources?.length > 0) {
         if (targetVisionLevel?.visionSources.includes(<string>sourceVisionLevel.visionId)) {
-          sourceVisionLevelsValid.set(sourceVisionLevel.visionId,sourceVisionLevel);
+          sourceVisionLevelsValid.set(sourceVisionLevel.visionId, sourceVisionLevel);
           return true;
         } else {
           return false;
@@ -433,7 +433,7 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
         isStringEquals(targetVisionLevel.visionId, AtcvEffectSenseFlags.NORMAL) ||
         isStringEquals(targetVisionLevel.visionId, AtcvEffectSenseFlags.NONE)
       ) {
-        sourceVisionLevelsValid.set(sourceVisionLevel.visionId,sourceVisionLevel);
+        sourceVisionLevelsValid.set(sourceVisionLevel.visionId, sourceVisionLevel);
         return true;
       }
       // const result =
@@ -445,13 +445,13 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
         <number>sourceVisionLevel?.visionLevelMinIndex <= <number>targetVisionLevel?.visionLevelMinIndex &&
         <number>sourceVisionLevel?.visionLevelMaxIndex >= <number>targetVisionLevel?.visionLevelMaxIndex;
       if (result) {
-        sourceVisionLevelsValid.set(sourceVisionLevel.visionId,sourceVisionLevel);
+        sourceVisionLevelsValid.set(sourceVisionLevel.visionId, sourceVisionLevel);
       }
       return result;
     });
     // if any source has vision to the token, the token is visible
     let resultFinal = resultsOnTarget.reduce((total, curr) => total || curr, false);
-    if(resultFinal){
+    if (resultFinal) {
       // Check elevation
       if (sourceVisionLevel?.visionElevation) {
         const tokenElevation = getElevationToken(sourceToken);
@@ -519,9 +519,8 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
 export async function prepareActiveEffectForConditionalVisibility(
   sourceToken: Token,
   visionCapabilities: VisionCapabilities,
-): Promise<Map<string,AtcvEffect>> {
-
-  const mapToUpdate = new Map<string,AtcvEffect>();
+): Promise<Map<string, AtcvEffect>> {
+  const mapToUpdate = new Map<string, AtcvEffect>();
 
   // Make sure to remove anything with value 0
   for (const senseData of await API.getAllDefaultSensesAndConditions(sourceToken)) {
@@ -572,8 +571,8 @@ export async function prepareActiveEffectForConditionalVisibility(
           );
         }
       } else {
-        const atcvEffcet  = await API.addEffectConditionalVisibilityOnToken(<string>sourceToken.id, sense, false);
-        if(atcvEffcet){
+        const atcvEffcet = await API.addEffectConditionalVisibilityOnToken(<string>sourceToken.id, sense, false);
+        if (atcvEffcet) {
           mapToUpdate.set(sense.visionId, atcvEffcet);
         }
       }
@@ -624,14 +623,14 @@ export async function prepareActiveEffectForConditionalVisibility(
           condition, //<string>condition.statusSight?.id,
           false,
         );
-        if(atcvEffcet){
+        if (atcvEffcet) {
           mapToUpdate.set(condition.visionId, atcvEffcet);
         }
       }
     } else {
       // TODO why this failed to return ???
       //if (await API.hasEffectAppliedOnToken(<string>sourceToken.id, effectNameToCheckOnActor, true)) {
-      if(activeEffectFounded){
+      if (activeEffectFounded) {
         const actve = retrieveAtcvVisionLevelValueFromActiveEffect(activeEffectFounded.data.changes);
         if (condition.visionLevelValue != actve) {
           await API.removeEffectFromIdOnToken(<string>sourceToken.id, <string>activeEffectFounded.id);
@@ -735,7 +734,6 @@ export function getConditionsFromToken(token: Token, filterValueNoZero = false):
 }
 
 function _getCVFromToken(token: Token, isSense: boolean, filterValueNoZero = false): AtcvEffect[] {
-
   const statusEffects: AtcvEffect[] = [];
   if (!token) {
     info(`No token found i get only the default registered`);
@@ -757,7 +755,7 @@ function _getCVFromToken(token: Token, isSense: boolean, filterValueNoZero = fal
     }
     if (!filterValueNoZero) {
       return statusEffects.filter((a) => a.visionLevelValue != 0);
-    }else{
+    } else {
       return statusEffects;
     }
   }
@@ -777,16 +775,24 @@ function _getCVFromToken(token: Token, isSense: boolean, filterValueNoZero = fal
     if (!effectNameToSet) {
       continue;
     }
-    const atcvEffectTmp = retrieveAtcvEffectFromActiveEffect(effectEntity.data.changes, effectNameToSet,<string>effectEntity.data.icon, undefined);
-    if(!atcvEffectTmp.visionId){
+    const atcvEffectTmp = retrieveAtcvEffectFromActiveEffect(
+      effectEntity.data.changes,
+      effectNameToSet,
+      <string>effectEntity.data.icon,
+      undefined,
+    );
+    if (!atcvEffectTmp.visionId) {
       continue;
     }
-    if(isSense && atcvEffectTmp.visionType === 'sense'){
+    if (isSense && atcvEffectTmp.visionType === 'sense') {
       statusEffects.push(atcvEffectTmp);
-    }else if(!isSense && atcvEffectTmp.visionType === 'condition'){
+    } else if (!isSense && atcvEffectTmp.visionType === 'condition') {
       statusEffects.push(atcvEffectTmp);
-    }else{
-      warn(`Cannot add the sense or condition with name ${effectNameToSet} the 'visionType' property is not been set please add the 'ATCV.conditionType' active effect changes with the value 'sense' or 'condition', or registered the sense with the condition`, true);
+    } else {
+      warn(
+        `Cannot add the sense or condition with name ${effectNameToSet} the 'visionType' property is not been set please add the 'ATCV.conditionType' active effect changes with the value 'sense' or 'condition', or registered the sense with the condition`,
+        true,
+      );
     }
   }
   let sensesOrConditions: SenseData[] = [];
@@ -806,7 +812,7 @@ function _getCVFromToken(token: Token, isSense: boolean, filterValueNoZero = fal
   }
   if (!filterValueNoZero) {
     return statusEffects.filter((a) => a.visionLevelValue != 0);
-  }else{
+  } else {
     return statusEffects;
   }
 }
@@ -939,28 +945,30 @@ function _getCVFromToken(token: Token, isSense: boolean, filterValueNoZero = fal
   return statusEffects;
 }
 */
-export function retrieveAtcvEffectFromActiveEffect(effectChanges: EffectChangeData[], effectName:string, effectIcon:string, isSense:boolean|undefined = undefined):AtcvEffect{
-  const atcvEffect:AtcvEffect = <any>{};
+export function retrieveAtcvEffectFromActiveEffect(
+  effectChanges: EffectChangeData[],
+  effectName: string,
+  effectIcon: string,
+  isSense: boolean | undefined = undefined,
+): AtcvEffect {
+  const atcvEffect: AtcvEffect = <any>{};
   const effectEntityChanges = effectChanges.sort((a, b) => <number>a.priority - <number>b.priority);
   effectEntityChanges.forEach((change) => {
     if (change.key.startsWith('ATCV.') && !change.key.startsWith('ATCV.condition') && change.value) {
-      if(atcvEffect.visionId === null || atcvEffect.visionId === undefined){
+      if (atcvEffect.visionId === null || atcvEffect.visionId === undefined) {
         atcvEffect.visionId = change.key.slice(5);
         atcvEffect.visionLevelValue = Number(change.value);
       }
-    }
-    else if (isStringEquals(change.key, 'ATCV.conditionElevation') && change.value) {
-      if(atcvEffect.visionElevation === null || atcvEffect.visionElevation === undefined){
-        atcvEffect.visionElevation = (change.value === 'true');
+    } else if (isStringEquals(change.key, 'ATCV.conditionElevation') && change.value) {
+      if (atcvEffect.visionElevation === null || atcvEffect.visionElevation === undefined) {
+        atcvEffect.visionElevation = change.value === 'true';
       }
-    }
-    else if(isStringEquals(change.key, 'ATCV.conditionDistance') && change.value){
-      if(atcvEffect.visionDistanceValue === null || atcvEffect.visionDistanceValue === undefined){
+    } else if (isStringEquals(change.key, 'ATCV.conditionDistance') && change.value) {
+      if (atcvEffect.visionDistanceValue === null || atcvEffect.visionDistanceValue === undefined) {
         atcvEffect.visionDistanceValue = Number(change.value);
       }
-    }
-    else if (isStringEquals(change.key, 'ATCV.conditionTargets') && change.value) {
-      if(atcvEffect.visionTargets === null || atcvEffect.visionTargets === undefined){
+    } else if (isStringEquals(change.key, 'ATCV.conditionTargets') && change.value) {
+      if (atcvEffect.visionTargets === null || atcvEffect.visionTargets === undefined) {
         const inTags = <any>change.value;
         if (!(typeof inTags === 'string' || inTags instanceof RegExp || Array.isArray(inTags))) {
           error(`'ATCV.conditionTargets' must be of type string or array`);
@@ -976,9 +984,8 @@ export function retrieveAtcvEffectFromActiveEffect(effectChanges: EffectChangeDa
         });
         atcvEffect.visionTargets = providedTags.map((t) => (t instanceof RegExp ? t : t.trim()));
       }
-    }
-    else if (isStringEquals(change.key, 'ATCV.conditionSources') && change.value) {
-      if(atcvEffect.visionSources === null || atcvEffect.visionSources === undefined){
+    } else if (isStringEquals(change.key, 'ATCV.conditionSources') && change.value) {
+      if (atcvEffect.visionSources === null || atcvEffect.visionSources === undefined) {
         const inTags = <any>change.value;
         if (!(typeof inTags === 'string' || inTags instanceof RegExp || Array.isArray(inTags))) {
           error(`'ATCV.conditionSources' must be of type string or array`);
@@ -994,42 +1001,38 @@ export function retrieveAtcvEffectFromActiveEffect(effectChanges: EffectChangeDa
         });
         atcvEffect.visionSources = providedTags.map((t) => (t instanceof RegExp ? t : t.trim()));
       }
-    }
-    else if (isStringEquals(change.key, 'ATCV.conditionTargetImage') && change.value) {
-      if(atcvEffect.visionTargetImage === null || atcvEffect.visionTargetImage === undefined){
+    } else if (isStringEquals(change.key, 'ATCV.conditionTargetImage') && change.value) {
+      if (atcvEffect.visionTargetImage === null || atcvEffect.visionTargetImage === undefined) {
         atcvEffect.visionTargetImage = String(change.value);
       }
-    }
-    else if (isStringEquals(change.key, 'ATCV.conditionType') && change.value) {
-      if(atcvEffect.visionType === null || atcvEffect.visionType === undefined){
+    } else if (isStringEquals(change.key, 'ATCV.conditionType') && change.value) {
+      if (atcvEffect.visionType === null || atcvEffect.visionType === undefined) {
         atcvEffect.visionType = String(change.value);
       }
-    }
-    else if (isStringEquals(change.key, 'ATCV.conditionLevelMinIndex') && change.value) {
-      if(atcvEffect.visionLevelMinIndex === null || atcvEffect.visionLevelMinIndex === undefined){
+    } else if (isStringEquals(change.key, 'ATCV.conditionLevelMinIndex') && change.value) {
+      if (atcvEffect.visionLevelMinIndex === null || atcvEffect.visionLevelMinIndex === undefined) {
         atcvEffect.visionLevelMinIndex = Number(change.value);
       }
-    }
-    else if (isStringEquals(change.key, 'ATCV.conditionLevelMaxIndex') && change.value) {
-      if(atcvEffect.visionLevelMaxIndex === null || atcvEffect.visionLevelMaxIndex === undefined){
+    } else if (isStringEquals(change.key, 'ATCV.conditionLevelMaxIndex') && change.value) {
+      if (atcvEffect.visionLevelMaxIndex === null || atcvEffect.visionLevelMaxIndex === undefined) {
         atcvEffect.visionLevelMaxIndex = Number(change.value);
       }
     }
   });
 
-  if(isSense === null || isSense === undefined){
+  if (isSense === null || isSense === undefined) {
     const effectSightSense = <SenseData>API.SENSES.find((a: SenseData) => {
       return isStringEquals(atcvEffect.visionName, a.id) || isStringEquals(atcvEffect.visionName, a.name);
     });
-    if(effectSightSense){
+    if (effectSightSense) {
       if (!atcvEffect.visionType) {
         atcvEffect.visionType = 'sense';
       }
-    }else{
+    } else {
       const effectSightCondition = <SenseData>API.CONDITIONS.find((a: SenseData) => {
         return isStringEquals(atcvEffect.visionName, a.id) || isStringEquals(atcvEffect.visionName, a.name);
       });
-      if(effectSightCondition){
+      if (effectSightCondition) {
         if (!atcvEffect.visionType) {
           atcvEffect.visionType = 'condition';
         }
@@ -1037,22 +1040,22 @@ export function retrieveAtcvEffectFromActiveEffect(effectChanges: EffectChangeDa
         // this cannot be happening
       }
     }
-  }else{
+  } else {
     // Last check
-    if(!atcvEffect.visionType && isSense){
+    if (!atcvEffect.visionType && isSense) {
       atcvEffect.visionType = 'sense';
-    }else if(!atcvEffect.visionType && !isSense){
+    } else if (!atcvEffect.visionType && !isSense) {
       atcvEffect.visionType = 'condition';
-    }else{
+    } else {
       // this cannot be happening
     }
   }
 
-  if(!atcvEffect.visionName){
+  if (!atcvEffect.visionName) {
     atcvEffect.visionName = effectName;
   }
 
-  if(!atcvEffect.visionIcon){
+  if (!atcvEffect.visionIcon) {
     atcvEffect.visionIcon = effectIcon;
   }
 
@@ -1261,15 +1264,17 @@ export async function toggleStealth(event) {
   //const sensesOrderByName = <SenseData[]>API.SENSES; //.sort((a, b) => a.name.localeCompare(b.name));
   //const conditionsOrderByName = <SenseData[]>API.CONDITIONS; //.sort((a, b) => a.name.localeCompare(b.name));
   const sensesOrderByName = getSensesFromToken(this.object).sort((a, b) => a.visionName.localeCompare(b.visionName));
-  const conditionsOrderByName = getConditionsFromToken(this.object).sort((a, b) => a.visionName.localeCompare(b.visionName));
-  sensesOrderByName.forEach(function(item,i){
-    if(item.visionId === AtcvEffectSenseFlags.NONE){
+  const conditionsOrderByName = getConditionsFromToken(this.object).sort((a, b) =>
+    a.visionName.localeCompare(b.visionName),
+  );
+  sensesOrderByName.forEach(function (item, i) {
+    if (item.visionId === AtcvEffectSenseFlags.NONE) {
       sensesOrderByName.splice(i, 1);
       sensesOrderByName.unshift(item);
     }
   });
-  conditionsOrderByName.forEach(function(item,i){
-    if(item.visionId === AtcvEffectConditionFlags.NONE){
+  conditionsOrderByName.forEach(function (item, i) {
+    if (item.visionId === AtcvEffectConditionFlags.NONE) {
       conditionsOrderByName.splice(i, 1);
       conditionsOrderByName.unshift(item);
     }

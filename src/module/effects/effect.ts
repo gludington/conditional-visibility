@@ -494,12 +494,12 @@ export class EffectSupport {
     return changes;
   }
 
-  static prepareOriginForToken(tokenOrTokenId:Token|string):string{
-    let token:Token;
-    if(typeof tokenOrTokenId === 'string' || tokenOrTokenId instanceof String){
+  static prepareOriginForToken(tokenOrTokenId: Token | string): string {
+    let token: Token;
+    if (typeof tokenOrTokenId === 'string' || tokenOrTokenId instanceof String) {
       const tokens = <Token[]>canvas.tokens?.placeables;
       token = <Token>tokens.find((token) => token.id == <string>tokenOrTokenId);
-    }else{
+    } else {
       token = tokenOrTokenId;
     }
     const sceneId = (token?.scene && token.scene.id) || canvas.scene?.id;
@@ -507,11 +507,11 @@ export class EffectSupport {
     return origin;
   }
 
-  static prepareOriginForActor(actorOrAcotrId:Actor|string):string{
-    let actor:Actor;
-    if(typeof actorOrAcotrId === 'string' || actorOrAcotrId instanceof String){
+  static prepareOriginForActor(actorOrAcotrId: Actor | string): string {
+    let actor: Actor;
+    if (typeof actorOrAcotrId === 'string' || actorOrAcotrId instanceof String) {
       actor = <Actor>game.actors?.get(<string>actorOrAcotrId);
-    }else{
+    } else {
       actor = actorOrAcotrId;
     }
     const origin = `Actor.${actor.id}`;

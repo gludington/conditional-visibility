@@ -1,8 +1,4 @@
-import {
-  AtcvEffect,
-  AtcvEffectConditionFlags,
-  AtcvEffectSenseFlags,
-} from './conditional-visibility-models';
+import { AtcvEffect, AtcvEffectConditionFlags, AtcvEffectSenseFlags } from './conditional-visibility-models';
 import API from './api';
 import CONSTANTS from './constants';
 import { debug, getSensesFromToken, i18n, log, shouldIncludeVision, templateTokens, warn } from './lib/lib';
@@ -534,7 +530,6 @@ async function rollSkillHandler(wrapped, skillId, options, ...rest) {
     game.settings.get(CONSTANTS.MODULE_NAME, 'autoStealth') &&
     actorChatId === actor.id
   ) {
-
     //@ts-ignore
     let valStealthRoll = parseInt(rollChatTotal);
     if (isNaN(valStealthRoll)) {

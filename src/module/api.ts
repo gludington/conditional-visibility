@@ -238,7 +238,11 @@ const API = {
       throw error('hasEffectAppliedOnActorArr | inAttributes must be of type array');
     }
     const [effectName, uuid, includeDisabled] = inAttributes;
-    const result = await (<EffectInterface>this.effectInterface)._effectHandler.hasEffectAppliedOnActor(effectName, uuid, includeDisabled);
+    const result = await (<EffectInterface>this.effectInterface)._effectHandler.hasEffectAppliedOnActor(
+      effectName,
+      uuid,
+      includeDisabled,
+    );
     return result;
   },
 
@@ -247,7 +251,11 @@ const API = {
       throw error('hasEffectAppliedFromIdOnActorArr | inAttributes must be of type array');
     }
     const [effectId, uuid, includeDisabled] = inAttributes;
-    const result = await (<EffectInterface>this.effectInterface)._effectHandler.hasEffectAppliedFromIdOnActor(effectId, uuid, includeDisabled);
+    const result = await (<EffectInterface>this.effectInterface)._effectHandler.hasEffectAppliedFromIdOnActor(
+      effectId,
+      uuid,
+      includeDisabled,
+    );
     return result;
   },
 
@@ -319,7 +327,11 @@ const API = {
       throw error('hasEffectAppliedOnTokenArr | inAttributes must be of type array');
     }
     const [effectName, uuid, includeDisabled] = inAttributes;
-    const result = await (<EffectInterface>this.effectInterface)._effectHandler.hasEffectAppliedOnToken(effectName, uuid, includeDisabled);
+    const result = await (<EffectInterface>this.effectInterface)._effectHandler.hasEffectAppliedOnToken(
+      effectName,
+      uuid,
+      includeDisabled,
+    );
     return result;
   },
 
@@ -328,7 +340,11 @@ const API = {
       throw error('hasEffectAppliedFromIdOnTokenArr | inAttributes must be of type array');
     }
     const [effectId, uuid, includeDisabled] = inAttributes;
-    const result = await (<EffectInterface>this.effectInterface)._effectHandler.hasEffectAppliedFromIdOnToken(effectId, uuid, includeDisabled);
+    const result = await (<EffectInterface>this.effectInterface)._effectHandler.hasEffectAppliedFromIdOnToken(
+      effectId,
+      uuid,
+      includeDisabled,
+    );
     return result;
   },
 
@@ -538,12 +554,20 @@ const API = {
   },
 
   async hasEffectAppliedOnToken(tokenId: string, effectName: string, includeDisabled: boolean) {
-    const result = await (<EffectInterface>this.effectInterface).hasEffectAppliedOnToken(effectName, <string>tokenId, includeDisabled);
+    const result = await (<EffectInterface>this.effectInterface).hasEffectAppliedOnToken(
+      effectName,
+      <string>tokenId,
+      includeDisabled,
+    );
     return result;
   },
 
   async hasEffectAppliedFromIdOnToken(tokenId: string, effectId: string, includeDisabled: boolean) {
-    const result = await (<EffectInterface>this.effectInterface).hasEffectAppliedFromIdOnToken(effectId, <string>tokenId, includeDisabled);
+    const result = await (<EffectInterface>this.effectInterface).hasEffectAppliedFromIdOnToken(
+      effectId,
+      <string>tokenId,
+      includeDisabled,
+    );
     return result;
   },
 
@@ -565,7 +589,10 @@ const API = {
   },
 
   async addActiveEffectOnToken(tokenId: string, activeEffectData: ActiveEffectData) {
-    const result = await (<EffectInterface>this.effectInterface).addActiveEffectOnToken(<string>tokenId, activeEffectData);
+    const result = await (<EffectInterface>this.effectInterface).addActiveEffectOnToken(
+      <string>tokenId,
+      activeEffectData,
+    );
     return result;
   },
 
@@ -639,7 +666,11 @@ const API = {
     return this.addEffectConditionalVisibilityOnToken(tokenNameOrId, senseDataEffect, disabled);
   },
 
-  async addEffectConditionalVisibilityOnToken(tokenNameOrId: string, senseDataEffect: AtcvEffect, disabled: boolean):Promise<AtcvEffect|undefined> {
+  async addEffectConditionalVisibilityOnToken(
+    tokenNameOrId: string,
+    senseDataEffect: AtcvEffect,
+    disabled: boolean,
+  ): Promise<AtcvEffect | undefined> {
     const tokens = <Token[]>canvas.tokens?.placeables;
     const token = <Token>tokens.find((token) => {
       return isStringEquals(token.name, i18n(tokenNameOrId)) || isStringEquals(token.id, tokenNameOrId);

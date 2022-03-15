@@ -176,11 +176,15 @@ const module = {
         if (senseOrConditionIdKey.includes('-=')) {
           return;
         }
-        const currentValueOfFlag = Number((<AtcvEffect>document.getFlag(CONSTANTS.MODULE_NAME,senseOrConditionIdKey))?.visionLevelValue || 0);
+        const currentValueOfFlag = Number(
+          (<AtcvEffect>document.getFlag(CONSTANTS.MODULE_NAME, senseOrConditionIdKey))?.visionLevelValue || 0,
+        );
         const senseOrConditionId = senseOrConditionIdKey; //senseOrConditionIdKey.replace('-=', '');
-        if (senseOrConditionValue?.visionLevelValue
-          && senseOrConditionValue?.visionLevelValue != 0
-          && senseOrConditionValue?.visionLevelValue != currentValueOfFlag) {
+        if (
+          senseOrConditionValue?.visionLevelValue &&
+          senseOrConditionValue?.visionLevelValue != 0 &&
+          senseOrConditionValue?.visionLevelValue != currentValueOfFlag
+        ) {
           // const isSense = <SenseData>API.SENSES.find((sense: SenseData) => {
           //   return (
           //     isStringEquals(sense.id, senseOrConditionId) || isStringEquals(i18n(sense.name), i18n(senseOrConditionId))

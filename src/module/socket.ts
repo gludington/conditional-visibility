@@ -70,9 +70,7 @@ export function registerSocket() {
   conditionalVisibilitySocket.register('toggleEffectFromIdOnActor', (...args) =>
     API.toggleEffectFromIdOnActorArr(...args),
   );
-  conditionalVisibilitySocket.register('hasEffectAppliedOnActor', (...args) =>
-    API.hasEffectAppliedOnActorArr(...args),
-  );
+  conditionalVisibilitySocket.register('hasEffectAppliedOnActor', (...args) => API.hasEffectAppliedOnActorArr(...args));
   conditionalVisibilitySocket.register('hasEffectAppliedFromIdOnActor', (...args) =>
     API.hasEffectAppliedFromIdOnActorArr(...args),
   );
@@ -91,9 +89,7 @@ export function registerSocket() {
   conditionalVisibilitySocket.register('hasEffectAppliedFromIdOnToken', (...args) =>
     API.hasEffectAppliedFromIdOnTokenArr(...args),
   );
-  conditionalVisibilitySocket.register('hasEffectAppliedOnToken', (...args) =>
-    API.hasEffectAppliedOnTokenArr(...args),
-  );
+  conditionalVisibilitySocket.register('hasEffectAppliedOnToken', (...args) => API.hasEffectAppliedOnTokenArr(...args));
   conditionalVisibilitySocket.register('addEffectOnToken', (...args) => API.addEffectOnTokenArr(...args));
   conditionalVisibilitySocket.register('removeEffectOnToken', (...args) => API.removeEffectOnTokenArr(...args));
   conditionalVisibilitySocket.register('removeEffectFromIdOnToken', (...args) =>

@@ -352,7 +352,7 @@ function otherSettings(apply = false) {
       default: false,
       type: Boolean,
     },
-  
+
     enableSightCheckForGM: {
       name: `${CONSTANTS.MODULE_NAME}.setting.enableSightCheckForGM.name`,
       hint: `${CONSTANTS.MODULE_NAME}.setting.enableSightCheckForGM.hint`,
@@ -361,7 +361,7 @@ function otherSettings(apply = false) {
       default: true,
       type: Boolean,
     },
-  
+
     enableHud: {
       name: `${CONSTANTS.MODULE_NAME}.setting.enableHud.name`,
       hint: `${CONSTANTS.MODULE_NAME}.setting.enableHud.hint`,
@@ -370,7 +370,7 @@ function otherSettings(apply = false) {
       default: false,
       type: Boolean,
     },
-  
+
     hudPos: {
       name: `${CONSTANTS.MODULE_NAME}.setting.hudPos.name`,
       hint: `${CONSTANTS.MODULE_NAME}.setting.hudPos.hint`,
@@ -383,7 +383,7 @@ function otherSettings(apply = false) {
         '.left': 'Left',
       },
     },
-  
+
     disableForNonHostileNpc: {
       name: `${CONSTANTS.MODULE_NAME}.setting.disableForNonHostileNpc.name`,
       hint: `${CONSTANTS.MODULE_NAME}.setting.disableForNonHostileNpc.hint`,
@@ -392,7 +392,7 @@ function otherSettings(apply = false) {
       default: false,
       type: Boolean,
     },
-  
+
     disableDCEAutomaticImport: {
       name: `${CONSTANTS.MODULE_NAME}.setting.disableDCEAutomaticImport.name`,
       hint: `${CONSTANTS.MODULE_NAME}.setting.disableDCEAutomaticImport.hint`,
@@ -401,7 +401,7 @@ function otherSettings(apply = false) {
       default: false,
       type: Boolean,
     },
-  
+
     autoStealth: {
       name: `${CONSTANTS.MODULE_NAME}.setting.autoStealth.name`,
       hint: `${CONSTANTS.MODULE_NAME}.setting.autoStealth.hint`,
@@ -410,7 +410,7 @@ function otherSettings(apply = false) {
       default: false,
       type: Boolean,
     },
-  
+
     autoPassivePerception: {
       name: `${CONSTANTS.MODULE_NAME}.setting.autoPassivePerception.name`,
       hint: `${CONSTANTS.MODULE_NAME}.setting.autoPassivePerception.hint`,
@@ -418,7 +418,7 @@ function otherSettings(apply = false) {
       config: true,
       default: true,
       type: Boolean,
-    }
+    },
   };
 }
 

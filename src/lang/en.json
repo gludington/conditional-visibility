@@ -5,7 +5,6 @@
   "conditional-visibility.setting.autoPassivePerception.name": "Auto check with passive percpetion",
   "conditional-visibility.setting.autoPassivePerception.hint": "[This is system dependent] On supported game systems, if checked the passive percpetion attribure is used as a 'sense' active effect",
 
-
   "conditional-visibility.setting.useEagleEye.name": "Use eagle eye (Experimental)",
   "conditional-visibility.setting.useEagleEye.hint": "A embedded version of the module https://github.com/trioderegion/eagle-eye/",
 

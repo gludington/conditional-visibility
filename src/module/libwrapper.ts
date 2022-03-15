@@ -535,12 +535,7 @@ async function rollSkillHandler(wrapped, skillId, options, ...rest) {
     if (isNaN(valStealthRoll)) {
       valStealthRoll = 0;
     }
-    // //@ts-ignore
-    // const passiveStealth = getProperty(actor.data, <string>API.STEALTH_PASSIVE_SKILL) || 0;
-    // const valCurrentstealth = getProperty(actor.data, <string>API.STEALTH_ACTIVE_SKILL) || 0;
-    // if (passiveStealth > valStealthRoll) {
-    //   valStealthRoll = passiveStealth;
-    // }
+
     const senseId = AtcvEffectSenseFlags.NONE;
     const conditionId = AtcvEffectConditionFlags.HIDDEN;
 

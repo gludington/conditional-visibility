@@ -15,7 +15,10 @@ import { EnhancedConditions } from './cub/enhanced-conditions';
 import { canvas, game } from './settings';
 import Effect, { EffectSupport } from './effects/effect';
 import { ConditionalVisibilityEffectDefinitions } from './conditional-visibility-effect-definition';
-import { ActiveEffectData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/module.mjs';
+import {
+  ActiveEffectData,
+  ActorData,
+} from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/module.mjs';
 
 const API = {
   effectInterface: EffectInterface,
@@ -696,7 +699,6 @@ const API = {
     let effect: Effect | undefined = undefined;
     //let senseData: SenseData | undefined = undefined;
 
-
     // const senseDataId = senseDataEffect.visionId;
     // for (const sense of sensesAndConditionOrderByName) {
     //   // Check for dfred convenient effect and retrieve the effect with the specific name
@@ -764,7 +766,7 @@ const API = {
     //     isStringEquals(sense.name, (<SenseData>senseData).name)
     //   );
     // });
-    
+
     const isSense = senseDataEffect.visionType === 'sense';
     if (!effect) {
       const sensesAndConditionOrderByName = <AtcvEffect[]>await this.getAllDefaultSensesAndConditions(token);
@@ -784,9 +786,16 @@ const API = {
           },
         ];
         effect = EffectSupport.buildDefault(
-          senseOrCondition.visionId, senseOrCondition.visionName, senseOrCondition.visionIcon, 
-          !!isSense, [], [], [], atcvChanges);
-      }else{
+          senseOrCondition.visionId,
+          senseOrCondition.visionName,
+          senseOrCondition.visionIcon,
+          !!isSense,
+          [],
+          [],
+          [],
+          atcvChanges,
+        );
+      } else {
         const atcvChanges = <any[]>[
           {
             key: 'ATCV.' + senseDataEffect.visionId,
@@ -796,15 +805,23 @@ const API = {
           },
         ];
         effect = EffectSupport.buildDefault(
-          senseDataEffect.visionId, senseDataEffect.visionName, senseDataEffect.visionIcon, 
-          !!isSense, [], [], [], atcvChanges);
+          senseDataEffect.visionId,
+          senseDataEffect.visionName,
+          senseDataEffect.visionIcon,
+          !!isSense,
+          [],
+          [],
+          [],
+          atcvChanges,
+        );
       }
     }
     // Add some feature if is a sense or a condition
     if (!effect) {
       warn(
-        `No effect found with reference '${senseDataEffect.visionId}' and name '${senseDataEffect.visionName}', please create this active effect on the actor or on dfred convinient effects with the AE change 'ATCV.${senseDataEffect.visionId}' with any numeric value`
-      , true);
+        `No effect found with reference '${senseDataEffect.visionId}' and name '${senseDataEffect.visionName}', please create this active effect on the actor or on dfred convinient effects with the AE change 'ATCV.${senseDataEffect.visionId}' with any numeric value`,
+        true,
+      );
       return undefined;
     } else {
       /*
@@ -838,7 +855,7 @@ const API = {
         }
       }
       effect.transfer = !disabled;
-      
+
       let effectToFoundByName = i18n(senseDataEffect.visionName);
       if (!effectToFoundByName.endsWith('(CV)')) {
         effectToFoundByName = effectToFoundByName + ' (CV)';
@@ -978,7 +995,9 @@ const API = {
     }
     const sensesAndConditionDataList = <AtcvEffect[]>await this.getAllDefaultSensesAndConditions(null);
     const senseAlreadyExistsId = <AtcvEffect>(
-      sensesAndConditionDataList.find((a: AtcvEffect) => a.visionId == senseDataIdOrName || a.visionName == senseDataIdOrName)
+      sensesAndConditionDataList.find(
+        (a: AtcvEffect) => a.visionId == senseDataIdOrName || a.visionName == senseDataIdOrName,
+      )
     );
     if (!senseAlreadyExistsId) {
       warn(`Cannot unregister the ${valueComment} with id '${senseDataIdOrName}' because is not exists exists`, true);
@@ -994,7 +1013,8 @@ const API = {
     let mytotal = 0;
     if (token && token.actor) {
       const stealthActiveSetting = API.STEALTH_ACTIVE_SKILL; //game.settings.get(CONSTANTS.MODULE_NAME, 'passiveStealthSkill');
-      const stealthActive = <number>getProperty(token.actor, `data.${stealthActiveSetting}`);
+      //document.actor.data
+      const stealthActive = <number>getProperty(<Actor>token?.document?.actor, `data.${stealthActiveSetting}`);
       if (stealthActiveSetting && stealthActive && !isNaN(stealthActive)) {
         const roll = await new Roll('1d20 + (' + stealthActive + ')').roll();
         mytotal = <number>roll.total;

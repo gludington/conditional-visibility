@@ -373,6 +373,7 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
       return true;
     }
   }
+
   // ========================================
   // 1 - Preparation of the active effect
   // =========================================
@@ -429,13 +430,24 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
           return false;
         }
       }
-      if (
-        isStringEquals(targetVisionLevel.visionId, AtcvEffectSenseFlags.NORMAL) ||
-        isStringEquals(targetVisionLevel.visionId, AtcvEffectSenseFlags.NONE)
-      ) {
+      if (isStringEquals(targetVisionLevel.visionId, AtcvEffectConditionFlags.NONE)) {
         sourceVisionLevelsValid.set(sourceVisionLevel.visionId, sourceVisionLevel);
         return true;
       }
+
+      if (isStringEquals(targetVisionLevel.visionId, AtcvEffectConditionFlags.HIDDEN)) {
+        const stealthedPassive =
+          getProperty(<Actor>sourceToken?.document?.actor, `data.${API.STEALTH_PASSIVE_SKILL}`) || 0;
+        if (
+          stealthedPassive > 0 &&
+          game.settings.get(CONSTANTS.MODULE_NAME, 'autoPassivePerception') &&
+          stealthedPassive > <number>targetVisionLevel.visionLevelValue
+        ) {
+          sourceVisionLevelsValid.set(sourceVisionLevel.visionId, sourceVisionLevel);
+          return true;
+        }
+      }
+
       // const result =
       //   <number>sourceVisionLevel?.statusSight?.visionLevelMinIndex <=
       //     <number>targetVisionLevel.statusSight?.visionLevelMinIndex &&
@@ -790,12 +802,11 @@ function _getCVFromToken(tokenDocument: TokenDocument, isSense: boolean, filterV
       continue;
     }
 
-    
     if (isSense && atcvEffectTmp.visionType === 'sense') {
       statusEffects.push(atcvEffectTmp);
     } else if (!isSense && atcvEffectTmp.visionType === 'condition') {
       statusEffects.push(atcvEffectTmp);
-    } 
+    }
     // TODO to remove this piece of code....
     else {
       const effectSenseSight = API.SENSES.find((a: SenseData) => {
@@ -811,7 +822,7 @@ function _getCVFromToken(tokenDocument: TokenDocument, isSense: boolean, filterV
           atcvEffectTmp.visionType = 'condition';
         } else {
           // do nothing
-          if(!atcvEffectTmp.visionType){
+          if (!atcvEffectTmp.visionType) {
             warn(
               `Cannot add the sense or condition with name ${effectNameToSet} the 'visionType' property is not been set please add the 'ATCV.conditionType' active effect changes with the value 'sense' or 'condition', or registered the sense with the condition`,
               true,
@@ -979,7 +990,7 @@ export function retrieveAtcvEffectFromActiveEffect(
   isSense: boolean | undefined = undefined,
 ): AtcvEffect {
   const atcvEffect: AtcvEffect = <any>{};
-  
+
   if (!atcvEffect.visionName) {
     atcvEffect.visionName = effectName;
   }
@@ -1283,9 +1294,13 @@ export async function toggleStealth(event) {
   );
   let stealthedWithHiddenCondition = atcvEffectFlagData?.visionLevelValue ?? 0;
   let stealthedPassive = 0;
-  if (stealthedWithHiddenCondition == 0 && getProperty(this.object.document, `data.${API.STEALTH_PASSIVE_SKILL}`)) {
-    stealthedWithHiddenCondition = <number>getProperty(this.object.document, `data.${API.STEALTH_PASSIVE_SKILL}`) || 0;
-    stealthedPassive = getProperty(this.object.document, `data.${API.STEALTH_PASSIVE_SKILL}`) || 0;
+  if (
+    stealthedWithHiddenCondition == 0 &&
+    getProperty(this.object.document.actor, `data.${API.STEALTH_PASSIVE_SKILL}`)
+  ) {
+    stealthedWithHiddenCondition =
+      <number>getProperty(this.object.document.actor, `data.${API.STEALTH_PASSIVE_SKILL}`) || 0;
+    stealthedPassive = getProperty(this.object.document.actor, `data.${API.STEALTH_PASSIVE_SKILL}`) || 0;
   }
 
   // TODO TO CHECK IF I CAN ADD MY CUSTOMIZED ONES WITHOUT THE NEED OF REGISTERED

@@ -250,9 +250,9 @@ export class Constants {
 export class EffectSupport {
   static buildDefault(
     // effectData: Effect,
-    id:string,
-    name:string,
-    icon:string,
+    id: string,
+    name: string,
+    icon: string,
     isPassive: boolean,
     changes: EffectChangeData[] = [],
     atlChanges: EffectChangeData[] = [],

@@ -731,24 +731,26 @@ const API = {
       }
       //@ts-ignore
       effect = <Effect>await game.dfreds.effectInterface.findCustomEffectByName(effectToFoundByName);
-      let foundedFlagVisionValue = false;
-      if (!effect.atcvChanges) {
-        effect.atcvChanges = [];
-      }
-      for (const obj of effect.atcvChanges) {
-        if (obj.key === 'ATCV.' + senseDataEffect.visionId && obj.value != String(senseDataEffect.visionLevelValue)) {
-          obj.value = String(senseDataEffect.visionLevelValue);
-          foundedFlagVisionValue = true;
-          break;
+      if(effect){
+        let foundedFlagVisionValue = false;
+        if (!effect.atcvChanges) {
+          effect.atcvChanges = [];
         }
-      }
-      if (!foundedFlagVisionValue) {
-        effect.atcvChanges.push(<any>{
-          key: 'ATCV.' + senseDataEffect.visionId,
-          mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
-          value: String(senseDataEffect.visionLevelValue),
-          priority: 5,
-        });
+        for (const obj of effect.atcvChanges) {
+          if (obj.key === 'ATCV.' + senseDataEffect.visionId && obj.value != String(senseDataEffect.visionLevelValue)) {
+            obj.value = String(senseDataEffect.visionLevelValue);
+            foundedFlagVisionValue = true;
+            break;
+          }
+        }
+        if (!foundedFlagVisionValue) {
+          effect.atcvChanges.push(<any>{
+            key: 'ATCV.' + senseDataEffect.visionId,
+            mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+            value: String(senseDataEffect.visionLevelValue),
+            priority: 5,
+          });
+        }
       }
     }
     if (!effect) {
@@ -759,13 +761,6 @@ const API = {
         );
       });
     }
-
-    // const isSense = API.SENSES.find((sense: SenseData) => {
-    //   return (
-    //     isStringEquals(sense.id, (<SenseData>senseData).id) ||
-    //     isStringEquals(sense.name, (<SenseData>senseData).name)
-    //   );
-    // });
 
     const isSense = senseDataEffect.visionType === 'sense';
     if (!effect) {
@@ -824,27 +819,6 @@ const API = {
       );
       return undefined;
     } else {
-      /*
-      let foundedFlagVisionValue = false;
-      if (!effect.atcvChanges) {
-        effect.atcvChanges = [];
-      }
-      for (const obj of effect.atcvChanges) {
-        if (obj.key === 'ATCV.' + senseDataEffect.visionId && obj.value != String(visionLevel)) {
-          obj.value = String(visionLevel);
-          foundedFlagVisionValue = true;
-          break;
-        }
-      }
-      if (!foundedFlagVisionValue) {
-        effect.atcvChanges.push(<any>{
-          key: 'ATCV.' + senseDataEffect.visionId,
-          mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
-          value: String(visionLevel),
-          priority: 5,
-        });
-      }
-      */
       if (isSense) {
         effect.isTemporary = false; // passive ae
         // effect.dae = { stackable: false, specialDuration: [], transfer: true }

@@ -384,7 +384,24 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
   if (!sourceVisionLevels || sourceVisionLevels.length == 0) {
     // If at least a condition is present on target it should be false
     if (targetVisionLevels && targetVisionLevels.length > 0) {
-      return false;
+      const targetVisionLevel = <AtcvEffect>targetVisionLevels.find((a: AtcvEffect) => {
+        return isStringEquals(a.visionId, AtcvEffectConditionFlags.HIDDEN);
+      });
+      if (targetVisionLevel) {
+        const stealthedPassive =
+          getProperty(<Actor>sourceToken?.document?.actor, `data.${API.STEALTH_PASSIVE_SKILL}`) || 0;
+        if (
+          stealthedPassive > 0 &&
+          game.settings.get(CONSTANTS.MODULE_NAME, 'autoPassivePerception') &&
+          stealthedPassive > <number>targetVisionLevel.visionLevelValue
+        ) {
+          return true;
+        } else {
+          return false;
+        }
+      } else {
+        return false;
+      }
     } else {
       return true; // default vaue
     }

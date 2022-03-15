@@ -1,3 +1,8 @@
+### 0.4.26
+
+- Bug fix for check with passice perception when no source sense is present
+- Bug fix when the effect is not recover from the dfred convinient effect store
+
 ### 0.4.25 [BREAKING CHANGES]
 
 - Add new active effect change `ATCV.conditionType` for indicate the type of CV usually they are or 'sense' or 'condition' not both, **THIS IS ESSENTIAL FOR USE SENSE AND CONDITION NOT REGISTERED ON THE MODULE IF NOT FOUNDED BY DEFAULT IS CONSIDERED A SENSE**, so now you can just modify the AE and you are not forced to call the registered macro of the module CV, this is very useful for integration with other modules.

@@ -3,121 +3,63 @@ import { ActiveEffectData } from '@league-of-foundry-developers/foundry-vtt-type
 /* eslint-disable prefer-const */
 import API from './api';
 import CONSTANTS from './constants';
-import Effect from './effects/effect';
+import Effect, { EffectSupport } from './effects/effect';
 import {
   error,
-  retrieveAtcvVisionLevelDistanceFromActiveEffect,
-  retrieveAtcvTargetsFromActiveEffect,
-  retrieveAtcvElevationFromActiveEffect,
-  retrieveAtcvSourcesFromActiveEffect,
-  retrieveAtcvVisionLevelValueFromActiveEffect,
-  retrieveAtcvVisionTargetImageFromActiveEffect,
-  retrieveAtcvTypeFromActiveEffect,
   getSensesFromToken,
   getConditionsFromToken,
-  retrieveAtcvLevelMaxIndexFromActiveEffect,
-  retrieveAtcvLevelMinIndexFromActiveEffect,
-  retrieveAtcvVisionLevelKeyFromActiveEffect,
   i18n,
+  retrieveAtcvEffectFromActiveEffect,
 } from './lib/lib';
 
-export interface AtcvEffect {
+export class AtcvEffect {
   // Effect Base
   visionId: string;
   visionName: string;
+  visionPath: string;
+  visionIcon: string;
 
   // Effect changes
   // statusSight: SenseData | undefined;
-  visionElevation: boolean;
   visionLevelValue: number | undefined;
-  visionDistanceValue: number | undefined;
+  visionLevelMinIndex: number;
+  visionLevelMaxIndex: number;
+  visionElevation: boolean;
   visionTargets: string[];
   visionSources: string[];
   visionTargetImage: string;
-  visionType: string;
-  visionLevelMinIndex: number;
-  visionLevelMaxIndex: number;
-}
-
-export class AtcvEffectFlagData {
-  visionId: string;
-  visionName: string;
-
-  visionLevelValue: number | undefined;
   visionDistanceValue: number | undefined;
-  visionElevation: boolean;
-  visionSources: string[];
-  visionTargets: string[];
-  visionTargetImage: string;
   visionType: string;
-  visionLevelMinIndex: number;
-  visionLevelMaxIndex: number;
 
-  constructor() {}
+  static fromSenseData(senseData: SenseData, visionLevelValue:number, isSense:boolean) {
+    const res = new AtcvEffect();
+    res.visionId = senseData.id;
+    res.visionName = senseData.name;
+    res.visionPath = senseData.path;
+    res.visionIcon = senseData.img;
 
-  static fromAtcvEffect(atcvEffect: AtcvEffect) {
-    const res = new AtcvEffectFlagData();
-    res.visionId = atcvEffect.visionId;
-    res.visionName = atcvEffect.visionName;
-
-    res.visionLevelValue = atcvEffect.visionLevelValue;
-    res.visionDistanceValue = atcvEffect.visionDistanceValue;
-    res.visionElevation = atcvEffect.visionElevation;
-    res.visionSources = atcvEffect.visionSources;
-    res.visionTargets = atcvEffect.visionTargets;
-    res.visionTargetImage = atcvEffect.visionTargetImage;
-    res.visionType = atcvEffect.visionType;
-    res.visionLevelMinIndex = atcvEffect.visionLevelMinIndex;
-    res.visionLevelMaxIndex = atcvEffect.visionLevelMaxIndex;
+    res.visionLevelValue = visionLevelValue;
+    res.visionLevelMinIndex = senseData.conditionLevelMinIndex;
+    res.visionLevelMaxIndex = senseData.conditionLevelMaxIndex;
+    res.visionElevation = senseData.conditionElevation;
+    res.visionTargets = senseData.conditionTargets;
+    res.visionSources = senseData.conditionSources;
+    res.visionTargetImage = '';
+    res.visionDistanceValue = undefined;
+    res.visionType = isSense ? 'sense' : 'condition';
     return res;
   }
 
   static fromEffect(effect: Effect) {
-    const effectChanges: EffectChangeData[] = []; //effect.changes || [];
-    // ======
-    if (effect.atlChanges.length > 0) {
-      effectChanges.push(...effect.atlChanges);
-    }
+    const effectChanges: EffectChangeData[] = EffectSupport._handleIntegrations(effect) || [];
 
-    if (effect.tokenMagicChanges.length > 0) {
-      effectChanges.push(...effect.tokenMagicChanges);
-    }
-
-    if (effect.atcvChanges.length > 0) {
-      effectChanges.push(...effect.atcvChanges);
-    }
-    // ======
-    const res = new AtcvEffectFlagData();
-    res.visionId = retrieveAtcvVisionLevelKeyFromActiveEffect(effectChanges);
-    res.visionName = i18n(effect.name);
-
-    res.visionLevelValue = retrieveAtcvVisionLevelValueFromActiveEffect(effectChanges);
-    res.visionDistanceValue = retrieveAtcvVisionLevelDistanceFromActiveEffect(effectChanges);
-    res.visionElevation = retrieveAtcvElevationFromActiveEffect(effectChanges);
-    res.visionSources = retrieveAtcvSourcesFromActiveEffect(effectChanges);
-    res.visionTargets = retrieveAtcvTargetsFromActiveEffect(effectChanges);
-    res.visionTargetImage = retrieveAtcvVisionTargetImageFromActiveEffect(effectChanges);
-    res.visionType = retrieveAtcvTypeFromActiveEffect(effectChanges);
-    res.visionLevelMinIndex = retrieveAtcvLevelMinIndexFromActiveEffect(effectChanges);
-    res.visionLevelMaxIndex = retrieveAtcvLevelMaxIndexFromActiveEffect(effectChanges);
+    const res = retrieveAtcvEffectFromActiveEffect(effectChanges,effect.name,effect.icon, undefined);
     return res;
   }
 
   static fromActiveEffect(activeEffect: ActiveEffect) {
     const effectChanges = activeEffect.data.changes;
-    const res = new AtcvEffectFlagData();
-    res.visionId = retrieveAtcvVisionLevelKeyFromActiveEffect(effectChanges);
-    res.visionName = activeEffect.data.label;
-
-    res.visionLevelValue = retrieveAtcvVisionLevelValueFromActiveEffect(effectChanges);
-    res.visionDistanceValue = retrieveAtcvVisionLevelDistanceFromActiveEffect(effectChanges);
-    res.visionElevation = retrieveAtcvElevationFromActiveEffect(effectChanges);
-    res.visionSources = retrieveAtcvSourcesFromActiveEffect(effectChanges);
-    res.visionTargets = retrieveAtcvTargetsFromActiveEffect(effectChanges);
-    res.visionTargetImage = retrieveAtcvVisionTargetImageFromActiveEffect(effectChanges);
-    res.visionType = retrieveAtcvTypeFromActiveEffect(effectChanges);
-    res.visionLevelMinIndex = retrieveAtcvLevelMinIndexFromActiveEffect(effectChanges);
-    res.visionLevelMaxIndex = retrieveAtcvLevelMaxIndexFromActiveEffect(effectChanges);
+    const res = retrieveAtcvEffectFromActiveEffect(effectChanges,activeEffect.data.label,<string>activeEffect.data.icon, undefined);
     return res;
   }
 }
@@ -127,8 +69,8 @@ export interface SenseData {
   name: string; // This is the unique name used for sync all the senses and conditions (here you cna put any dirty character you want)
   path: string; // This is the path to the property you want to associate with this sense e.g. data.skills.prc.passive
   img: string; // [OPTIONAL] Image to associate to this sense
-  visionLevelMinIndex: number; // [OPTIONAL] check a min index for filter a range of sense can see these conditions, or viceversa conditions can be seen only from this sense
-  visionLevelMaxIndex: number; // [OPTIONAL] check a max index for filter a range of sense can see these conditions, or viceversa conditions can be seen only from this sense
+  conditionLevelMinIndex: number; // [OPTIONAL] check a min index for filter a range of sense can see these conditions, or viceversa conditions can be seen only from this sense
+  conditionLevelMaxIndex: number; // [OPTIONAL] check a max index for filter a range of sense can see these conditions, or viceversa conditions can be seen only from this sense
   conditionElevation: boolean; // [OPTIONAL] force to check the elevation between the source token and the target token, useful when using module like 'Levels'
   conditionTargets: string[]; // [OPTIONAL] force to apply the check only for these sources (you can set this but is used only from sense)
   conditionSources: string[]; // [OPTIONAL] force to apply the check only for these sources (you can set this but is used only from condition)
@@ -136,6 +78,93 @@ export interface SenseData {
   conditionDistance: number; // [OPTIONAL] set a maximum distance for check the sight with this effect
   conditionType: string; // indicate the type of CV usually they are or 'sense' or 'condition' not both, **THIS IS ESSENTIAL FOR USE SENSE AND CONDITION NOT REGISTERED ON THE MODULE IF NOT FOUNDED BY DEFAULT IS CONSIDERED A SENSE**, so now you can just modify the AE and you are not forced to call the registered macro of the module CV, this is very useful for integration with other modules.
 }
+
+// export class AtcvEffectFlagData {
+//   visionId: string;
+//   visionName: string;
+//   visionPath: string;
+//   visionIcon: string;
+
+//   visionLevelValue: number | undefined;
+//   visionDistanceValue: number | undefined;
+//   visionElevation: boolean;
+//   visionSources: string[];
+//   visionTargets: string[];
+//   visionTargetImage: string;
+//   visionType: string;
+//   visionLevelMinIndex: number;
+//   visionLevelMaxIndex: number;
+
+//   constructor() {}
+
+//   static fromAtcvEffect(atcvEffect: AtcvEffect) {
+//     const res = new AtcvEffectFlagData();
+//     res.visionId = atcvEffect.visionId;
+//     res.visionName = atcvEffect.visionName;
+//     res.visionPath = atcvEffect.visionPath;
+//     res.visionIcon = atcvEffect.visionIcon;
+
+//     res.visionLevelValue = atcvEffect.visionLevelValue;
+//     res.visionDistanceValue = atcvEffect.visionDistanceValue;
+//     res.visionElevation = atcvEffect.visionElevation;
+//     res.visionSources = atcvEffect.visionSources;
+//     res.visionTargets = atcvEffect.visionTargets;
+//     res.visionTargetImage = atcvEffect.visionTargetImage;
+//     res.visionType = atcvEffect.visionType;
+//     res.visionLevelMinIndex = atcvEffect.visionLevelMinIndex;
+//     res.visionLevelMaxIndex = atcvEffect.visionLevelMaxIndex;
+//     return res;
+//   }
+
+//   static fromEffect(effect: Effect) {
+//     const effectChanges: EffectChangeData[] = []; //effect.changes || [];
+//     // ======
+//     if (effect.atlChanges.length > 0) {
+//       effectChanges.push(...effect.atlChanges);
+//     }
+
+//     if (effect.tokenMagicChanges.length > 0) {
+//       effectChanges.push(...effect.tokenMagicChanges);
+//     }
+
+//     if (effect.atcvChanges.length > 0) {
+//       effectChanges.push(...effect.atcvChanges);
+//     }
+//     // ======
+//     const res = new AtcvEffectFlagData();
+//     res.visionId = retrieveAtcvVisionLevelKeyFromActiveEffect(effectChanges);
+//     res.visionName = i18n(effect.name);
+
+//     res.visionLevelValue = retrieveAtcvVisionLevelValueFromActiveEffect(effectChanges);
+//     res.visionDistanceValue = retrieveAtcvVisionLevelDistanceFromActiveEffect(effectChanges);
+//     res.visionElevation = retrieveAtcvElevationFromActiveEffect(effectChanges);
+//     res.visionSources = retrieveAtcvSourcesFromActiveEffect(effectChanges);
+//     res.visionTargets = retrieveAtcvTargetsFromActiveEffect(effectChanges);
+//     res.visionTargetImage = retrieveAtcvVisionTargetImageFromActiveEffect(effectChanges);
+//     res.visionType = retrieveAtcvTypeFromActiveEffect(effectChanges);
+//     res.visionLevelMinIndex = retrieveAtcvLevelMinIndexFromActiveEffect(effectChanges);
+//     res.visionLevelMaxIndex = retrieveAtcvLevelMaxIndexFromActiveEffect(effectChanges);
+//     return res;
+//   }
+
+//   static fromActiveEffect(activeEffect: ActiveEffect) {
+//     const effectChanges = activeEffect.data.changes;
+//     const res = new AtcvEffectFlagData();
+//     res.visionId = retrieveAtcvVisionLevelKeyFromActiveEffect(effectChanges);
+//     res.visionName = activeEffect.data.label;
+
+//     res.visionLevelValue = retrieveAtcvVisionLevelValueFromActiveEffect(effectChanges);
+//     res.visionDistanceValue = retrieveAtcvVisionLevelDistanceFromActiveEffect(effectChanges);
+//     res.visionElevation = retrieveAtcvElevationFromActiveEffect(effectChanges);
+//     res.visionSources = retrieveAtcvSourcesFromActiveEffect(effectChanges);
+//     res.visionTargets = retrieveAtcvTargetsFromActiveEffect(effectChanges);
+//     res.visionTargetImage = retrieveAtcvVisionTargetImageFromActiveEffect(effectChanges);
+//     res.visionType = retrieveAtcvTypeFromActiveEffect(effectChanges);
+//     res.visionLevelMinIndex = retrieveAtcvLevelMinIndexFromActiveEffect(effectChanges);
+//     res.visionLevelMaxIndex = retrieveAtcvLevelMaxIndexFromActiveEffect(effectChanges);
+//     return res;
+//   }
+// }
 
 export enum AtcvEffectSenseFlags {
   // additional generic
@@ -254,7 +283,7 @@ export class VisionCapabilities {
   addSenses() {
     Promise.all(
       API.SENSES.map(async (statusSight) => {
-        const atcvEffectFlagData = <AtcvEffectFlagData>(
+        const atcvEffectFlagData = <AtcvEffect>(
           this.token?.document?.getFlag(CONSTANTS.MODULE_NAME, statusSight.id)
         );
         if (atcvEffectFlagData) {
@@ -314,7 +343,7 @@ export class VisionCapabilities {
   addConditions() {
     Promise.all(
       API.CONDITIONS.map(async (statusSight) => {
-        const atcvEffectFlagData = <AtcvEffectFlagData>(
+        const atcvEffectFlagData = <AtcvEffect>(
           this.token.document?.getFlag(CONSTANTS.MODULE_NAME, statusSight.id)
         );
         if (atcvEffectFlagData) {

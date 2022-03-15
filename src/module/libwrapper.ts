@@ -1,7 +1,6 @@
 import {
   AtcvEffect,
   AtcvEffectConditionFlags,
-  AtcvEffectFlagData,
   AtcvEffectSenseFlags,
 } from './conditional-visibility-models';
 import API from './api';
@@ -535,14 +534,15 @@ async function rollSkillHandler(wrapped, skillId, options, ...rest) {
     game.settings.get(CONSTANTS.MODULE_NAME, 'autoStealth') &&
     actorChatId === actor.id
   ) {
-    //@ts-ignore
-    const passiveStealth = getProperty(actor.data, <string>API.STEALTH_PASSIVE_SKILL) || 0;
-    const valCurrentstealth = getProperty(actor.data, <string>API.STEALTH_ACTIVE_SKILL) || 0;
+
     //@ts-ignore
     let valStealthRoll = parseInt(rollChatTotal);
     if (isNaN(valStealthRoll)) {
       valStealthRoll = 0;
     }
+    // //@ts-ignore
+    // const passiveStealth = getProperty(actor.data, <string>API.STEALTH_PASSIVE_SKILL) || 0;
+    // const valCurrentstealth = getProperty(actor.data, <string>API.STEALTH_ACTIVE_SKILL) || 0;
     // if (passiveStealth > valStealthRoll) {
     //   valStealthRoll = passiveStealth;
     // }
@@ -561,8 +561,7 @@ async function rollSkillHandler(wrapped, skillId, options, ...rest) {
             await API.removeEffectOnToken(selectedToken.id, i18n(<string>effect?.name));
             await selectedToken.document.unsetFlag(CONSTANTS.MODULE_NAME, senseId);
           } else {
-            //await selectedToken.document.setFlag(CONSTANTS.MODULE_NAME, senseId, valStealthRoll);
-            const atcvEffectFlagData = AtcvEffectFlagData.fromEffect(effect);
+            const atcvEffectFlagData = AtcvEffect.fromEffect(effect);
             atcvEffectFlagData.visionLevelValue = valStealthRoll;
             await selectedToken.document.setFlag(CONSTANTS.MODULE_NAME, senseId, atcvEffectFlagData);
           }
@@ -578,8 +577,7 @@ async function rollSkillHandler(wrapped, skillId, options, ...rest) {
             await API.removeEffectOnToken(selectedToken.id, i18n(<string>effect?.name));
             await selectedToken.document.unsetFlag(CONSTANTS.MODULE_NAME, conditionId);
           } else {
-            //await selectedToken.document.setFlag(CONSTANTS.MODULE_NAME, conditionId, valStealthRoll);
-            const atcvEffectFlagData = AtcvEffectFlagData.fromEffect(effect);
+            const atcvEffectFlagData = AtcvEffect.fromEffect(effect);
             atcvEffectFlagData.visionLevelValue = valStealthRoll;
             await selectedToken.document.setFlag(CONSTANTS.MODULE_NAME, conditionId, atcvEffectFlagData);
           }

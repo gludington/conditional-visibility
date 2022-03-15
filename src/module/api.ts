@@ -10,7 +10,7 @@ import {
   warn,
 } from './lib/lib';
 import EffectInterface from './effects/effect-interface';
-import { AtcvEffect, AtcvEffectFlagData, SenseData } from './conditional-visibility-models';
+import { AtcvEffect, SenseData } from './conditional-visibility-models';
 import { EnhancedConditions } from './cub/enhanced-conditions';
 import { canvas, game } from './settings';
 import Effect, { EffectSupport } from './effects/effect';
@@ -211,7 +211,7 @@ const API = {
       throw error('toggleEffectArr | inAttributes must be of type array');
     }
     const [effectName, params] = inAttributes;
-    const result = await this.effectInterface.toggleEffect(effectName, params);
+    const result = await (<EffectInterface>this.effectInterface).toggleEffect(effectName, params);
     return result;
   },
 
@@ -230,6 +230,24 @@ const API = {
     }
     const [effectName, uuid] = inAttributes;
     const result = await (<EffectInterface>this.effectInterface)._effectHandler.hasEffectApplied(effectName, uuid);
+    return result;
+  },
+
+  async hasEffectAppliedOnActorArr(...inAttributes: any[]) {
+    if (!Array.isArray(inAttributes)) {
+      throw error('hasEffectAppliedOnActorArr | inAttributes must be of type array');
+    }
+    const [effectName, uuid, includeDisabled] = inAttributes;
+    const result = await (<EffectInterface>this.effectInterface)._effectHandler.hasEffectAppliedOnActor(effectName, uuid, includeDisabled);
+    return result;
+  },
+
+  async hasEffectAppliedFromIdOnActorArr(...inAttributes: any[]) {
+    if (!Array.isArray(inAttributes)) {
+      throw error('hasEffectAppliedFromIdOnActorArr | inAttributes must be of type array');
+    }
+    const [effectId, uuid, includeDisabled] = inAttributes;
+    const result = await (<EffectInterface>this.effectInterface)._effectHandler.hasEffectAppliedFromIdOnActor(effectId, uuid, includeDisabled);
     return result;
   },
 
@@ -293,6 +311,24 @@ const API = {
       effectName,
       uuid,
     );
+    return result;
+  },
+
+  async hasEffectAppliedOnTokenArr(...inAttributes: any[]) {
+    if (!Array.isArray(inAttributes)) {
+      throw error('hasEffectAppliedOnTokenArr | inAttributes must be of type array');
+    }
+    const [effectName, uuid, includeDisabled] = inAttributes;
+    const result = await (<EffectInterface>this.effectInterface)._effectHandler.hasEffectAppliedOnToken(effectName, uuid, includeDisabled);
+    return result;
+  },
+
+  async hasEffectAppliedFromIdOnTokenArr(...inAttributes: any[]) {
+    if (!Array.isArray(inAttributes)) {
+      throw error('hasEffectAppliedFromIdOnTokenArr | inAttributes must be of type array');
+    }
+    const [effectId, uuid, includeDisabled] = inAttributes;
+    const result = await (<EffectInterface>this.effectInterface)._effectHandler.hasEffectAppliedFromIdOnToken(effectId, uuid, includeDisabled);
     return result;
   },
 
@@ -436,22 +472,22 @@ const API = {
   // ======================
   /*
   async addEffectOnActor(actorId: string, effectName: string, effect: Effect) {
-    const result = await this.effectInterface.addEffectOnActor(effectName, <string>actorId, effect);
+    const result = await (<EffectInterface>this.effectInterface).addEffectOnActor(effectName, <string>actorId, effect);
     return result;
   },
 
   async findEffectByNameOnActor(actorId: string, effectName: string): Promise<ActiveEffect | null> {
-    const result = await this.effectInterface.findEffectByNameOnActor(effectName, <string>actorId);
+    const result = await (<EffectInterface>this.effectInterface).findEffectByNameOnActor(effectName, <string>actorId);
     return result;
   },
 
   async hasEffectAppliedOnActor(actorId: string, effectName: string, includeDisabled:boolean) {
-    const result = await this.effectInterface.hasEffectAppliedOnActor(effectName, <string>actorId, includeDisabled);
+    const result = await (<EffectInterface>this.effectInterface).hasEffectAppliedOnActor(effectName, <string>actorId, includeDisabled);
     return result;
   },
 
   async hasEffectAppliedFromIdOnActor(actorId: string, effectId: string, includeDisabled:boolean) {
-    const result = await this.effectInterface.hasEffectAppliedFromIdOnActor(effectId, <string>actorId, includeDisabled);
+    const result = await (<EffectInterface>this.effectInterface).hasEffectAppliedFromIdOnActor(effectId, <string>actorId, includeDisabled);
     return result;
   },
 
@@ -462,7 +498,7 @@ const API = {
     forceEnabled?: boolean,
     forceDisabled?: boolean,
   ) {
-    const result = await this.effectInterface.toggleEffectFromIdOnActor(
+    const result = await (<EffectInterface>this.effectInterface).toggleEffectFromIdOnActor(
       effectId,
       <string>actorId,
       alwaysDelete,
@@ -473,17 +509,17 @@ const API = {
   },
 
   async addActiveEffectOnActor(actorId: string, activeEffectData: ActiveEffectData) {
-    const result = this.effectInterface.addActiveEffectOnActor(<string>actorId, activeEffectData);
+    const result = (<EffectInterface>this.effectInterface).addActiveEffectOnActor(<string>actorId, activeEffectData);
     return result;
   },
 
   async removeEffectOnActor(actorId: string, effectName: string) {
-    const result = await this.effectInterface.removeEffectOnActor(effectName, <string>actorId);
+    const result = await (<EffectInterface>this.effectInterface).removeEffectOnActor(effectName, <string>actorId);
     return result;
   },
 
   async removeEffectFromIdOnActor(actorId: string, effectId: string) {
-    const result = await this.effectInterface.removeEffectFromIdOnActor(effectId, <string>actorId);
+    const result = await (<EffectInterface>this.effectInterface).removeEffectFromIdOnActor(effectId, <string>actorId);
     return result;
   },
   */
@@ -492,22 +528,22 @@ const API = {
   // ======================
 
   async addEffectOnToken(tokenId: string, effectName: string, effect: Effect) {
-    const result = await this.effectInterface.addEffectOnToken(effectName, <string>tokenId, effect);
+    const result = await (<EffectInterface>this.effectInterface).addEffectOnToken(effectName, <string>tokenId, effect);
     return result;
   },
 
   async findEffectByNameOnToken(tokenId: string, effectName: string): Promise<ActiveEffect | null> {
-    const result = await this.effectInterface.findEffectByNameOnToken(effectName, <string>tokenId);
+    const result = await (<EffectInterface>this.effectInterface).findEffectByNameOnToken(effectName, <string>tokenId);
     return result;
   },
 
   async hasEffectAppliedOnToken(tokenId: string, effectName: string, includeDisabled: boolean) {
-    const result = await this.effectInterface.hasEffectAppliedOnToken(effectName, <string>tokenId, includeDisabled);
+    const result = await (<EffectInterface>this.effectInterface).hasEffectAppliedOnToken(effectName, <string>tokenId, includeDisabled);
     return result;
   },
 
   async hasEffectAppliedFromIdOnToken(tokenId: string, effectId: string, includeDisabled: boolean) {
-    const result = await this.effectInterface.hasEffectAppliedFromIdOnToken(effectId, <string>tokenId, includeDisabled);
+    const result = await (<EffectInterface>this.effectInterface).hasEffectAppliedFromIdOnToken(effectId, <string>tokenId, includeDisabled);
     return result;
   },
 
@@ -518,7 +554,7 @@ const API = {
     forceEnabled?: boolean,
     forceDisabled?: boolean,
   ) {
-    const result = await this.effectInterface.toggleEffectFromIdOnToken(
+    const result = await (<EffectInterface>this.effectInterface).toggleEffectFromIdOnToken(
       effectId,
       <string>tokenId,
       alwaysDelete,
@@ -529,22 +565,22 @@ const API = {
   },
 
   async addActiveEffectOnToken(tokenId: string, activeEffectData: ActiveEffectData) {
-    const result = await this.effectInterface.addActiveEffectOnToken(<string>tokenId, activeEffectData);
+    const result = await (<EffectInterface>this.effectInterface).addActiveEffectOnToken(<string>tokenId, activeEffectData);
     return result;
   },
 
   async removeEffectOnToken(tokenId: string, effectName: string) {
-    const result = await this.effectInterface.removeEffectOnToken(effectName, <string>tokenId);
+    const result = await (<EffectInterface>this.effectInterface).removeEffectOnToken(effectName, <string>tokenId);
     return result;
   },
 
   async removeEffectFromIdOnToken(tokenId: string, effectId: string) {
-    const result = await this.effectInterface.removeEffectFromIdOnToken(effectId, <string>tokenId);
+    const result = await (<EffectInterface>this.effectInterface).removeEffectFromIdOnToken(effectId, <string>tokenId);
     return result;
   },
 
   async updateEffectFromIdOnToken(tokenId: string, effectId: string, origin, overlay, effectUpdated: Effect) {
-    const result = await this.effectInterface.updateEffectFromIdOnToken(
+    const result = await (<EffectInterface>this.effectInterface).updateEffectFromIdOnToken(
       effectId,
       tokenId,
       origin,
@@ -555,7 +591,7 @@ const API = {
   },
 
   async updateEffectFromNameOnToken(tokenId: string, effectName: string, origin, overlay, effectUpdated: Effect) {
-    const result = await this.effectInterface.updateEffectFromNameOnToken(
+    const result = await (<EffectInterface>this.effectInterface).updateEffectFromNameOnToken(
       effectName,
       tokenId,
       origin,
@@ -572,7 +608,7 @@ const API = {
     overlay,
     effectUpdated: ActiveEffectData,
   ) {
-    const result = await this.effectInterface.updateActiveEffectFromIdOnToken(
+    const result = await (<EffectInterface>this.effectInterface).updateActiveEffectFromIdOnToken(
       effectId,
       tokenId,
       origin,
@@ -589,7 +625,7 @@ const API = {
     overlay,
     effectUpdated: ActiveEffectData,
   ) {
-    const result = await this.effectInterface.updateActiveEffectFromNameOnToken(
+    const result = await (<EffectInterface>this.effectInterface).updateActiveEffectFromNameOnToken(
       effectName,
       tokenId,
       origin,
@@ -600,10 +636,10 @@ const API = {
   },
 
   async setCondition(tokenNameOrId: string, senseDataEffect: AtcvEffect, disabled: boolean) {
-    return API.addEffectConditionalVisibilityOnToken(tokenNameOrId, senseDataEffect, disabled);
+    return this.addEffectConditionalVisibilityOnToken(tokenNameOrId, senseDataEffect, disabled);
   },
 
-  async addEffectConditionalVisibilityOnToken(tokenNameOrId: string, senseDataEffect: AtcvEffect, disabled: boolean) {
+  async addEffectConditionalVisibilityOnToken(tokenNameOrId: string, senseDataEffect: AtcvEffect, disabled: boolean):Promise<AtcvEffect|undefined> {
     const tokens = <Token[]>canvas.tokens?.placeables;
     const token = <Token>tokens.find((token) => {
       return isStringEquals(token.name, i18n(tokenNameOrId)) || isStringEquals(token.id, tokenNameOrId);
@@ -703,6 +739,7 @@ const API = {
     // Add some feature if is a sense or a condition
     if (!effect) {
       warn(`No effect found with reference '${senseDataId}'`, true);
+      return undefined;
     } else {
       let foundedFlagVisionValue = false;
       if (!effect.atcvChanges) {
@@ -736,10 +773,12 @@ const API = {
       effect.transfer = !disabled;
 
       const nameToUse = effectToFoundByName ? effectToFoundByName : effect?.name;
-      await this.effectInterface.addEffectOnToken(nameToUse, <string>token.id, effect);
+      await (<EffectInterface>this.effectInterface).addEffectOnToken(nameToUse, <string>token.id, effect);
       //await token?.document?.setFlag(CONSTANTS.MODULE_NAME, (<Effect>effect).customId, visionLevel);
-      const atcvEffectFlagData = AtcvEffectFlagData.fromEffect(effect);
-      await token?.document?.setFlag(CONSTANTS.MODULE_NAME, (<Effect>effect).customId, atcvEffectFlagData);
+      const atcvEffectFlagData = AtcvEffect.fromEffect(effect);
+      // await token?.document?.setFlag(CONSTANTS.MODULE_NAME, (<Effect>effect).customId, atcvEffectFlagData);
+      const result = atcvEffectFlagData;
+      return result;
     }
   },
 
@@ -835,7 +874,7 @@ const API = {
   //   } else {
   //     if (token && effect) {
   //       const nameToUse = senseData?.name ? senseData?.name : effect?.name;
-  //       await this.effectInterface.addEffectOnToken(nameToUse, <string>token.id, effect);
+  //       await (<EffectInterface>this.effectInterface).addEffectOnToken(nameToUse, <string>token.id, effect);
   //       //await token?.document?.setFlag(CONSTANTS.MODULE_NAME, (<Effect>effect).customId, visionLevel);
   //       const atcvEffectFlagData = AtcvEffectFlagData.fromEffect(effect);
   //       await token?.document?.setFlag(CONSTANTS.MODULE_NAME, (<Effect>effect).customId, atcvEffectFlagData);
@@ -843,10 +882,11 @@ const API = {
   //   }
   // },
 
-  async getAllDefaultSensesAndConditions(token: Token): Promise<SenseData[]> {
-    let allSensesAndConditions: SenseData[] = [];
-    const senses = API.SENSES;
-    const conditions = API.CONDITIONS;
+  async getAllDefaultSensesAndConditions(token: Token): Promise<AtcvEffect[]> {
+    const allSensesAndConditions: AtcvEffect[] = [];
+    allSensesAndConditions.push(...getSensesFromToken(token));
+    allSensesAndConditions.push(...getConditionsFromToken(token));
+    /*
     allSensesAndConditions = mergeByProperty(allSensesAndConditions, senses, 'id');
     allSensesAndConditions = mergeByProperty(allSensesAndConditions, conditions, 'id');
     if (token) {
@@ -856,8 +896,8 @@ const API = {
           name: atcvEffect.visionName,
           path: '', // TODO to integrate
           img: '', // TODO to integrate
-          visionLevelMinIndex: atcvEffect.visionLevelMinIndex,
-          visionLevelMaxIndex: atcvEffect.visionLevelMaxIndex,
+          conditionLevelMinIndex: atcvEffect.visionLevelMinIndex,
+          conditionLevelMaxIndex: atcvEffect.visionLevelMaxIndex,
           conditionElevation: atcvEffect.visionElevation,
           conditionTargets: atcvEffect.visionTargets,
           conditionSources: atcvEffect.visionSources,
@@ -873,8 +913,8 @@ const API = {
           name: atcvEffect.visionName,
           path: '', // TODO to integrate
           img: '', // TODO to integrate
-          visionLevelMinIndex: atcvEffect.visionLevelMinIndex,
-          visionLevelMaxIndex: atcvEffect.visionLevelMaxIndex,
+          conditionLevelMinIndex: atcvEffect.visionLevelMinIndex,
+          conditionLevelMaxIndex: atcvEffect.visionLevelMaxIndex,
           conditionElevation: atcvEffect.visionElevation,
           conditionTargets: atcvEffect.visionTargets,
           conditionSources: atcvEffect.visionSources,
@@ -886,6 +926,9 @@ const API = {
       }
     }
     const sensesOrderByName = <SenseData[]>allSensesAndConditions.sort((a, b) => a.name.localeCompare(b.name));
+    return sensesOrderByName;
+    */
+    const sensesOrderByName = allSensesAndConditions.sort((a, b) => a.visionName.localeCompare(b.visionName));
     return sensesOrderByName;
   },
 

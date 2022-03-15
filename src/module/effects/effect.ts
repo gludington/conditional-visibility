@@ -3,7 +3,7 @@ import { EffectChangeData } from '@league-of-foundry-developers/foundry-vtt-type
 import { EffectDurationData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/data.mjs/effectDurationData';
 import { PropertiesToSource } from '@league-of-foundry-developers/foundry-vtt-types/src/types/helperTypes';
 import { i18n } from '../lib/lib';
-import { game } from '../settings';
+import { canvas, game } from '../settings';
 
 /**
  * Data class for defining an effect
@@ -449,7 +449,7 @@ export class EffectSupport {
             : {}
           : effect.dae,
       }),
-      origin: effect.origin ? effect.origin : '', // MOD 4535992
+      origin: effect.origin ? effect.origin : 'None', // MOD 4535992
       transfer: isPassive ? false : effect.transfer,
       //changes: this.changes, // MOD 4535992
       changes: EffectSupport._handleIntegrations(effect),
@@ -492,5 +492,29 @@ export class EffectSupport {
     }, []);
     changes.sort((a, b) => <number>a.priority - <number>b.priority);
     return changes;
+  }
+
+  static prepareOriginForToken(tokenOrTokenId:Token|string):string{
+    let token:Token;
+    if(typeof tokenOrTokenId === 'string' || tokenOrTokenId instanceof String){
+      const tokens = <Token[]>canvas.tokens?.placeables;
+      token = <Token>tokens.find((token) => token.id == <string>tokenOrTokenId);
+    }else{
+      token = tokenOrTokenId;
+    }
+    const sceneId = (token?.scene && token.scene.id) || canvas.scene?.id;
+    const origin = `Scene.${sceneId}.Token.${token.id}`;
+    return origin;
+  }
+
+  static prepareOriginForActor(actorOrAcotrId:Actor|string):string{
+    let actor:Actor;
+    if(typeof actorOrAcotrId === 'string' || actorOrAcotrId instanceof String){
+      actor = <Actor>game.actors?.get(<string>actorOrAcotrId);
+    }else{
+      actor = actorOrAcotrId;
+    }
+    const origin = `Actor.${actor.id}`;
+    return origin;
   }
 }

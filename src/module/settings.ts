@@ -284,12 +284,20 @@ function defaultSettings(apply = false) {
       default: apply && SYSTEMS.DATA ? SYSTEMS.DATA.STEALTH_ACTIVE_SKILL : '',
       type: String,
     },
-    idStealthSkill: {
-      name: `${CONSTANTS.MODULE_NAME}.setting.idStealthSkill.name`,
-      hint: `${CONSTANTS.MODULE_NAME}.setting.idStealthSkill.hint`,
+    // idStealthSkill: {
+    //   name: `${CONSTANTS.MODULE_NAME}.setting.idStealthSkill.name`,
+    //   hint: `${CONSTANTS.MODULE_NAME}.setting.idStealthSkill.hint`,
+    //   scope: 'world',
+    //   config: true,
+    //   default: apply && SYSTEMS.DATA ? SYSTEMS.DATA.STEALTH_ID_SKILL : '',
+    //   type: String,
+    // },
+    idLangStealthSkill: {
+      name: `${CONSTANTS.MODULE_NAME}.setting.idLangStealthSkill.name`,
+      hint: `${CONSTANTS.MODULE_NAME}.setting.idLangStealthSkill.hint`,
       scope: 'world',
       config: true,
-      default: apply && SYSTEMS.DATA ? SYSTEMS.DATA.STEALTH_ID_SKILL : '',
+      default: apply && SYSTEMS.DATA ? SYSTEMS.DATA.STEALTH_ID_LANG_SKILL : '',
       type: String,
     },
   };

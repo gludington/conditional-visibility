@@ -353,13 +353,14 @@ const module = {
                     const atcvEffectFlagData = AtcvEffect.fromActiveEffect(atcvEffect);
                     await tokenToSet?.document.setFlag(CONSTANTS.MODULE_NAME, updateKey, atcvEffectFlagData);
                   }
-                  if (statusSight?.visionPath && statusSight?.visionPath.toLowerCase().includes('data')) {
-                    if (isRemoved || currentValue == '0') {
-                      setProperty(tokenToSet.document, <string>statusSight?.visionPath, 0);
-                    } else {
-                      setProperty(tokenToSet.document, <string>statusSight?.visionPath, change.value);
-                    }
-                  }
+                  // REMOVES SOME PEOPLE DOESN'T WANT THIS ? AND I'M NOT SURE HOW OTHER MODULES CAN WORK WITH THIS
+                  // if (statusSight?.visionPath && statusSight?.visionPath.toLowerCase().includes('data')) {
+                  //   if (isRemoved || currentValue == '0') {
+                  //     setProperty(tokenToSet.document, <string>statusSight?.visionPath, 0);
+                  //   } else {
+                  //     setProperty(tokenToSet.document, <string>statusSight?.visionPath, change.value);
+                  //   }
+                  // }
                 } else {
                   // Strange bug fixing
                   if (isRemoved && activeEffect.id === atcvEffect.id) {
@@ -421,7 +422,14 @@ const module = {
                 effect.isTemporary = false; // passive ae
               } else {
                 effect.isTemporary = true;
-                if (!effect.flags.core.statusId) {
+                if (!effect.flags?.core?.statusId) {
+                  // Just make sure the effect is built it right
+                  if(!effect.flags){
+                    effect.flags = {};
+                  }
+                  if(!effect.flags.core){
+                    effect.flags.core = {};
+                  }
                   effect.flags.core.statusId = effect._id;
                 }
               }

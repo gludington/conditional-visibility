@@ -1,12 +1,12 @@
 {
   "conditional-visibility.setting.autoStealth.name": "Auto hide on stealth rolls",
-  "conditional-visibility.setting.autoStealth.hint": "[This is system dependent] On supported game systems, set the 'hidden' condition on a token's stealth roll",
+  "conditional-visibility.setting.autoStealth.hint": "[This is system dependent] On supported game systems, set the 'hidden' condition on a token's stealth roll. NOTE: Is impossible to make the auto stealth work with other modules like token action hud, LMRTFY or similar module in a multisystem environment without specific hooks, so now i just rendered the result roll on the chat message and hope everything is working like expected, so if no chat is been rendered on the client side no stealth effect is applied and you are force to use the token hud feature.",
 
-  "conditional-visibility.setting.autoPassivePerception.name": "Auto check with passive percpetion",
-  "conditional-visibility.setting.autoPassivePerception.hint": "[This is system dependent] On supported game systems, if checked the passive percpetion attribure is used as a 'sense' active effect",
+  "conditional-visibility.setting.autoPassivePerception.name": "Auto check with passive perception",
+  "conditional-visibility.setting.autoPassivePerception.hint": "[This is system dependent] On supported game systems, if checked the passive perception attribute is used as a 'sense' active effect",
 
-  "conditional-visibility.setting.useEagleEye.name": "Use eagle eye (Experimental)",
-  "conditional-visibility.setting.useEagleEye.hint": "A embedded version of the module https://github.com/trioderegion/eagle-eye/",
+  "conditional-visibility.setting.useEagleEye.name": "[EXPERIMENTAL] Use eagle eye",
+  "conditional-visibility.setting.useEagleEye.hint": "A embedded version of the module https://github.com/trioderegion/eagle-eye/, but is abandoned for now",
 
   "conditional-visibility.setting.reset.name": "Reset settings to default",
   "conditional-visibility.setting.reset.label": "Reset Settings To Default",
@@ -18,11 +18,14 @@
   "conditional-visibility.setting.passivePerceptionSkill.name": "Passive perception skill",
   "conditional-visibility.setting.passivePerceptionSkill.hint": "[This is system dependent] Here you can configure what the attribute path is for each actor's passive perception. For example, in D&D5e system, each actor's passive perception is stored in the item's \"actor.data.data.skills.prc.passive\" attribute, so you'd put \"data.skills.prc.passive\" in this setting.",
   "conditional-visibility.setting.passiveStealthSkill.name": "Passive stealth skill",
-  "conditional-visibility.setting.passiveStealthSkill.hint": "[This is system dependent] Make sense only with 'Auto hide on stealth rolls' setting set to true. Here you can configure what the attribute path is for each actor's passive stealth. For example, in D&D5e system, each actor's passive stealth is stored in the item's \"actor.data.data.skills.ste.passive\" attribute, so you'd put \"data.skills.ste.passive\" in this setting.",
+  "conditional-visibility.setting.passiveStealthSkill.hint": "[This is system dependent] Make sense only with 'Auto hide on stealth rolls' or 'Auto check with passive perception' setting set to true. Here you can configure what the attribute path is for each actor's passive stealth. For example, in D&D5e system, each actor's passive stealth is stored in the item's \"actor.data.data.skills.ste.passive\" attribute, so you'd put \"data.skills.ste.passive\" in this setting.",
   "conditional-visibility.setting.activeStealthSkill.name": "Active stealth skill",
   "conditional-visibility.setting.activeStealthSkill.hint": "[This is system dependent] Make sense only with 'Auto hide on stealth rolls' setting set to true. Here you can configure what the attribute path is for each actor's passive stealth. For example, in D&D5e system, each actor's active stealth is stored in the item's \"actor.data.data.skills.ste.total\" attribute, so you'd put \"data.skills.ste.total\" in this setting.",
   "conditional-visibility.setting.idStealthSkill.name": "Id of the attribute used from the system for the stealth",
   "conditional-visibility.setting.idStealthSkill.hint": "[This is system dependent] Make sense only with 'Auto hide on stealth rolls' setting set to true. Here you can configure what attribute id is used from the system for tell is a stealth roll.For example, in D&D5e system, the attribute used is the id of the skill \"ste\" so you'd put that in this setting.",
+  "conditional-visibility.setting.idLangStealthSkill.name": "The lang key of the attribute used from the system for the stealth skill",
+  "conditional-visibility.setting.idLangStealthSkill.hint": "[This is system dependent] Make sense only with 'Auto hide on stealth rolls' setting set to true. Here you can configure what attribute id is used from the system for tell is a stealth roll.For example, in D&D5e system, the attribute used is the lang key of the skill \"DND5E.SkillSte\" so you'd put that in this setting.",
+
 
   "conditional-visibility.setting.npcType.name": "NPC actor type",
   "conditional-visibility.setting.npcType.hint": "Here you can configure what the type of NPC actor of your system for the sight check. For example, in D&D5e system, the type is on the property \"actor.type\" an is value is 'npc', so you'd put \"npc\" in this setting.",
@@ -30,7 +33,7 @@
   "conditional-visibility.setting.enableSightCheckForGM.hint": "Can be useful for debugging",
 
   "conditional-visibility.setting.enableHud.name": "CV HUD element",
-  "conditional-visibility.setting.enableHud.hint": "If checked it will enable the hud buttton for apply sense and condition",
+  "conditional-visibility.setting.enableHud.hint": "If checked it will enable the hud button for apply sense and condition",
   "conditional-visibility.setting.hudPos.name": "CV Control HUD Position",
   "conditional-visibility.setting.hudPos.hint": "HUD position of the hidden button on the token",
   "conditional-visibility.setting.disableForNonHostileNpc.name": "Disable for non hostile npc",

@@ -91,13 +91,22 @@ const API = {
     return <string>game.settings.get(CONSTANTS.MODULE_NAME, 'activeStealthSkill');
   },
 
+  // /**
+  //  * The attributes used to track dynamic attributes in this system
+  //  *
+  //  * @returns {array}
+  //  */
+  // get STEALTH_ID_SKILL(): string {
+  //   return <string>game.settings.get(CONSTANTS.MODULE_NAME, 'idStealthSkill');
+  // },
+
   /**
    * The attributes used to track dynamic attributes in this system
    *
    * @returns {array}
    */
-  get STEALTH_ID_SKILL(): string {
-    return <string>game.settings.get(CONSTANTS.MODULE_NAME, 'idStealthSkill');
+  get STEALTH_ID_LANG_SKILL(): string {
+      return <string>game.settings.get(CONSTANTS.MODULE_NAME, 'idLangStealthSkill');
   },
 
   /**
@@ -824,7 +833,14 @@ const API = {
         // effect.dae = { stackable: false, specialDuration: [], transfer: true }
       } else {
         effect.isTemporary = true;
-        if (!effect.flags.core.statusId) {
+        if (!effect.flags?.core?.statusId) {
+          // Just make sure the effect is built it right
+          if(!effect.flags){
+            effect.flags = {};
+          }
+          if(!effect.flags.core){
+            effect.flags.core = {};
+          }
           effect.flags.core.statusId = effect._id;
         }
       }

@@ -769,6 +769,8 @@ export function getConditionsFromToken(tokenDocument: TokenDocument, filterValue
 
 function _getCVFromToken(tokenDocument: TokenDocument, isSense: boolean, filterValueNoZero = false): AtcvEffect[] {
   const statusEffects: AtcvEffect[] = [];
+
+  // If not token is find we go back to the default preset list...
   if (!tokenDocument) {
     info(`No token found i get only the default registered`);
     //return [];
@@ -793,6 +795,8 @@ function _getCVFromToken(tokenDocument: TokenDocument, isSense: boolean, filterV
       return statusEffects;
     }
   }
+
+  // A token is present
   const actor = <Actor>tokenDocument?.actor; // <Actor>token.document?.getActor() ||
   if (!actor) {
     info(`No actor found for token '${tokenDocument.name}'`);

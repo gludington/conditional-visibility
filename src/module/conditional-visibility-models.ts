@@ -78,93 +78,6 @@ export interface SenseData {
   conditionType: string; // indicate the type of CV usually they are or 'sense' or 'condition' not both, **THIS IS ESSENTIAL FOR USE SENSE AND CONDITION NOT REGISTERED ON THE MODULE IF NOT FOUNDED BY DEFAULT IS CONSIDERED A SENSE**, so now you can just modify the AE and you are not forced to call the registered macro of the module CV, this is very useful for integration with other modules.
 }
 
-// export class AtcvEffectFlagData {
-//   visionId: string;
-//   visionName: string;
-//   visionPath: string;
-//   visionIcon: string;
-
-//   visionLevelValue: number | undefined;
-//   visionDistanceValue: number | undefined;
-//   visionElevation: boolean;
-//   visionSources: string[];
-//   visionTargets: string[];
-//   visionTargetImage: string;
-//   visionType: string;
-//   visionLevelMinIndex: number;
-//   visionLevelMaxIndex: number;
-
-//   constructor() {}
-
-//   static fromAtcvEffect(atcvEffect: AtcvEffect) {
-//     const res = new AtcvEffectFlagData();
-//     res.visionId = atcvEffect.visionId;
-//     res.visionName = atcvEffect.visionName;
-//     res.visionPath = atcvEffect.visionPath;
-//     res.visionIcon = atcvEffect.visionIcon;
-
-//     res.visionLevelValue = atcvEffect.visionLevelValue;
-//     res.visionDistanceValue = atcvEffect.visionDistanceValue;
-//     res.visionElevation = atcvEffect.visionElevation;
-//     res.visionSources = atcvEffect.visionSources;
-//     res.visionTargets = atcvEffect.visionTargets;
-//     res.visionTargetImage = atcvEffect.visionTargetImage;
-//     res.visionType = atcvEffect.visionType;
-//     res.visionLevelMinIndex = atcvEffect.visionLevelMinIndex;
-//     res.visionLevelMaxIndex = atcvEffect.visionLevelMaxIndex;
-//     return res;
-//   }
-
-//   static fromEffect(effect: Effect) {
-//     const effectChanges: EffectChangeData[] = []; //effect.changes || [];
-//     // ======
-//     if (effect.atlChanges.length > 0) {
-//       effectChanges.push(...effect.atlChanges);
-//     }
-
-//     if (effect.tokenMagicChanges.length > 0) {
-//       effectChanges.push(...effect.tokenMagicChanges);
-//     }
-
-//     if (effect.atcvChanges.length > 0) {
-//       effectChanges.push(...effect.atcvChanges);
-//     }
-//     // ======
-//     const res = new AtcvEffectFlagData();
-//     res.visionId = retrieveAtcvVisionLevelKeyFromActiveEffect(effectChanges);
-//     res.visionName = i18n(effect.name);
-
-//     res.visionLevelValue = retrieveAtcvVisionLevelValueFromActiveEffect(effectChanges);
-//     res.visionDistanceValue = retrieveAtcvVisionLevelDistanceFromActiveEffect(effectChanges);
-//     res.visionElevation = retrieveAtcvElevationFromActiveEffect(effectChanges);
-//     res.visionSources = retrieveAtcvSourcesFromActiveEffect(effectChanges);
-//     res.visionTargets = retrieveAtcvTargetsFromActiveEffect(effectChanges);
-//     res.visionTargetImage = retrieveAtcvVisionTargetImageFromActiveEffect(effectChanges);
-//     res.visionType = retrieveAtcvTypeFromActiveEffect(effectChanges);
-//     res.visionLevelMinIndex = retrieveAtcvLevelMinIndexFromActiveEffect(effectChanges);
-//     res.visionLevelMaxIndex = retrieveAtcvLevelMaxIndexFromActiveEffect(effectChanges);
-//     return res;
-//   }
-
-//   static fromActiveEffect(activeEffect: ActiveEffect) {
-//     const effectChanges = activeEffect.data.changes;
-//     const res = new AtcvEffectFlagData();
-//     res.visionId = retrieveAtcvVisionLevelKeyFromActiveEffect(effectChanges);
-//     res.visionName = activeEffect.data.label;
-
-//     res.visionLevelValue = retrieveAtcvVisionLevelValueFromActiveEffect(effectChanges);
-//     res.visionDistanceValue = retrieveAtcvVisionLevelDistanceFromActiveEffect(effectChanges);
-//     res.visionElevation = retrieveAtcvElevationFromActiveEffect(effectChanges);
-//     res.visionSources = retrieveAtcvSourcesFromActiveEffect(effectChanges);
-//     res.visionTargets = retrieveAtcvTargetsFromActiveEffect(effectChanges);
-//     res.visionTargetImage = retrieveAtcvVisionTargetImageFromActiveEffect(effectChanges);
-//     res.visionType = retrieveAtcvTypeFromActiveEffect(effectChanges);
-//     res.visionLevelMinIndex = retrieveAtcvLevelMinIndexFromActiveEffect(effectChanges);
-//     res.visionLevelMaxIndex = retrieveAtcvLevelMaxIndexFromActiveEffect(effectChanges);
-//     return res;
-//   }
-// }
-
 export enum AtcvEffectSenseFlags {
   // additional generic
   NONE = 'none',
@@ -223,7 +136,7 @@ export class VisionCapabilities {
         }
       });
     } else {
-      error('No token found for get the visual capatibilities');
+      error('No token found for get the visual capabilities');
     }
   }
 

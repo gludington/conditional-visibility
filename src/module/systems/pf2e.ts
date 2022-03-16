@@ -2,13 +2,21 @@ import { ConditionalVisibilityEffectDefinitions } from '../conditional-visibilit
 import { AtcvEffectSenseFlags, AtcvEffectConditionFlags, SenseData } from '../conditional-visibility-models';
 import CONSTANTS from '../constants';
 
+/*
+HP: data.hp.value
+Perception: data.perception.value
+Passive perception: data.perception.value + 10
+Stealth: data.skills.ste
+Stealth active: data.skills.ste.value
+Stealth passive: data.skills.ste.value + 10
+*/
 export default {
-  HP_ATTRIBUTE: 'data.attributes.hp.value',
-  PERCEPTION_PASSIVE_SKILL: `data.skills.prc.passive`,
-  STEALTH_PASSIVE_SKILL: `data.skills.ste.passive`,
-  STEALTH_ACTIVE_SKILL: `data.skills.ste.total`,
-  // STEALTH_ID_SKILL: `ste`,
-  STEALTH_ID_LANG_SKILL: `SkillSte`, // SkillStealth
+  HP_ATTRIBUTE: 'data.hp.value',
+  PERCEPTION_PASSIVE_SKILL: `data.perception.value`,
+  STEALTH_PASSIVE_SKILL: `data.skills.ste.value`,
+  STEALTH_ACTIVE_SKILL: `data.skills.ste.value`,
+  // STEALTH_ID_SKILL: `data.skills.ste`,
+  STEALTH_ID_LANG_SKILL: `PF2E.SkillSte`, // SkillStealth
   NPC_TYPE: `npc`,
   SENSES: <SenseData[]>[
     {

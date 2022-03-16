@@ -50,6 +50,7 @@ This module uses the [ATE](https://github.com/kandashi/Active-Token-Lighting) li
 
 ## Known Issue\Limitation
 
+- **HELP WANTED FOR PF2E INTEGRATION**, it's seems from my last visit to the PF2E sytem to many things are chnaged, i need some PF2E developer for help me with the intgration (the problem is always the time...)
 - HELP WANTED This is just a "fast to make" module maybe someone a little more expert than me with form application and hud layer can do a better form for a better user experience.
 - This module used many feature of the [Dfred convenient effects](https://github.com/DFreds/dfreds-convenient-effects/) module, but is not multisystem (yet) i invite you to support Dfred for is marvelous work and beg him to make that module multisystem.
 - With levels module enabled and active, **if the scene is with "Token vision" set to false (unchecked box)**, after selected a token and click on the canvas with the option "Release on left click" enable the hidden token are visible for a small instant this is a incompatibility with the [Levels](https://github.com/theripper93/Levels) module i cannot solve, the simple solution is just enable the token vision on the current scene.
@@ -57,7 +58,7 @@ This module uses the [ATE](https://github.com/kandashi/Active-Token-Lighting) li
 
 ## Usage
 
-A usage documentation on how the active effect are managed is reachable [here](./wiki/tutorial.md), before anything giveit a look there and let me know howmuch bad is the documentation.
+A usage documentation on how the active effect are managed is reachable [here](./wiki/tutorial.md), before anything give it a look there and let me know howmuch bad is the documentation.
 
 These modules are suggested for a better user experience with this one :
 
@@ -72,7 +73,7 @@ These modules are suggested for a better user experience with this one :
 ## Conditions and sense combination by system default
 
 #### [System Dnd5e](./wiki/table_dnd5e.md)
-#### [System Pathfinder 2e](./wiki/table_pf2e.md)
+#### [System Pathfinder 2e](./wiki/table_pf2e.md) (work in progress)
 #### Did you want ot help with your system prepare some table like the one i do it for Dnd5e for help me to define some rule for your system
 
 ## Features
@@ -117,9 +118,18 @@ Depends on the value you set the module will automatically create, updated and r
 
 ### Auto-applied the 'hidden' condition from Stealth Rolls like the old "auto appplied hidden"
 
+This is been tested with these modules:
+
+- [TAH](https://foundryvtt.com/packages/token-action-hud)
+- [LMRTFY](https://foundryvtt.com/packages/lmrtfy)
+- [MTB](https://foundryvtt.com/packages/monks-tokenbar)
+- [DAE](https://foundryvtt.com/packages/dae) + [Item Macro](https://foundryvtt.com/packages/itemacro)
+
 ![autostealth](./wiki/video/feature_autostealth_2_cut.gif)
 
 ### Apply sense and condition from Token HUD
+
+**Stop immediately! Thinking of doing a stealth roll right? Well you can't do it from here! this is a generic tool for applying active 'sense' and 'condition' effects on tokens. Stealth shooting can be done in many ways from the character sheet, with [TAH](https://foundryvtt.com/packages/token-action-hud), with [LMRTFY](https://foundryvtt.com/packages/lmrtfy), with [MTB](https://foundryvtt.com/packages/monks-tokenbar), with [DAE](https://foundryvtt.com/packages/dae) + [Item Macro](https://foundryvtt.com/packages/itemacro), but not with this form. The form uses the stealth values as a basis for applying a value for the AE you select in the dropdown the end does nothing else ,stop thinking that what you shoot here is a stealth roll**
 
 Conditional Visibility contains an setting to auto-apply the hidden condition based on a stealth roll. The reuslt can be differnete depends on the current game system ,contributions for other systems are welcomed.
 

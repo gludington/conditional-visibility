@@ -122,20 +122,22 @@
   "conditional-visibility.effects.hidden.name": "Hidden (CV)",
   "conditional-visibility.effects.hidden.description": "This sense is used from the module 'Conditional Visibility'",
 
-  "conditional-visibility.dialogs.title.hidden": "Roll stealth",
+  "conditional-visibility.dialogs.title.warning": "Stop immediately! Thinking of doing a stealth roll right? Well you can't do it from here! this is a generic tool for applying active 'sense' and 'condition' effects on tokens. Stealth shooting can be done in many ways from the character sheet, with <a title='TAH' href='https://foundryvtt.com/packages/token-action-hud/' target='_blank' rel='noopener'>TAH</a>, with <a title='LMRTFY' href='https://foundryvtt.com/packages/lmrtfy' target='_blank' rel='noopener'>LMRTFY</a>, with <a title='MTB' href='https://foundryvtt.com/packages/monks-tokenbar' target='_blank' rel='noopener'>MTB</a>, with <a title='DAE' href='https://foundryvtt.com/packages/dae' target='_blank' rel='noopener'>DAE</a> + <a title='Item Macro' href='https://foundryvtt.com/packages/itemacro' target='_blank' rel='noopener'>Item Macro</a>, but not with this form. The form uses the stealth values as a basis for applying a value for the AE you select in the dropdown and does nothing else, stop thinking that what you shoot here is a 'stealth' roll.",
+
+  "conditional-visibility.dialogs.title.hidden": "Conditional visibilty roll",
   "conditional-visibility.dialogs.stealth.not.supported": "Conditional Visibility does not support the hidden condition/stealth for {sysid}",
 
-  "conditional-visibility.dialogs.passivestealth": "Passive Stealth",
-  "conditional-visibility.dialogs.passivestealthdescription": "This value depend on the system, but usually is the 'passive stealth' attribute of the first token from the token array you have currently selected.",
+  "conditional-visibility.dialogs.passivestealth": "Conditional visibility Passive",
+  "conditional-visibility.dialogs.passivestealthdescription": "This value depend on the system, but usually is the 'passive stealth' attribute of the first token from the token array you have currently selected. IS JUST A DISPLAYED INFO OF THE PASSIVE STEALTH IF PRESENT ON THE SYSTEM",
 
-  "conditional-visibility.dialogs.currentstealth": "Current Stealth",
-  "conditional-visibility.dialogs.currentstealthdescription": "This value depend on the system, but usually is the 'current stealth' attribute of the first token from the token array you have currently selected.",
+  "conditional-visibility.dialogs.currentstealth": "Conditional visibility Current",
+  "conditional-visibility.dialogs.currentstealthdescription": "This value depend on the system, but usually is the 'current hidden condition value' attribute of the first token from the token array you have currently selected. IS NOT THE STEALTH IS THE CURRENT VALUE OF THE HIDDEN STATE",
 
-  "conditional-visibility.dialogs.stealthroll": "Stealh Roll, for unlimited range use <= -1, for disable/remove use 0",
-  "conditional-visibility.dialogs.stealthrolldescription": "This value will be compared with the other 'sense' (active effect) value from the source token (if present on the system). Non-numeric entries will result in the initial value being taken",
+  "conditional-visibility.dialogs.stealthroll": "Conditional visibility roll, for unlimited range use <= -1, for disable/remove use 0",
+  "conditional-visibility.dialogs.stealthrolldescription": "This value will used to apply the selected 'sense' and/or 'condition' on the following  be compared with the other 'sense' (active effect) value from the source token (if present on the system). Non-numeric entries will result in the initial value being taken",
 
   "conditional-visibility.dialogs.disablepassiverecovery": "Disable the passive recovery",
-  "conditional-visibility.dialogs.disablepassiverecoverydescription": "If you check this box and your roll is a number lower than the passive one it will be taken anyway. By default the value go back to the passive one",
+  "conditional-visibility.dialogs.disablepassiverecoverydescription": "If you check this box and your roll is a number lower than the passive value you see on the first input it will be taken anyway. By default the value go back to the passive one if is lower",
 
   "conditional-visibility.dialogs.resetsettings.title": "Reset Module Settings",
   "conditional-visibility.dialogs.resetsettings.content": "Are you sure you want to reset all of the module settings to the current system's defaults? <strong>THIS CANNOT BE UNDONE!</strong>",

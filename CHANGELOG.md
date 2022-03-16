@@ -1,9 +1,11 @@
 ### 0.4.28
 
+- Add warning on the hud form
 - Bug fix missing `effect.flags.core.statusId` on the effect used, becuase is mandatory for the moduel i will create this runtime 
-- Bug gix []()
-- Bug fix []()
+- Bug gix [[BUG] Token Action HUD and Auto Stealth not working](https://github.com/p4535992/conditional-visibility/issues/11)
+- Bug fix [[BUG] Removing invisible from a hostile token causes errors on client side and doesn't make them visible](https://github.com/p4535992/conditional-visibility/issues/12)
 - Is impossibile to make the auto stealth work with other module like token action hud, LMRTFY or similar module in a multisystem enviroment, so now i just rendered the chat and hope everything is working like expected, so if no chat is been rendered on the client side no stealth effect is applied and you are force to use the token hud feature.
+
 ### 0.4.27
 
 - Update lang

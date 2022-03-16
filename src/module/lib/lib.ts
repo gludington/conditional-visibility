@@ -1361,20 +1361,20 @@ export async function toggleStealth(event) {
         label: 'OK',
         callback: async (html: JQuery<HTMLElement>) => {
           //@ts-ignore
-          const passivestealth = parseInt(html.find('div.form-group').children()[1]?.value);
+          const passivestealth = parseInt(html.find('div.form-group').children()[2]?.value);
           //@ts-ignore
-          const currentstealth = parseInt(html.find('div.form-group').children()[4]?.value);
+          const currentstealth = parseInt(html.find('div.form-group').children()[5]?.value);
           //@ts-ignore
-          let valStealthRoll = parseInt(html.find('div.form-group').children()[7]?.value);
+          let valStealthRoll = parseInt(html.find('div.form-group').children()[8]?.value);
           if (isNaN(valStealthRoll)) {
             valStealthRoll = 0;
           }
           //@ts-ignore
-          const disablePassiveRecovery = html.find('div.form-group').children()[10]?.value === 'true';
+          const disablePassiveRecovery = html.find('div.form-group').children()[11]?.value === 'true';
           //@ts-ignore
-          const senseId = String(html.find('div.form-group').children()[13]?.value);
+          const senseId = String(html.find('div.form-group').children()[14]?.value);
           //@ts-ignore
-          const conditionId = String(html.find('div.form-group').children()[17]?.value);
+          const conditionId = String(html.find('div.form-group').children()[18]?.value);
 
           if (valStealthRoll < passivestealth && !disablePassiveRecovery) {
             valStealthRoll = passivestealth;

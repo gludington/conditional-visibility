@@ -729,7 +729,7 @@ const API = {
     //     break;
     //   }
     // }
-
+    let changesTmp: any[] = [];
     // Check for dfred convenient effect and retrieve the effect with the specific name
     // https://github.com/DFreds/dfreds-convenient-effects/issues/110
     //@ts-ignore
@@ -739,13 +739,14 @@ const API = {
         effectToFoundByName = effectToFoundByName + ' (CV)';
       }
       //@ts-ignore
-      effect = <Effect>await game.dfreds.effectInterface.findCustomEffectByName(effectToFoundByName);
-      if (effect) {
+      const dfredEffect = <Effect>await game.dfreds.effectInterface.findCustomEffectByName(effectToFoundByName);
+      if (dfredEffect) {
         let foundedFlagVisionValue = false;
-        if (!effect.atcvChanges) {
-          effect.atcvChanges = [];
+        if (!dfredEffect.atcvChanges) {
+          dfredEffect.atcvChanges = [];
         }
-        for (const obj of effect.atcvChanges) {
+        changesTmp = EffectSupport._handleIntegrations(dfredEffect);
+        for (const obj of changesTmp) {
           if (obj.key === 'ATCV.' + senseDataEffect.visionId && obj.value != String(senseDataEffect.visionLevelValue)) {
             obj.value = String(senseDataEffect.visionLevelValue);
             foundedFlagVisionValue = true;
@@ -753,7 +754,7 @@ const API = {
           }
         }
         if (!foundedFlagVisionValue) {
-          for (const obj of effect.changes) {
+          for (const obj of changesTmp) {
             if (
               obj.key === 'ATCV.' + senseDataEffect.visionId &&
               obj.value != String(senseDataEffect.visionLevelValue)
@@ -765,13 +766,17 @@ const API = {
           }
         }
         if (!foundedFlagVisionValue) {
-          effect.atcvChanges.push(<any>{
+          changesTmp.push(<any>{
             key: 'ATCV.' + senseDataEffect.visionId,
             mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
             value: String(senseDataEffect.visionLevelValue),
             priority: 5,
           });
         }
+        //@ts-ignore
+        effect = structuredClone(dfredEffect);
+        //@ts-ignore
+        effect.changes = structuredClone(changesTmp);
       }
     }
     if (!effect) {
@@ -793,7 +798,7 @@ const API = {
         );
       });
       if (senseOrCondition) {
-        const atcvChanges = <any[]>[
+        changesTmp = <any[]>[
           {
             key: 'ATCV.' + senseOrCondition.visionId,
             mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
@@ -809,10 +814,10 @@ const API = {
           [],
           [],
           [],
-          atcvChanges,
+          changesTmp,
         );
       } else {
-        const atcvChanges = <any[]>[
+        changesTmp = <any[]>[
           {
             key: 'ATCV.' + senseDataEffect.visionId,
             mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
@@ -828,7 +833,7 @@ const API = {
           [],
           [],
           [],
-          atcvChanges,
+          changesTmp,
         );
       }
     }
@@ -866,7 +871,6 @@ const API = {
       await (<EffectInterface>this.effectInterface).addEffectOnToken(nameToUse, <string>token.id, effect);
       //await token?.document?.setFlag(CONSTANTS.MODULE_NAME, (<Effect>effect).customId, visionLevel);
       const atcvEffectFlagData = AtcvEffect.fromEffect(effect);
-      // await token?.document?.setFlag(CONSTANTS.MODULE_NAME, (<Effect>effect).customId, atcvEffectFlagData);
       const result = atcvEffectFlagData;
       return result;
     }

@@ -328,7 +328,7 @@ export function sightLayerPrototypeTestVisibilityHandler(wrapped, ...args) {
 // };
 
 export const tokenPrototypeDrawHandler = function (wrapped, ...args) {
-  if(!game.user?.isGM){
+  if (!game.user?.isGM) {
     return;
   }
   const tokenData: Token = this as Token;
@@ -344,8 +344,8 @@ export const tokenPrototypeDrawHandler = function (wrapped, ...args) {
   if (currentActvEffect) {
     //tokenData.data.img = currentActvEffect.visionTargetImage;
     const targetTokens = <Token[]>canvas.tokens?.placeables;
-    for(const targetToken of targetTokens){
-      if(targetToken.id != tokenData.id){
+    for (const targetToken of targetTokens) {
+      if (targetToken.id != tokenData.id) {
         targetToken.document.data.img = currentActvEffect.visionTargetImage;
         targetToken.draw();
       }

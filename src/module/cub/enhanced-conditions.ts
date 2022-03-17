@@ -635,7 +635,7 @@ export interface EnhancedConditions {
 
   //     // Iterate through the map validating/preparing the data
   //     for (let i = 0; i < conditionMap.length; i++) {
-  //         let condition = duplicate(conditionMap[i]);
+  //         let condition = structuredClone(conditionMap[i]);
 
   //         // Delete falsy values
   //         if (!condition) preparedMap.splice(i, 1);
@@ -661,7 +661,7 @@ export interface EnhancedConditions {
   //  * Duplicate the core status icons, freeze the duplicate then store a copy in settings
   //  */
   //  _backupCoreEffects() {
-  //     CONFIG.defaultStatusEffects = CONFIG.defaultStatusEffects || duplicate(CONFIG.statusEffects);
+  //     CONFIG.defaultStatusEffects = CONFIG.defaultStatusEffects || structuredClone(CONFIG.statusEffects);
   //     if (!Object.isFrozen(CONFIG.defaultStatusEffects)) {
   //         Object.freeze(CONFIG.defaultStatusEffects);
   //     }

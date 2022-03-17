@@ -366,7 +366,37 @@ export class EffectSupport {
     return result;
   }
 
-  static _getDurationData(seconds: number, rounds: number, turns: number) {
+  static _getDurationData(seconds: number, rounds: number, turns: number, isTemporary: boolean) {
+    const isPassive = !isTemporary;
+    if (game.combat) {
+      if (isPassive) {
+        return {
+          startTime: game.time.worldTime,
+          startRound: 0,
+          startTurn: 0,
+        };
+      } else {
+        return {
+          startRound: game.combat.round,
+          rounds: EffectSupport._getCombatRounds(seconds, rounds),
+          turns: turns,
+        };
+      }
+    } else {
+      if (isPassive) {
+        return {
+          startTime: game.time.worldTime,
+          startRound: 0,
+          startTurn: 0,
+        };
+      } else {
+        return {
+          startTime: game.time.worldTime,
+          seconds: EffectSupport._getSeconds(seconds, rounds),
+        };
+      }
+    }
+    /*
     if (game.combat) {
       return {
         startRound: game.combat.round,
@@ -379,6 +409,7 @@ export class EffectSupport {
         seconds: EffectSupport._getSeconds(seconds, rounds),
       };
     }
+    */
   }
 
   static _getCombatRounds(seconds: number, rounds: number) {
@@ -453,6 +484,7 @@ export class EffectSupport {
         <number>p.duration.seconds,
         <number>p.duration.rounds,
         <number>p.duration.turns,
+        !isPassive,
       ),
       flags: foundry.utils.mergeObject(p.flags, {
         core: {
@@ -482,22 +514,24 @@ export class EffectSupport {
    */
   public static convertToActiveEffectData(effect: Effect): Record<string, unknown> {
     const isPassive = !effect.isTemporary;
+    const myid = effect._id ? effect._id : effect.flags?.core?.statusId ? effect.flags.core.statusId : undefined;
+    const myoverlay = effect.overlay ? effect.overlay : effect.flags?.core?.overlay ? effect.flags.core.overlay : false;
     return {
-      id: effect._id,
+      id: myid,
       name: i18n(effect.name),
       label: i18n(effect.name),
       description: i18n(effect.description), // 4535992 this not make sense, but it doesn't hurt either
       icon: effect.icon,
       tint: effect.tint,
-      duration: effect._getDurationData(),
+      duration: EffectSupport._getDurationData(effect.seconds, effect.rounds, effect.turns, effect.isTemporary),
       flags: foundry.utils.mergeObject(effect.flags, {
         core: {
-          statusId: isPassive ? undefined : effect._id,
-          overlay: effect.overlay ? effect.overlay : false,
+          statusId: isPassive ? undefined : myid,
+          overlay: myoverlay,
         },
         isConvenient: true,
         convenientDescription: i18n(effect.description),
-        dae: this._isEmptyObject(effect.dae)
+        dae: EffectSupport._isEmptyObject(effect.dae)
           ? isPassive
             ? { stackable: false, specialDuration: [], transfer: true }
             : {}
@@ -518,7 +552,7 @@ export class EffectSupport {
   //   // Organize non-disabled effects by their application priority
   //   const changes = <EffectChangeData[]>changesTmp.reduce((changes) => {
   //     return changes.map((c: EffectChangeData) => {
-  //       const c2 = <EffectChangeData>duplicate(c);
+  //       const c2 = <EffectChangeData>structuredClone(c);
   //       // c2.effect = e;
   //       c2.priority = <number>c2.priority ?? c2.mode * 10;
   //       return c2;
@@ -537,7 +571,8 @@ export class EffectSupport {
       return changes.concat(
         //@ts-ignore
         (<EffectChangeData[]>e.data.changes).map((c: EffectChangeData) => {
-          const c2 = <EffectChangeData>duplicate(c);
+          //@ts-ignore
+          const c2 = <EffectChangeData>structuredClone(c);
           // c2.effect = e;
           c2.priority = <number>c2.priority ?? c2.mode * 10;
           return c2;

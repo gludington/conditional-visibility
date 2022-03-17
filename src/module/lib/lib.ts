@@ -252,7 +252,7 @@ async function updateAtcvVisionLevel(
     return changes.concat(
       //@ts-ignore
       (<EffectChangeData[]>e.data.changes).map((c: EffectChangeData) => {
-        const c2 = <EffectChangeData>duplicate(c);
+        const c2 = <EffectChangeData>structuredClone(c);
         // c2.effect = e;
         c2.priority = <number>c2.priority ?? c2.mode * 10;
         return c2;
@@ -655,7 +655,8 @@ export async function prepareActiveEffectForConditionalVisibility(
       if (activeEffectFounded) {
         const actve = retrieveAtcvVisionLevelValueFromActiveEffect(activeEffectFounded.data.changes);
         if (sense.visionLevelValue != actve) {
-          const data = <ActiveEffectData>duplicate(activeEffectFounded.data);
+          //@ts-ignore
+          const data = <ActiveEffectData>structuredClone(activeEffectFounded.data);
           data.changes.forEach((aee) => {
             if (aee.key.startsWith('ATCV.') && !aee.key.startsWith('ATCV.condition') && aee.value) {
               aee.value = String(sense.visionLevelValue);
@@ -705,7 +706,8 @@ export async function prepareActiveEffectForConditionalVisibility(
       if (activeEffectFounded) {
         const actve = retrieveAtcvVisionLevelValueFromActiveEffect(activeEffectFounded.data.changes);
         if (condition.visionLevelValue != actve) {
-          const data = <ActiveEffectData>duplicate(activeEffectFounded.data);
+          //@ts-ignore
+          const data = <ActiveEffectData>structuredClone(activeEffectFounded.data);
           data.changes.forEach((aee) => {
             if (aee.key.startsWith('ATCV.') && !aee.key.startsWith('ATCV.condition') && aee.value) {
               aee.value = String(condition.visionLevelValue);

@@ -1015,10 +1015,13 @@ export default class EffectHandler {
       const sceneId = (token?.scene && token.scene.id) || canvas.scene?.id;
       origin = `Scene.${sceneId}.Token.${token.id}`;
     }
-    const activeEffectDataUpdated = effectUpdated.convertToActiveEffectData({
-      origin,
-      overlay,
-    });
+    // const activeEffectDataUpdated = effectUpdated.convertToActiveEffectData({
+    //   origin,
+    //   overlay,
+    // });
+    effectUpdated.origin = origin;
+    effectUpdated.overlay = overlay;
+    const activeEffectDataUpdated = EffectSupport.convertToActiveEffectData(effectUpdated);
     activeEffectDataUpdated._id = effect.id;
     const updated = await token.actor?.updateEmbeddedDocuments('ActiveEffect', [activeEffectDataUpdated]);
     log(`Updated effect ${effect.data.label} to ${token.name} - ${token.id}`);
@@ -1046,10 +1049,13 @@ export default class EffectHandler {
       const sceneId = (token?.scene && token.scene.id) || canvas.scene?.id;
       origin = `Scene.${sceneId}.Token.${token.id}`;
     }
-    const activeEffectDataUpdated = effectUpdated.convertToActiveEffectData({
-      origin,
-      overlay,
-    });
+    // const activeEffectDataUpdated = effectUpdated.convertToActiveEffectData({
+    //   origin,
+    //   overlay,
+    // });
+    effectUpdated.origin = origin;
+    effectUpdated.overlay = overlay;
+    const activeEffectDataUpdated = EffectSupport.convertToActiveEffectData(effectUpdated);
     activeEffectDataUpdated._id = effect.id;
     const updated = await token.actor?.updateEmbeddedDocuments('ActiveEffect', [activeEffectDataUpdated]);
     log(`Updated effect ${effect.data.label} to ${token.name} - ${token.id}`);

@@ -333,13 +333,17 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
   // friendly, neutral, hostile
   // =================================================
 
-  // If you are owner of the token you can see him
+  // 2) Check if the target is owned from the player if true you can see the token.
   const isPlayerOwned = <boolean>targetToken.actor?.hasPlayerOwner;
-  // If I'm an owner of the token; remain visible
   if (!game.user?.isGM && (isPlayerOwned || targetToken.owner)) {
+    debug(`(2) Is true, target ${targetToken.data.name} ${'is visible'} to source ${sourceToken.data.name}`);
     return true;
   }
+  debug(`(2) Is false, target ${targetToken.data.name} ${'is not visible'} to source ${sourceToken.data.name}`);
+  // 3) Check for the token disposition:
 
+  // 3.1) by default the check is applied to all token disposition Friendly, Neutral, Hostile,
+  // You can disable the check for all non hostile NPC with the module settings 'Disable for non hostile npc'
   let targetActorDisposition;
   if (targetToken && targetToken.data?.disposition) {
     targetActorDisposition = targetToken.data.disposition;
@@ -357,14 +361,15 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
       sourceToken.actor?.type === API.NPC_TYPE ? CONST.TOKEN_DISPOSITIONS.HOSTILE : CONST.TOKEN_DISPOSITIONS.FRIENDLY;
   }
 
-  // If both are hostile return true
+  // 3.2) A npc Hostile can see other Hostile npc
   if (
     sourceActorDisposition == CONST.TOKEN_DISPOSITIONS.HOSTILE &&
     targetActorDisposition == CONST.TOKEN_DISPOSITIONS.HOSTILE
   ) {
+    debug(`(3.2) Is true, target ${targetToken.data.name} ${'is visible'} to source ${sourceToken.data.name}`);
     return true;
   }
-
+  debug(`(3.2) Is false, target ${targetToken.data.name} ${'is not visible'} to source ${sourceToken.data.name}`);
   if (game.settings.get(CONSTANTS.MODULE_NAME, 'disableForNonHostileNpc')) {
     if (
       targetActorDisposition === CONST.TOKEN_DISPOSITIONS.FRIENDLY ||
@@ -381,37 +386,70 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
   const sourceVisionLevels = getSensesFromToken(sourceToken.document, true) ?? [];
   const targetVisionLevels = getConditionsFromToken(targetToken.document, true) ?? [];
 
-  const stealthedPassive =
-    getProperty(<Actor>targetToken?.document?.actor, `data.${API.STEALTH_PASSIVE_SKILL}`) || 0;
+  const stealthedPassive = getProperty(<Actor>targetToken?.document?.actor, `data.${API.STEALTH_PASSIVE_SKILL}`) || 0;
   // 10 + Wisdom Score Modifier + Proficiency Bonus
   //@ts-ignore
-  const perceptionPassive = getProperty(<Actor>sourceToken?.document?.actor, `data.${API.PERCEPTION_PASSIVE_SKILL}`) || 0;
+  const perceptionPassive =
+    getProperty(<Actor>sourceToken?.document?.actor, `data.${API.PERCEPTION_PASSIVE_SKILL}`) || 0;
 
-  if (targetVisionLevels.length == 0) {
-    if (game.settings.get(CONSTANTS.MODULE_NAME, 'autoPassivePerception')) {
-      if(perceptionPassive > stealthedPassive){
+  // 4) If module setting `autoPassivePerception` is enabled, check by default if
+  // _Perception Passive of the system_ is `>` of the _Stealth Passive of the System_,
+  // but only IF NO ACTIVE EFFECT CONDITION ARE PRESENT ON THE TARGET
+  if (game.settings.get(CONSTANTS.MODULE_NAME, 'autoPassivePerception')) {
+    if (targetVisionLevels.length == 0) {
+      if (perceptionPassive > stealthedPassive) {
+        debug(`(4) Is true, target ${targetToken.data.name} ${'is visible'} to source ${sourceToken.data.name}`);
         return true;
       }
     }
   }
-
+  debug(`(4) Is false, target ${targetToken.data.name} ${'is not visible'} to source ${sourceToken.data.name}`);
+  // 5) Check if the source token has at least a active effect marked with key `ATCV.<sense or condition id>`
   if (sourceVisionLevels.length === 0) {
-    // If at least a condition is present on target it should be false
+    // 5.1) If at least a condition is present on target it should be false else with no 'sense' on source e no ' condition' on target is true
     if (targetVisionLevels.length === 0) {
+      debug(`(5) Is true target ${targetToken.data.name} ${'is visible'} to source ${sourceToken.data.name}`);
       return true;
     }
   }
+  debug(`(5) Is false, target ${targetToken.data.name} ${'is not visible'} to source ${sourceToken.data.name}`);
 
+  // 6) Check if the source token has the active effect `blinded` active, if is true, you cannot see anything and return false.
   for (const sourceStatusEffect of sourceVisionLevels) {
     if (isStringEquals(sourceStatusEffect.visionId, AtcvEffectSenseFlags.BLINDED)) {
+      debug(`(6) Is false, target ${targetToken.data.name} ${'is not visible'} to source ${sourceToken.data.name}`);
       // Someone is blind
       return false;
     }
   }
-
+  debug(`(6) Is true, target ${targetToken.data.name} ${'is visible'} to source ${sourceToken.data.name}`);
+  // 7) If not 'condition' are present on the target token return true (nothing to check).
   if (targetVisionLevels.length == 0) {
+    debug(`(7) Is true, target ${targetToken.data.name} ${'is visible'} to source ${sourceToken.data.name}`);
     return true;
   }
+  debug(`(7) Is false, target ${targetToken.data.name} ${'is not visible'} to source ${sourceToken.data.name}`);
+
+  // 8) Check again for _passive perception vs passive stealth_ like on point 4) this time we use the hidden active effect like the stealth passive on the target token...
+  // THIS WILL BE CHECK ONLY IF ONE CONDITION IS PRESENT ON THE TARGET AND THE CONDITION TYPE IS 'HIDDEN'
+  if (game.settings.get(CONSTANTS.MODULE_NAME, 'autoPassivePerception')) {
+    if (sourceVisionLevels.length === 0) {
+      let isTheCaseWhenOnlyTheHiddenConditionIsPresentOnTarget = true;
+      for (const targetVisionLevel of targetVisionLevels) {
+        if (!isStringEquals(targetVisionLevel.visionId, AtcvEffectConditionFlags.HIDDEN)) {
+          isTheCaseWhenOnlyTheHiddenConditionIsPresentOnTarget = false;
+          break;
+        }
+      }
+      if (isTheCaseWhenOnlyTheHiddenConditionIsPresentOnTarget) {
+        if (perceptionPassive > stealthedPassive) {
+          debug(`(8) Is true, target ${targetToken.data.name} ${'is visible'} to source ${sourceToken.data.name}`);
+          return true;
+        }
+      }
+    }
+  }
+  debug(`(8) Is false, target ${targetToken.data.name} ${'is not visible'} to source ${sourceToken.data.name}`);
 
   // ========================================
   // 2 - Check for the correct status sight
@@ -419,75 +457,99 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
 
   const sourceVisionLevelsValid: Map<string, AtcvEffect> = new Map<string, AtcvEffect>();
 
+  // 9) Check if the source token has some 'sense' powerful enough to beat every 'condition' ont he target token:
   const visibleForTypeOfSenseByIndex = [...sourceVisionLevels].map((sourceVisionLevel: AtcvEffect) => {
-    // Check list of sources and targets
     const resultsOnTarget = targetVisionLevels.map((targetVisionLevel) => {
+      // 9.0) If no `ATCV.visioId` is founded return true (this shoudldn't never happened is just for avoid some unwanted behaviour)
       if (!targetVisionLevel || !targetVisionLevel.visionId) {
         sourceVisionLevelsValid.set(sourceVisionLevel.visionId, sourceVisionLevel);
+        debug(`(9) Is true, target ${targetToken.data.name} ${'is visible'} to source ${sourceToken.data.name}`);
         return true;
       }
+
+      debug(`(9) Is false, target ${targetToken.data.name} ${'is not visible'} to source ${sourceToken.data.name}`);
+
+      // 9.1) Check for explicit `ATCV.conditionTargets` and `ATCV.conditionSources`, this control make avoid the following 9.X check
       if (sourceVisionLevel?.visionTargets?.length > 0) {
         if (sourceVisionLevel?.visionTargets.includes(<string>targetVisionLevel.visionId)) {
           sourceVisionLevelsValid.set(sourceVisionLevel.visionId, sourceVisionLevel);
+          debug(`(9.1.1) Is true, target ${targetToken.data.name} ${'is visible'} to source ${sourceToken.data.name}`);
           return true;
         } else {
+          debug(
+            `(9.1.1) Is false, target ${targetToken.data.name} ${'is not visible'} to source ${sourceToken.data.name}`,
+          );
           return false;
         }
       }
       if (targetVisionLevel?.visionSources?.length > 0) {
         if (targetVisionLevel?.visionSources.includes(<string>sourceVisionLevel.visionId)) {
           sourceVisionLevelsValid.set(sourceVisionLevel.visionId, sourceVisionLevel);
+          debug(`(9.1.2) Is true, target ${targetToken.data.name} ${'is visible'} to source ${sourceToken.data.name}`);
           return true;
         } else {
+          debug(
+            `(9.1.2) Is false, target ${targetToken.data.name} ${'is not visible'} to source ${sourceToken.data.name}`,
+          );
           return false;
         }
       }
+
+      // 9.2) If the 'condition' on the target token is `NONE` return true
       if (isStringEquals(targetVisionLevel.visionId, AtcvEffectConditionFlags.NONE)) {
         sourceVisionLevelsValid.set(sourceVisionLevel.visionId, sourceVisionLevel);
+        debug(`(9.2) Is true, target ${targetToken.data.name} ${'is visible'} to source ${sourceToken.data.name}`);
         return true;
       }
 
+      // 9.3) If the 'condition' on the target token is `HIDDEN` and the _Perception Passive of the system_
+      // of the source token is `>` of the current sense value, we use the  _Perception Passive of the system_ for the checking and return ture if is `>` of the condition value setted.
       if (isStringEquals(targetVisionLevel.visionId, AtcvEffectConditionFlags.HIDDEN)) {
-        const stealthedPassive =
-          getProperty(<Actor>sourceToken?.document?.actor, `data.${API.STEALTH_PASSIVE_SKILL}`) || 0;
         if (
-          stealthedPassive > 0 &&
           game.settings.get(CONSTANTS.MODULE_NAME, 'autoPassivePerception') &&
           stealthedPassive > <number>targetVisionLevel.visionLevelValue
         ) {
           sourceVisionLevelsValid.set(sourceVisionLevel.visionId, sourceVisionLevel);
+          debug(`(9.3) Is true, target ${targetToken.data.name} ${'is visible'} to source ${sourceToken.data.name}`);
           return true;
         }
       }
 
-      // const result =
-      //   <number>sourceVisionLevel?.statusSight?.visionLevelMinIndex <=
-      //     <number>targetVisionLevel.statusSight?.visionLevelMinIndex &&
-      //   <number>sourceVisionLevel?.statusSight?.visionLevelMaxIndex >=
-      //     <number>targetVisionLevel.statusSight?.visionLevelMaxIndex;
+      // 9.4)  The range of 'condition' level [`conditionLevelMinIndex,conditionLevelMaxIndex`], must be between the 'sense' range level [`conditionLevelMinIndex,conditionLevelMaxIndex`] like explained on the [tables](./tables.md).
       const result =
         <number>sourceVisionLevel?.visionLevelMinIndex <= <number>targetVisionLevel?.visionLevelMinIndex &&
         <number>sourceVisionLevel?.visionLevelMaxIndex >= <number>targetVisionLevel?.visionLevelMaxIndex;
       if (result) {
         sourceVisionLevelsValid.set(sourceVisionLevel.visionId, sourceVisionLevel);
       }
+      if (result) {
+        debug(`(9.3) Is true, target ${targetToken.data.name} ${'is visible'} to source ${sourceToken.data.name}`);
+      } else {
+        debug(`(9.3) Is false, target ${targetToken.data.name} ${'is not visible'} to source ${sourceToken.data.name}`);
+      }
       return result;
     });
     // if any source has vision to the token, the token is visible
     let resultFinal = resultsOnTarget.reduce((total, curr) => total || curr, false);
     if (resultFinal) {
-      // Check elevation
+      // 10)  Check if `ATCV.conditionElevation` if set to true, will check if the source token and target token are at the same level .
       if (sourceVisionLevel?.visionElevation) {
         const tokenElevation = getElevationToken(sourceToken);
         const targetElevation = getElevationToken(targetToken);
         if (tokenElevation < targetElevation) {
+          debug(
+            `(10) Is false, target ${targetToken.data.name} ${'is not visible'} to source ${sourceToken.data.name}`,
+          );
           resultFinal = false;
         }
       }
-      // Check distance
+      // 11)  Check if `ATCV.conditionDistance` is valorized if is set to a numeric value, will check if the tokens are near enough to remain hidden (remember -1 is infinity distance).
       if (sourceVisionLevel?.visionDistanceValue && sourceVisionLevel?.visionDistanceValue != 0) {
         const tokenDistance = getUnitTokenDist(sourceToken, targetToken);
         if (sourceVisionLevel?.visionDistanceValue != -1 && sourceVisionLevel?.visionDistanceValue < tokenDistance) {
+          debug(
+            `(11) Is false, target ${targetToken.data.name} ${'is not visible'} to source ${sourceToken.data.name}`,
+          );
           resultFinal = false;
         }
       }
@@ -507,24 +569,38 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
   // 3 - Check for the correct value number
   // =========================================
 
+  // 7) Check if the vision level value of the filtered  'sense' on the source token is a number `>=` of the vision level value of the filtered 'condition' on the target token,
+  // if the sense is set to `-1` this check is automatically skipped. If the condition and the sesne are both set with value `-1` the condition won.
   const visibleForTypeOfSenseByValue = [...sourceVisionLevelsValid.values()].map((sourceVisionLevel: AtcvEffect) => {
     const resultsOnTarget = targetVisionLevels.map((targetVisionLevel) => {
       if (!targetVisionLevel || !targetVisionLevel.visionId) {
+        debug(`(12.1) Is true, target ${targetToken.data.name} ${'is visible'} to source ${sourceToken.data.name}`);
         return true;
       }
       if (
         isStringEquals(targetVisionLevel.visionId, AtcvEffectSenseFlags.NORMAL) ||
         isStringEquals(targetVisionLevel.visionId, AtcvEffectSenseFlags.NONE)
       ) {
+        debug(`(12.2) Is true, target ${targetToken.data.name} ${'is visible'} to source ${sourceToken.data.name}`);
         return true;
       }
       // the "-1" case
       if (<number>targetVisionLevel.visionLevelValue <= -1) {
+        debug(
+          `(12.3) Is false, target ${targetToken.data.name} ${'is not visible'} to source ${sourceToken.data.name}`,
+        );
         return false;
       } else {
         const result =
           <number>sourceVisionLevel.visionLevelValue <= -1 ||
           <number>sourceVisionLevel.visionLevelValue >= <number>targetVisionLevel.visionLevelValue;
+        if (result) {
+          debug(`(12.4) Is true, target ${targetToken.data.name} ${'is visible'} to source ${sourceToken.data.name}`);
+        } else {
+          debug(
+            `(12.4) Is false, target ${targetToken.data.name} ${'is not visible'} to source ${sourceToken.data.name}`,
+          );
+        }
         return result;
       }
     });
@@ -1375,9 +1451,12 @@ export async function toggleStealth(event) {
             valStealthRoll = passivestealth;
           }
 
-          let selectedTokens = <Token[]>canvas.tokens?.controlled;
-          if (!selectedTokens || selectedTokens.length == 0) {
+          let selectedTokens = <Token[]>[];
+          if (this.object) {
             selectedTokens = [this.object];
+          }
+          if (!selectedTokens || selectedTokens.length == 0) {
+            selectedTokens = [<Token[]>canvas.tokens?.controlled][0];
           }
           for (const selectedToken of selectedTokens) {
             if (senseId != AtcvEffectSenseFlags.NONE && senseId != AtcvEffectSenseFlags.NORMAL) {

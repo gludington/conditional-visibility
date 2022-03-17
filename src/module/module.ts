@@ -424,10 +424,10 @@ const module = {
                 effect.isTemporary = true;
                 if (!effect.flags?.core?.statusId) {
                   // Just make sure the effect is built it right
-                  if(!effect.flags){
+                  if (!effect.flags) {
                     effect.flags = {};
                   }
-                  if(!effect.flags.core){
+                  if (!effect.flags.core) {
                     effect.flags.core = {};
                   }
                   effect.flags.core.statusId = effect._id;

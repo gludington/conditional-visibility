@@ -198,6 +198,31 @@ export default class Effect {
 
   _handleIntegrations() {
     const arrChanges = this.changes || [];
+
+    if (this.atlChanges.length > 0) {
+      for (const atlChange of this.atlChanges) {
+        if (arrChanges.filter((e) => e.key === atlChange.key).length <= 0) {
+          arrChanges.push(atlChange);
+        }
+      }
+    }
+
+    if (this.tokenMagicChanges.length > 0) {
+      for (const tokenMagicChange of this.tokenMagicChanges) {
+        if (arrChanges.filter((e) => e.key === tokenMagicChange.key).length <= 0) {
+          arrChanges.push(tokenMagicChange);
+        }
+      }
+    }
+
+    if (this.atcvChanges.length > 0) {
+      for (const atcvChange of this.atcvChanges) {
+        if (arrChanges.filter((e) => e.key === atcvChange.key).length <= 0) {
+          arrChanges.push(atcvChange);
+        }
+      }
+    }
+    /*
     if (this.atlChanges.length > 0) {
       arrChanges.push(...this.atlChanges);
     }
@@ -209,7 +234,7 @@ export default class Effect {
     if (this.atcvChanges.length > 0) {
       arrChanges.push(...this.atcvChanges);
     }
-
+    */
     return arrChanges;
   }
 
@@ -289,7 +314,32 @@ export class EffectSupport {
   }
 
   static _handleIntegrations(effect: Effect): EffectChangeData[] {
-    const arrChanges: EffectChangeData[] = [];
+    const arrChanges: EffectChangeData[] = effect.changes || [];
+
+    if (effect.atlChanges.length > 0) {
+      for (const atlChange of effect.atlChanges) {
+        if (arrChanges.filter((e) => e.key === atlChange.key).length <= 0) {
+          arrChanges.push(atlChange);
+        }
+      }
+    }
+
+    if (effect.tokenMagicChanges.length > 0) {
+      for (const tokenMagicChange of effect.tokenMagicChanges) {
+        if (arrChanges.filter((e) => e.key === tokenMagicChange.key).length <= 0) {
+          arrChanges.push(tokenMagicChange);
+        }
+      }
+    }
+
+    if (effect.atcvChanges.length > 0) {
+      for (const atcvChange of effect.atcvChanges) {
+        if (arrChanges.filter((e) => e.key === atcvChange.key).length <= 0) {
+          arrChanges.push(atcvChange);
+        }
+      }
+    }
+    /*
     if (effect.atlChanges && effect.atlChanges.length > 0) {
       arrChanges.push(...effect.atlChanges);
     }
@@ -302,6 +352,7 @@ export class EffectSupport {
       arrChanges.push(...effect.atcvChanges);
     }
     // arrChanges = EffectSupport.retrieveChangesOrderedByPriority(arrChanges);
+    */
     return arrChanges;
   }
 

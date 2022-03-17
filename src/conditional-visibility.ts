@@ -88,8 +88,7 @@ Hooks.once('libChangelogsReady', function () {
   libChangelogs.register(
     CONSTANTS.MODULE_NAME,
     `
-    - Bug fix for check with passice perception when no source sense is present
-    - Bug fix when the effect is not recover from the dfred convinient effect store
+    - Some bugfix
     `,
     'minor',
   );

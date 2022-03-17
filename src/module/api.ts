@@ -106,7 +106,7 @@ const API = {
    * @returns {array}
    */
   get STEALTH_ID_LANG_SKILL(): string {
-      return <string>game.settings.get(CONSTANTS.MODULE_NAME, 'idLangStealthSkill');
+    return <string>game.settings.get(CONSTANTS.MODULE_NAME, 'idLangStealthSkill');
   },
 
   /**
@@ -753,6 +753,18 @@ const API = {
           }
         }
         if (!foundedFlagVisionValue) {
+          for (const obj of effect.changes) {
+            if (
+              obj.key === 'ATCV.' + senseDataEffect.visionId &&
+              obj.value != String(senseDataEffect.visionLevelValue)
+            ) {
+              obj.value = String(senseDataEffect.visionLevelValue);
+              foundedFlagVisionValue = true;
+              break;
+            }
+          }
+        }
+        if (!foundedFlagVisionValue) {
           effect.atcvChanges.push(<any>{
             key: 'ATCV.' + senseDataEffect.visionId,
             mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
@@ -835,10 +847,10 @@ const API = {
         effect.isTemporary = true;
         if (!effect.flags?.core?.statusId) {
           // Just make sure the effect is built it right
-          if(!effect.flags){
+          if (!effect.flags) {
             effect.flags = {};
           }
-          if(!effect.flags.core){
+          if (!effect.flags.core) {
             effect.flags.core = {};
           }
           effect.flags.core.statusId = effect._id;

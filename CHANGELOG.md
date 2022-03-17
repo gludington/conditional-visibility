@@ -1,3 +1,7 @@
+### 0.4.29
+
+- Buf fix
+
 ### 0.4.28
 
 - Add warning on the hud form

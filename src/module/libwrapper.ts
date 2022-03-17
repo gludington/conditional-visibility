@@ -505,47 +505,48 @@ export const updateTokenHandler = function (wrapped, ...args) {
 };
 
 Hooks.on('renderChatMessage', async (message: ChatMessage, html: JQuery<HTMLElement>, speakerInfo) => {
-  if(!game?.ready){
+  if (!game?.ready) {
     return;
   }
-  if(!game.settings.get(CONSTANTS.MODULE_NAME, 'autoStealth')){
+  if (!game.settings.get(CONSTANTS.MODULE_NAME, 'autoStealth')) {
     return;
   }
   let tokenChatId = <string>speakerInfo.message.speaker.token;
   const actorChatId = <string>speakerInfo.message.speaker.actor;
 
-  if(!actorChatId){
+  if (!actorChatId) {
     return;
   }
 
   const actor = <Actor>game.actors?.get(actorChatId);
   if (!tokenChatId) {
-    if(actor.getActiveTokens()?.length > 0){
+    if (actor.getActiveTokens()?.length > 0) {
       tokenChatId = <string>actor.getActiveTokens()[0].id;
     }
   }
-  let token:Token | null = null;
+  let token: Token | null = null;
   if (tokenChatId) {
-    token = <Token>canvas.tokens?.placeables.find((t) => { 
-      return t.id === tokenChatId
+    token = <Token>canvas.tokens?.placeables.find((t) => {
+      return t.id === tokenChatId;
     });
   }
 
   let selectedTokens = <Token[]>[];
-  if(!token){
-    selectedTokens = <Token[]>canvas.tokens?.controlled;
-  }else{
-    if (!selectedTokens || selectedTokens.length == 0) {
-      selectedTokens = [<Token>token];
-    }
+  if (token) {
+    selectedTokens = [token];
+  }
+  if (!selectedTokens || selectedTokens.length == 0) {
+    selectedTokens = [<Token[]>canvas.tokens?.controlled][0];
   }
 
   let isStealth = false;
   // This work with TAH, LMRTFY and character sheet
   if (speakerInfo.message.roll) {
     const rollChatTotal = JSON.parse(<string>speakerInfo.message.roll)?.total || '0';
-    const fullTextContent:string = <number>message.data.flavor?.length > message.data.content.length
-      ? <string>message.data.flavor : <string>message.data.content;
+    const fullTextContent: string =
+      <number>message.data.flavor?.length > message.data.content.length
+        ? <string>message.data.flavor
+        : <string>message.data.content;
     if (fullTextContent) {
       // Clean up the string for multisystem (D&D5, PF2, ecc.)
       const innerTextTmp = fullTextContent.toLowerCase().trim();
@@ -555,12 +556,9 @@ Hooks.on('renderChatMessage', async (message: ChatMessage, html: JQuery<HTMLElem
         if (text) {
           text = text.toLowerCase().trim();
           // Keywords to avoid for all the system ?
-          if(text.indexOf('check') !== -1
-            || text.indexOf('ability') !== -1
-            || text.indexOf('skill') !== -1
-          ){
+          if (text.indexOf('check') !== -1 || text.indexOf('ability') !== -1 || text.indexOf('skill') !== -1) {
             //
-          }else{
+          } else {
             continue;
           }
           text = text.replace(/\W/g, ' ');
@@ -577,7 +575,6 @@ Hooks.on('renderChatMessage', async (message: ChatMessage, html: JQuery<HTMLElem
     }
 
     if (isStealth) {
-
       //@ts-ignore
       let valStealthRoll = parseInt(rollChatTotal);
       if (isNaN(valStealthRoll)) {
@@ -588,7 +585,7 @@ Hooks.on('renderChatMessage', async (message: ChatMessage, html: JQuery<HTMLElem
       const conditionId = AtcvEffectConditionFlags.HIDDEN;
 
       for (const selectedToken of selectedTokens) {
-        if(!selectedToken){
+        if (!selectedToken) {
           continue;
         }
         if (senseId != AtcvEffectSenseFlags.NONE && senseId != AtcvEffectSenseFlags.NORMAL) {
@@ -628,17 +625,17 @@ Hooks.on('renderChatMessage', async (message: ChatMessage, html: JQuery<HTMLElem
     }
   }
   // This work with Monk TokenBar
-  else if(message.data.flags["monks-tokenbar"]){
+  else if (message.data.flags['monks-tokenbar']) {
     const rollChatTotal = $(message.data.content).find('.total').html() || '0';
     //@ts-ignore
     let valStealthRoll = parseInt(rollChatTotal);
     if (isNaN(valStealthRoll)) {
       valStealthRoll = 0;
     }
-    if(valStealthRoll === 0){
+    if (valStealthRoll === 0) {
       return;
     }
-    const fullTextContent:string = <string>(<any>message.data.flags["monks-tokenbar"]).name;
+    const fullTextContent: string = <string>(<any>message.data.flags['monks-tokenbar']).name;
     if (fullTextContent) {
       // Clean up the string for multisystem (D&D5, PF2, ecc.)
       const innerTextTmp = fullTextContent.toLowerCase().trim();
@@ -648,12 +645,9 @@ Hooks.on('renderChatMessage', async (message: ChatMessage, html: JQuery<HTMLElem
         if (text) {
           text = text.toLowerCase().trim();
           // Keywords to avoid for all the system ?
-          if(text.indexOf('check') !== -1
-            || text.indexOf('ability') !== -1
-            || text.indexOf('skill') !== -1
-          ){
+          if (text.indexOf('check') !== -1 || text.indexOf('ability') !== -1 || text.indexOf('skill') !== -1) {
             //
-          }else{
+          } else {
             continue;
           }
           text = text.replace(/\W/g, ' ');
@@ -669,12 +663,11 @@ Hooks.on('renderChatMessage', async (message: ChatMessage, html: JQuery<HTMLElem
       }
     }
     if (isStealth) {
-
       const senseId = AtcvEffectSenseFlags.NONE;
       const conditionId = AtcvEffectConditionFlags.HIDDEN;
 
       for (const selectedToken of selectedTokens) {
-        if(!selectedToken){
+        if (!selectedToken) {
           continue;
         }
         if (senseId != AtcvEffectSenseFlags.NONE && senseId != AtcvEffectSenseFlags.NORMAL) {

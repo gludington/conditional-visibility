@@ -381,29 +381,24 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
   const sourceVisionLevels = getSensesFromToken(sourceToken.document, true) ?? [];
   const targetVisionLevels = getConditionsFromToken(targetToken.document, true) ?? [];
 
-  if (!sourceVisionLevels || sourceVisionLevels.length == 0) {
-    // If at least a condition is present on target it should be false
-    if (targetVisionLevels && targetVisionLevels.length > 0) {
-      const targetVisionLevel = <AtcvEffect>targetVisionLevels.find((a: AtcvEffect) => {
-        return isStringEquals(a.visionId, AtcvEffectConditionFlags.HIDDEN);
-      });
-      if (targetVisionLevel) {
-        const stealthedPassive =
-          getProperty(<Actor>sourceToken?.document?.actor, `data.${API.STEALTH_PASSIVE_SKILL}`) || 0;
-        if (
-          stealthedPassive > 0 &&
-          game.settings.get(CONSTANTS.MODULE_NAME, 'autoPassivePerception') &&
-          stealthedPassive > <number>targetVisionLevel.visionLevelValue
-        ) {
-          return true;
-        } else {
-          return false;
-        }
-      } else {
-        return false;
+  const stealthedPassive =
+    getProperty(<Actor>targetToken?.document?.actor, `data.${API.STEALTH_PASSIVE_SKILL}`) || 0;
+  // 10 + Wisdom Score Modifier + Proficiency Bonus
+  //@ts-ignore
+  const perceptionPassive = getProperty(<Actor>sourceToken?.document?.actor, `data.${API.PERCEPTION_PASSIVE_SKILL}`) || 0;
+
+  if (targetVisionLevels.length == 0) {
+    if (game.settings.get(CONSTANTS.MODULE_NAME, 'autoPassivePerception')) {
+      if(perceptionPassive > stealthedPassive){
+        return true;
       }
-    } else {
-      return true; // default vaue
+    }
+  }
+
+  if (sourceVisionLevels.length === 0) {
+    // If at least a condition is present on target it should be false
+    if (targetVisionLevels.length === 0) {
+      return true;
     }
   }
 
@@ -414,7 +409,7 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
     }
   }
 
-  if (!targetVisionLevels || targetVisionLevels.length == 0) {
+  if (targetVisionLevels.length == 0) {
     return true;
   }
 

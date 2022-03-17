@@ -1,3 +1,7 @@
+### 0.4.30
+
+- Removed warning
+
 ### 0.4.29
 
 - Buf fix

@@ -915,10 +915,10 @@ function _getCVFromToken(tokenDocument: TokenDocument, isSense: boolean, filterV
         } else {
           // do nothing
           if (!atcvEffectTmp.visionType) {
-            warn(
-              `Cannot add the sense or condition with name ${effectNameToSet} the 'visionType' property is not been set please add the 'ATCV.conditionType' active effect changes with the value 'sense' or 'condition', or registered the sense with the condition`,
-              true,
-            );
+            // warn(
+            //   `Cannot add the sense or condition with name ${effectNameToSet} the 'visionType' property is not been set please add the 'ATCV.conditionType' active effect changes with the value 'sense' or 'condition', or registered the sense with the condition`,
+            //   true,
+            // );
             atcvEffectTmp.visionType = 'sense';
           }
         }

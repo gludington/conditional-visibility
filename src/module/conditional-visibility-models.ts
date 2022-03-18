@@ -298,8 +298,8 @@ export class VisionCapabilities {
   // }
 }
 
-export class CheckerDebugData{
-  atcvSourceEffect:AtcvEffect;
-  atcvTargetEffect:AtcvEffect|string;
+export class CheckerDebugData {
+  atcvSourceEffect: AtcvEffect;
+  atcvTargetEffect: AtcvEffect | string;
   checkerResult: boolean;
 }

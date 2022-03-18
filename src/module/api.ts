@@ -775,9 +775,9 @@ const API = {
           });
         }
         effect = <Effect>duplicateExtended(dfredEffect);
-        if(effect){
+        if (effect) {
           effect.changes = duplicateExtended(changesTmp);
-        }else{
+        } else {
           warn(`Found dfred active effect  ${effectToFoundByName} but can't clone...`);
         }
       }

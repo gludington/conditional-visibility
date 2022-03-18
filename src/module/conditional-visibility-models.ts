@@ -297,3 +297,9 @@ export class VisionCapabilities {
   //   return sense;
   // }
 }
+
+export class CheckerDebugData{
+  atcvSourceEffect:AtcvEffect;
+  atcvTargetEffect:AtcvEffect|string;
+  checkerResult: boolean;
+}

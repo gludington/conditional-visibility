@@ -24,6 +24,15 @@ the token.
 
 ## NOTE: If you are a javascript developer and not a typescript developer, you can just use the javascript files under the dist folder
 
+## Before open any issue 
+
+1) Enable the module setting _"Enable debugging"_
+2) Click F12 go to the _console_ tab 
+3) make the test you want and replicate the error
+4) Go to the tab console open on point 2) and just right click and click 'Save as' and 'Save'.
+5) attach the text file on the github issue
+6) Wait for a response
+
 ## Installation
 
 It's always easiest to install modules from the in game add-on browser.

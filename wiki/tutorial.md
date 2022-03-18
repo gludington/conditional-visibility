@@ -52,26 +52,26 @@ The calculation for the vision checks is split in many phase forall the use case
 8) Check again for _passive perception vs passive stealth_ like on point 4) this time we use the hidden active effect like the stealth passive on the target token...THIS WILL BE CHECK ONLY IF ONE CONDITION IS PRESENT ON THE TARGET AND THE CONDITION TYPE IS 'HIDDEN'
 9) Check if the source token has some 'sense' powerful enough to beat every 'condition' ont he target token:
 
-  - 9.0) If no `ATCV.visioId` is founded return true (this shoudldn't never happened is just for avoid some unwanted behaviour)
+  - 9.0) If no `ATCV.visioId` is founded return true (this shouldn't never happened is just for avoid some unwanted behavior)
 
   - 9.1) Check for explicit `ATCV.conditionTargets` and `ATCV.conditionSources`, this control make avoid the following 9.X check
 
   - 9.2) If the 'condition' on the target token is `NONE` return true
 
-  - 9.3) If the 'condition' on the target token is `HIDDEN` and the _Perception Passive of the system_ of the source token is `>` of the current sense value, we use the  _Perception Passive of the system_ for the checking and return ture if is `>` of the condition value setted.
+  - 9.3) If the 'condition' on the target token is `HIDDEN` and the _Perception Passive of the system_ of the source token is `>` of the current sense value, we use the  _Perception Passive of the system_ for the checking and return ture if is `>` of the condition value set.
 
   - 9.4)  The range of 'condition' level [`conditionLevelMinIndex,conditionLevelMaxIndex`], must be between the 'sense' range level [`conditionLevelMinIndex,conditionLevelMaxIndex`] like explained on the [tables](./tables.md).
 
 10) Check if `ATCV.conditionElevation` is != 0, will check if the source token and target token are at the same level.
-11)  Check if `ATCV.conditionDistance` is valorized if is set to a numeric value, will check if the tokens are near enough to remain hidden (remember -1 is infinity distance).
-12) Check if the vision level value of the filtered  'sense' on the source token is a number `>=` of the vision level value of the filtered 'condition' on the target token, if the sense is set to `-1` this check is automatically skipped. If the condition and the sesne are both set with value `-1` the condition won.
+11) Check if `ATCV.conditionDistance` is valorized if is set to a numeric value, will check if the tokens are near enough to remain hidden (remember -1 is infinity distance).
+12) Check if the vision level value of the filtered  'sense' on the source token is a number `>=` of the vision level value of the filtered 'condition' on the target token, if the sense is set to `-1` this check is automatically skipped. If the condition and the sense are both set with value `-1` the condition won.
 
 ## What active effect data changes are used from this module ?
 
-Every active effect data of this is module use any chnages with the prefix `ATCV` acronim for _Active Token Conditional Visibility_ .
+Every active effect data of this is module use any chnages with the prefix `ATCV` acronym for _Active Token Conditional Visibility_ .
 
 **NOTE:** by default all _senses_ are passive AE and all _conditions_ are _temporary_ AE
-**NOTE:** for now every active effect can have only one `ATCV.<sense or condition id>`,`ATCV.conditionElevation`,`ATCV.conditionTargets`,`ATCV.conditionSources` key at the time, if multiple are setted we get only the first for the checking
+**NOTE:** for now every active effect can have only one `ATCV.<sense or condition id>`,`ATCV.conditionElevation`,`ATCV.conditionTargets`,`ATCV.conditionSources` key at the time, if multiple are set we get only the first for the checking
 
 There three type of these AE used and supported from this module:
 
@@ -107,8 +107,8 @@ ConditionalVisibility.API.registerSense({
     name: string;   // This is the unique name used for sync all the senses and conditions (here you cna put any dirty character you want)
     path: string;   // This is the path to the property you want to associate with this sense e.g. data.skills.prc.passive
     img: string;    // [OPTIONAL] Image to associate to this sense
-    conditionLevelMinIndex: number; // [OPTIONAL] check a min index for filter a range of sense can see these conditions, or viceversa conditions can be seen only from this sense
-    conditionLevelMaxIndex: number; // [OPTIONAL] check a max index for filter a range of sense can see these conditions, or viceversa conditions can be seen only from this sense
+    conditionLevelMinIndex: number; // [OPTIONAL] check a min index for filter a range of sense can see these conditions, or on the other side conditions can be seen only from this sense
+    conditionLevelMaxIndex: number; // [OPTIONAL] check a max index for filter a range of sense can see these conditions, or on the other side conditions can be seen only from this sense
     conditionElevation: boolean; // [OPTIONAL] force to check the elevation between the source token and the target token, useful when using module like 'Levels'
     conditionTargets:string[]; // [OPTIONAL] force to apply the check only for these sources (you can set this but is used only from sense active effect)
     conditionSources:string[]; // [OPTIONAL] force to apply the check only for these sources (you can set this but is used only from condition active effect)
@@ -123,8 +123,8 @@ ConditionalVisibility.API.registerCondition({
     name: string;   // This is the unique name used for sync all the senses and conditions (here you cna put any dirty character you want)
     path: string;   // This is the path to the property you want to associate with this sense e.g. data.skills.prc.passive
     img: string;    // [OPTIONAL] Image to associate to this sense
-    conditionLevelMinIndex: number; // [OPTIONAL] check a min index for filter a range of sense can see these conditions, or viceversa conditions can be seen only from this sense
-    conditionLevelMaxIndex: number; // [OPTIONAL] check a max index for filter a range of sense can see these conditions, or viceversa conditions can be seen only from this sense
+    conditionLevelMinIndex: number; // [OPTIONAL] check a min index for filter a range of sense can see these conditions, or on the other side conditions can be seen only from this sense
+    conditionLevelMaxIndex: number; // [OPTIONAL] check a max index for filter a range of sense can see these conditions, or on the other side conditions can be seen only from this sense
     conditionElevation: boolean; // [OPTIONAL] force to check the elevation between the source token and the target token, useful when using module like 'Levels'
     conditionTargets:string[]; // [OPTIONAL] force to apply the check only for these sources (you can set this but is used only from sense active effect)
     conditionSources:string[]; // [OPTIONAL] force to apply the check only for these sources (you can set this but is used only from condition active effect)

@@ -107,7 +107,7 @@ const API = {
    * @returns {array}
    */
   get STEALTH_ID_LANG_SKILL(): string {
-    return <string>game.settings.get(CONSTANTS.MODULE_NAME, 'idLangStealthSkill');
+    return <string>game.settings.get(CONSTANTS.MODULE_NAME, 'idLangStealthSkill') ?? "Stealth";
   },
 
   /**

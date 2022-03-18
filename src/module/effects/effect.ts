@@ -2,7 +2,7 @@ import { ActiveEffectDataProperties } from '@league-of-foundry-developers/foundr
 import { EffectChangeData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/data.mjs/effectChangeData';
 import { PropertiesToSource } from '@league-of-foundry-developers/foundry-vtt-types/src/types/helperTypes';
 import { SenseData } from '../conditional-visibility-models';
-import { i18n } from '../lib/lib';
+import { duplicateExtended, i18n } from '../lib/lib';
 import { canvas, game } from '../settings';
 
 /**
@@ -552,7 +552,7 @@ export class EffectSupport {
   //   // Organize non-disabled effects by their application priority
   //   const changes = <EffectChangeData[]>changesTmp.reduce((changes) => {
   //     return changes.map((c: EffectChangeData) => {
-  //       const c2 = <EffectChangeData>structuredClone(c);
+  //       const c2 = <EffectChangeData>duplicateExtended(c);
   //       // c2.effect = e;
   //       c2.priority = <number>c2.priority ?? c2.mode * 10;
   //       return c2;
@@ -572,7 +572,7 @@ export class EffectSupport {
         //@ts-ignore
         (<EffectChangeData[]>e.data.changes).map((c: EffectChangeData) => {
           //@ts-ignore
-          const c2 = <EffectChangeData>structuredClone(c);
+          const c2 = <EffectChangeData>duplicateExtended(c);
           // c2.effect = e;
           c2.priority = <number>c2.priority ?? c2.mode * 10;
           return c2;

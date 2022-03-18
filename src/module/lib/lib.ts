@@ -124,6 +124,28 @@ export function isStringEquals(stringToCheck1: string, stringToCheck2: string, s
   }
 }
 
+/**
+ * The duplicate function of foundry keep converting my stirng value to "0"
+ * i don't know why this methos is a brute force solution for avoid that problem
+ */
+export function duplicateExtended(obj:any):any{
+  try{
+    //@ts-ignore
+    if(structuredClone){
+      //@ts-ignore
+      return structuredClone(obj);
+    }else{
+      // Shallow copy
+      // const newObject = jQuery.extend({}, oldObject);
+      // Deep copy
+      // const newObject = jQuery.extend(true, {}, oldObject);
+      return jQuery.extend(true, {}, obj);
+    }
+  }catch(e){
+    return duplicate(obj);
+  }
+}
+
 // =========================================================================================
 
 /**
@@ -252,7 +274,7 @@ async function updateAtcvVisionLevel(
     return changes.concat(
       //@ts-ignore
       (<EffectChangeData[]>e.data.changes).map((c: EffectChangeData) => {
-        const c2 = <EffectChangeData>structuredClone(c);
+        const c2 = <EffectChangeData>duplicateExtended(c);
         // c2.effect = e;
         c2.priority = <number>c2.priority ?? c2.mode * 10;
         return c2;
@@ -656,7 +678,7 @@ export async function prepareActiveEffectForConditionalVisibility(
         const actve = retrieveAtcvVisionLevelValueFromActiveEffect(activeEffectFounded.data.changes);
         if (sense.visionLevelValue != actve) {
           //@ts-ignore
-          const data = <ActiveEffectData>structuredClone(activeEffectFounded.data);
+          const data = <ActiveEffectData>duplicateExtended(activeEffectFounded.data);
           data.changes.forEach((aee) => {
             if (aee.key.startsWith('ATCV.') && !aee.key.startsWith('ATCV.condition') && aee.value) {
               aee.value = String(sense.visionLevelValue);
@@ -707,7 +729,7 @@ export async function prepareActiveEffectForConditionalVisibility(
         const actve = retrieveAtcvVisionLevelValueFromActiveEffect(activeEffectFounded.data.changes);
         if (condition.visionLevelValue != actve) {
           //@ts-ignore
-          const data = <ActiveEffectData>structuredClone(activeEffectFounded.data);
+          const data = <ActiveEffectData>duplicateExtended(activeEffectFounded.data);
           data.changes.forEach((aee) => {
             if (aee.key.startsWith('ATCV.') && !aee.key.startsWith('ATCV.condition') && aee.value) {
               aee.value = String(condition.visionLevelValue);

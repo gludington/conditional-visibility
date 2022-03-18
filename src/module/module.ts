@@ -6,6 +6,7 @@ import CONSTANTS from './constants';
 import HOOKS from './hooks';
 import {
   debug,
+  duplicateExtended,
   getConditionsFromToken,
   getSensesFromToken,
   i18n,
@@ -133,8 +134,7 @@ const module = {
     const sensesTemplateData: any[] = [];
     for (const s of senses) {
       if (s.visionId != AtcvEffectSenseFlags.NONE && s.visionId != AtcvEffectSenseFlags.NORMAL) {
-        //@ts-ignore
-        const s2: any = structuredClone(s);
+        const s2: any = duplicateExtended(s);
         //s2.value = tokenConfig.object.getFlag(CONSTANTS.MODULE_NAME, s.id);
         const currentAtcvEffectFlagData = <AtcvEffect>tokenConfig.object.getFlag(CONSTANTS.MODULE_NAME, s.visionId);
         if (currentAtcvEffectFlagData) {
@@ -149,8 +149,7 @@ const module = {
     const conditionsTemplateData: any[] = [];
     for (const s of conditions) {
       if (s.visionId != AtcvEffectConditionFlags.NONE) {
-        //@ts-ignore
-        const s2: any = structuredClone(s);
+        const s2: any = duplicateExtended(s);
         //s2.value = tokenConfig.object.getFlag(CONSTANTS.MODULE_NAME, s.id);
         const currentAtcvEffectFlagData = <AtcvEffect>tokenConfig.object.getFlag(CONSTANTS.MODULE_NAME, s.visionId);
         if (currentAtcvEffectFlagData) {

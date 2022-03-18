@@ -1,5 +1,6 @@
 import CONSTANTS from './constants';
 import {
+  duplicateExtended,
   error,
   getConditionsFromToken,
   getSensesFromToken,
@@ -773,10 +774,12 @@ const API = {
             priority: 5,
           });
         }
-        //@ts-ignore
-        effect = structuredClone(dfredEffect);
-        //@ts-ignore
-        effect.changes = structuredClone(changesTmp);
+        effect = <Effect>duplicateExtended(dfredEffect);
+        if(effect){
+          effect.changes = duplicateExtended(changesTmp);
+        }else{
+          warn(`Found dfred active effect  ${effectToFoundByName} but can't clone...`);
+        }
       }
     }
     if (!effect) {

@@ -50,7 +50,9 @@ The calculation for the vision checks is split in many phase forall the use case
 6) Check if the source token has the active effect `blinded` active, if is true, you cannot see anything and return false.
 7) If not 'condition' are present on the target token return true (nothing to check).
 8) Check again for _passive perception vs passive stealth_ like on point 4) this time we use the hidden active effect like the stealth passive on the target token...THIS WILL BE CHECK ONLY IF ONE CONDITION IS PRESENT ON THE TARGET AND THE CONDITION TYPE IS 'HIDDEN'
-9) Check if the source token has some 'sense' powerful enough to beat every 'condition' ont he target token:
+  - 8.1) Remember if the _Stealth passive value_ is > then the current hidden value and module setting `autoPassivePerception` is enabled, we use the stelath passive value instead the hidden value
+  - 8.2) Check if the current staet value is <= of the _Perception passive_ value
+9)  Check if the source token has some 'sense' powerful enough to beat every 'condition' ont he target token:
 
   - 9.0) If no `ATCV.visioId` is founded return true (this shouldn't never happened is just for avoid some unwanted behavior)
 

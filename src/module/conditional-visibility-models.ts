@@ -44,41 +44,41 @@ export class AtcvEffect {
     return res;
   }
 
-  static mergeWithSensedataDefault(res:AtcvEffect, senseData: SenseData){
-    if(!res.visionId){
+  static mergeWithSensedataDefault(res: AtcvEffect, senseData: SenseData) {
+    if (!res.visionId) {
       res.visionId = senseData.id;
     }
-    if(!res.visionName){
+    if (!res.visionName) {
       res.visionName = i18n(senseData.name);
     }
-    if(!res.visionPath){
+    if (!res.visionPath) {
       res.visionPath = senseData.path;
     }
-    if(!res.visionIcon){
+    if (!res.visionIcon) {
       res.visionIcon = senseData.img;
     }
     // if(!res.visionLevelValue){
     //   res.visionLevelValue = visionLevelValue;
     // }
-    if(!res.visionLevelMinIndex){
+    if (!res.visionLevelMinIndex) {
       res.visionLevelMinIndex = senseData.conditionLevelMinIndex;
     }
-    if(!res.visionLevelMaxIndex){
+    if (!res.visionLevelMaxIndex) {
       res.visionLevelMaxIndex = senseData.conditionLevelMaxIndex;
     }
-    if(!res.visionElevation){
+    if (!res.visionElevation) {
       res.visionElevation = senseData.conditionElevation;
     }
-    if(!res.visionTargets){
+    if (!res.visionTargets) {
       res.visionTargets = senseData.conditionTargets;
     }
-    if(!res.visionSources){
+    if (!res.visionSources) {
       res.visionSources = senseData.conditionSources;
     }
     // if(!res.visionTargetImage){
     //   res.visionTargetImage = '';
     // }
-    if(!res.visionDistanceValue){
+    if (!res.visionDistanceValue) {
       res.visionDistanceValue = senseData.conditionDistance;
     }
     // if(!res.visionType){

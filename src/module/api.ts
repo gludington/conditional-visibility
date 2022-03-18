@@ -8,6 +8,7 @@ import {
   info,
   isStringEquals,
   mergeByProperty,
+  prepareActiveEffectForConditionalVisibility,
   warn,
 } from './lib/lib';
 import EffectInterface from './effects/effect-interface';
@@ -107,7 +108,7 @@ const API = {
    * @returns {array}
    */
   get STEALTH_ID_LANG_SKILL(): string {
-    return <string>game.settings.get(CONSTANTS.MODULE_NAME, 'idLangStealthSkill') ?? "Stealth";
+    return <string>game.settings.get(CONSTANTS.MODULE_NAME, 'idLangStealthSkill') ?? 'Stealth';
   },
 
   /**
@@ -1039,6 +1040,15 @@ const API = {
       mytotal = 0;
     }
     return mytotal;
+  },
+
+  async prepareActiveEffectForConditionalVisibilityArr(...inAttributes: any[]) {
+    if (!Array.isArray(inAttributes)) {
+      throw error('prepareActiveEffectForConditionalVisibility | inAttributes must be of type array');
+    }
+    const [sourceToken, visionCapabilities] = inAttributes;
+    const result = await prepareActiveEffectForConditionalVisibility(sourceToken, visionCapabilities);
+    return result;
   },
 };
 

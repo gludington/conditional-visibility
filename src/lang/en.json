@@ -39,6 +39,8 @@
   "conditional-visibility.setting.disableForNonHostileNpc.hint": "This will avoid the sight check for all the token with disposition FRIENDLY or NEUTRAL",
   "conditional-visibility.setting.disableDCEAutomaticImport.name": "Disable automatic import on module 'DFreds Convenient Effects'",
   "conditional-visibility.setting.disableDCEAutomaticImport.hint": "This will avoid the automatic import of all sense and condition on the module 'DFreds Convenient Effects'",
+  "conditional-visibility.setting.forceLimitSightToMaxSightOnConfig.name": "[EXPERIMENTAL] Force limit of the sight to the max sight found on token",
+  "conditional-visibility.setting.forceLimitSightToMaxSightOnConfig.hint": "Takes the maximum distance between the atl effects and the token view values to \"sharply truncate any token at a distance not close enough\"",
 
   "conditional-visibility.token.config.senses.title": "Senses",
   "conditional-visibility.token.config.conditions.title": "Conditions",

@@ -10,6 +10,7 @@ import {
   getConditionsFromToken,
   getSensesFromToken,
   i18n,
+  isGMConnected,
   isStringEquals,
   prepareActiveEffectForConditionalVisibility,
   toggleStealth,
@@ -173,6 +174,10 @@ const module = {
     if (!sourceToken) {
       return;
     }
+    const isPlayerOwned = <boolean>document.isOwner;
+    if (!game.user?.isGM && !isPlayerOwned) {
+      return;
+    }
     if (change.flags && change.flags[CONSTANTS.MODULE_NAME]) {
       const sourceVisionCapabilities: VisionCapabilities = new VisionCapabilities(<Token>document.object);
       const p = getProperty(change, `flags.${CONSTANTS.MODULE_NAME}`);
@@ -251,6 +256,13 @@ const module = {
           }
           if (sourceVisionCapabilities.hasSenses() || sourceVisionCapabilities.hasConditions()) {
             await prepareActiveEffectForConditionalVisibility(sourceToken, sourceVisionCapabilities);
+
+            // if (!game.user?.isGM && isGMConnected()) {
+            //   return conditionalVisibilitySocket.executeAsGM('prepareActiveEffectForConditionalVisibility', sourceToken, sourceVisionCapabilities);
+            // } else {
+            //   await prepareActiveEffectForConditionalVisibility(sourceToken, sourceVisionCapabilities);
+            // }
+
             // TODO CHECK IF We don't need the modification of the effect start this anyway
             // const mapFlagsToUpdated = <Map<string,AtcvEffect>>await prepareActiveEffectForConditionalVisibility(token, sourceVisionCapabilities);
             // for (const [atcvEffectKey, atcvEffectValue] of mapFlagsToUpdated) {
@@ -293,10 +305,11 @@ const module = {
         }
       } // Fine for
       // Refresh sight and lighting after deselect
-      canvas.perception.schedule({
-        lighting: { refresh: true },
-        sight: { refresh: true, forceUpdateFog: sourceToken.hasLimitedVisionAngle }
-      });
+      // canvas.perception.schedule({
+      //   lighting: { refresh: true },
+      //   sight: { refresh: true, forceUpdateFog: sourceToken.hasLimitedVisionAngle }
+      // });
+      // sourceToken.refresh();
     }
   },
   async updateActiveEffect(activeEffect: ActiveEffect, options: EffectChangeData, isRemoved: boolean) {

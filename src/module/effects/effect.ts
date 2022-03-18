@@ -197,7 +197,7 @@ export default class Effect {
   // =============================================
 
   _handleIntegrations() {
-    const arrChanges = this.changes || [];
+    const arrChanges = this?.changes || [];
 
     if (this.atlChanges.length > 0) {
       for (const atlChange of this.atlChanges) {
@@ -314,7 +314,7 @@ export class EffectSupport {
   }
 
   static _handleIntegrations(effect: Effect): EffectChangeData[] {
-    const arrChanges: EffectChangeData[] = effect.changes || [];
+    const arrChanges: EffectChangeData[] = effect?.changes || [];
 
     if (effect.atlChanges.length > 0) {
       for (const atlChange of effect.atlChanges) {

@@ -357,7 +357,8 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
   // =================================================
 
   // 2) Check if the target is owned from the player if true you can see the token.
-  const isPlayerOwned = <boolean>targetToken.actor?.hasPlayerOwner;
+  //const isPlayerOwned = <boolean>targetToken.actor?.hasPlayerOwner;
+  const isPlayerOwned = <boolean>targetToken.isOwner;
   if (!game.user?.isGM && (isPlayerOwned || targetToken.owner)) {
     debug(
       `(2) Player own target: Is true, target ${targetToken.data.name} ${'is visible'} to source ${
@@ -506,16 +507,30 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
   if (game.settings.get(CONSTANTS.MODULE_NAME, 'autoPassivePerception')) {
     if (sourceVisionLevels.length === 0) {
       let isTheCaseWhenOnlyTheHiddenConditionIsPresentOnTarget = true;
+      let currentHiddenValue = 0;
       for (const targetVisionLevel of targetVisionLevels) {
         if (!isStringEquals(targetVisionLevel.visionId, AtcvEffectConditionFlags.HIDDEN)) {
           isTheCaseWhenOnlyTheHiddenConditionIsPresentOnTarget = false;
           break;
+        } else {
+          currentHiddenValue = <number>targetVisionLevel.visionLevelValue;
         }
       }
+      if (!currentHiddenValue) {
+        currentHiddenValue = 0;
+      }
+      if (currentHiddenValue < stealthedPassive && game.settings.get(CONSTANTS.MODULE_NAME, 'autoPassivePerception')) {
+        debug(
+          `(8.1) Is the case when only the hidden condition is present on target but stealth passive > the the hidden value state : Is true, target ${
+            targetToken.data.name
+          } ${'is visible'} to source ${sourceToken.data.name}`,
+        );
+        currentHiddenValue = stealthedPassive;
+      }
       if (isTheCaseWhenOnlyTheHiddenConditionIsPresentOnTarget) {
-        if (perceptionPassive > stealthedPassive) {
+        if (perceptionPassive > currentHiddenValue) {
           debug(
-            `(8) Is the case when only the hidden condition is present on target: Is true, target ${
+            `(8.2) Is the case when only the hidden condition is present on target: Is true, target ${
               targetToken.data.name
             } ${'is visible'} to source ${sourceToken.data.name}`,
           );
@@ -913,24 +928,26 @@ export async function prepareActiveEffectForConditionalVisibility(
       // TODO why this failed to return ???
       //if (await API.hasEffectAppliedOnToken(<string>sourceToken.id, effectNameToCheckOnActor, true)) {
       if (activeEffectFounded) {
-        const actve = retrieveAtcvVisionLevelValueFromActiveEffect(activeEffectFounded.data.changes);
+        const actve = retrieveAtcvVisionLevelValueFromActiveEffect(activeEffectFounded.data?.changes || []);
         if (sense.visionLevelValue != actve) {
           //@ts-ignore
           const data = <ActiveEffectData>duplicateExtended(activeEffectFounded.data);
-          data.changes.forEach((aee) => {
+          data?.changes.forEach((aee) => {
             if (aee.key.startsWith('ATCV.') && !aee.key.startsWith('ATCV.condition') && aee.value) {
               aee.value = String(sense.visionLevelValue);
             }
           });
-          await API.updateActiveEffectFromIdOnToken(
-            <string>sourceToken.id,
-            <string>activeEffectFounded.id,
-            undefined,
-            undefined,
-            data,
-          );
-          if (sense) {
-            mapToUpdate.set(sense.visionId, sense);
+          if (data?.changes.length > 0) {
+            await API.updateActiveEffectFromIdOnToken(
+              <string>sourceToken.id,
+              <string>activeEffectFounded.id,
+              undefined,
+              undefined,
+              data,
+            );
+            if (sense) {
+              mapToUpdate.set(sense.visionId, sense);
+            }
           }
         }
       } else {
@@ -943,7 +960,7 @@ export async function prepareActiveEffectForConditionalVisibility(
       // TODO why this failed to return ???
       //if (await API.hasEffectAppliedOnToken(<string>sourceToken.id, effectNameToCheckOnActor, true)) {
       if (activeEffectFounded) {
-        const actve = retrieveAtcvVisionLevelValueFromActiveEffect(activeEffectFounded.data.changes);
+        const actve = retrieveAtcvVisionLevelValueFromActiveEffect(activeEffectFounded.data?.changes || []);
         if (sense.visionLevelValue != actve) {
           await API.removeEffectFromIdOnToken(<string>sourceToken.id, <string>activeEffectFounded.id);
         }
@@ -964,24 +981,26 @@ export async function prepareActiveEffectForConditionalVisibility(
       // TODO why this failed to return ???
       //if (await API.hasEffectAppliedOnToken(<string>sourceToken.id, effectNameToCheckOnActor, true)) {
       if (activeEffectFounded) {
-        const actve = retrieveAtcvVisionLevelValueFromActiveEffect(activeEffectFounded.data.changes);
+        const actve = retrieveAtcvVisionLevelValueFromActiveEffect(activeEffectFounded.data?.changes || []);
         if (condition.visionLevelValue != actve) {
           //@ts-ignore
           const data = <ActiveEffectData>duplicateExtended(activeEffectFounded.data);
-          data.changes.forEach((aee) => {
+          data?.changes.forEach((aee) => {
             if (aee.key.startsWith('ATCV.') && !aee.key.startsWith('ATCV.condition') && aee.value) {
               aee.value = String(condition.visionLevelValue);
             }
           });
-          await API.updateActiveEffectFromIdOnToken(
-            <string>sourceToken.id,
-            <string>activeEffectFounded.id,
-            undefined,
-            undefined,
-            data,
-          );
-          if (condition) {
-            mapToUpdate.set(condition.visionId, condition);
+          if (data?.changes.length > 0) {
+            await API.updateActiveEffectFromIdOnToken(
+              <string>sourceToken.id,
+              <string>activeEffectFounded.id,
+              undefined,
+              undefined,
+              data,
+            );
+            if (condition) {
+              mapToUpdate.set(condition.visionId, condition);
+            }
           }
         }
       } else {
@@ -998,7 +1017,7 @@ export async function prepareActiveEffectForConditionalVisibility(
       // TODO why this failed to return ???
       //if (await API.hasEffectAppliedOnToken(<string>sourceToken.id, effectNameToCheckOnActor, true)) {
       if (activeEffectFounded) {
-        const actve = retrieveAtcvVisionLevelValueFromActiveEffect(activeEffectFounded.data.changes);
+        const actve = retrieveAtcvVisionLevelValueFromActiveEffect(activeEffectFounded.data?.changes || []);
         if (condition.visionLevelValue != actve) {
           await API.removeEffectFromIdOnToken(<string>sourceToken.id, <string>activeEffectFounded.id);
         }
@@ -1203,8 +1222,8 @@ function _getCVFromToken(tokenDocument: TokenDocument, isSense: boolean, filterV
     if (!alreadyPresent) {
       const atcvEffect = AtcvEffect.fromSenseData(senseData, 0, isSense);
       statusEffectsFinal.push(atcvEffect);
-    }else{
-      const atcvEffect = AtcvEffect.mergeWithSensedataDefault(alreadyPresent,senseData);
+    } else {
+      const atcvEffect = AtcvEffect.mergeWithSensedataDefault(alreadyPresent, senseData);
       statusEffectsFinal.push(atcvEffect);
     }
   }
@@ -1360,7 +1379,7 @@ export function retrieveAtcvEffectFromActiveEffect(
   }
 
   const effectEntityChanges = effectChanges.sort((a, b) => <number>a.priority - <number>b.priority);
-  effectEntityChanges.forEach((change) => {
+  effectEntityChanges?.forEach((change) => {
     if (change.key.startsWith('ATCV.') && !change.key.startsWith('ATCV.condition') && change.value) {
       if (atcvEffect.visionId === null || atcvEffect.visionId === undefined) {
         atcvEffect.visionId = change.key.slice(5);

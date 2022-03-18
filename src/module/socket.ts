@@ -43,6 +43,9 @@ export function registerSocket() {
   // conditionalVisibilitySocket.register(SOCKET_HANDLERS.ON_RENDER_TOKEN_CONFIG, (...args) =>
   //   API._onRenderTokenConfig(...args),
   // );
+  conditionalVisibilitySocket.register('prepareActiveEffectForConditionalVisibility', (...args) =>
+    API.prepareActiveEffectForConditionalVisibilityArr(...args),
+  );
 
   /**
    * UI sockets

@@ -292,6 +292,11 @@ const module = {
           }
         }
       } // Fine for
+      // Refresh sight and lighting after deselect
+      canvas.perception.schedule({
+        lighting: { refresh: true },
+        sight: { refresh: true, forceUpdateFog: sourceToken.hasLimitedVisionAngle }
+      });
     }
   },
   async updateActiveEffect(activeEffect: ActiveEffect, options: EffectChangeData, isRemoved: boolean) {

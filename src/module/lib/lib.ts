@@ -733,7 +733,6 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
   });
 
   // Print map for debug
-  // Print map for debug
   if (game.settings.get(CONSTANTS.MODULE_NAME, 'debug')) {
     debug(`PRINTING MAP FOR POINT FOR POINT 9-11 CHECKS`);
     debug(`${sourceToken.data.name} VS ${targetToken.data.name}`);
@@ -741,7 +740,7 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
       debug(
         `${JSON.stringify(value.atcvSourceEffect)} vs ${JSON.stringify(value.atcvTargetEffect)} => ${
           value.checkerResult
-        }`,
+        } \n`,
       );
     }
   }
@@ -849,14 +848,14 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
       debug(
         `${JSON.stringify(value.atcvSourceEffect)} vs ${JSON.stringify(value.atcvTargetEffect)} => ${
           value.checkerResult
-        }`,
+        } \n`,
       );
     }
   }
 
   // Print map for debug
   if (game.settings.get(CONSTANTS.MODULE_NAME, 'debug')) {
-    debug(`PRINTING MAP FOR POINT FOR POINT12 CHECKS`);
+    debug(`PRINTING MAP FOR POINT FOR POINT FINAL CHECKS`);
     for (const [key, value] of sourceVisionLevelsValidForDebug12.entries()) {
       if (typeof value.atcvTargetEffect === 'string' || value.atcvTargetEffect instanceof String) {
         debug(
@@ -1186,8 +1185,11 @@ function _getCVFromToken(tokenDocument: TokenDocument, isSense: boolean, filterV
           }
         }
       }
+      statusEffects.push(atcvEffectTmp);
     }
   }
+
+  const statusEffectsFinal: AtcvEffect[] = [];
   let sensesOrConditions: SenseData[] = [];
   if (isSense) {
     sensesOrConditions = API.SENSES;
@@ -1195,18 +1197,21 @@ function _getCVFromToken(tokenDocument: TokenDocument, isSense: boolean, filterV
     sensesOrConditions = API.CONDITIONS;
   }
   for (const senseData of sensesOrConditions) {
-    const alreadyPresent = statusEffects.find((e) => {
+    const alreadyPresent = <AtcvEffect>statusEffects.find((e) => {
       return isStringEquals(e.visionId, senseData.id);
     });
     if (!alreadyPresent) {
       const atcvEffect = AtcvEffect.fromSenseData(senseData, 0, isSense);
-      statusEffects.push(atcvEffect);
+      statusEffectsFinal.push(atcvEffect);
+    }else{
+      const atcvEffect = AtcvEffect.mergeWithSensedataDefault(alreadyPresent,senseData);
+      statusEffectsFinal.push(atcvEffect);
     }
   }
   if (filterValueNoZero) {
-    return statusEffects.filter((a) => a.visionLevelValue != 0);
+    return statusEffectsFinal.filter((a) => a.visionLevelValue != 0);
   } else {
-    return statusEffects;
+    return statusEffectsFinal;
   }
 }
 

@@ -44,6 +44,49 @@ export class AtcvEffect {
     return res;
   }
 
+  static mergeWithSensedataDefault(res:AtcvEffect, senseData: SenseData){
+    if(!res.visionId){
+      res.visionId = senseData.id;
+    }
+    if(!res.visionName){
+      res.visionName = i18n(senseData.name);
+    }
+    if(!res.visionPath){
+      res.visionPath = senseData.path;
+    }
+    if(!res.visionIcon){
+      res.visionIcon = senseData.img;
+    }
+    // if(!res.visionLevelValue){
+    //   res.visionLevelValue = visionLevelValue;
+    // }
+    if(!res.visionLevelMinIndex){
+      res.visionLevelMinIndex = senseData.conditionLevelMinIndex;
+    }
+    if(!res.visionLevelMaxIndex){
+      res.visionLevelMaxIndex = senseData.conditionLevelMaxIndex;
+    }
+    if(!res.visionElevation){
+      res.visionElevation = senseData.conditionElevation;
+    }
+    if(!res.visionTargets){
+      res.visionTargets = senseData.conditionTargets;
+    }
+    if(!res.visionSources){
+      res.visionSources = senseData.conditionSources;
+    }
+    // if(!res.visionTargetImage){
+    //   res.visionTargetImage = '';
+    // }
+    if(!res.visionDistanceValue){
+      res.visionDistanceValue = senseData.conditionDistance;
+    }
+    // if(!res.visionType){
+    //   res.visionType = isSense ? 'sense' : 'condition';
+    // }
+    return res;
+  }
+
   static fromEffect(effect: Effect) {
     const effectChanges: EffectChangeData[] = EffectSupport._handleIntegrations(effect) || [];
 

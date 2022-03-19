@@ -880,52 +880,16 @@ const API = {
     }
   },
 
-  async getAllDefaultSensesAndConditions(token: Token): Promise<AtcvEffect[]> {
+  getAllDefaultSensesAndConditions(token: Token): AtcvEffect[] {
     const allSensesAndConditions: AtcvEffect[] = [];
+    // if(token){
     allSensesAndConditions.push(...getSensesFromToken(token.document));
     allSensesAndConditions.push(...getConditionsFromToken(token.document));
-    /*
-    allSensesAndConditions = mergeByProperty(allSensesAndConditions, senses, 'id');
-    allSensesAndConditions = mergeByProperty(allSensesAndConditions, conditions, 'id');
-    if (token) {
-      for (const atcvEffect of getSensesFromToken(token)) {
-        const sData: SenseData = {
-          id: atcvEffect.visionId,
-          name: atcvEffect.visionName,
-          path: '', // to integrate
-          img: '', // to integrate
-          conditionLevelMinIndex: atcvEffect.visionLevelMinIndex,
-          conditionLevelMaxIndex: atcvEffect.visionLevelMaxIndex,
-          conditionElevation: atcvEffect.visionElevation,
-          conditionTargets: atcvEffect.visionTargets,
-          conditionSources: atcvEffect.visionSources,
-          conditionTargetImage: atcvEffect.visionTargetImage,
-          conditionDistance: <number>atcvEffect.visionDistanceValue,
-          conditionType: atcvEffect.visionType,
-        };
-        mergeByProperty(allSensesAndConditions, [sData], 'id');
-      }
-      for (const atcvEffect of getConditionsFromToken(token)) {
-        const sData: SenseData = {
-          id: atcvEffect.visionId,
-          name: atcvEffect.visionName,
-          path: '', // to integrate
-          img: '', // to integrate
-          conditionLevelMinIndex: atcvEffect.visionLevelMinIndex,
-          conditionLevelMaxIndex: atcvEffect.visionLevelMaxIndex,
-          conditionElevation: atcvEffect.visionElevation,
-          conditionTargets: atcvEffect.visionTargets,
-          conditionSources: atcvEffect.visionSources,
-          conditionTargetImage: atcvEffect.visionTargetImage,
-          conditionDistance: <number>atcvEffect.visionDistanceValue,
-          conditionType: atcvEffect.visionType,
-        };
-        mergeByProperty(allSensesAndConditions, [sData], 'id');
-      }
-    }
-    const sensesOrderByName = <SenseData[]>allSensesAndConditions.sort((a, b) => a.name.localeCompare(b.name));
-    return sensesOrderByName;
-    */
+    // }else{
+    //   allSensesAndConditions.push(...getSensesFromToken(undefined));
+    //   allSensesAndConditions.push(...getConditionsFromToken(undefined));
+    // }
+
     const sensesOrderByName = allSensesAndConditions.sort((a, b) => a.visionName.localeCompare(b.visionName));
     return sensesOrderByName;
   },

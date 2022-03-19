@@ -4,7 +4,14 @@ import { ActiveEffectData } from '@league-of-foundry-developers/foundry-vtt-type
 import API from './api';
 import CONSTANTS from './constants';
 import Effect, { EffectSupport } from './effects/effect';
-import { error, getSensesFromToken, getConditionsFromToken, i18n, retrieveAtcvEffectFromActiveEffect } from './lib/lib';
+import {
+  error,
+  getSensesFromToken,
+  getConditionsFromToken,
+  i18n,
+  retrieveAtcvEffectFromActiveEffect,
+  isStringEquals,
+} from './lib/lib';
 
 export class AtcvEffect {
   // Effect Base
@@ -90,18 +97,38 @@ export class AtcvEffect {
   static fromEffect(effect: Effect) {
     const effectChanges: EffectChangeData[] = EffectSupport._handleIntegrations(effect) || [];
 
-    const res = retrieveAtcvEffectFromActiveEffect(effectChanges, i18n(effect.name), effect.icon, undefined);
+    let res = retrieveAtcvEffectFromActiveEffect(effectChanges, i18n(effect.name), effect.icon, undefined);
+    let sensesOrConditions: SenseData[] = [];
+    sensesOrConditions.push(...API.SENSES);
+    sensesOrConditions.push(...API.CONDITIONS);
+
+    for (const senseData of sensesOrConditions) {
+      if (isStringEquals(res.visionId, senseData.id)) {
+        res = AtcvEffect.mergeWithSensedataDefault(res, senseData);
+        break;
+      }
+    }
     return res;
   }
 
   static fromActiveEffect(activeEffect: ActiveEffect) {
     const effectChanges = activeEffect.data.changes;
-    const res = retrieveAtcvEffectFromActiveEffect(
+    let res = retrieveAtcvEffectFromActiveEffect(
       effectChanges,
       i18n(activeEffect.data.label),
       <string>activeEffect.data.icon,
       undefined,
     );
+    let sensesOrConditions: SenseData[] = [];
+    sensesOrConditions.push(...API.SENSES);
+    sensesOrConditions.push(...API.CONDITIONS);
+
+    for (const senseData of sensesOrConditions) {
+      if (isStringEquals(res.visionId, senseData.id)) {
+        res = AtcvEffect.mergeWithSensedataDefault(res, senseData);
+        break;
+      }
+    }
     return res;
   }
 }

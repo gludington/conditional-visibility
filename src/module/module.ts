@@ -310,10 +310,17 @@ const module = {
       //   sight: { refresh: true, forceUpdateFog: sourceToken.hasLimitedVisionAngle }
       // });
       // sourceToken.refresh();
+      Hooks.callAll('sightRefresh', sourceToken);
+      //sourceToken.updateSource();
+      // canvas.tokens.controlled.forEach(t => t.updateSource());
     }
   },
   async updateActiveEffect(activeEffect: ActiveEffect, options: EffectChangeData, isRemoved: boolean) {
-    if (!activeEffect.data.changes?.find((effect) => effect.key.includes('ATCV'))) {
+    if (
+      !activeEffect.data?.changes ||
+      activeEffect.data?.changes.length <= 0 ||
+      !activeEffect.data.changes?.find((effect) => effect.key.includes('ATCV'))
+    ) {
       return;
     }
     const actor = <Actor>activeEffect.parent;
@@ -389,13 +396,15 @@ const module = {
                 break;
               }
             }
+            //Hooks.callAll("sightRefresh", tokenToSet);
+            tokenToSet.updateSource();
           }
         }
       }
     } else {
       if (isRemoved) {
-        for (const tok of tokenArray) {
-          const sense = (await API.getAllDefaultSensesAndConditions(tok)).find((sense: AtcvEffect) => {
+        for (const sourceToken of tokenArray) {
+          const sense = (await API.getAllDefaultSensesAndConditions(sourceToken)).find((sense: AtcvEffect) => {
             return (
               isStringEquals(sense.visionName, <string>activeEffect.name) ||
               isStringEquals(sense.visionName, activeEffect.data.label)
@@ -403,7 +412,9 @@ const module = {
           });
           if (sense?.visionId) {
             //await tok?.document.setFlag(CONSTANTS.MODULE_NAME, sense?.id, 0);
-            await tok?.document.unsetFlag(CONSTANTS.MODULE_NAME, sense?.visionId);
+            await sourceToken?.document.unsetFlag(CONSTANTS.MODULE_NAME, sense?.visionId);
+            //Hooks.callAll("sightRefresh", sourceToken);
+            sourceToken.updateSource();
           }
         }
       }

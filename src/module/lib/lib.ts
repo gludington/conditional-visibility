@@ -437,7 +437,7 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
   // but only IF NO ACTIVE EFFECT CONDITION ARE PRESENT ON THE TARGET
   if (game.settings.get(CONSTANTS.MODULE_NAME, 'autoPassivePerception')) {
     if (targetVisionLevels.length == 0) {
-      if (perceptionPassive > stealthedPassive) {
+      if (perceptionPassive >= stealthedPassive) {
         debug(
           `(4) Auto passive perception: Is true, target ${targetToken.data.name} ${'is visible'} to source ${
             sourceToken.data.name
@@ -519,18 +519,18 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
       if (!currentHiddenValue) {
         currentHiddenValue = 0;
       }
-      if (currentHiddenValue < stealthedPassive && game.settings.get(CONSTANTS.MODULE_NAME, 'autoPassivePerception')) {
-        debug(
-          `(8.1) Is the case when only the hidden condition is present on target but stealth passive > the the hidden value state : Is true, target ${
-            targetToken.data.name
-          } ${'is visible'} to source ${sourceToken.data.name}`,
-        );
-        currentHiddenValue = stealthedPassive;
-      }
+      // if (currentHiddenValue < stealthedPassive && game.settings.get(CONSTANTS.MODULE_NAME, 'autoPassivePerception')) {
+      //   debug(
+      //     `(8.1) Is the case when only the hidden condition is present on target but stealth passive > the the hidden value state : Is true, target ${
+      //       targetToken.data.name
+      //     } ${'is visible'} to source ${sourceToken.data.name}`,
+      //   );
+      //   currentHiddenValue = stealthedPassive;
+      // }
       if (isTheCaseWhenOnlyTheHiddenConditionIsPresentOnTarget) {
-        if (perceptionPassive > currentHiddenValue) {
+        if (perceptionPassive >= currentHiddenValue) {
           debug(
-            `(8.2) Is the case when only the hidden condition is present on target: Is true, target ${
+            `(8.2) Check if the current perception passive value is >= of the 'Hidden Perception passive value': Is true, target ${
               targetToken.data.name
             } ${'is visible'} to source ${sourceToken.data.name}`,
           );

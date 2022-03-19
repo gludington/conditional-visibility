@@ -1014,6 +1014,29 @@ const API = {
     const result = await prepareActiveEffectForConditionalVisibility(sourceToken, visionCapabilities);
     return result;
   },
+
+  updateSourceCVArr(...inAttributes) {
+    if (!Array.isArray(inAttributes)) {
+      throw error('updateSourceCVArr | inAttributes must be of type array');
+    }
+    const [sourceToken] = inAttributes;
+    // sourceToken.updateSource();
+    canvas.tokens?.placeables.forEach((t: Token) => {
+      t.updateSource();
+      t.document.update();
+      Hooks.callAll('sightRefresh', t);
+    });
+  },
+  sightRefreshCVArr(...inAttributes) {
+    if (!Array.isArray(inAttributes)) {
+      throw error('sightRefreshCVArr | inAttributes must be of type array');
+    }
+    const [sourceToken] = inAttributes;
+    // Hooks.callAll('sightRefresh', sourceToken);
+    canvas.tokens?.placeables.forEach((t: Token) => {
+      Hooks.callAll('sightRefresh', t);
+    });
+  },
 };
 
 export default API;

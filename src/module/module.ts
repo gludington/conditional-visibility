@@ -304,15 +304,14 @@ const module = {
           }
         }
       } // Fine for
-      // Refresh sight and lighting after deselect
-      // canvas.perception.schedule({
-      //   lighting: { refresh: true },
-      //   sight: { refresh: true, forceUpdateFog: sourceToken.hasLimitedVisionAngle }
-      // });
-      // sourceToken.refresh();
-      Hooks.callAll('sightRefresh', sourceToken);
-      //sourceToken.updateSource();
-      // canvas.tokens.controlled.forEach(t => t.updateSource());
+      // TODO check better solution
+      // conditionalVisibilitySocket.executeForEveryone('sightRefreshCV', sourceToken);
+      canvas.tokens?.placeables.forEach((t: Token) => {
+        t.updateSource({ defer: true, deleted: false, noUpdateFog: false });
+        // t.document.update();
+        // Hooks.callAll('sightRefresh', t);
+        t.refresh();
+      });
     }
   },
   async updateActiveEffect(activeEffect: ActiveEffect, options: EffectChangeData, isRemoved: boolean) {
@@ -364,6 +363,10 @@ const module = {
           }
           const updateKey = change.key.slice(5);
           for (const tokenToSet of tokenArray) {
+            const isPlayerOwned = <boolean>tokenToSet.document.isOwner;
+            if (!isPlayerOwned) {
+              continue;
+            }
             const sensesData = await API.getAllDefaultSensesAndConditions(tokenToSet);
             for (const statusSight of sensesData) {
               if (updateKey === statusSight.visionId) {
@@ -396,8 +399,14 @@ const module = {
                 break;
               }
             }
-            //Hooks.callAll("sightRefresh", tokenToSet);
-            tokenToSet.updateSource();
+            // TODO check better solution
+            // conditionalVisibilitySocket.executeForEveryone('updateSourceCV', tokenToSet);
+            canvas.tokens?.placeables.forEach((t: Token) => {
+              t.updateSource({ defer: true, deleted: false, noUpdateFog: false });
+              // t.document.update();
+              // Hooks.callAll('sightRefresh', t);
+              t.refresh();
+            });
           }
         }
       }
@@ -413,8 +422,14 @@ const module = {
           if (sense?.visionId) {
             //await tok?.document.setFlag(CONSTANTS.MODULE_NAME, sense?.id, 0);
             await sourceToken?.document.unsetFlag(CONSTANTS.MODULE_NAME, sense?.visionId);
-            //Hooks.callAll("sightRefresh", sourceToken);
-            sourceToken.updateSource();
+            // TODO check better solution
+            //conditionalVisibilitySocket.executeForEveryone('updateSourceCV', sourceToken);
+            canvas.tokens?.placeables.forEach((t: Token) => {
+              t.updateSource({ defer: true, deleted: false, noUpdateFog: false });
+              // t.document.update();
+              // Hooks.callAll('sightRefresh', t);
+              t.refresh();
+            });
           }
         }
       }

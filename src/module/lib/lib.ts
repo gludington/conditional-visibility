@@ -606,6 +606,7 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
           return false;
         }
       }
+
       if (targetVisionLevel?.visionSources?.length > 0) {
         if (targetVisionLevel?.visionSources.includes(<string>sourceVisionLevel.visionId)) {
           sourceVisionLevelsValidForDebug.set(sourceVisionLevel.visionId, {
@@ -672,8 +673,15 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
           return true;
         }
       }
-
+      debug(
+        `(9.5) Final checker test: Is false, target ${
+          targetToken.data.name
+        } ${'is not visible'} to source ${sourceToken.data.name}`,
+      );
+      return false;
       // 9.4)  The range of 'condition' level [`conditionLevelMinIndex,conditionLevelMaxIndex`], must be between the 'sense' range level [`conditionLevelMinIndex,conditionLevelMaxIndex`] like explained on the [tables](./tables.md).
+      // REMOVED TO COMPLCIATED WE USE SOURCES AND TARGETS
+      /*
       const result =
         <number>sourceVisionLevel?.visionLevelMinIndex <= <number>targetVisionLevel?.visionLevelMinIndex &&
         <number>sourceVisionLevel?.visionLevelMaxIndex >= <number>targetVisionLevel?.visionLevelMaxIndex;
@@ -702,6 +710,7 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
         );
       }
       return result;
+      */
     });
 
     // if any source has vision to the token, the token is visible

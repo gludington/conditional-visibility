@@ -440,7 +440,7 @@ const module = {
       // https://github.com/DFreds/dfreds-convenient-effects/issues/110
       //@ts-ignore
       if (game.dfreds) {
-        const effects = ConditionalVisibilityEffectDefinitions.all();
+        const effects = ConditionalVisibilityEffectDefinitions.all(0,1);
         const activeEffectsData: any[] = [];
         for (const effect of effects) {
           // I also added this for specifically checking for custom effects.
@@ -455,13 +455,19 @@ const module = {
             const origin = undefined;
             const overlay = false;
             const disabled = false;
+
+            const isSense = API.SENSES.find((sense: SenseData) => {
+              return (
+                isStringEquals(sense.id, effect.customId) || isStringEquals(i18n(sense.name), effectToFoundByName)
+              );
+            });
+            const isCondition = API.CONDITIONS.find((sense: SenseData) => {
+              return (
+                isStringEquals(sense.id, effect.customId) || isStringEquals(i18n(sense.name), effectToFoundByName)
+              );
+            });
             // Add some feature if is a sense or a condition
             if (effect) {
-              const isSense = API.SENSES.find((sense: SenseData) => {
-                return (
-                  isStringEquals(sense.id, effect.customId) || isStringEquals(i18n(sense.name), effectToFoundByName)
-                );
-              });
               // Force check for make condition temporary and sense passive
               if (isSense) {
                 effect.isTemporary = false; // passive ae

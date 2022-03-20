@@ -40,8 +40,8 @@ export class AtcvEffect {
     res.visionIcon = senseData.img;
 
     res.visionLevelValue = visionLevelValue;
-    res.visionLevelMinIndex = senseData.conditionLevelMinIndex;
-    res.visionLevelMaxIndex = senseData.conditionLevelMaxIndex;
+    // res.visionLevelMinIndex = senseData.conditionLevelMinIndex;
+    // res.visionLevelMaxIndex = senseData.conditionLevelMaxIndex;
     res.visionElevation = senseData.conditionElevation;
     res.visionTargets = senseData.conditionTargets;
     res.visionSources = senseData.conditionSources;
@@ -67,12 +67,12 @@ export class AtcvEffect {
     // if(!res.visionLevelValue){
     //   res.visionLevelValue = visionLevelValue;
     // }
-    if (!res.visionLevelMinIndex) {
-      res.visionLevelMinIndex = senseData.conditionLevelMinIndex;
-    }
-    if (!res.visionLevelMaxIndex) {
-      res.visionLevelMaxIndex = senseData.conditionLevelMaxIndex;
-    }
+    // if (!res.visionLevelMinIndex) {
+    //   res.visionLevelMinIndex = senseData.conditionLevelMinIndex;
+    // }
+    // if (!res.visionLevelMaxIndex) {
+    //   res.visionLevelMaxIndex = senseData.conditionLevelMaxIndex;
+    // }
     if (!res.visionElevation) {
       res.visionElevation = senseData.conditionElevation;
     }
@@ -94,7 +94,172 @@ export class AtcvEffect {
     return res;
   }
 
+  static mergeEffectWithSensedataDefault(res: Effect):EffectChangeData[] {
+    const allSensesAndConditionsData: SenseData[] = [];
+    allSensesAndConditionsData.push(...API.SENSES);
+    allSensesAndConditionsData.push(...API.CONDITIONS);
+    const senseData = allSensesAndConditionsData.find((senseData) =>{
+      return isStringEquals(senseData.id, res.customId) || isStringEquals(senseData.name, res.name);
+    });
+    if(!senseData){
+      return res.atcvChanges;
+    }
+    // TODO addcheck only for defined value
+    const atcvChanges:any[] = [];
+    atcvChanges.push(...res.atcvChanges);
+    for (const atcvChange of atcvChanges) {
+      if (atcvChange.key.startsWith('ATCV.') && !atcvChange.key.startsWith('ATCV.condition')){
+        continue;
+      }
+      if (atcvChanges.filter((e) => isStringEquals(e.key, 'ATCV.conditionElevation')).length <= 0) {
+        atcvChanges.push(
+          {
+            key: 'ATCV.conditionElevation',
+            mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+            value: `${senseData.conditionElevation}`,
+            priority: 5,
+          },
+        );
+      }
+      else if (atcvChanges.filter((e) => isStringEquals(e.key, 'ATCV.conditionDistance')).length <= 0) {
+        atcvChanges.push(
+          {
+            key: 'ATCV.conditionDistance',
+            mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+            value: `${senseData.conditionDistance}`,
+            priority: 5,
+          },
+        );
+      }
+      else if (atcvChanges.filter((e) => isStringEquals(e.key, 'ATCV.conditionTargets')).length <= 0) {
+        atcvChanges.push(
+          {
+            key: 'ATCV.conditionTargets',
+            mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+            value: `${senseData.conditionTargets.join()}`,
+            priority: 5,
+          },
+        );
+      }
+      else if (atcvChanges.filter((e) => isStringEquals(e.key, 'ATCV.conditionSources')).length <= 0) {
+        atcvChanges.push(
+          {
+            key: 'ATCV.conditionSources',
+            mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+            value: `${senseData.conditionTargets.join()}`,
+            priority: 5,
+          },
+        );
+      }
+      else if (atcvChanges.filter((e) => isStringEquals(e.key, 'ATCV.conditionTargetImage')).length <= 0) {
+        atcvChanges.push(
+          {
+            key: 'ATCV.conditionTargetImage',
+            mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+            value: `${senseData.conditionTargetImage}`,
+            priority: 5,
+          },
+        );
+      }
+      else if (atcvChanges.filter((e) => isStringEquals(e.key, 'ATCV.conditionType')).length <= 0) {
+        atcvChanges.push(
+          {
+            key: 'ATCV.conditionType',
+            mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+            value: `${senseData.conditionType}`,
+            priority: 5,
+          },
+        );
+      }
+    }
+    return atcvChanges;
+  }
+
+  private static mergeActiveEffectWithSensedataDefault(res: ActiveEffect):EffectChangeData[] {
+    const allSensesAndConditionsData: SenseData[] = [];
+    allSensesAndConditionsData.push(...API.SENSES);
+    allSensesAndConditionsData.push(...API.CONDITIONS);
+    const senseData = allSensesAndConditionsData.find((senseData) =>{
+      return isStringEquals(senseData.id, <string>res.id) || isStringEquals(senseData.name, res.data.label);
+    });
+    if(!senseData){
+      return res.data.changes;
+    }
+    // TODO addcheck only for defined value
+    const atcvChanges:any[] = [];
+    atcvChanges.push(...res.data.changes);
+    for (const atcvChange of atcvChanges) {
+      if (atcvChange.key.startsWith('ATCV.') && !atcvChange.key.startsWith('ATCV.condition')){
+        continue;
+      }
+      if (atcvChanges.filter((e) => isStringEquals(e.key, 'ATCV.conditionElevation')).length <= 0) {
+        atcvChanges.push(
+          {
+            key: 'ATCV.conditionElevation',
+            mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+            value: `${senseData.conditionElevation}`,
+            priority: 5,
+          },
+        );
+      }
+      else if (atcvChanges.filter((e) => isStringEquals(e.key, 'ATCV.conditionDistance')).length <= 0) {
+        atcvChanges.push(
+          {
+            key: 'ATCV.conditionDistance',
+            mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+            value: `${senseData.conditionDistance}`,
+            priority: 5,
+          },
+        );
+      }
+      else if (atcvChanges.filter((e) => isStringEquals(e.key, 'ATCV.conditionTargets')).length <= 0) {
+        atcvChanges.push(
+          {
+            key: 'ATCV.conditionTargets',
+            mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+            value: `${senseData.conditionTargets.join()}`,
+            priority: 5,
+          },
+        );
+      }
+      else if (atcvChanges.filter((e) => isStringEquals(e.key, 'ATCV.conditionSources')).length <= 0) {
+        atcvChanges.push(
+          {
+            key: 'ATCV.conditionSources',
+            mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+            value: `${senseData.conditionTargets.join()}`,
+            priority: 5,
+          },
+        );
+      }
+      else if (atcvChanges.filter((e) => isStringEquals(e.key, 'ATCV.conditionTargetImage')).length <= 0) {
+        atcvChanges.push(
+          {
+            key: 'ATCV.conditionTargetImage',
+            mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+            value: `${senseData.conditionTargetImage}`,
+            priority: 5,
+          },
+        );
+      }
+      else if (atcvChanges.filter((e) => isStringEquals(e.key, 'ATCV.conditionType')).length <= 0) {
+        atcvChanges.push(
+          {
+            key: 'ATCV.conditionType',
+            mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+            value: `${senseData.conditionType}`,
+            priority: 5,
+          },
+        );
+      }
+    }
+    return atcvChanges;
+  }
+
   static fromEffect(effect: Effect) {
+
+    effect.atcvChanges = AtcvEffect.mergeEffectWithSensedataDefault(effect);
+
     const effectChanges: EffectChangeData[] = EffectSupport._handleIntegrations(effect) || [];
 
     let res = retrieveAtcvEffectFromActiveEffect(effectChanges, i18n(effect.name), effect.icon, undefined);
@@ -112,7 +277,8 @@ export class AtcvEffect {
   }
 
   static fromActiveEffect(activeEffect: ActiveEffect) {
-    const effectChanges = activeEffect.data.changes;
+    //const effectChanges = activeEffect.data.changes;
+    const effectChanges = AtcvEffect.mergeActiveEffectWithSensedataDefault(activeEffect);
     let res = retrieveAtcvEffectFromActiveEffect(
       effectChanges,
       i18n(activeEffect.data.label),
@@ -138,8 +304,8 @@ export interface SenseData {
   name: string; // This is the unique name used for sync all the senses and conditions (here you cna put any dirty character you want)
   path: string; // This is the path to the property you want to associate with this sense e.g. data.skills.prc.passive
   img: string; // [OPTIONAL] Image to associate to this sense
-  conditionLevelMinIndex: number; // [OPTIONAL] check a min index for filter a range of sense can see these conditions, or viceversa conditions can be seen only from this sense
-  conditionLevelMaxIndex: number; // [OPTIONAL] check a max index for filter a range of sense can see these conditions, or viceversa conditions can be seen only from this sense
+  // conditionLevelMinIndex: number; // [OPTIONAL] check a min index for filter a range of sense can see these conditions, or viceversa conditions can be seen only from this sense
+  // conditionLevelMaxIndex: number; // [OPTIONAL] check a max index for filter a range of sense can see these conditions, or viceversa conditions can be seen only from this sense
   conditionElevation: boolean; // [OPTIONAL] force to check the elevation between the source token and the target token, useful when using module like 'Levels'
   conditionTargets: string[]; // [OPTIONAL] force to apply the check only for these sources (you can set this but is used only from sense)
   conditionSources: string[]; // [OPTIONAL] force to apply the check only for these sources (you can set this but is used only from condition)

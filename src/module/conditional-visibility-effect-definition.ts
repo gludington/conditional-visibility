@@ -1,5 +1,5 @@
 import API from './api';
-import { AtcvEffectSenseFlags, AtcvEffectConditionFlags, SenseData } from './conditional-visibility-models';
+import { AtcvEffectSenseFlags, AtcvEffectConditionFlags, SenseData, AtcvEffect } from './conditional-visibility-models';
 import CONSTANTS from './constants';
 import Effect from './effects/effect';
 import { debug, i18n, i18nFormat, isStringEquals, mergeByProperty, warn } from './lib/lib';
@@ -24,51 +24,63 @@ export class ConditionalVisibilityEffectDefinitions {
     // SENSES
     const blinded = ConditionalVisibilityEffectDefinitions.blinded(distance, visionLevel);
     if (blinded) {
+      blinded.atcvChanges = AtcvEffect.mergeEffectWithSensedataDefault(blinded);
       effects.push(blinded);
     }
     const blindsight = ConditionalVisibilityEffectDefinitions.blindsight(distance, visionLevel);
     if (blindsight) {
+      blindsight.atcvChanges = AtcvEffect.mergeEffectWithSensedataDefault(blindsight);
       effects.push(blindsight);
     }
     const darkvision = ConditionalVisibilityEffectDefinitions.darkvision(distance, visionLevel);
     if (darkvision) {
+      darkvision.atcvChanges = AtcvEffect.mergeEffectWithSensedataDefault(darkvision);
       effects.push(darkvision);
     }
     const devilssight = ConditionalVisibilityEffectDefinitions.devilssight(distance, visionLevel);
     if (devilssight) {
+      devilssight.atcvChanges = AtcvEffect.mergeEffectWithSensedataDefault(devilssight);
       effects.push(devilssight);
     }
     const lowlightvision = ConditionalVisibilityEffectDefinitions.lowlightvision(distance, visionLevel);
     if (lowlightvision) {
+      lowlightvision.atcvChanges = AtcvEffect.mergeEffectWithSensedataDefault(lowlightvision);
       effects.push(lowlightvision);
     }
     const seeinvisible = ConditionalVisibilityEffectDefinitions.seeinvisible(distance, visionLevel);
     if (seeinvisible) {
+      seeinvisible.atcvChanges = AtcvEffect.mergeEffectWithSensedataDefault(seeinvisible);
       effects.push(seeinvisible);
     }
     const tremorsense = ConditionalVisibilityEffectDefinitions.tremorsense(distance, visionLevel);
     if (tremorsense) {
+      tremorsense.atcvChanges = AtcvEffect.mergeEffectWithSensedataDefault(tremorsense);
       effects.push(tremorsense);
     }
     const truesight = ConditionalVisibilityEffectDefinitions.truesight(distance, visionLevel);
     if (truesight) {
+      truesight.atcvChanges = AtcvEffect.mergeEffectWithSensedataDefault(truesight);
       effects.push(truesight);
     }
     // CONDITIONS
     const hidden = ConditionalVisibilityEffectDefinitions.hidden(visionLevel);
     if (hidden) {
+      hidden.atcvChanges = AtcvEffect.mergeEffectWithSensedataDefault(hidden);
       effects.push(hidden);
     }
     const invisible = ConditionalVisibilityEffectDefinitions.invisible(visionLevel);
     if (invisible) {
+      invisible.atcvChanges = AtcvEffect.mergeEffectWithSensedataDefault(invisible);
       effects.push(invisible);
     }
     const obscured = ConditionalVisibilityEffectDefinitions.obscured(visionLevel);
     if (obscured) {
+      obscured.atcvChanges = AtcvEffect.mergeEffectWithSensedataDefault(obscured);
       effects.push(obscured);
     }
     const indarkness = ConditionalVisibilityEffectDefinitions.indarkness(visionLevel);
     if (indarkness) {
+      indarkness.atcvChanges = AtcvEffect.mergeEffectWithSensedataDefault(indarkness);
       effects.push(indarkness);
     }
 

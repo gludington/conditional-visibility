@@ -874,6 +874,7 @@ const API = {
       const nameToUse = effectToFoundByName ? effectToFoundByName : effect?.name;
       await (<EffectInterface>this.effectInterface).addEffectOnToken(nameToUse, <string>token.id, effect);
       //await token?.document?.setFlag(CONSTANTS.MODULE_NAME, (<Effect>effect).customId, visionLevel);
+      effect.atcvChanges = AtcvEffect.mergeEffectWithSensedataDefault(effect);
       const atcvEffectFlagData = AtcvEffect.fromEffect(effect);
       const result = atcvEffectFlagData;
       return result;

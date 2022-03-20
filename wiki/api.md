@@ -102,8 +102,6 @@ ConditionalVisibility.API.registerSense({
   name: 'Bloodsight',
   path: '',
   img: 'systems/dnd5e/icons/spells/haste-fire-3.jpg',
-  conditionLevelMinIndex: 0,
-  conditionLevelMaxIndex: 5,
   conditionElevation: true,
   conditionTargets: ['invisible','hidden'],
   conditionSources: [],
@@ -116,8 +114,6 @@ game.conditional-visibility.API.registerSense({
   name: 'Bloodsight',
   path: '',
   img: 'systems/dnd5e/icons/spells/haste-fire-3.jpg',
-  conditionLevelMinIndex: 0,
-  conditionLevelMaxIndex: 5,
   conditionElevation: true,
   conditionTargets: ['invisible','hidden'],
   conditionSources: [],
@@ -140,8 +136,6 @@ ConditionalVisibility.API.registerCondition({
   name: 'Bloodsight',
   path: '',
   img: 'systems/dnd5e/icons/spells/haste-fire-3.jpg',
-  conditionLevelMinIndex: 0,
-  conditionLevelMaxIndex: 5,
   conditionElevation: true,
   conditionTargets: [],
   conditionSources: ['darkvision'],
@@ -154,8 +148,6 @@ game.conditional-visibility.API.registerCondition({
   name: 'Bloodsight',
   path: '',
   img: 'systems/dnd5e/icons/spells/haste-fire-3.jpg',
-  conditionLevelMinIndex: 0,
-  conditionLevelMaxIndex: 5,
   conditionElevation: true,
   conditionTargets: [],
   conditionSources: ['darkvision'],
@@ -210,8 +202,6 @@ This is the model used for register a custom sense or condition to the module
   name: string; // This is the unique name used for sync all the senses and conditions (here you cna put any dirty character you want)
   path: string; // This is the path to the property you want to associate with this sense e.g. data.skills.prc.passive
   img: string; // [OPTIONAL] Image to associate to this sense
-  conditionLevelMinIndex: number; // [OPTIONAL] check a min index for filter a range of sense can see these conditions, or viceversa conditions can be seen only from this sense
-  conditionLevelMaxIndex: number; // [OPTIONAL] check a max index for filter a range of sense can see these conditions, or viceversa conditions can be seen only from this sense
   conditionElevation: boolean; // [OPTIONAL] force to check the elevation between the source token and the target token, useful when using module like 'Levels'
   conditionTargets: string[]; // [OPTIONAL] force to apply the check only for these sources (you can set this but is used only from sense)
   conditionSources: string[]; // [OPTIONAL] force to apply the check only for these sources (you can set this but is used only from condition)

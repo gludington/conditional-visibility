@@ -85,9 +85,9 @@ export const registerSettings = function (): void {
     hint: `${CONSTANTS.MODULE_NAME}.setting.hudPos.hint`,
     scope: 'world',
     config: true,
-    default: '.left' ?? '',
+    default: '.left',
     type: String,
-    choices: {
+    choices: <Record<string, string>>{
       '.right': 'Right',
       '.left': 'Left',
     },
@@ -384,12 +384,8 @@ function otherSettings(apply = false) {
       hint: `${CONSTANTS.MODULE_NAME}.setting.hudPos.hint`,
       scope: 'world',
       config: true,
-      default: '.left' ?? '',
+      default: '.left',
       type: String,
-      choices: {
-        '.right': 'Right',
-        '.left': 'Left',
-      },
     },
 
     disableForNonHostileNpc: {

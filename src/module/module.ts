@@ -310,7 +310,7 @@ const module = {
         t.updateSource({ defer: true, deleted: false, noUpdateFog: false });
         // t.document.update();
         // Hooks.callAll('sightRefresh', t);
-        t.refresh();
+        // t.refresh();
       });
     }
   },
@@ -405,7 +405,7 @@ const module = {
               t.updateSource({ defer: true, deleted: false, noUpdateFog: false });
               // t.document.update();
               // Hooks.callAll('sightRefresh', t);
-              t.refresh();
+              // t.refresh();
             });
           }
         }
@@ -428,7 +428,7 @@ const module = {
               t.updateSource({ defer: true, deleted: false, noUpdateFog: false });
               // t.document.update();
               // Hooks.callAll('sightRefresh', t);
-              t.refresh();
+              // t.refresh();
             });
           }
         }
@@ -440,7 +440,7 @@ const module = {
       // https://github.com/DFreds/dfreds-convenient-effects/issues/110
       //@ts-ignore
       if (game.dfreds) {
-        const effects = ConditionalVisibilityEffectDefinitions.all(0,1);
+        const effects = ConditionalVisibilityEffectDefinitions.all(0, 1);
         const activeEffectsData: any[] = [];
         for (const effect of effects) {
           // I also added this for specifically checking for custom effects.
@@ -457,14 +457,10 @@ const module = {
             const disabled = false;
 
             const isSense = API.SENSES.find((sense: SenseData) => {
-              return (
-                isStringEquals(sense.id, effect.customId) || isStringEquals(i18n(sense.name), effectToFoundByName)
-              );
+              return isStringEquals(sense.id, effect.customId) || isStringEquals(i18n(sense.name), effectToFoundByName);
             });
             const isCondition = API.CONDITIONS.find((sense: SenseData) => {
-              return (
-                isStringEquals(sense.id, effect.customId) || isStringEquals(i18n(sense.name), effectToFoundByName)
-              );
+              return isStringEquals(sense.id, effect.customId) || isStringEquals(i18n(sense.name), effectToFoundByName);
             });
             // Add some feature if is a sense or a condition
             if (effect) {

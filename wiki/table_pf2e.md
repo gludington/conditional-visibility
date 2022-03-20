@@ -11,7 +11,7 @@ Check is the array of id condtions on the sense `ATCV.condtionTargets` contain t
 ### Senses
 
 | Image | Effect\Vision Level  | effectId used on the module | Check Elevation | Condition |
-|:------|:---------------------|:---------------------------:|:--------:|:-------:|:---------------:|:---------:|
+|:------|:---------------------|:---------------------------:|:---------------:|:---------:|
 |<img src="https://raw.githubusercontent.com/p4535992/conditional-visibility/master/src/icons/ae/light_01.jpg" alt="" style="height: 50px; width:50px;"></img> | **None** | none  | false | |
 |<img src="https://raw.githubusercontent.com/p4535992/conditional-visibility/master/src/icons/ae/light_02.jpg" alt="" style="height: 50px; width:50px;"></img> | **Normal** | normal | false | |
 |<img src="https://raw.githubusercontent.com/p4535992/conditional-visibility/master/src/icons/ae/affliction_24.jpg" alt="" style="height: 50px; width:50px;"></img> | **Blinded** | blinded | false | |
@@ -22,7 +22,7 @@ Check is the array of id condtions on the sense `ATCV.condtionTargets` contain t
 ### Conditions
 
 | Image | Condition Level | effectId used on the module | Check Elevation |
-|:------|:----------------|:---------------------------:|:--------:|:-------:|:---------------:|
+|:------|:----------------|:---------------------------:|:---------------:|
 |<img src="https://raw.githubusercontent.com/p4535992/conditional-visibility/master/src/icons/hidden.jpg" alt="" style="height: 50px; width:50px;"></img> | Hidden | hidden | false |
 |<img src="https://raw.githubusercontent.com/p4535992/conditional-visibility/master/src/icons/invisible.jpg" alt="" style="height: 50px; width:50px;"></img> | Invisible | invisible | false |
 |<img src="https://raw.githubusercontent.com/p4535992/conditional-visibility/master/src/icons/obscured.jpg" alt="" style="height: 50px; width:50px;"></img> | Obscured | obscured | false |

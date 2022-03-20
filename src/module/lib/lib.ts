@@ -674,9 +674,9 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
         }
       }
       debug(
-        `(9.5) Final checker test: Is false, target ${
-          targetToken.data.name
-        } ${'is not visible'} to source ${sourceToken.data.name}`,
+        `(9.5) Final checker test: Is false, target ${targetToken.data.name} ${'is not visible'} to source ${
+          sourceToken.data.name
+        }`,
       );
       return false;
       // 9.4)  The range of 'condition' level [`conditionLevelMinIndex,conditionLevelMaxIndex`], must be between the 'sense' range level [`conditionLevelMinIndex,conditionLevelMaxIndex`] like explained on the [tables](./tables.md).
@@ -1232,7 +1232,7 @@ function _getCVFromToken(tokenDocument: TokenDocument, isSense: boolean, filterV
       const atcvEffect = AtcvEffect.fromSenseData(senseData, 0, isSense);
       statusEffectsFinal.push(atcvEffect);
     } else {
-      const atcvEffect = AtcvEffect.mergeWithSensedataDefault(alreadyPresent, senseData);
+      const atcvEffect = AtcvEffect.mergeWithSensedataDefault(alreadyPresent);
       statusEffectsFinal.push(atcvEffect);
     }
   }
@@ -1486,7 +1486,8 @@ export function retrieveAtcvEffectFromActiveEffect(
     }
   }
 
-  return atcvEffect;
+  return AtcvEffect.mergeWithSensedataDefault(atcvEffect);
+  //return atcvEffect;
 }
 
 /**

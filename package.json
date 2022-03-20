@@ -17,7 +17,7 @@
   "author": "",
   "license": "",
   "devDependencies": {
-    "@league-of-foundry-developers/foundry-vtt-types": "^9.249.4",
+    "@league-of-foundry-developers/foundry-vtt-types": "^9.255.1",
     "@types/jquery": "^3.5.14",
     "@typescript-eslint/eslint-plugin": "^4.33.0",
     "@typescript-eslint/parser": "^4.33.0",
@@ -43,7 +43,7 @@
     "gulp-sass": "^4.1.1",
     "gulp-typescript": "^6.0.0-alpha.1",
     "json-stringify-pretty-compact": "^2.0.0",
-    "prettier": "^2.5.0",
+    "prettier": "^2.6.0",
     "sass": "^1.49.9",
     "yargs": "^15.4.1"
   },

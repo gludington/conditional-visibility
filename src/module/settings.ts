@@ -84,13 +84,14 @@ export const registerSettings = function (): void {
     name: `${CONSTANTS.MODULE_NAME}.setting.hudPos.name`,
     hint: `${CONSTANTS.MODULE_NAME}.setting.hudPos.hint`,
     scope: 'world',
-    config: true,
+    config: false,
     default: '.left',
     type: String,
-    choices: <Record<string, string>|undefined>{
-      '.right': 'Right',
-      '.left': 'Left',
-    },
+    // TODO is not assignable to type 'undefined'.
+    // choices: {
+    //   '.right': 'Right',
+    //   '.left': 'Left',
+    // },
   });
 
   game.settings.register(CONSTANTS.MODULE_NAME, 'disableForNonHostileNpc', {

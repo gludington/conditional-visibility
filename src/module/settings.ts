@@ -87,7 +87,7 @@ export const registerSettings = function (): void {
     config: true,
     default: '.left',
     type: String,
-    choices: <Record<string, string>>{
+    choices: <Record<string, string>|undefined>{
       '.right': 'Right',
       '.left': 'Left',
     },

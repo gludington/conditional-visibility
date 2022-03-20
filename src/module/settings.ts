@@ -85,7 +85,7 @@ export const registerSettings = function (): void {
     hint: `${CONSTANTS.MODULE_NAME}.setting.hudPos.hint`,
     scope: 'world',
     config: true,
-    default: '.left',
+    default: '.left' ?? '',
     type: String,
     choices: {
       '.right': 'Right',
@@ -384,7 +384,7 @@ function otherSettings(apply = false) {
       hint: `${CONSTANTS.MODULE_NAME}.setting.hudPos.hint`,
       scope: 'world',
       config: true,
-      default: '.left',
+      default: '.left' ?? '',
       type: String,
       choices: {
         '.right': 'Right',

@@ -72,6 +72,10 @@ export const setupHooks = async (): Promise<void> => {
   // Deprecated to remove soon....
   //@ts-ignore
   window.ConditionalVisibility.setCondition = ConditionalVisibility.API.setCondition;
+  //@ts-ignore
+  window.ConditionalVisibility.unHide = ConditionalVisibility.API.unHide;
+  //@ts-ignore
+  window.ConditionalVisibility.hide = ConditionalVisibility.API.hide;
 
   if (game[CONSTANTS.MODULE_NAME]) {
     game[CONSTANTS.MODULE_NAME] = {};

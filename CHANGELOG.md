@@ -1,4 +1,4 @@
-### 0.5.1
+### 0.5.1-2
 
 - Add some old api for retrocomaptibility
 

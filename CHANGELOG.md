@@ -1,3 +1,7 @@
+### 0.5.1
+
+- Add some old api for retrocomaptibility
+
 ### 0.5.0 [BREKING CHANGES]
 
 - Rewriting the logic for a better workflow

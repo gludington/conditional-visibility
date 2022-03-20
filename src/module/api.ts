@@ -12,7 +12,7 @@ import {
   warn,
 } from './lib/lib';
 import EffectInterface from './effects/effect-interface';
-import { AtcvEffect, SenseData } from './conditional-visibility-models';
+import { AtcvEffect, AtcvEffectConditionFlags, SenseData } from './conditional-visibility-models';
 import { EnhancedConditions } from './cub/enhanced-conditions';
 import { canvas, game } from './settings';
 import Effect, { EffectSupport } from './effects/effect';
@@ -676,8 +676,65 @@ const API = {
     return result;
   },
 
-  async setCondition(tokenNameOrId: string, senseDataEffect: AtcvEffect, disabled: boolean) {
-    return this.addEffectConditionalVisibilityOnToken(tokenNameOrId, senseDataEffect, disabled);
+  /*
+    For example, if you want to set all the selected tokens invisible:
+    `ConditionalVisibility.setCondition(canvas.tokens.controlled, 'invisible', true)`
+
+    The *hidden* condition requires system specific rules, and so uses a different set of methods.  Note this is only available on systems that have these rules developed, currently only D&D 5e.  Issues or contributions for other issues are welcome.
+
+    `ConditionalVisibility.hide(tokens, value)`
+    * tokens - a list of tokens to affect
+    * value - optional; a flat value to apply to all tokens.  If not specified, each token will make system-specific roll.
+
+    `ConditionalVisibility.unHide(tokens)`
+    * tokens - a list of tokens from which to remove the hidden condition.
+  */
+  async hide(tokens: Token[], value: number) {
+    const allSensesAndConditionsData: SenseData[] = [];
+    allSensesAndConditionsData.push(...API.SENSES);
+    allSensesAndConditionsData.push(...API.CONDITIONS);
+    const senseDataEffect = allSensesAndConditionsData.find((senseData) => {
+      return isStringEquals(senseData.id, AtcvEffectConditionFlags.HIDDEN);
+    });
+    if (senseDataEffect) {
+      for (const token of tokens) {
+        this.addEffectConditionalVisibilityOnToken(token.id, senseDataEffect, false);
+      }
+    }
+  },
+
+  async unHide(tokens: Token[]) {
+    for (const token of tokens) {
+      await token.document.unsetFlag(CONSTANTS.MODULE_NAME, AtcvEffectConditionFlags.HIDDEN);
+    }
+  },
+
+  async clean(tokens: Token[]) {
+    const allSensesAndConditionsData: SenseData[] = [];
+    allSensesAndConditionsData.push(...API.SENSES);
+    allSensesAndConditionsData.push(...API.CONDITIONS);
+    for (const token of tokens) {
+      const arr = getSensesFromToken(token.document, true);
+      for (const atcvEffect of arr) {
+        await token.document.unsetFlag(CONSTANTS.MODULE_NAME, atcvEffect.visionId);
+      }
+      const arr2 = getConditionsFromToken(token.document, true);
+      for (const atcvEffect of arr2) {
+        await token.document.unsetFlag(CONSTANTS.MODULE_NAME, atcvEffect.visionId);
+      }
+    }
+  },
+
+  async setCondition(token: Token, conditionId: string, disabled: boolean) {
+    const allSensesAndConditionsData: SenseData[] = [];
+    allSensesAndConditionsData.push(...API.SENSES);
+    allSensesAndConditionsData.push(...API.CONDITIONS);
+    const senseDataEffect = allSensesAndConditionsData.find((senseData) => {
+      return isStringEquals(senseData.id, conditionId);
+    });
+    if (senseDataEffect) {
+      return this.addEffectConditionalVisibilityOnToken(token.id, senseDataEffect, disabled);
+    }
   },
 
   async addEffectConditionalVisibilityOnToken(

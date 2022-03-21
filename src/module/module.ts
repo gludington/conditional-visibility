@@ -1,5 +1,5 @@
 import { ConditionalVisibilityEffectDefinitions } from './conditional-visibility-effect-definition';
-import { registerLibwrappers, updateTokenHandler } from './libwrapper';
+import { registerLibwrappers } from './libwrapper';
 import { registerSocket, conditionalVisibilitySocket } from './socket';
 
 import CONSTANTS from './constants';

@@ -77,14 +77,17 @@ export const setupHooks = async (): Promise<void> => {
   //@ts-ignore
   window.ConditionalVisibility.hide = ConditionalVisibility.API.hide;
 
-  if (game[CONSTANTS.MODULE_NAME]) {
-    game[CONSTANTS.MODULE_NAME] = {};
-  }
-  if (game[CONSTANTS.MODULE_NAME].API) {
-    game[CONSTANTS.MODULE_NAME].API = {};
-  }
+  // if (game[CONSTANTS.MODULE_NAME]) {
+  //   game[CONSTANTS.MODULE_NAME] = {};
+  // }
+  // if (game[CONSTANTS.MODULE_NAME].API) {
+  //   game[CONSTANTS.MODULE_NAME].API = {};
+  // }
+  // //@ts-ignore
+  // game[CONSTANTS.MODULE_NAME].API = window.ConditionalVisibility.API;
+
   //@ts-ignore
-  game[CONSTANTS.MODULE_NAME].API = window.ConditionalVisibility.API;
+  game.modules.get(CONSTANTS.MODULE_NAME)?.api = API;
 };
 
 export const readyHooks = async (): Promise<void> => {

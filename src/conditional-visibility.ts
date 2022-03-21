@@ -88,7 +88,7 @@ Hooks.once('libChangelogsReady', function () {
   libChangelogs.register(
     CONSTANTS.MODULE_NAME,
     `
-    - Bug fix
+    - Remove all forEach for performance
     `,
     'minor',
   );

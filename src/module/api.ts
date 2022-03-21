@@ -163,7 +163,7 @@ const API = {
     if (!Array.isArray(inAttributes)) {
       throw error('setSenses | inAttributes must be of type array');
     }
-    for(const attribute of inAttributes){
+    for (const attribute of inAttributes) {
       if (typeof attribute !== 'object') {
         throw error('setSenses | each entry in the inAttributes array must be of type object');
       }
@@ -190,7 +190,7 @@ const API = {
     if (!Array.isArray(inAttributes)) {
       throw error('setConditions | inAttributes must be of type array');
     }
-    for(const attribute of inAttributes){
+    for (const attribute of inAttributes) {
       if (typeof attribute !== 'object') {
         throw error('setConditions | each entry in the inAttributes array must be of type object');
       }
@@ -1078,7 +1078,7 @@ const API = {
       throw error('updateSourceCVArr | inAttributes must be of type array');
     }
     const [sourceToken] = inAttributes;
-    for(const t of <Token[]>canvas.tokens?.placeables){
+    for (const t of <Token[]>canvas.tokens?.placeables) {
       t.updateSource();
       t.document.update();
       Hooks.callAll('sightRefresh', t);
@@ -1090,7 +1090,7 @@ const API = {
     }
     const [sourceToken] = inAttributes;
     // Hooks.callAll('sightRefresh', sourceToken);
-    for(const t of <Token[]>canvas.tokens?.placeables){
+    for (const t of <Token[]>canvas.tokens?.placeables) {
       Hooks.callAll('sightRefresh', t);
     }
   },

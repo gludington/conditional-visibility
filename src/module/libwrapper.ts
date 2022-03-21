@@ -285,7 +285,7 @@ export function sightLayerPrototypeTestVisibilityHandler(wrapped, ...args) {
     mySources = <Token[]>canvas.tokens?.controlled;
   } else {
     const uniqueIds = new Set();
-    for(const element of this.sources) {
+    for (const element of this.sources) {
       const isDuplicate = uniqueIds.has(element.key);
       uniqueIds.add(element.key);
       if (!isDuplicate) {

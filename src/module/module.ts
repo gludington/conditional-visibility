@@ -77,17 +77,14 @@ export const setupHooks = async (): Promise<void> => {
   //@ts-ignore
   window.ConditionalVisibility.hide = ConditionalVisibility.API.hide;
 
-  // if (game[CONSTANTS.MODULE_NAME]) {
-  //   game[CONSTANTS.MODULE_NAME] = {};
-  // }
-  // if (game[CONSTANTS.MODULE_NAME].API) {
-  //   game[CONSTANTS.MODULE_NAME].API = {};
-  // }
-  // //@ts-ignore
-  // game[CONSTANTS.MODULE_NAME].API = window.ConditionalVisibility.API;
-
+  if (game[CONSTANTS.MODULE_NAME]) {
+    game[CONSTANTS.MODULE_NAME] = {};
+  }
+  if (game[CONSTANTS.MODULE_NAME].API) {
+    game[CONSTANTS.MODULE_NAME].API = {};
+  }
   //@ts-ignore
-  game.modules.get(CONSTANTS.MODULE_NAME)?.api = API;
+  game[CONSTANTS.MODULE_NAME].API = window.ConditionalVisibility.API;
 };
 
 export const readyHooks = async (): Promise<void> => {
@@ -313,7 +310,7 @@ const module = {
       } // Fine for
       // TODO check better solution
       // conditionalVisibilitySocket.executeForEveryone('sightRefreshCV', sourceToken);
-      for(const t of <Token[]>canvas.tokens?.placeables){
+      for (const t of <Token[]>canvas.tokens?.placeables) {
         t.updateSource({ defer: true, deleted: false, noUpdateFog: false });
         // t.document.update();
         // Hooks.callAll('sightRefresh', t);
@@ -408,7 +405,7 @@ const module = {
             }
             // TODO check better solution
             // conditionalVisibilitySocket.executeForEveryone('updateSourceCV', tokenToSet);
-            for(const t of <Token[]>canvas.tokens?.placeables){
+            for (const t of <Token[]>canvas.tokens?.placeables) {
               t.updateSource({ defer: true, deleted: false, noUpdateFog: false });
               // t.document.update();
               // Hooks.callAll('sightRefresh', t);
@@ -431,7 +428,7 @@ const module = {
             await sourceToken?.document.unsetFlag(CONSTANTS.MODULE_NAME, sense?.visionId);
             // TODO check better solution
             //conditionalVisibilitySocket.executeForEveryone('updateSourceCV', sourceToken);
-            for(const t of <Token[]>canvas.tokens?.placeables){
+            for (const t of <Token[]>canvas.tokens?.placeables) {
               t.updateSource({ defer: true, deleted: false, noUpdateFog: false });
               // t.document.update();
               // Hooks.callAll('sightRefresh', t);

@@ -166,7 +166,7 @@ export function enumKeys<O extends object, K extends keyof O = keyof O>(obj: O):
  * @param prop
  */
 export function mergeByProperty(target: any[], source: any[], prop: any) {
-  for(const sourceElement of  source){
+  for (const sourceElement of source) {
     const targetElement = target.find((targetElement) => {
       return sourceElement[prop] === targetElement[prop];
     });
@@ -941,7 +941,7 @@ export async function prepareActiveEffectForConditionalVisibility(
         if (sense.visionLevelValue != actve) {
           //@ts-ignore
           const data = <ActiveEffectData>duplicateExtended(activeEffectFounded.data);
-          for(const aee of data?.changes) {
+          for (const aee of data?.changes) {
             if (aee.key.startsWith('ATCV.') && !aee.key.startsWith('ATCV.condition') && aee.value) {
               aee.value = String(sense.visionLevelValue);
             }
@@ -994,7 +994,7 @@ export async function prepareActiveEffectForConditionalVisibility(
         if (condition.visionLevelValue != actve) {
           //@ts-ignore
           const data = <ActiveEffectData>duplicateExtended(activeEffectFounded.data);
-          for(const aee of data?.changes) {
+          for (const aee of data?.changes) {
             if (aee.key.startsWith('ATCV.') && !aee.key.startsWith('ATCV.condition') && aee.value) {
               aee.value = String(condition.visionLevelValue);
             }
@@ -1388,7 +1388,7 @@ export function retrieveAtcvEffectFromActiveEffect(
   }
 
   const effectEntityChanges = effectChanges.sort((a, b) => <number>a.priority - <number>b.priority);
-  for(const change of effectEntityChanges) {
+  for (const change of effectEntityChanges) {
     if (change.key.startsWith('ATCV.') && !change.key.startsWith('ATCV.condition') && change.value) {
       if (atcvEffect.visionId === null || atcvEffect.visionId === undefined) {
         atcvEffect.visionId = change.key.slice(5);
@@ -1412,7 +1412,7 @@ export function retrieveAtcvEffectFromActiveEffect(
 
         if (!Array.isArray(providedTags)) providedTags = [providedTags];
 
-        for(const t of providedTags) {
+        for (const t of providedTags) {
           if (!(typeof t === 'string' || t instanceof RegExp)) {
             error(`'ATCV.conditionTargets' in array must be of type string or regexp`);
           }
@@ -1429,7 +1429,7 @@ export function retrieveAtcvEffectFromActiveEffect(
 
         if (!Array.isArray(providedTags)) providedTags = [providedTags];
 
-        for(const t of providedTags) {
+        for (const t of providedTags) {
           if (!(typeof t === 'string' || t instanceof RegExp)) {
             error(`'ATCV.conditionSources' in array must be of type string or regexp`);
           }
@@ -1699,13 +1699,13 @@ export async function toggleStealth(event) {
   const conditionsOrderByName = getConditionsFromToken(this.object).sort((a, b) =>
     a.visionName.localeCompare(b.visionName),
   );
-  for (const [i, item] of  sensesOrderByName.entries()) {
+  for (const [i, item] of sensesOrderByName.entries()) {
     if (item.visionId === AtcvEffectSenseFlags.NONE) {
       sensesOrderByName.splice(i, 1);
       sensesOrderByName.unshift(item);
     }
   }
-  for (const [i, item] of  conditionsOrderByName.entries()) {
+  for (const [i, item] of conditionsOrderByName.entries()) {
     if (item.visionId === AtcvEffectConditionFlags.NONE) {
       conditionsOrderByName.splice(i, 1);
       conditionsOrderByName.unshift(item);

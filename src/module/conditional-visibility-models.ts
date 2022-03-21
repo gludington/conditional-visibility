@@ -367,12 +367,12 @@ export class VisionCapabilities {
       // CONDITIONS
       this.addConditions();
 
-      for(const sense of getSensesFromToken(srcToken.document)) {
+      for (const sense of getSensesFromToken(srcToken.document)) {
         if (sense.visionType === 'sense' && !this.senses.has(sense.visionId)) {
           this.senses.set(sense.visionId, sense);
         }
       }
-      for(const condition of getConditionsFromToken(srcToken.document)) {
+      for (const condition of getConditionsFromToken(srcToken.document)) {
         if (condition.visionType === 'condition' && !this.conditions.has(condition.visionId)) {
           this.conditions.set(condition.visionId, condition);
         }

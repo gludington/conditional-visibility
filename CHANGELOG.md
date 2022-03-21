@@ -1,5 +1,6 @@
-### 0.5.1-2
+### 0.5.1-2-3
 
+- Remove all forEach fro performance
 - Add some old api for retrocomaptibility
 
 ### 0.5.0 [BREKING CHANGES]

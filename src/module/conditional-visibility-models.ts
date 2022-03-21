@@ -367,16 +367,16 @@ export class VisionCapabilities {
       // CONDITIONS
       this.addConditions();
 
-      getSensesFromToken(srcToken.document).forEach((sense: AtcvEffect) => {
+      for(const sense of getSensesFromToken(srcToken.document)) {
         if (sense.visionType === 'sense' && !this.senses.has(sense.visionId)) {
           this.senses.set(sense.visionId, sense);
         }
-      });
-      getConditionsFromToken(srcToken.document).forEach((condition: AtcvEffect) => {
+      }
+      for(const condition of getConditionsFromToken(srcToken.document)) {
         if (condition.visionType === 'condition' && !this.conditions.has(condition.visionId)) {
           this.conditions.set(condition.visionId, condition);
         }
-      });
+      }
     } else {
       error('No token found for get the visual capabilities');
     }

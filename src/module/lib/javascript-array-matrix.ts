@@ -136,7 +136,7 @@ const ArrayMatrix$2 = function ArrayMatrix() {
       dive into the matrix, and place the item
       at the correct vertices.
     */
-    data.forEach(function (item) {
+    for(const item of data){
       let pointer = 0;
       let plane = matrix;
 
@@ -149,7 +149,7 @@ const ArrayMatrix$2 = function ArrayMatrix() {
       }
 
       plane.push(item);
-    });
+    }
 
     return this;
   }

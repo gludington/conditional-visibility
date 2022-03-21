@@ -310,12 +310,12 @@ const module = {
       } // Fine for
       // TODO check better solution
       // conditionalVisibilitySocket.executeForEveryone('sightRefreshCV', sourceToken);
-      canvas.tokens?.placeables.forEach((t: Token) => {
+      for(const t of <Token[]>canvas.tokens?.placeables){
         t.updateSource({ defer: true, deleted: false, noUpdateFog: false });
         // t.document.update();
         // Hooks.callAll('sightRefresh', t);
         // t.refresh();
-      });
+      }
     }
   },
   async updateActiveEffect(activeEffect: ActiveEffect, options: EffectChangeData, isRemoved: boolean) {
@@ -405,12 +405,12 @@ const module = {
             }
             // TODO check better solution
             // conditionalVisibilitySocket.executeForEveryone('updateSourceCV', tokenToSet);
-            canvas.tokens?.placeables.forEach((t: Token) => {
+            for(const t of <Token[]>canvas.tokens?.placeables){
               t.updateSource({ defer: true, deleted: false, noUpdateFog: false });
               // t.document.update();
               // Hooks.callAll('sightRefresh', t);
               // t.refresh();
-            });
+            }
           }
         }
       }
@@ -428,12 +428,12 @@ const module = {
             await sourceToken?.document.unsetFlag(CONSTANTS.MODULE_NAME, sense?.visionId);
             // TODO check better solution
             //conditionalVisibilitySocket.executeForEveryone('updateSourceCV', sourceToken);
-            canvas.tokens?.placeables.forEach((t: Token) => {
+            for(const t of <Token[]>canvas.tokens?.placeables){
               t.updateSource({ defer: true, deleted: false, noUpdateFog: false });
               // t.document.update();
               // Hooks.callAll('sightRefresh', t);
               // t.refresh();
-            });
+            }
           }
         }
       }

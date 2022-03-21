@@ -163,7 +163,7 @@ const API = {
     if (!Array.isArray(inAttributes)) {
       throw error('setSenses | inAttributes must be of type array');
     }
-    inAttributes.forEach((attribute) => {
+    for(const attribute of inAttributes){
       if (typeof attribute !== 'object') {
         throw error('setSenses | each entry in the inAttributes array must be of type object');
       }
@@ -176,7 +176,7 @@ const API = {
       if (attribute.img && typeof attribute.img !== 'string') {
         throw error('setSenses | attribute.img must be of type string');
       }
-    });
+    }
     return game.settings.set(CONSTANTS.MODULE_NAME, 'senses', inAttributes);
   },
 
@@ -190,7 +190,7 @@ const API = {
     if (!Array.isArray(inAttributes)) {
       throw error('setConditions | inAttributes must be of type array');
     }
-    inAttributes.forEach((attribute) => {
+    for(const attribute of inAttributes){
       if (typeof attribute !== 'object') {
         throw error('setConditions | each entry in the inAttributes array must be of type object');
       }
@@ -203,7 +203,7 @@ const API = {
       if (attribute.img && typeof attribute.img !== 'string') {
         throw error('setConditions | attribute.img must be of type string');
       }
-    });
+    }
     return game.settings.set(CONSTANTS.MODULE_NAME, 'conditions', inAttributes);
   },
 
@@ -1078,12 +1078,11 @@ const API = {
       throw error('updateSourceCVArr | inAttributes must be of type array');
     }
     const [sourceToken] = inAttributes;
-    // sourceToken.updateSource();
-    canvas.tokens?.placeables.forEach((t: Token) => {
+    for(const t of <Token[]>canvas.tokens?.placeables){
       t.updateSource();
       t.document.update();
       Hooks.callAll('sightRefresh', t);
-    });
+    }
   },
   sightRefreshCVArr(...inAttributes) {
     if (!Array.isArray(inAttributes)) {
@@ -1091,9 +1090,9 @@ const API = {
     }
     const [sourceToken] = inAttributes;
     // Hooks.callAll('sightRefresh', sourceToken);
-    canvas.tokens?.placeables.forEach((t: Token) => {
+    for(const t of <Token[]>canvas.tokens?.placeables){
       Hooks.callAll('sightRefresh', t);
-    });
+    }
   },
 };
 

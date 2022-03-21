@@ -456,7 +456,7 @@ export interface EnhancedConditions {
   //     const speaker = isActorEntity ? ChatMessage.getSpeaker({actor: entity}) : ChatMessage.getSpeaker({token: entity});
 
   //     // iterate over the entries and mark any with references for use in the template
-  //     entries.forEach((v, i, a) => {
+  //     for(const [v, i, a] of entries) {
   //         if (v.referenceId) {
   //             if (!v.referenceId.match(/\{.+\}/)) {
   //                 v.referenceId += `{${v.name}}`;

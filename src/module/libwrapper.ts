@@ -285,13 +285,13 @@ export function sightLayerPrototypeTestVisibilityHandler(wrapped, ...args) {
     mySources = <Token[]>canvas.tokens?.controlled;
   } else {
     const uniqueIds = new Set();
-    this.sources.forEach((element) => {
+    for(const element of this.sources) {
       const isDuplicate = uniqueIds.has(element.key);
       uniqueIds.add(element.key);
       if (!isDuplicate) {
         mySources.push(<Token>element.object);
       }
-    });
+    }
   }
   if (!mySources || mySources.length === 0) {
     return res;
@@ -303,7 +303,7 @@ export function sightLayerPrototypeTestVisibilityHandler(wrapped, ...args) {
     const is_visible = shouldIncludeVision(controlledToken, tokenToCheckIfIsVisible);
     // log(`terrains ${is_visible ? 'do not block' : 'do block'}`, terrains_block);
     return is_visible ?? false;
-  }); // [...this.sources].forEach
+  });
 
   const sourcesNames = <string[]>mySources.map((e) => {
     return e.data.name;

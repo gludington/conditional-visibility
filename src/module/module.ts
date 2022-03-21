@@ -77,7 +77,7 @@ export const setupHooks = async (): Promise<void> => {
   //@ts-ignore
   window.ConditionalVisibility.hide = ConditionalVisibility.API.hide;
 
-  if (game[CONSTANTS.MODULE_NAME]) {
+  if (!game[CONSTANTS.MODULE_NAME]) {
     game[CONSTANTS.MODULE_NAME] = {};
   }
   if (!game[CONSTANTS.MODULE_NAME].API) {

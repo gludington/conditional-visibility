@@ -311,7 +311,7 @@ const module = {
       // TODO check better solution
       // conditionalVisibilitySocket.executeForEveryone('sightRefreshCV', sourceToken);
       for (const t of <Token[]>canvas.tokens?.placeables) {
-        t.updateSource({ defer: true, deleted: false, noUpdateFog: false });
+        t.updateSource();
         // t.document.update();
         // Hooks.callAll('sightRefresh', t);
         // t.refresh();
@@ -406,7 +406,7 @@ const module = {
             // TODO check better solution
             // conditionalVisibilitySocket.executeForEveryone('updateSourceCV', tokenToSet);
             for (const t of <Token[]>canvas.tokens?.placeables) {
-              t.updateSource({ defer: true, deleted: false, noUpdateFog: false });
+              t.updateSource();
               // t.document.update();
               // Hooks.callAll('sightRefresh', t);
               // t.refresh();
@@ -429,7 +429,7 @@ const module = {
             // TODO check better solution
             //conditionalVisibilitySocket.executeForEveryone('updateSourceCV', sourceToken);
             for (const t of <Token[]>canvas.tokens?.placeables) {
-              t.updateSource({ defer: true, deleted: false, noUpdateFog: false });
+              t.updateSource();
               // t.document.update();
               // Hooks.callAll('sightRefresh', t);
               // t.refresh();

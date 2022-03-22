@@ -1,5 +1,6 @@
-### 0.5.1-2-3-4
+### 0.5.1-2-3-4-5
 
+- Some bug fix
 - Remove all forEach fro performance
 - Add some old api for retrocomaptibility
 

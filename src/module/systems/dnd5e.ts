@@ -191,7 +191,10 @@ export default {
       conditionType: 'condition',
       // conditionLevelMinIndex: 0,
       // conditionLevelMaxIndex: 6,
-      conditionSources: <string[]>[AtcvEffectSenseFlags.BLIND_SIGHT, AtcvEffectSenseFlags.TREMOR_SENSE],
+      conditionSources: <string[]>[
+        AtcvEffectSenseFlags.BLIND_SIGHT, 
+        AtcvEffectSenseFlags.TREMOR_SENSE
+      ],
       conditionTargets: <string[]>[],
       conditionElevation: false,
     },

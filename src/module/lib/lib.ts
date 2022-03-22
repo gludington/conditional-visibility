@@ -2,7 +2,7 @@ import { EffectSupport } from './../effects/effect';
 import { EffectChangeData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/data.mjs/effectChangeData';
 import CONSTANTS from '../constants.js';
 import API from '../api.js';
-import { canvas, ConditionalVisibilityModuleData, game } from '../settings';
+import { canvas, game } from '../settings';
 import {
   AtcvEffect,
   AtcvEffectSenseFlags,
@@ -1430,15 +1430,26 @@ export function retrieveAtcvEffectFromActiveEffect(
           if (change.value && String(change.value).includes('data.')) {
             //myvalue =  Number(getProperty(<ActorData>tokenDocument?.actor?.data,String(change.value)));
             // Retrieve the formula.
-            const formula = change.value;
+            const formula = change.value
+              .replace(/data\./g, '@');
             // Replace shorthand.
             // formula = formula
             //   .replace(/@abil\./g, '@abilities.')
             //   .replace(/@attr\./g, '@attributes.');
             // Roll the dice!
+            // Build the roll.
             const data = tokenDocument.actor ? tokenDocument.actor.getRollData() : {};
-            const r = new Roll(formula, data);
-            myvalue = r.total || 1;
+            const roll = new Roll(formula, data);
+            // Roll the dice.
+            //roll.roll();
+            //myvalue = roll.total || 1;
+            const myresult = eval(roll.result);
+            if (isNaN(myresult)) {
+              warn(`The formula '${formula}' doesn't return a number we set the default 1`, true);
+              myvalue = 1;
+            }else{
+              myvalue = myresult;
+            }
           } else {
             myvalue = Number(change.value);
           }

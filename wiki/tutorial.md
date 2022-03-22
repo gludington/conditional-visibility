@@ -79,7 +79,7 @@ There three type of these AE used and supported from this module:
 
 | Key Syntax                      | Type    | Description                         | Examples Active Effect Data [Key = value] |
 | :------------------------------:|:-------:|:-----------------------------------:|:--------:|
-| `ATCV.<sense or condition id>`  | number  | Identify the "vision level" of the sense/condition | `ATCV.invisible = 12`, `ATCV.darkvision = 13` |
+| `ATCV.<sense or condition id>`  | number  | Identify the "vision level" of the sense/condition | `ATCV.invisible = 12`, `ATCV.darkvision = 13`, `ATCV.darkvision = data.skills.ste.passive` |
 | `ATCV.conditionElevation`       | boolean | if true will force to check the elevation between tokens source and target, VERY USEFUL IF YOU USE LEVELS | `ATCV.conditionElevation = true` |
 | `ATCV.conditionTargets`         | list of string | This is used for explicitly tell to the checker what AE can be see from this AE based on the custom id used from this module, check out the [TABLES](./tables.md) for details, **this is basically a override of the point 6. checker based on the indexes given to the sense  |  `ATCV.conditionTargets=hidden,invisible` |
 | `ATCV.conditionSources`         | list of string | This is used for explicitly tell to the checker what AE can be see from this AE based on the custom id used from this module, check out the [TABLES](./tables.md) for details, **this is basically a override of the point 6. checker based on the indexes given to the condition  |  `ATCV.conditionSources=darkvision,tremorsense` |

@@ -17,6 +17,7 @@ import { registerHotkeys } from './module/hotkeys';
 import CONSTANTS from './module/constants';
 import { error, log } from './module/lib/lib';
 import { initHooks, readyHooks, setupHooks } from './module/module';
+import API from './module/api';
 
 // declare global {
 //   interface Window {
@@ -74,6 +75,47 @@ Hooks.once('ready', async function () {
 /* ------------------------------------ */
 /* Other Hooks							*/
 /* ------------------------------------ */
+
+export interface ConditionalVisibilityModuleData {
+  api: typeof API;
+  socket: any;
+}
+
+/**
+ * Initialization helper, to set API.
+ * @param api to set to game module.
+ */
+export function setApi(api: typeof API): void {
+  const data = game.modules.get(CONSTANTS.MODULE_NAME) as unknown as ConditionalVisibilityModuleData;
+  data.api = api;
+}
+
+/**
+ * Returns the set API.
+ * @returns Api from games module.
+ */
+export function getApi(): typeof API {
+  const data = game.modules.get(CONSTANTS.MODULE_NAME) as unknown as ConditionalVisibilityModuleData;
+  return data.api;
+}
+
+/**
+ * Initialization helper, to set Socket.
+ * @param socket to set to game module.
+ */
+export function setSocket(socket: any): void {
+  const data = game.modules.get(CONSTANTS.MODULE_NAME) as unknown as ConditionalVisibilityModuleData;
+  data.socket = socket;
+}
+
+/*
+ * Returns the set socket.
+ * @returns Socket from games module.
+ */
+export function getSocket() {
+  const data = game.modules.get(CONSTANTS.MODULE_NAME) as unknown as ConditionalVisibilityModuleData;
+  return data.socket;
+}
 
 Hooks.once('libChangelogsReady', function () {
   //@ts-ignore

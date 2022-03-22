@@ -19,7 +19,7 @@ import {
 import API from './api';
 import EffectInterface from './effects/effect-interface';
 import { registerHotkeys } from './hotkeys';
-import { canvas, game, setApi } from './settings';
+import { canvas, game } from './settings';
 import { checkSystem } from './settings';
 import {
   AtcvEffect,
@@ -30,6 +30,7 @@ import {
 } from './conditional-visibility-models';
 import { EffectChangeData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/data.mjs/effectChangeData';
 import { EffectSupport } from './effects/effect';
+import { setApi } from '../conditional-visibility';
 
 export const initHooks = async (): Promise<void> => {
   // registerSettings();

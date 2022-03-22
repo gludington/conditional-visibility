@@ -1,6 +1,7 @@
 import CONSTANTS from './constants';
 import API from './api';
 import { debug } from './lib/lib';
+import { setSocket } from '../conditional-visibility';
 
 export const SOCKET_HANDLERS = {
   /**
@@ -113,7 +114,7 @@ export function registerSocket() {
   conditionalVisibilitySocket.register('updateActiveEffectFromNameOnToken', (...args) =>
     API.updateActiveEffectFromNameOnTokenArr(...args),
   );
-
+  setSocket(conditionalVisibilitySocket);
   return conditionalVisibilitySocket;
 }
 

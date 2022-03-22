@@ -621,7 +621,7 @@ export class ConditionalVisibilityEffectDefinitions {
       return;
     }
     return new Effect({
-      customId: AtcvEffectConditionFlags.OBSCURED,
+      customId: AtcvEffectConditionFlags.IN_DARKNESS,
       name: i18n(`${CONSTANTS.MODULE_NAME}.effects.indarkness.name`),
       description: i18n(`${CONSTANTS.MODULE_NAME}.effects.indarkness.description`),
       icon: `modules/${CONSTANTS.MODULE_NAME}/icons/indarkness.jpg`,

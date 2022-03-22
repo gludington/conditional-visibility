@@ -87,7 +87,6 @@ export const setupHooks = async (): Promise<void> => {
   // game[CONSTANTS.MODULE_NAME].API = window.ConditionalVisibility.API;
 
   setApi(API);
-
 };
 
 export const readyHooks = async (): Promise<void> => {
@@ -386,7 +385,7 @@ const module = {
                   if (isRemoved || currentValue == '0') {
                     await tokenToSet?.document.unsetFlag(CONSTANTS.MODULE_NAME, updateKey);
                   } else {
-                    const atcvEffectFlagData = AtcvEffect.fromActiveEffect(tokenToSet.document,atcvEffect);
+                    const atcvEffectFlagData = AtcvEffect.fromActiveEffect(tokenToSet.document, atcvEffect);
                     await tokenToSet?.document.setFlag(CONSTANTS.MODULE_NAME, updateKey, atcvEffectFlagData);
                   }
                   // REMOVES SOME PEOPLE DOESN'T WANT THIS ? AND I'M NOT SURE HOW OTHER MODULES CAN WORK WITH THIS

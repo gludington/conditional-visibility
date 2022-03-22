@@ -853,7 +853,9 @@ const API = {
 
     const isSense = senseDataEffect.visionType === 'sense';
     if (!effect) {
-      const sensesAndConditionOrderByName = <AtcvEffect[]>await (this as typeof API).getAllDefaultSensesAndConditions(token);
+      const sensesAndConditionOrderByName = <AtcvEffect[]>(
+        await (this as typeof API).getAllDefaultSensesAndConditions(token)
+      );
       const senseOrCondition = <AtcvEffect>sensesAndConditionOrderByName.find((sense: AtcvEffect) => {
         return (
           isStringEquals(sense.visionId, senseDataEffect.visionId) ||
@@ -934,18 +936,18 @@ const API = {
       await (<EffectInterface>this.effectInterface).addEffectOnToken(nameToUse, <string>token.id, effect);
       //await token?.document?.setFlag(CONSTANTS.MODULE_NAME, (<Effect>effect).customId, visionLevel);
       effect.atcvChanges = AtcvEffect.mergeEffectWithSensedataDefault(effect);
-      const atcvEffectFlagData = AtcvEffect.fromEffect(token.document,effect);
+      const atcvEffectFlagData = AtcvEffect.fromEffect(token.document, effect);
       const result = atcvEffectFlagData;
       return result;
     }
   },
 
-  getAllDefaultSensesAndConditions(token: Token|null): AtcvEffect[] {
+  getAllDefaultSensesAndConditions(token: Token | null): AtcvEffect[] {
     const allSensesAndConditions: AtcvEffect[] = [];
-    if(token){
+    if (token) {
       allSensesAndConditions.push(...getSensesFromToken(token.document));
       allSensesAndConditions.push(...getConditionsFromToken(token.document));
-    }else{
+    } else {
       allSensesAndConditions.push(...getSensesFromToken(null));
       allSensesAndConditions.push(...getConditionsFromToken(null));
     }
@@ -983,7 +985,11 @@ const API = {
 
   async unRegisterCondition(senseDataIdOrName: string): Promise<void> {
     const conditionsData = <SenseData[]>game.settings.get(CONSTANTS.MODULE_NAME, 'conditions');
-    const newConditionsData = await (this as typeof API)._unregisterSenseData(senseDataIdOrName, conditionsData, 'condition');
+    const newConditionsData = await (this as typeof API)._unregisterSenseData(
+      senseDataIdOrName,
+      conditionsData,
+      'condition',
+    );
     if (newConditionsData && newConditionsData.length > 0) {
       await game.settings.set(CONSTANTS.MODULE_NAME, 'conditions', newConditionsData);
       info(`Untegister condition '${senseDataIdOrName}`, true);

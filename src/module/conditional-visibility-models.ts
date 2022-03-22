@@ -32,13 +32,12 @@ export class AtcvEffect {
   visionType: string;
 
   static fromSenseData(senseData: SenseData, visionLevelValue: number) {
-
     let isSense = false;
-    if(senseData.conditionType === 'sense'){
+    if (senseData.conditionType === 'sense') {
       isSense = true;
-    }else if(senseData.conditionType === 'condition'){
+    } else if (senseData.conditionType === 'condition') {
       isSense = false;
-    }else{
+    } else {
       isSense = !!API.SENSES.find((senseData) => {
         return isStringEquals(senseData.id, res.visionId) || isStringEquals(senseData.name, res.visionName);
       });
@@ -58,7 +57,7 @@ export class AtcvEffect {
     res.visionSources = senseData.conditionSources;
     res.visionTargetImage = senseData.conditionTargetImage;
     res.visionDistanceValue = senseData.conditionDistance;
-    res.visionType = senseData.conditionType ? senseData.conditionType : (isSense ? 'sense' : 'condition');
+    res.visionType = senseData.conditionType ? senseData.conditionType : isSense ? 'sense' : 'condition';
     return res;
   }
 
@@ -270,12 +269,18 @@ export class AtcvEffect {
     return atcvChanges;
   }
 
-  static fromEffect(tokenDocument:TokenDocument, effect: Effect) {
+  static fromEffect(tokenDocument: TokenDocument, effect: Effect) {
     effect.atcvChanges = AtcvEffect.mergeEffectWithSensedataDefault(effect);
 
     const effectChanges: EffectChangeData[] = EffectSupport._handleIntegrations(effect) || [];
 
-    let res = retrieveAtcvEffectFromActiveEffect(tokenDocument, effectChanges, i18n(effect.name), effect.icon, undefined);
+    let res = retrieveAtcvEffectFromActiveEffect(
+      tokenDocument,
+      effectChanges,
+      i18n(effect.name),
+      effect.icon,
+      undefined,
+    );
     /*
     let sensesOrConditions: SenseData[] = [];
     sensesOrConditions.push(...API.SENSES);
@@ -291,7 +296,7 @@ export class AtcvEffect {
     return res;
   }
 
-  static fromActiveEffect(tokenDocument:TokenDocument,activeEffect: ActiveEffect) {
+  static fromActiveEffect(tokenDocument: TokenDocument, activeEffect: ActiveEffect) {
     //const effectChanges = activeEffect.data.changes;
     const effectChanges = AtcvEffect.mergeActiveEffectWithSensedataDefault(activeEffect);
     let res = retrieveAtcvEffectFromActiveEffect(

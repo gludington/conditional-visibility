@@ -1430,8 +1430,7 @@ export function retrieveAtcvEffectFromActiveEffect(
           if (change.value && String(change.value).includes('data.')) {
             //myvalue =  Number(getProperty(<ActorData>tokenDocument?.actor?.data,String(change.value)));
             // Retrieve the formula.
-            const formula = change.value
-              .replace(/data\./g, '@');
+            const formula = change.value.replace(/data\./g, '@');
             // Replace shorthand.
             // formula = formula
             //   .replace(/@abil\./g, '@abilities.')
@@ -1441,13 +1440,19 @@ export function retrieveAtcvEffectFromActiveEffect(
             const data = tokenDocument.actor ? tokenDocument.actor.getRollData() : {};
             const roll = new Roll(formula, data);
             // Roll the dice.
+            let myresult = 0;
             //roll.roll();
+            try {
+              roll.evaluate();
+              myresult = roll.total ? <number>roll.total : parseInt(roll.result);
+            } catch (e) {
+              myresult = parseInt(eval(roll.result));
+            }
             //myvalue = roll.total || 1;
-            const myresult = eval(roll.result);
             if (isNaN(myresult)) {
               warn(`The formula '${formula}' doesn't return a number we set the default 1`, true);
               myvalue = 1;
-            }else{
+            } else {
               myvalue = myresult;
             }
           } else {

@@ -19,7 +19,7 @@ import {
 import API from './api';
 import EffectInterface from './effects/effect-interface';
 import { registerHotkeys } from './hotkeys';
-import { canvas, game } from './settings';
+import { canvas, game, setApi } from './settings';
 import { checkSystem } from './settings';
 import {
   AtcvEffect,
@@ -77,14 +77,17 @@ export const setupHooks = async (): Promise<void> => {
   //@ts-ignore
   window.ConditionalVisibility.hide = ConditionalVisibility.API.hide;
 
-  if (!game[CONSTANTS.MODULE_NAME]) {
-    game[CONSTANTS.MODULE_NAME] = {};
-  }
-  if (!game[CONSTANTS.MODULE_NAME].API) {
-    game[CONSTANTS.MODULE_NAME].API = {};
-  }
-  //@ts-ignore
-  game[CONSTANTS.MODULE_NAME].API = window.ConditionalVisibility.API;
+  // if (!game[CONSTANTS.MODULE_NAME]) {
+  //   game[CONSTANTS.MODULE_NAME] = {};
+  // }
+  // if (!game[CONSTANTS.MODULE_NAME].API) {
+  //   game[CONSTANTS.MODULE_NAME].API = {};
+  // }
+  // //@ts-ignore
+  // game[CONSTANTS.MODULE_NAME].API = window.ConditionalVisibility.API;
+
+  setApi(API);
+
 };
 
 export const readyHooks = async (): Promise<void> => {
@@ -383,7 +386,7 @@ const module = {
                   if (isRemoved || currentValue == '0') {
                     await tokenToSet?.document.unsetFlag(CONSTANTS.MODULE_NAME, updateKey);
                   } else {
-                    const atcvEffectFlagData = AtcvEffect.fromActiveEffect(atcvEffect);
+                    const atcvEffectFlagData = AtcvEffect.fromActiveEffect(tokenToSet.document,atcvEffect);
                     await tokenToSet?.document.setFlag(CONSTANTS.MODULE_NAME, updateKey, atcvEffectFlagData);
                   }
                   // REMOVES SOME PEOPLE DOESN'T WANT THIS ? AND I'M NOT SURE HOW OTHER MODULES CAN WORK WITH THIS
@@ -443,7 +446,7 @@ const module = {
     if (!game.settings.get(CONSTANTS.MODULE_NAME, 'disableDCEAutomaticImport')) {
       // https://github.com/DFreds/dfreds-convenient-effects/issues/110
       //@ts-ignore
-      if (game.dfreds) {
+      if (game.modules.get('dfreds-convenient-effects')?.active && game.dfreds && game.dfreds.effectInterface) {
         const effects = ConditionalVisibilityEffectDefinitions.all(0, 1);
         const activeEffectsData: any[] = [];
         for (const effect of effects) {

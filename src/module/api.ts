@@ -676,19 +676,19 @@ const API = {
     return result;
   },
 
-  /*
-    For example, if you want to set all the selected tokens invisible:
-    `ConditionalVisibility.setCondition(canvas.tokens.controlled, 'invisible', true)`
+  // OLD API
+  // For example, if you want to set all the selected tokens invisible:
+  // `ConditionalVisibility.setCondition(canvas.tokens.controlled, 'invisible', true)`
 
-    The *hidden* condition requires system specific rules, and so uses a different set of methods.  Note this is only available on systems that have these rules developed, currently only D&D 5e.  Issues or contributions for other issues are welcome.
+  // The *hidden* condition requires system specific rules, and so uses a different set of methods.  Note this is only available on systems that have these rules developed, currently only D&D 5e.  Issues or contributions for other issues are welcome.
 
-    `ConditionalVisibility.hide(tokens, value)`
-    * tokens - a list of tokens to affect
-    * value - optional; a flat value to apply to all tokens.  If not specified, each token will make system-specific roll.
+  // `ConditionalVisibility.hide(tokens, value)`
+  // * tokens - a list of tokens to affect
+  // * value - optional; a flat value to apply to all tokens.  If not specified, each token will make system-specific roll.
 
-    `ConditionalVisibility.unHide(tokens)`
-    * tokens - a list of tokens from which to remove the hidden condition.
-  */
+  // `ConditionalVisibility.unHide(tokens)`
+  // * tokens - a list of tokens from which to remove the hidden condition.
+
   async hide(tokens: Token[], value: number) {
     const allSensesAndConditionsData: SenseData[] = [];
     allSensesAndConditionsData.push(...API.SENSES);
@@ -697,8 +697,9 @@ const API = {
       return isStringEquals(senseData.id, AtcvEffectConditionFlags.HIDDEN);
     });
     if (senseDataEffect) {
+      const atcvEffect = AtcvEffect.fromSenseData(senseDataEffect, value);
       for (const token of tokens) {
-        this.addEffectConditionalVisibilityOnToken(token.id, senseDataEffect, false);
+        (this as typeof API).addEffectConditionalVisibilityOnToken(token.id, atcvEffect, false);
       }
     }
   },
@@ -725,7 +726,7 @@ const API = {
     }
   },
 
-  async setCondition(token: Token, conditionId: string, disabled: boolean) {
+  async setCondition(token: Token, conditionId: string, disabled: boolean): Promise<AtcvEffect | undefined> {
     const allSensesAndConditionsData: SenseData[] = [];
     allSensesAndConditionsData.push(...API.SENSES);
     allSensesAndConditionsData.push(...API.CONDITIONS);
@@ -733,7 +734,8 @@ const API = {
       return isStringEquals(senseData.id, conditionId);
     });
     if (senseDataEffect) {
-      return this.addEffectConditionalVisibilityOnToken(token.id, senseDataEffect, disabled);
+      const atcvEffect = AtcvEffect.fromSenseData(senseDataEffect, 1);
+      return (this as typeof API).addEffectConditionalVisibilityOnToken(token.id, atcvEffect, disabled);
     }
   },
 
@@ -792,7 +794,7 @@ const API = {
     // Check for dfred convenient effect and retrieve the effect with the specific name
     // https://github.com/DFreds/dfreds-convenient-effects/issues/110
     //@ts-ignore
-    if (game.dfreds) {
+    if (game.modules.get('dfreds-convenient-effects')?.active && game.dfreds && game.dfreds.effectInterface) {
       let effectToFoundByName = i18n(senseDataEffect.visionName);
       if (!effectToFoundByName.endsWith('(CV)')) {
         effectToFoundByName = effectToFoundByName + ' (CV)';
@@ -851,7 +853,7 @@ const API = {
 
     const isSense = senseDataEffect.visionType === 'sense';
     if (!effect) {
-      const sensesAndConditionOrderByName = <AtcvEffect[]>await this.getAllDefaultSensesAndConditions(token);
+      const sensesAndConditionOrderByName = <AtcvEffect[]>await (this as typeof API).getAllDefaultSensesAndConditions(token);
       const senseOrCondition = <AtcvEffect>sensesAndConditionOrderByName.find((sense: AtcvEffect) => {
         return (
           isStringEquals(sense.visionId, senseDataEffect.visionId) ||
@@ -932,21 +934,21 @@ const API = {
       await (<EffectInterface>this.effectInterface).addEffectOnToken(nameToUse, <string>token.id, effect);
       //await token?.document?.setFlag(CONSTANTS.MODULE_NAME, (<Effect>effect).customId, visionLevel);
       effect.atcvChanges = AtcvEffect.mergeEffectWithSensedataDefault(effect);
-      const atcvEffectFlagData = AtcvEffect.fromEffect(effect);
+      const atcvEffectFlagData = AtcvEffect.fromEffect(token.document,effect);
       const result = atcvEffectFlagData;
       return result;
     }
   },
 
-  getAllDefaultSensesAndConditions(token: Token): AtcvEffect[] {
+  getAllDefaultSensesAndConditions(token: Token|null): AtcvEffect[] {
     const allSensesAndConditions: AtcvEffect[] = [];
-    // if(token){
-    allSensesAndConditions.push(...getSensesFromToken(token.document));
-    allSensesAndConditions.push(...getConditionsFromToken(token.document));
-    // }else{
-    //   allSensesAndConditions.push(...getSensesFromToken(undefined));
-    //   allSensesAndConditions.push(...getConditionsFromToken(undefined));
-    // }
+    if(token){
+      allSensesAndConditions.push(...getSensesFromToken(token.document));
+      allSensesAndConditions.push(...getConditionsFromToken(token.document));
+    }else{
+      allSensesAndConditions.push(...getSensesFromToken(null));
+      allSensesAndConditions.push(...getConditionsFromToken(null));
+    }
 
     const sensesOrderByName = allSensesAndConditions.sort((a, b) => a.visionName.localeCompare(b.visionName));
     return sensesOrderByName;
@@ -954,7 +956,7 @@ const API = {
 
   async registerSense(senseData: SenseData): Promise<void> {
     const sensesData = <SenseData[]>game.settings.get(CONSTANTS.MODULE_NAME, 'senses');
-    const newSenseData = await this._registerSenseData(senseData, sensesData, 'sense', false);
+    const newSenseData = await (this as typeof API)._registerSenseData(senseData, sensesData, 'sense');
     if (newSenseData && newSenseData.length > 0) {
       await game.settings.set(CONSTANTS.MODULE_NAME, 'senses', newSenseData);
       info(`Register sense '${senseData.id}' with name ${senseData.name}`, true);
@@ -963,7 +965,7 @@ const API = {
 
   async registerCondition(senseData: SenseData): Promise<void> {
     const conditionsData = <SenseData[]>game.settings.get(CONSTANTS.MODULE_NAME, 'conditions');
-    const newConditionData = await this._registerSenseData(senseData, conditionsData, 'condition', false);
+    const newConditionData = await (this as typeof API)._registerSenseData(senseData, conditionsData, 'condition');
     if (newConditionData && newConditionData.length > 0) {
       await game.settings.set(CONSTANTS.MODULE_NAME, 'conditions', newConditionData);
       info(`Register condition '${senseData.id}' with name ${senseData.name}`, true);
@@ -972,7 +974,7 @@ const API = {
 
   async unRegisterSense(senseDataIdOrName: string): Promise<void> {
     const sensesData = <SenseData[]>game.settings.get(CONSTANTS.MODULE_NAME, 'senses');
-    const newSenseData = await this._unregisterSenseData(senseDataIdOrName, sensesData, 'sense', true);
+    const newSenseData = await (this as typeof API)._unregisterSenseData(senseDataIdOrName, sensesData, 'sense');
     if (newSenseData && newSenseData.length > 0) {
       await game.settings.set(CONSTANTS.MODULE_NAME, 'senses', newSenseData);
       info(`Untegister sense '${senseDataIdOrName}'`, true);
@@ -981,7 +983,7 @@ const API = {
 
   async unRegisterCondition(senseDataIdOrName: string): Promise<void> {
     const conditionsData = <SenseData[]>game.settings.get(CONSTANTS.MODULE_NAME, 'conditions');
-    const newConditionsData = await this._unregisterSenseData(senseDataIdOrName, conditionsData, 'condition', true);
+    const newConditionsData = await (this as typeof API)._unregisterSenseData(senseDataIdOrName, conditionsData, 'condition');
     if (newConditionsData && newConditionsData.length > 0) {
       await game.settings.set(CONSTANTS.MODULE_NAME, 'conditions', newConditionsData);
       info(`Untegister condition '${senseDataIdOrName}`, true);
@@ -991,25 +993,25 @@ const API = {
   async _registerSenseData(
     senseData: SenseData,
     sensesDataList: SenseData[],
-    valueComment: string,
+    conditionType: string,
   ): Promise<SenseData[] | undefined> {
     if (!senseData.id) {
-      warn(`Cannot register the ${valueComment} with id empty or null`, true);
+      warn(`Cannot register the ${conditionType} with id empty or null`, true);
       return;
     }
     if (!senseData.name) {
-      warn(`Cannot register the ${valueComment} with name empty or null`, true);
+      warn(`Cannot register the ${conditionType} with name empty or null`, true);
       return;
     }
-    const sensesAndConditionDataList = <AtcvEffect[]>await this.getAllDefaultSensesAndConditions(null);
+    const sensesAndConditionDataList = <AtcvEffect[]>await (this as typeof API).getAllDefaultSensesAndConditions(null);
     const senseAlreadyExistsId = sensesAndConditionDataList.find((a: AtcvEffect) => a.visionId == senseData.id);
     const senseAlreadyExistsName = sensesAndConditionDataList.find((a: AtcvEffect) => a.visionName == senseData.name);
     if (senseAlreadyExistsId) {
-      warn(`Cannot register the ${valueComment} with id '${senseData.id}' because already exists`, true);
+      warn(`Cannot register the ${conditionType} with id '${senseData.id}' because already exists`, true);
       return;
     }
     if (senseAlreadyExistsName) {
-      warn(`Cannot register the ${valueComment} with name '${senseData.name}' because already exists`, true);
+      warn(`Cannot register the ${conditionType} with name '${senseData.name}' because already exists`, true);
       return;
     }
     sensesDataList.push(senseData);
@@ -1025,7 +1027,7 @@ const API = {
       warn(`Cannot unregister the ${valueComment} with id empty or null`, true);
       return;
     }
-    const sensesAndConditionDataList = <AtcvEffect[]>await this.getAllDefaultSensesAndConditions(null);
+    const sensesAndConditionDataList = <AtcvEffect[]>await (this as typeof API).getAllDefaultSensesAndConditions(null);
     const senseAlreadyExistsId = <AtcvEffect>(
       sensesAndConditionDataList.find(
         (a: AtcvEffect) => a.visionId == senseDataIdOrName || a.visionName == senseDataIdOrName,

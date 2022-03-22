@@ -2,7 +2,7 @@ import { EffectSupport } from './../effects/effect';
 import { EffectChangeData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/data.mjs/effectChangeData';
 import CONSTANTS from '../constants.js';
 import API from '../api.js';
-import { canvas, game } from '../settings';
+import { canvas, ConditionalVisibilityModuleData, game } from '../settings';
 import {
   AtcvEffect,
   AtcvEffectSenseFlags,
@@ -31,6 +31,10 @@ export function isGMConnected(): boolean {
 export function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
+
+// ================================
+// Logger utility
+// ================================
 
 // export let debugEnabled = 0;
 // 0 = none, warnings = 1, debug = 2, all = 3
@@ -100,6 +104,8 @@ export function dialogWarning(message, icon = 'fas fa-exclamation-triangle') {
         <br><br>${message}
     </p>`;
 }
+
+// =========================================================================================
 
 export function cleanUpString(stringToCleanUp: string) {
   // regex expression to match all non-alphanumeric characters in string
@@ -937,7 +943,7 @@ export async function prepareActiveEffectForConditionalVisibility(
       // TODO why this failed to return ???
       //if (await API.hasEffectAppliedOnToken(<string>sourceToken.id, effectNameToCheckOnActor, true)) {
       if (activeEffectFounded) {
-        const actve = retrieveAtcvVisionLevelValueFromActiveEffect(activeEffectFounded.data?.changes || []);
+        const actve = retrieveAtcvVisionLevelValueFromActiveEffect(sourceToken,activeEffectFounded.data?.changes || []);
         if (sense.visionLevelValue != actve) {
           //@ts-ignore
           const data = <ActiveEffectData>duplicateExtended(activeEffectFounded.data);
@@ -969,7 +975,7 @@ export async function prepareActiveEffectForConditionalVisibility(
       // TODO why this failed to return ???
       //if (await API.hasEffectAppliedOnToken(<string>sourceToken.id, effectNameToCheckOnActor, true)) {
       if (activeEffectFounded) {
-        const actve = retrieveAtcvVisionLevelValueFromActiveEffect(activeEffectFounded.data?.changes || []);
+        const actve = retrieveAtcvVisionLevelValueFromActiveEffect(sourceToken,activeEffectFounded.data?.changes || []);
         if (sense.visionLevelValue != actve) {
           await API.removeEffectFromIdOnToken(<string>sourceToken.id, <string>activeEffectFounded.id);
         }
@@ -990,7 +996,7 @@ export async function prepareActiveEffectForConditionalVisibility(
       // TODO why this failed to return ???
       //if (await API.hasEffectAppliedOnToken(<string>sourceToken.id, effectNameToCheckOnActor, true)) {
       if (activeEffectFounded) {
-        const actve = retrieveAtcvVisionLevelValueFromActiveEffect(activeEffectFounded.data?.changes || []);
+        const actve = retrieveAtcvVisionLevelValueFromActiveEffect(sourceToken,activeEffectFounded.data?.changes || []);
         if (condition.visionLevelValue != actve) {
           //@ts-ignore
           const data = <ActiveEffectData>duplicateExtended(activeEffectFounded.data);
@@ -1026,7 +1032,7 @@ export async function prepareActiveEffectForConditionalVisibility(
       // TODO why this failed to return ???
       //if (await API.hasEffectAppliedOnToken(<string>sourceToken.id, effectNameToCheckOnActor, true)) {
       if (activeEffectFounded) {
-        const actve = retrieveAtcvVisionLevelValueFromActiveEffect(activeEffectFounded.data?.changes || []);
+        const actve = retrieveAtcvVisionLevelValueFromActiveEffect(sourceToken,activeEffectFounded.data?.changes || []);
         if (condition.visionLevelValue != actve) {
           await API.removeEffectFromIdOnToken(<string>sourceToken.id, <string>activeEffectFounded.id);
         }
@@ -1120,15 +1126,15 @@ export async function prepareActiveEffectForConditionalVisibility(
 //   return statusEffects;
 // }
 
-export function getSensesFromToken(tokenDocument: TokenDocument, filterValueNoZero = false): AtcvEffect[] {
+export function getSensesFromToken(tokenDocument: TokenDocument|null, filterValueNoZero = false): AtcvEffect[] {
   return _getCVFromToken(tokenDocument, true, filterValueNoZero);
 }
 
-export function getConditionsFromToken(tokenDocument: TokenDocument, filterValueNoZero = false): AtcvEffect[] {
+export function getConditionsFromToken(tokenDocument: TokenDocument|null, filterValueNoZero = false): AtcvEffect[] {
   return _getCVFromToken(tokenDocument, false, filterValueNoZero);
 }
 
-function _getCVFromToken(tokenDocument: TokenDocument, isSense: boolean, filterValueNoZero = false): AtcvEffect[] {
+function _getCVFromToken(tokenDocument: TokenDocument|null, isSense: boolean, filterValueNoZero = false): AtcvEffect[] {
   const statusEffects: AtcvEffect[] = [];
 
   // If not token is find we go back to the default preset list...
@@ -1146,7 +1152,8 @@ function _getCVFromToken(tokenDocument: TokenDocument, isSense: boolean, filterV
         return isStringEquals(e.visionId, senseData.id);
       });
       if (!alreadyPresent) {
-        const atcvEffect = AtcvEffect.fromSenseData(senseData, 0, isSense);
+        senseData.conditionType = isSense ? 'sense' : 'condition';
+        const atcvEffect = AtcvEffect.fromSenseData(senseData, 0);
         statusEffects.push(atcvEffect);
       }
     }
@@ -1175,6 +1182,7 @@ function _getCVFromToken(tokenDocument: TokenDocument, isSense: boolean, filterV
       continue;
     }
     const atcvEffectTmp = retrieveAtcvEffectFromActiveEffect(
+      tokenDocument,
       effectEntity.data.changes,
       effectNameToSet,
       <string>effectEntity.data.icon,
@@ -1229,7 +1237,8 @@ function _getCVFromToken(tokenDocument: TokenDocument, isSense: boolean, filterV
       return isStringEquals(e.visionId, senseData.id);
     });
     if (!alreadyPresent) {
-      const atcvEffect = AtcvEffect.fromSenseData(senseData, 0, isSense);
+      senseData.conditionType = isSense ? 'sense' : 'condition';
+      const atcvEffect = AtcvEffect.fromSenseData(senseData, 0);
       statusEffectsFinal.push(atcvEffect);
     } else {
       const atcvEffect = AtcvEffect.mergeWithSensedataDefault(alreadyPresent);
@@ -1372,11 +1381,13 @@ function _getCVFromToken(token: Token, isSense: boolean, filterValueNoZero = fal
 }
 */
 export function retrieveAtcvEffectFromActiveEffect(
+  tokenDocument:TokenDocument,
   effectChanges: EffectChangeData[],
   effectName: string,
   effectIcon: string,
   isSense: boolean | undefined = undefined,
 ): AtcvEffect {
+
   const atcvEffect: AtcvEffect = <any>{};
 
   if (!atcvEffect.visionName) {
@@ -1392,7 +1403,35 @@ export function retrieveAtcvEffectFromActiveEffect(
     if (change.key.startsWith('ATCV.') && !change.key.startsWith('ATCV.condition') && change.value) {
       if (atcvEffect.visionId === null || atcvEffect.visionId === undefined) {
         atcvEffect.visionId = change.key.slice(5);
-        atcvEffect.visionLevelValue = Number(change.value);
+        let myvalue = 0;
+        if (!change.value) {
+          // Ignore ???
+          if(change.value === '0'){
+            myvalue = 0;
+          }else{
+            myvalue = 1;
+          }
+        }else{
+          if(change.value && String(change.value).includes('data.')){
+            //myvalue =  Number(getProperty(<ActorData>tokenDocument?.actor?.data,String(change.value)));
+            // Retrieve the formula.
+            const formula = change.value;
+            // Replace shorthand.
+            // formula = formula
+            //   .replace(/@abil\./g, '@abilities.')
+            //   .replace(/@attr\./g, '@attributes.');
+            // Roll the dice!
+            const data = tokenDocument.actor ? tokenDocument.actor.getRollData() : {};
+            const r = new Roll(formula, data);
+            myvalue = r.total || 1;
+          }else{
+            myvalue = Number(change.value);
+          }
+          if(isNaN(myvalue)){
+            myvalue = 1;
+          }
+        }
+        atcvEffect.visionLevelValue = myvalue;
       }
     } else if (isStringEquals(change.key, 'ATCV.conditionElevation') && change.value) {
       if (atcvEffect.visionElevation === null || atcvEffect.visionElevation === undefined) {
@@ -1495,19 +1534,30 @@ export function retrieveAtcvEffectFromActiveEffect(
  * @param effectChanges
  * @returns
  */
-export function retrieveAtcvVisionLevelValueFromActiveEffect(effectChanges: EffectChangeData[]): number {
+export function retrieveAtcvVisionLevelValueFromActiveEffect(token:Token,effectChanges: EffectChangeData[]): number {
   let atcvValue = 0;
   const effectEntityChanges = effectChanges.sort((a, b) => <number>a.priority - <number>b.priority);
-  const atcvValueChange = effectEntityChanges.find((aee) => {
+  const atcvValueChange = <EffectChangeData>effectEntityChanges.find((aee) => {
     if (aee.key.startsWith('ATCV.') && !aee.key.startsWith('ATCV.condition') && aee.value) {
       return aee;
     }
   });
   if (!atcvValueChange) {
     // Ignore ???
-    return 0;
+    if(atcvValueChange === '0'){
+      return 0;
+    }else{
+      return 1;
+    }
   }
-  atcvValue = Number(atcvValueChange.value);
+  if(atcvValueChange && String(atcvValueChange.value).startsWith('data.')){
+    atcvValue = Number(getProperty(<ActorData>token.document?.actor?.data,String(atcvValueChange.value)));
+  }else{
+    atcvValue = Number(atcvValueChange.value);
+  }
+  if(isNaN(atcvValue)){
+    return 1;
+  }
   return atcvValue;
 }
 
@@ -1764,7 +1814,7 @@ export async function toggleStealth(event) {
                   await selectedToken.document.unsetFlag(CONSTANTS.MODULE_NAME, senseId);
                 } else {
                   //await selectedToken.document.setFlag(CONSTANTS.MODULE_NAME, senseId, valStealthRoll);
-                  const atcvEffectFlagData = AtcvEffect.fromEffect(effect);
+                  const atcvEffectFlagData = AtcvEffect.fromEffect(this.object.document,effect);
                   atcvEffectFlagData.visionLevelValue = valStealthRoll;
                   await selectedToken.document.setFlag(CONSTANTS.MODULE_NAME, senseId, atcvEffectFlagData);
                 }
@@ -1780,7 +1830,7 @@ export async function toggleStealth(event) {
                   await selectedToken.document.unsetFlag(CONSTANTS.MODULE_NAME, conditionId);
                 } else {
                   //await selectedToken.document.setFlag(CONSTANTS.MODULE_NAME, conditionId, valStealthRoll);
-                  const atcvEffectFlagData = AtcvEffect.fromEffect(effect);
+                  const atcvEffectFlagData = AtcvEffect.fromEffect(this.object.document,effect);
                   atcvEffectFlagData.visionLevelValue = valStealthRoll;
                   await selectedToken.document.setFlag(CONSTANTS.MODULE_NAME, conditionId, atcvEffectFlagData);
                 }

@@ -605,7 +605,7 @@ Hooks.on('renderChatMessage', async (message: ChatMessage, html: JQuery<HTMLElem
               await API.removeEffectOnToken(selectedToken.id, i18n(<string>effect?.name));
               await selectedToken.document.unsetFlag(CONSTANTS.MODULE_NAME, senseId);
             } else {
-              const atcvEffectFlagData = AtcvEffect.fromEffect(effect);
+              const atcvEffectFlagData = AtcvEffect.fromEffect(selectedToken.document,effect);
               atcvEffectFlagData.visionLevelValue = valStealthRoll;
               await selectedToken.document.setFlag(CONSTANTS.MODULE_NAME, senseId, atcvEffectFlagData);
               //await API.addEffectConditionalVisibilityOnToken(selectedToken.id,atcvEffectFlagData, false);
@@ -622,7 +622,7 @@ Hooks.on('renderChatMessage', async (message: ChatMessage, html: JQuery<HTMLElem
               await API.removeEffectOnToken(selectedToken.id, i18n(<string>effect?.name));
               await selectedToken.document.unsetFlag(CONSTANTS.MODULE_NAME, conditionId);
             } else {
-              const atcvEffectFlagData = AtcvEffect.fromEffect(effect);
+              const atcvEffectFlagData = AtcvEffect.fromEffect(selectedToken.document,effect);
               atcvEffectFlagData.visionLevelValue = valStealthRoll;
               await selectedToken.document.setFlag(CONSTANTS.MODULE_NAME, conditionId, atcvEffectFlagData);
               //await API.addEffectConditionalVisibilityOnToken(selectedToken.id,atcvEffectFlagData, false)
@@ -687,7 +687,7 @@ Hooks.on('renderChatMessage', async (message: ChatMessage, html: JQuery<HTMLElem
               await API.removeEffectOnToken(selectedToken.id, i18n(<string>effect?.name));
               await selectedToken.document.unsetFlag(CONSTANTS.MODULE_NAME, senseId);
             } else {
-              const atcvEffectFlagData = AtcvEffect.fromEffect(effect);
+              const atcvEffectFlagData = AtcvEffect.fromEffect(selectedToken.document,effect);
               atcvEffectFlagData.visionLevelValue = valStealthRoll;
               await selectedToken.document.setFlag(CONSTANTS.MODULE_NAME, senseId, atcvEffectFlagData);
             }
@@ -703,7 +703,7 @@ Hooks.on('renderChatMessage', async (message: ChatMessage, html: JQuery<HTMLElem
               await API.removeEffectOnToken(selectedToken.id, i18n(<string>effect?.name));
               await selectedToken.document.unsetFlag(CONSTANTS.MODULE_NAME, conditionId);
             } else {
-              const atcvEffectFlagData = AtcvEffect.fromEffect(effect);
+              const atcvEffectFlagData = AtcvEffect.fromEffect(selectedToken.document,effect);
               atcvEffectFlagData.visionLevelValue = valStealthRoll;
               await selectedToken.document.setFlag(CONSTANTS.MODULE_NAME, conditionId, atcvEffectFlagData);
             }

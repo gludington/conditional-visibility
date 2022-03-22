@@ -12,7 +12,6 @@ import {
   retrieveAtcvEffectFromActiveEffect,
   isStringEquals,
 } from './lib/lib';
-
 export class AtcvEffect {
   // Effect Base
   visionId: string;
@@ -32,22 +31,34 @@ export class AtcvEffect {
   visionDistanceValue: number | undefined;
   visionType: string;
 
-  static fromSenseData(senseData: SenseData, visionLevelValue: number, isSense: boolean) {
+  static fromSenseData(senseData: SenseData, visionLevelValue: number) {
+
+    let isSense = false;
+    if(senseData.conditionType === 'sense'){
+      isSense = true;
+    }else if(senseData.conditionType === 'condition'){
+      isSense = false;
+    }else{
+      isSense = !!API.SENSES.find((senseData) => {
+        return isStringEquals(senseData.id, res.visionId) || isStringEquals(senseData.name, res.visionName);
+      });
+    }
+
     const res = new AtcvEffect();
     res.visionId = senseData.id;
     res.visionName = i18n(senseData.name);
     res.visionPath = senseData.path;
     res.visionIcon = senseData.img;
 
-    res.visionLevelValue = visionLevelValue;
+    res.visionLevelValue = visionLevelValue ?? 1;
     // res.visionLevelMinIndex = senseData.conditionLevelMinIndex;
     // res.visionLevelMaxIndex = senseData.conditionLevelMaxIndex;
     res.visionElevation = senseData.conditionElevation;
     res.visionTargets = senseData.conditionTargets;
     res.visionSources = senseData.conditionSources;
-    res.visionTargetImage = '';
-    res.visionDistanceValue = undefined;
-    res.visionType = isSense ? 'sense' : 'condition';
+    res.visionTargetImage = senseData.conditionTargetImage;
+    res.visionDistanceValue = senseData.conditionDistance;
+    res.visionType = senseData.conditionType ? senseData.conditionType : (isSense ? 'sense' : 'condition');
     return res;
   }
 
@@ -259,12 +270,12 @@ export class AtcvEffect {
     return atcvChanges;
   }
 
-  static fromEffect(effect: Effect) {
+  static fromEffect(tokenDocument:TokenDocument, effect: Effect) {
     effect.atcvChanges = AtcvEffect.mergeEffectWithSensedataDefault(effect);
 
     const effectChanges: EffectChangeData[] = EffectSupport._handleIntegrations(effect) || [];
 
-    let res = retrieveAtcvEffectFromActiveEffect(effectChanges, i18n(effect.name), effect.icon, undefined);
+    let res = retrieveAtcvEffectFromActiveEffect(tokenDocument, effectChanges, i18n(effect.name), effect.icon, undefined);
     /*
     let sensesOrConditions: SenseData[] = [];
     sensesOrConditions.push(...API.SENSES);
@@ -280,10 +291,11 @@ export class AtcvEffect {
     return res;
   }
 
-  static fromActiveEffect(activeEffect: ActiveEffect) {
+  static fromActiveEffect(tokenDocument:TokenDocument,activeEffect: ActiveEffect) {
     //const effectChanges = activeEffect.data.changes;
     const effectChanges = AtcvEffect.mergeActiveEffectWithSensedataDefault(activeEffect);
     let res = retrieveAtcvEffectFromActiveEffect(
+      tokenDocument,
       effectChanges,
       i18n(activeEffect.data.label),
       <string>activeEffect.data.icon,

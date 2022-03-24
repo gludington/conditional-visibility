@@ -1986,6 +1986,7 @@ export function isTokenInRange(token: Token, object: Tile | Drawing | AmbientLig
     return elevation <= rangeTop && elevation >= rangeBottom;
   } else {
     // TODO maybe active aura integration
+    return true;
   }
 }
 

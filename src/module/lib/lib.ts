@@ -356,6 +356,9 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
   if (!sourceToken || !targetToken) {
     return true;
   }
+  if(targetToken.data.hidden){
+    return false;
+  }
 
   // ===============================================
   // 0 - Checkout the ownership of the target and the disposition of the target
@@ -511,7 +514,7 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
   // 8) Check again for _passive perception vs passive stealth_ like on point 4) this time we use the hidden active effect like the stealth passive on the target token...
   // THIS WILL BE CHECK ONLY IF ONE CONDITION IS PRESENT ON THE TARGET AND THE CONDITION TYPE IS 'HIDDEN'
   if (game.settings.get(CONSTANTS.MODULE_NAME, 'autoPassivePerception')) {
-    if (sourceVisionLevels.length === 0) {
+    //if (sourceVisionLevels.length === 0) {
       let isTheCaseWhenOnlyTheHiddenConditionIsPresentOnTarget = true;
       let currentHiddenValue = 0;
       for (const targetVisionLevel of targetVisionLevels) {
@@ -543,7 +546,7 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
           return true;
         }
       }
-    }
+    //}
   }
   debug(
     `(8) Is the case when only the hidden condition is present on target: Is false, target ${

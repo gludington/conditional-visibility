@@ -204,9 +204,9 @@ const module = {
         warn(`Can't find a senseData for the sense '${senseOrConditionIdKey}'`, true);
       } else {
         // const effects = ConditionalVisibilityEffectDefinitions.all(senseOrConditionValue, atcvEffectFlagData.visionLevelValue);
-        if(senseOrConditionValue && <number>senseOrConditionValue > 0){
+        if (senseOrConditionValue && <number>senseOrConditionValue > 0) {
           atcvEffectFlagData.visionDistanceValue = senseOrConditionValue;
-          if(!atcvEffectFlagData.visionLevelValue || atcvEffectFlagData.visionLevelValue === 0){
+          if (!atcvEffectFlagData.visionLevelValue || atcvEffectFlagData.visionLevelValue === 0) {
             atcvEffectFlagData.visionLevelValue = 1;
           }
           await sourceToken?.document.setFlag(CONSTANTS.MODULE_NAME, senseOrConditionIdKey, atcvEffectFlagData);
@@ -232,14 +232,16 @@ const module = {
         if (senseOrConditionIdKey.includes('-=')) {
           return;
         }
-        if(!senseOrConditionValue.visionLevelValue 
-          || isNaN(senseOrConditionValue.visionLevelValue)
-          || senseOrConditionValue.visionLevelValue === undefined
-          || senseOrConditionValue.visionLevelValue === null){
-            const currentValueOfFlag = Number(
-              (<AtcvEffect>document.getFlag(CONSTANTS.MODULE_NAME, senseOrConditionIdKey))?.visionLevelValue || 1,
-            );
-            senseOrConditionValue.visionLevelValue = currentValueOfFlag;
+        if (
+          !senseOrConditionValue.visionLevelValue ||
+          isNaN(senseOrConditionValue.visionLevelValue) ||
+          senseOrConditionValue.visionLevelValue === undefined ||
+          senseOrConditionValue.visionLevelValue === null
+        ) {
+          const currentValueOfFlag = Number(
+            (<AtcvEffect>document.getFlag(CONSTANTS.MODULE_NAME, senseOrConditionIdKey))?.visionLevelValue || 1,
+          );
+          senseOrConditionValue.visionLevelValue = currentValueOfFlag;
         }
         const senseOrConditionId = senseOrConditionIdKey; //senseOrConditionIdKey.replace('-=', '');
         if (

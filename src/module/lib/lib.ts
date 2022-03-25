@@ -948,45 +948,39 @@ export async function prepareActiveEffectForConditionalVisibility(
           activeEffectFounded.data?.changes || [],
         );
         // if (sense.visionLevelValue != actve) {
-          //@ts-ignore
-          const data = <ActiveEffectData>duplicateExtended(activeEffectFounded.data);
-          for (const aee of data?.changes) {
-            if (aee.key.startsWith('ATCV.')){
-              if (!aee.key.startsWith('ATCV.condition') && sense.visionLevelValue) {
-                aee.value = String(sense.visionLevelValue);
-              }
-              else if(aee.key.startsWith('ATCV.conditionElevation') && sense.visionElevation){
-                aee.value = String(sense.visionElevation);
-              }
-              else if(aee.key.startsWith('ATCV.conditionDistance') && sense.visionDistanceValue){
-                aee.value = String(sense.visionDistanceValue);
-              }
-              else if(aee.key.startsWith('ATCV.conditionTargets') && sense.visionTargets){
-                aee.value = sense.visionTargets.join(',');
-              }
-              else if(aee.key.startsWith('ATCV.conditionSources') && sense.visionSources){
-                aee.value = sense.visionSources.join(',');
-              }
-              else if(aee.key.startsWith('ATCV.conditionTargetImage') && sense.visionTargetImage){
-                aee.value = sense.visionTargetImage;
-              }
-              else if(aee.key.startsWith('ATCV.conditionType') && sense.visionType){
-                aee.value = sense.visionType;
-              }
+        //@ts-ignore
+        const data = <ActiveEffectData>duplicateExtended(activeEffectFounded.data);
+        for (const aee of data?.changes) {
+          if (aee.key.startsWith('ATCV.')) {
+            if (!aee.key.startsWith('ATCV.condition') && sense.visionLevelValue) {
+              aee.value = String(sense.visionLevelValue);
+            } else if (aee.key.startsWith('ATCV.conditionElevation') && sense.visionElevation) {
+              aee.value = String(sense.visionElevation);
+            } else if (aee.key.startsWith('ATCV.conditionDistance') && sense.visionDistanceValue) {
+              aee.value = String(sense.visionDistanceValue);
+            } else if (aee.key.startsWith('ATCV.conditionTargets') && sense.visionTargets) {
+              aee.value = sense.visionTargets.join(',');
+            } else if (aee.key.startsWith('ATCV.conditionSources') && sense.visionSources) {
+              aee.value = sense.visionSources.join(',');
+            } else if (aee.key.startsWith('ATCV.conditionTargetImage') && sense.visionTargetImage) {
+              aee.value = sense.visionTargetImage;
+            } else if (aee.key.startsWith('ATCV.conditionType') && sense.visionType) {
+              aee.value = sense.visionType;
             }
           }
-          if (data?.changes.length > 0) {
-            await API.updateActiveEffectFromIdOnToken(
-              <string>sourceToken.id,
-              <string>activeEffectFounded.id,
-              undefined,
-              undefined,
-              data,
-            );
-            if (sense) {
-              mapToUpdate.set(sense.visionId, sense);
-            }
+        }
+        if (data?.changes.length > 0) {
+          await API.updateActiveEffectFromIdOnToken(
+            <string>sourceToken.id,
+            <string>activeEffectFounded.id,
+            undefined,
+            undefined,
+            data,
+          );
+          if (sense) {
+            mapToUpdate.set(sense.visionId, sense);
           }
+        }
         // }
       } else {
         const atcvEffcet = await API.addEffectConditionalVisibilityOnToken(<string>sourceToken.id, sense, false);
@@ -1027,45 +1021,39 @@ export async function prepareActiveEffectForConditionalVisibility(
           activeEffectFounded.data?.changes || [],
         );
         // if (condition.visionLevelValue != actve) {
-          //@ts-ignore
-          const data = <ActiveEffectData>duplicateExtended(activeEffectFounded.data);
-          for (const aee of data?.changes) {
-            if (aee.key.startsWith('ATCV.')){
-              if (!aee.key.startsWith('ATCV.condition') && condition.visionLevelValue) {
-                aee.value = String(condition.visionLevelValue);
-              }
-              else if(aee.key.startsWith('ATCV.conditionElevation') && condition.visionElevation){
-                aee.value = String(condition.visionElevation);
-              }
-              else if(aee.key.startsWith('ATCV.conditionDistance') && condition.visionDistanceValue){
-                aee.value = String(condition.visionDistanceValue);
-              }
-              else if(aee.key.startsWith('ATCV.conditionTargets') && condition.visionTargets){
-                aee.value = condition.visionTargets.join(',');
-              }
-              else if(aee.key.startsWith('ATCV.conditionSources') && condition.visionSources){
-                aee.value = condition.visionSources.join(',');
-              }
-              else if(aee.key.startsWith('ATCV.conditionTargetImage') && condition.visionTargetImage){
-                aee.value = condition.visionTargetImage;
-              }
-              else if(aee.key.startsWith('ATCV.conditionType') && condition.visionType){
-                aee.value = condition.visionType;
-              }
+        //@ts-ignore
+        const data = <ActiveEffectData>duplicateExtended(activeEffectFounded.data);
+        for (const aee of data?.changes) {
+          if (aee.key.startsWith('ATCV.')) {
+            if (!aee.key.startsWith('ATCV.condition') && condition.visionLevelValue) {
+              aee.value = String(condition.visionLevelValue);
+            } else if (aee.key.startsWith('ATCV.conditionElevation') && condition.visionElevation) {
+              aee.value = String(condition.visionElevation);
+            } else if (aee.key.startsWith('ATCV.conditionDistance') && condition.visionDistanceValue) {
+              aee.value = String(condition.visionDistanceValue);
+            } else if (aee.key.startsWith('ATCV.conditionTargets') && condition.visionTargets) {
+              aee.value = condition.visionTargets.join(',');
+            } else if (aee.key.startsWith('ATCV.conditionSources') && condition.visionSources) {
+              aee.value = condition.visionSources.join(',');
+            } else if (aee.key.startsWith('ATCV.conditionTargetImage') && condition.visionTargetImage) {
+              aee.value = condition.visionTargetImage;
+            } else if (aee.key.startsWith('ATCV.conditionType') && condition.visionType) {
+              aee.value = condition.visionType;
             }
           }
-          if (data?.changes.length > 0) {
-            await API.updateActiveEffectFromIdOnToken(
-              <string>sourceToken.id,
-              <string>activeEffectFounded.id,
-              undefined,
-              undefined,
-              data,
-            );
-            if (condition) {
-              mapToUpdate.set(condition.visionId, condition);
-            }
+        }
+        if (data?.changes.length > 0) {
+          await API.updateActiveEffectFromIdOnToken(
+            <string>sourceToken.id,
+            <string>activeEffectFounded.id,
+            undefined,
+            undefined,
+            data,
+          );
+          if (condition) {
+            mapToUpdate.set(condition.visionId, condition);
           }
+        }
         // }
       } else {
         const atcvEffcet = await API.addEffectConditionalVisibilityOnToken(

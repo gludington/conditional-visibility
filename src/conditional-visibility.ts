@@ -130,7 +130,8 @@ Hooks.once('libChangelogsReady', function () {
   libChangelogs.register(
     CONSTANTS.MODULE_NAME,
     `
-    - Remove all forEach for performance
+    - Apply integration with 'data.attributes.sense' for dnd5 systerm
+    - Some bug fix
     `,
     'minor',
   );

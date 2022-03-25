@@ -726,16 +726,18 @@ const API = {
     }
   },
 
-  async setCondition(token: Token, conditionId: string, disabled: boolean): Promise<AtcvEffect | undefined> {
-    const allSensesAndConditionsData: SenseData[] = [];
-    allSensesAndConditionsData.push(...API.SENSES);
-    allSensesAndConditionsData.push(...API.CONDITIONS);
-    const senseDataEffect = allSensesAndConditionsData.find((senseData) => {
-      return isStringEquals(senseData.id, conditionId);
-    });
-    if (senseDataEffect) {
-      const atcvEffect = AtcvEffect.fromSenseData(senseDataEffect, 1);
-      return (this as typeof API).addEffectConditionalVisibilityOnToken(token.id, atcvEffect, disabled);
+  async setCondition(tokens: Token[], conditionId: string, disabled: boolean): Promise<AtcvEffect | undefined> {
+    for (const token of tokens) {
+      const allSensesAndConditionsData: SenseData[] = [];
+      allSensesAndConditionsData.push(...API.SENSES);
+      allSensesAndConditionsData.push(...API.CONDITIONS);
+      const senseDataEffect = allSensesAndConditionsData.find((senseData) => {
+        return isStringEquals(senseData.id, conditionId);
+      });
+      if (senseDataEffect) {
+        const atcvEffect = AtcvEffect.fromSenseData(senseDataEffect, 1);
+        return (this as typeof API).addEffectConditionalVisibilityOnToken(token.id, atcvEffect, disabled);
+      }
     }
   },
 
@@ -807,16 +809,14 @@ const API = {
           dfredEffect.atcvChanges = [];
         }
         changesTmp = EffectSupport._handleIntegrations(dfredEffect);
-        changesTmp = changesTmp.filter((c) => !c.key.startsWith(`data.`))
-        if(senseDataEffect.visionDistanceValue  && senseDataEffect.visionDistanceValue > 0){
-          changesTmp.push(
-            {
-              key: 'ATCV.conditionDistance',
-              mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
-              value: `${senseDataEffect.visionDistanceValue}`,
-              priority: 5,
-            }
-          );
+        changesTmp = changesTmp.filter((c) => !c.key.startsWith(`data.`));
+        if (senseDataEffect.visionDistanceValue && senseDataEffect.visionDistanceValue > 0) {
+          changesTmp.push({
+            key: 'ATCV.conditionDistance',
+            mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+            value: `${senseDataEffect.visionDistanceValue}`,
+            priority: 5,
+          });
         }
         for (const obj of changesTmp) {
           if (obj.key === 'ATCV.' + senseDataEffect.visionId && obj.value != String(senseDataEffect.visionLevelValue)) {
@@ -882,16 +882,14 @@ const API = {
             priority: 5,
           },
         ];
-        changesTmp = changesTmp.filter((c) => !c.key.startsWith(`data.`))
-        if(senseDataEffect.visionDistanceValue && senseDataEffect.visionDistanceValue > 0){
-          changesTmp.push(
-            {
-              key: 'ATCV.conditionDistance',
-              mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
-              value: `${senseDataEffect.visionDistanceValue}`,
-              priority: 5,
-            }
-          );
+        changesTmp = changesTmp.filter((c) => !c.key.startsWith(`data.`));
+        if (senseDataEffect.visionDistanceValue && senseDataEffect.visionDistanceValue > 0) {
+          changesTmp.push({
+            key: 'ATCV.conditionDistance',
+            mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+            value: `${senseDataEffect.visionDistanceValue}`,
+            priority: 5,
+          });
         }
         effect = EffectSupport.buildDefault(
           senseOrCondition.visionId,
@@ -912,16 +910,14 @@ const API = {
             priority: 5,
           },
         ];
-        changesTmp = changesTmp.filter((c) => !c.key.startsWith(`data.`))
-        if(senseDataEffect.visionDistanceValue && senseDataEffect.visionDistanceValue > 0){
-          changesTmp.push(
-            {
-              key: 'ATCV.conditionDistance',
-              mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
-              value: `${senseDataEffect.visionDistanceValue}`,
-              priority: 5,
-            }
-          );
+        changesTmp = changesTmp.filter((c) => !c.key.startsWith(`data.`));
+        if (senseDataEffect.visionDistanceValue && senseDataEffect.visionDistanceValue > 0) {
+          changesTmp.push({
+            key: 'ATCV.conditionDistance',
+            mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+            value: `${senseDataEffect.visionDistanceValue}`,
+            priority: 5,
+          });
         }
         effect = EffectSupport.buildDefault(
           senseDataEffect.visionId,

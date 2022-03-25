@@ -706,7 +706,13 @@ const API = {
 
   async unHide(tokens: Token[]) {
     for (const token of tokens) {
-      await token.document.unsetFlag(CONSTANTS.MODULE_NAME, AtcvEffectConditionFlags.HIDDEN);
+      const sourceVisionLevels = getConditionsFromToken(token.document, true) ?? [];
+      for (const sourceVision of sourceVisionLevels) {
+        if (isStringEquals(sourceVision.visionId, AtcvEffectConditionFlags.HIDDEN)) {
+          const atcvEffect = sourceVision; //AtcvEffect.fromSenseData(senseDataEffect, 1);
+          await token.document.unsetFlag(CONSTANTS.MODULE_NAME, AtcvEffectConditionFlags.HIDDEN);
+        }
+      }
     }
   },
 
@@ -726,17 +732,20 @@ const API = {
     }
   },
 
-  async setCondition(tokens: Token[], conditionId: string, disabled: boolean): Promise<AtcvEffect | undefined> {
+  async setCondition(tokens: Token[], conditionId: string, disabled: boolean): Promise<void> {
     for (const token of tokens) {
-      const allSensesAndConditionsData: SenseData[] = [];
-      allSensesAndConditionsData.push(...API.SENSES);
-      allSensesAndConditionsData.push(...API.CONDITIONS);
-      const senseDataEffect = allSensesAndConditionsData.find((senseData) => {
-        return isStringEquals(senseData.id, conditionId);
-      });
-      if (senseDataEffect) {
-        const atcvEffect = AtcvEffect.fromSenseData(senseDataEffect, 1);
-        return (this as typeof API).addEffectConditionalVisibilityOnToken(token.id, atcvEffect, disabled);
+      // const allSensesAndConditionsData: SenseData[] = [];
+      // allSensesAndConditionsData.push(...API.SENSES);
+      // allSensesAndConditionsData.push(...API.CONDITIONS);
+      // const senseDataEffect = allSensesAndConditionsData.find((senseData) => {
+      //   return isStringEquals(senseData.id, conditionId);
+      // });
+      const sourceVisionLevels = getConditionsFromToken(token.document, true) ?? [];
+      for (const sourceVision of sourceVisionLevels) {
+        if (isStringEquals(sourceVision.visionId, conditionId)) {
+          const atcvEffect = sourceVision; //AtcvEffect.fromSenseData(senseDataEffect, 1);
+          await token?.document.setFlag(CONSTANTS.MODULE_NAME, conditionId, atcvEffect);
+        }
       }
     }
   },

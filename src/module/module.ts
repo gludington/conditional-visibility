@@ -108,6 +108,12 @@ export const readyHooks = async (): Promise<void> => {
     module.updateToken(document, change, options, userId);
   });
 
+  Hooks.on('updateActor', (actor: Actor, change, options, userId) => {
+    if (actor.token && getProperty(change, `data.attributes.senses`)) {
+      module.updateActor(<TokenDocument>actor.token, change, options, userId);
+    }
+  });
+
   Hooks.on('addActiveEffect', async (effect, options) => {
     module.updateActiveEffect(effect, options, false);
   });
@@ -176,6 +182,38 @@ const module = {
       visionTab.append(extraSenses);
     });
   },
+  async updateActor(document: TokenDocument, change, options, userId) {
+    const sourceToken = <Token>document.object;
+    if (!sourceToken) {
+      return;
+    }
+    const isPlayerOwned = <boolean>document.isOwner;
+    if (!game.user?.isGM && !isPlayerOwned) {
+      return;
+    }
+    // const sourceVisionCapabilities: VisionCapabilities = new VisionCapabilities(<Token>document.object);
+    // TODO for now only dnd5e
+    const p = getProperty(change, `data.attributes.senses`);
+    for (const key in p) {
+      const senseOrConditionIdKey = key;
+      const senseOrConditionValue = <number>p[key];
+      const atcvEffectFlagData = API.getAllDefaultSensesAndConditions(sourceToken).find((senseData: AtcvEffect) => {
+        return isStringEquals(senseData.visionId, senseOrConditionIdKey);
+      });
+      if (!atcvEffectFlagData) {
+        warn(`Can't find a senseData for the sense '${senseOrConditionIdKey}'`, true);
+      } else {
+        // const effects = ConditionalVisibilityEffectDefinitions.all(senseOrConditionValue, atcvEffectFlagData.visionLevelValue);
+        if(senseOrConditionValue && <number>senseOrConditionValue > 0){
+          atcvEffectFlagData.visionDistanceValue = senseOrConditionValue;
+          if(!atcvEffectFlagData.visionLevelValue || atcvEffectFlagData.visionLevelValue === 0){
+            atcvEffectFlagData.visionLevelValue = 1;
+          }
+          await sourceToken?.document.setFlag(CONSTANTS.MODULE_NAME, senseOrConditionIdKey, atcvEffectFlagData);
+        }
+      }
+    } // Fine for
+  },
   async updateToken(document: TokenDocument, change, options, userId) {
     const sourceToken = <Token>document.object;
     if (!sourceToken) {
@@ -194,9 +232,15 @@ const module = {
         if (senseOrConditionIdKey.includes('-=')) {
           return;
         }
-        const currentValueOfFlag = Number(
-          (<AtcvEffect>document.getFlag(CONSTANTS.MODULE_NAME, senseOrConditionIdKey))?.visionLevelValue || 0,
-        );
+        if(!senseOrConditionValue.visionLevelValue 
+          || isNaN(senseOrConditionValue.visionLevelValue)
+          || senseOrConditionValue.visionLevelValue === undefined
+          || senseOrConditionValue.visionLevelValue === null){
+            const currentValueOfFlag = Number(
+              (<AtcvEffect>document.getFlag(CONSTANTS.MODULE_NAME, senseOrConditionIdKey))?.visionLevelValue || 1,
+            );
+            senseOrConditionValue.visionLevelValue = currentValueOfFlag;
+        }
         const senseOrConditionId = senseOrConditionIdKey; //senseOrConditionIdKey.replace('-=', '');
         if (
           senseOrConditionValue?.visionLevelValue &&

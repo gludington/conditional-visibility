@@ -64,6 +64,7 @@ This module uses the [ATE](https://github.com/kandashi/Active-Token-Lighting) li
 - This module used many feature of the [Dfred convenient effects](https://github.com/DFreds/dfreds-convenient-effects/) module, but is not multisystem (yet) i invite you to support Dfred for is marvelous work and beg him to make that module multisystem.
 - With levels module enabled and active, **if the scene is with "Token vision" set to false (unchecked box)**, after selected a token and click on the canvas with the option "Release on left click" enable the hidden token are visible for a small instant this is a incompatibility with the [Levels](https://github.com/theripper93/Levels) module i cannot solve, the simple solution is just enable the token vision on the current scene.
 - There is a small incompatibility with the Dfred convenient effects module, for some strange reason the passive effect are applied has temporary effect here the issue related https://github.com/DFreds/dfreds-convenient-effects/issues/137
+- The module "less fog" breaks the dm view of tokens. The gm still see an invisible token as other tokens, but the players don't so is a minor issue.
 
 ## Usage
 
@@ -130,6 +131,10 @@ Depends on the value you set the module will automatically create, updated and r
 **NOTE:** Limitation do not use multiple active effects with the same key on the change values `ATCV.<sense or condtion id>`, checkout the [Active effect paragraph on the tutorial](./wiki/tutorial.md)
 
 ### Auto-applied the 'hidden' condition from Stealth Rolls like the old "auto appplied hidden"
+
+**IMPORTANT:** to manage the multisystem and the other three thousand modules from which you can roll the stealth I apply the value of the stealth that appears in the chat, so make sure that each player who launches the stealth roll can see their own chat.
+
+**NOTE:** The 'auto stealth' is a token only feature, so if you roll from a 'actor' on the sidebar is not applied .
 
 This is been tested with these modules:
 

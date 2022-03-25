@@ -168,12 +168,12 @@ export class ConditionalVisibilityEffectDefinitions {
       // seconds: Constants.SECONDS.IN_EIGHT_HOURS,
       transfer: true,
       changes: [
-        {
-          key: effectSight.path,
-          mode: CONST.ACTIVE_EFFECT_MODES.UPGRADE,
-          value: number && number > 0 ? `${number}` : `${effectSight.path}`,
-          priority: 5,
-        },
+        // {
+        //   key: 'ATCV.conditionPath',
+        //   mode: CONST.ACTIVE_EFFECT_MODES.UPGRADE,
+        //   value: number && number > 0 ? `${number}` : `${effectSight.path}`,
+        //   priority: 5,
+        // },
       ],
       atlChanges: [
         {
@@ -219,12 +219,12 @@ export class ConditionalVisibilityEffectDefinitions {
       // seconds: Constants.SECONDS.IN_EIGHT_HOURS,
       transfer: true,
       changes: [
-        {
-          key: effectSight.path,
-          mode: CONST.ACTIVE_EFFECT_MODES.UPGRADE,
-          value: number && number > 0 ? `${number}` : `${effectSight.path}`,
-          priority: 5,
-        },
+        // {
+        //   key: 'ATCV.conditionPath',
+        //   mode: CONST.ACTIVE_EFFECT_MODES.UPGRADE,
+        //   value: number && number > 0 ? `${number}` : `${effectSight.path}`,
+        //   priority: 5,
+        // },
       ],
       atcvChanges: [
         {
@@ -262,12 +262,12 @@ export class ConditionalVisibilityEffectDefinitions {
       // seconds: Constants.SECONDS.IN_EIGHT_HOURS,
       transfer: true,
       changes: [
-        {
-          key: effectSight.path,
-          mode: CONST.ACTIVE_EFFECT_MODES.UPGRADE,
-          value: number && number > 0 ? `${number}` : `${effectSight.path}`,
-          priority: 5,
-        },
+        // {
+        //   key: 'ATCV.conditionPath',
+        //   mode: CONST.ACTIVE_EFFECT_MODES.UPGRADE,
+        //   value: number && number > 0 ? `${number}` : `${effectSight.path}`,
+        //   priority: 5,
+        // },
       ],
       atcvChanges: [
         {
@@ -305,12 +305,12 @@ export class ConditionalVisibilityEffectDefinitions {
       // seconds: Constants.SECONDS.IN_EIGHT_HOURS,
       transfer: true,
       changes: [
-        {
-          key: effectSight.path,
-          mode: CONST.ACTIVE_EFFECT_MODES.UPGRADE,
-          value: number && number > 0 ? `${number}` : `${effectSight.path}`,
-          priority: 5,
-        },
+        // {
+        //   key: 'ATCV.conditionPath',
+        //   mode: CONST.ACTIVE_EFFECT_MODES.UPGRADE,
+        //   value: number && number > 0 ? `${number}` : `${effectSight.path}`,
+        //   priority: 5,
+        // },
       ],
       atcvChanges: [
         {
@@ -348,12 +348,12 @@ export class ConditionalVisibilityEffectDefinitions {
       // seconds: Constants.SECONDS.IN_EIGHT_HOURS,
       transfer: true,
       changes: [
-        {
-          key: effectSight.path,
-          mode: CONST.ACTIVE_EFFECT_MODES.UPGRADE,
-          value: number && number > 0 ? `${number}` : `${effectSight.path}`,
-          priority: 5,
-        },
+        // {
+        //   key: 'ATCV.conditionPath',
+        //   mode: CONST.ACTIVE_EFFECT_MODES.UPGRADE,
+        //   value: number && number > 0 ? `${number}` : `${effectSight.path}`,
+        //   priority: 5,
+        // },
       ],
       atcvChanges: [
         {
@@ -391,12 +391,12 @@ export class ConditionalVisibilityEffectDefinitions {
       // seconds: Constants.SECONDS.IN_EIGHT_HOURS,
       transfer: true,
       changes: [
-        {
-          key: effectSight.path,
-          mode: CONST.ACTIVE_EFFECT_MODES.UPGRADE,
-          value: number && number > 0 ? `${number}` : `${effectSight.path}`,
-          priority: 5,
-        },
+        // {
+        //   key: 'ATCV.conditionPath',
+        //   mode: CONST.ACTIVE_EFFECT_MODES.UPGRADE,
+        //   value: number && number > 0 ? `${number}` : `${effectSight.path}`,
+        //   priority: 5,
+        // },
       ],
       atcvChanges: [
         {
@@ -434,12 +434,12 @@ export class ConditionalVisibilityEffectDefinitions {
       // seconds: Constants.SECONDS.IN_EIGHT_HOURS,
       transfer: true,
       changes: [
-        {
-          key: effectSight.path,
-          mode: CONST.ACTIVE_EFFECT_MODES.UPGRADE,
-          value: number && number > 0 ? `${number}` : `${effectSight.path}`,
-          priority: 5,
-        },
+        // {
+        //   key: 'ATCV.conditionPath',
+        //   mode: CONST.ACTIVE_EFFECT_MODES.UPGRADE,
+        //   value: number && number > 0 ? `${number}` : `${effectSight.path}`,
+        //   priority: 5,
+        // },
       ],
       atlChanges: [
         // {

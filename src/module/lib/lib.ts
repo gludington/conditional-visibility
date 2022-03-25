@@ -947,12 +947,32 @@ export async function prepareActiveEffectForConditionalVisibility(
           sourceToken,
           activeEffectFounded.data?.changes || [],
         );
-        if (sense.visionLevelValue != actve) {
+        // if (sense.visionLevelValue != actve) {
           //@ts-ignore
           const data = <ActiveEffectData>duplicateExtended(activeEffectFounded.data);
           for (const aee of data?.changes) {
-            if (aee.key.startsWith('ATCV.') && !aee.key.startsWith('ATCV.condition') && aee.value) {
-              aee.value = String(sense.visionLevelValue);
+            if (aee.key.startsWith('ATCV.')){
+              if (!aee.key.startsWith('ATCV.condition') && sense.visionLevelValue) {
+                aee.value = String(sense.visionLevelValue);
+              }
+              else if(aee.key.startsWith('ATCV.conditionElevation') && sense.visionElevation){
+                aee.value = String(sense.visionElevation);
+              }
+              else if(aee.key.startsWith('ATCV.conditionDistance') && sense.visionDistanceValue){
+                aee.value = String(sense.visionDistanceValue);
+              }
+              else if(aee.key.startsWith('ATCV.conditionTargets') && sense.visionTargets){
+                aee.value = sense.visionTargets.join(',');
+              }
+              else if(aee.key.startsWith('ATCV.conditionSources') && sense.visionSources){
+                aee.value = sense.visionSources.join(',');
+              }
+              else if(aee.key.startsWith('ATCV.conditionTargetImage') && sense.visionTargetImage){
+                aee.value = sense.visionTargetImage;
+              }
+              else if(aee.key.startsWith('ATCV.conditionType') && sense.visionType){
+                aee.value = sense.visionType;
+              }
             }
           }
           if (data?.changes.length > 0) {
@@ -967,7 +987,7 @@ export async function prepareActiveEffectForConditionalVisibility(
               mapToUpdate.set(sense.visionId, sense);
             }
           }
-        }
+        // }
       } else {
         const atcvEffcet = await API.addEffectConditionalVisibilityOnToken(<string>sourceToken.id, sense, false);
         if (atcvEffcet) {
@@ -1006,12 +1026,32 @@ export async function prepareActiveEffectForConditionalVisibility(
           sourceToken,
           activeEffectFounded.data?.changes || [],
         );
-        if (condition.visionLevelValue != actve) {
+        // if (condition.visionLevelValue != actve) {
           //@ts-ignore
           const data = <ActiveEffectData>duplicateExtended(activeEffectFounded.data);
           for (const aee of data?.changes) {
-            if (aee.key.startsWith('ATCV.') && !aee.key.startsWith('ATCV.condition') && aee.value) {
-              aee.value = String(condition.visionLevelValue);
+            if (aee.key.startsWith('ATCV.')){
+              if (!aee.key.startsWith('ATCV.condition') && condition.visionLevelValue) {
+                aee.value = String(condition.visionLevelValue);
+              }
+              else if(aee.key.startsWith('ATCV.conditionElevation') && condition.visionElevation){
+                aee.value = String(condition.visionElevation);
+              }
+              else if(aee.key.startsWith('ATCV.conditionDistance') && condition.visionDistanceValue){
+                aee.value = String(condition.visionDistanceValue);
+              }
+              else if(aee.key.startsWith('ATCV.conditionTargets') && condition.visionTargets){
+                aee.value = condition.visionTargets.join(',');
+              }
+              else if(aee.key.startsWith('ATCV.conditionSources') && condition.visionSources){
+                aee.value = condition.visionSources.join(',');
+              }
+              else if(aee.key.startsWith('ATCV.conditionTargetImage') && condition.visionTargetImage){
+                aee.value = condition.visionTargetImage;
+              }
+              else if(aee.key.startsWith('ATCV.conditionType') && condition.visionType){
+                aee.value = condition.visionType;
+              }
             }
           }
           if (data?.changes.length > 0) {
@@ -1026,7 +1066,7 @@ export async function prepareActiveEffectForConditionalVisibility(
               mapToUpdate.set(condition.visionId, condition);
             }
           }
-        }
+        // }
       } else {
         const atcvEffcet = await API.addEffectConditionalVisibilityOnToken(
           <string>sourceToken.id,
@@ -1514,15 +1554,16 @@ export function retrieveAtcvEffectFromActiveEffect(
       if (atcvEffect.visionType === null || atcvEffect.visionType === undefined) {
         atcvEffect.visionType = String(change.value);
       }
-    } else if (isStringEquals(change.key, 'ATCV.conditionLevelMinIndex') && change.value) {
-      if (atcvEffect.visionLevelMinIndex === null || atcvEffect.visionLevelMinIndex === undefined) {
-        atcvEffect.visionLevelMinIndex = Number(change.value);
-      }
-    } else if (isStringEquals(change.key, 'ATCV.conditionLevelMaxIndex') && change.value) {
-      if (atcvEffect.visionLevelMaxIndex === null || atcvEffect.visionLevelMaxIndex === undefined) {
-        atcvEffect.visionLevelMaxIndex = Number(change.value);
-      }
     }
+    // } else if (isStringEquals(change.key, 'ATCV.conditionLevelMinIndex') && change.value) {
+    //   if (atcvEffect.visionLevelMinIndex === null || atcvEffect.visionLevelMinIndex === undefined) {
+    //     atcvEffect.visionLevelMinIndex = Number(change.value);
+    //   }
+    // } else if (isStringEquals(change.key, 'ATCV.conditionLevelMaxIndex') && change.value) {
+    //   if (atcvEffect.visionLevelMaxIndex === null || atcvEffect.visionLevelMaxIndex === undefined) {
+    //     atcvEffect.visionLevelMaxIndex = Number(change.value);
+    //   }
+    // }
   }
 
   if (isSense === null || isSense === undefined) {

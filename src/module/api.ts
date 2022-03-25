@@ -807,6 +807,17 @@ const API = {
           dfredEffect.atcvChanges = [];
         }
         changesTmp = EffectSupport._handleIntegrations(dfredEffect);
+        changesTmp = changesTmp.filter((c) => !c.key.startsWith(`data.`))
+        if(senseDataEffect.visionDistanceValue  && senseDataEffect.visionDistanceValue > 0){
+          changesTmp.push(
+            {
+              key: 'ATCV.conditionDistance',
+              mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+              value: `${senseDataEffect.visionDistanceValue}`,
+              priority: 5,
+            }
+          );
+        }
         for (const obj of changesTmp) {
           if (obj.key === 'ATCV.' + senseDataEffect.visionId && obj.value != String(senseDataEffect.visionLevelValue)) {
             obj.value = String(senseDataEffect.visionLevelValue);
@@ -871,6 +882,17 @@ const API = {
             priority: 5,
           },
         ];
+        changesTmp = changesTmp.filter((c) => !c.key.startsWith(`data.`))
+        if(senseDataEffect.visionDistanceValue && senseDataEffect.visionDistanceValue > 0){
+          changesTmp.push(
+            {
+              key: 'ATCV.conditionDistance',
+              mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+              value: `${senseDataEffect.visionDistanceValue}`,
+              priority: 5,
+            }
+          );
+        }
         effect = EffectSupport.buildDefault(
           senseOrCondition.visionId,
           senseOrCondition.visionName,
@@ -890,6 +912,17 @@ const API = {
             priority: 5,
           },
         ];
+        changesTmp = changesTmp.filter((c) => !c.key.startsWith(`data.`))
+        if(senseDataEffect.visionDistanceValue && senseDataEffect.visionDistanceValue > 0){
+          changesTmp.push(
+            {
+              key: 'ATCV.conditionDistance',
+              mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+              value: `${senseDataEffect.visionDistanceValue}`,
+              priority: 5,
+            }
+          );
+        }
         effect = EffectSupport.buildDefault(
           senseDataEffect.visionId,
           senseDataEffect.visionName,

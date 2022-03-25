@@ -163,6 +163,8 @@ Just edit the active effect data and apply the `ATCV.conditionDistance` change w
 
 CUB already manage the connection with active effect and a management with the [DFreds Convenient Effects](https://github.com/DFreds/dfreds-convenient-effects) add a third module is just redundancy, but if anyone has some suggestion just open a issue or better a PR.
 
+![cub](./wiki/video/feature_cub_cv_1.gif)
+
 ## Api
 
 The API documentation is reachable here [API](./wiki/api.md)

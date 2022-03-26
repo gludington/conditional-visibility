@@ -50,7 +50,7 @@ export class AtcvEffect {
     res.visionPath = senseData.path;
     res.visionIcon = senseData.img;
 
-    res.visionLevelValue = visionLevelValue ?? 1;
+    res.visionLevelValue = visionLevelValue ?? 0;
     // res.visionLevelMinIndex = senseData.conditionLevelMinIndex;
     // res.visionLevelMaxIndex = senseData.conditionLevelMaxIndex;
     res.visionElevation = senseData.conditionElevation;

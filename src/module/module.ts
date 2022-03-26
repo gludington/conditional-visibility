@@ -113,26 +113,26 @@ export const readyHooks = (): void => {
     module.updateToken(document, change, options, userId);
   });
 
-  Hooks.on('updateActor', (actor: Actor, change, options, userId) => {
-    // TODO for now only dnd5e
-    let p = getProperty(change, API.PATH_ATTRIBUTES_SENSES);
-    // TODO to remove
-    if(!p){
-      p = getProperty(change, `data.attributes.senses`);
-    }
-    if(p){
-      if (actor.token) {
-        module.updateActor(<TokenDocument>actor.token, change, options, userId);
-      }else{
-        const token = canvas.tokens?.placeables.find((t:Token) =>{
-          return t.actor?.id === actor.id;
-        });
-        if(token){
-          module.updateActor(<TokenDocument>token.document, change, options, userId);
-        }
-      }
-    }
-  });
+  // Hooks.on('updateActor', (actor: Actor, change, options, userId) => {
+  //   // TODO for now only dnd5e
+  //   let p = getProperty(change, API.PATH_ATTRIBUTES_SENSES);
+  //   // TODO to remove
+  //   if(!p){
+  //     p = getProperty(change, `data.attributes.senses`);
+  //   }
+  //   if(p){
+  //     if (actor.token) {
+  //       module.updateActor(<TokenDocument>actor.token, change, options, userId);
+  //     }else{
+  //       const token = canvas.tokens?.placeables.find((t:Token) =>{
+  //         return t.actor?.id === actor.id;
+  //       });
+  //       if(token){
+  //         module.updateActor(<TokenDocument>token.document, change, options, userId);
+  //       }
+  //     }
+  //   }
+  // });
 
   Hooks.on('addActiveEffect', async (effect, options) => {
     module.updateActiveEffect(effect, options, false);
@@ -267,7 +267,7 @@ const module = {
           senseOrConditionValue.visionLevelValue === null
         ) {
           const currentValueOfFlag = Number(
-            (<AtcvEffect>document.getFlag(CONSTANTS.MODULE_NAME, senseOrConditionIdKey))?.visionLevelValue || 1,
+            (<AtcvEffect>document.getFlag(CONSTANTS.MODULE_NAME, senseOrConditionIdKey))?.visionLevelValue || 0,
           );
           senseOrConditionValue.visionLevelValue = currentValueOfFlag;
         }
@@ -387,12 +387,12 @@ const module = {
       } // Fine for
       // TODO check better solution
       // conditionalVisibilitySocket.executeForEveryone('sightRefreshCV', sourceToken);
-      for (const t of <Token[]>canvas.tokens?.placeables) {
-        t.updateSource();
-        // t.document.update();
-        // Hooks.callAll('sightRefresh', t);
-        // t.refresh();
-      }
+      // for (const t of <Token[]>canvas.tokens?.placeables) {
+      //   t.updateSource();
+      //   // t.document.update();
+      //   // Hooks.callAll('sightRefresh', t);
+      //   // t.refresh();
+      // }
     }
   },
   async updateActiveEffect(activeEffect: ActiveEffect, options: EffectChangeData, isRemoved: boolean) {
@@ -482,12 +482,12 @@ const module = {
             }
             // TODO check better solution
             // conditionalVisibilitySocket.executeForEveryone('updateSourceCV', tokenToSet);
-            for (const t of <Token[]>canvas.tokens?.placeables) {
-              t.updateSource();
-              // t.document.update();
-              // Hooks.callAll('sightRefresh', t);
-              // t.refresh();
-            }
+            // for (const t of <Token[]>canvas.tokens?.placeables) {
+            //   t.updateSource();
+            //   // t.document.update();
+            //   // Hooks.callAll('sightRefresh', t);
+            //   // t.refresh();
+            // }
           }
         }
       }
@@ -505,12 +505,12 @@ const module = {
             await sourceToken?.document.unsetFlag(CONSTANTS.MODULE_NAME, sense?.visionId);
             // TODO check better solution
             //conditionalVisibilitySocket.executeForEveryone('updateSourceCV', sourceToken);
-            for (const t of <Token[]>canvas.tokens?.placeables) {
-              t.updateSource();
-              // t.document.update();
-              // Hooks.callAll('sightRefresh', t);
-              // t.refresh();
-            }
+            // for (const t of <Token[]>canvas.tokens?.placeables) {
+            //   t.updateSource();
+            //   // t.document.update();
+            //   // Hooks.callAll('sightRefresh', t);
+            //   // t.refresh();
+            // }
           }
         }
       }

@@ -1296,7 +1296,7 @@ export function retrieveAtcvEffectFromActiveEffect(
             } catch (e) {
               myresult = parseInt(eval(roll.result));
             }
-            //myvalue = roll.total || 1;
+            //myvalue = roll.total || 0;
             if (isNaN(myresult)) {
               warn(`The formula '${formula}' doesn't return a number we set the default 1`, true);
               myvalue = 1;

@@ -412,6 +412,19 @@ const API = {
     return result;
   },
 
+  
+  async removeEffectFromIdOnTokenMultipleArr(...inAttributes: any[]) {
+    if (!Array.isArray(inAttributes)) {
+      throw error('removeEffectFromIdOnTokenMultiple | inAttributes must be of type array');
+    }
+    const [effectIds, uuid] = inAttributes;
+    const result = await (<EffectInterface>this.effectInterface)._effectHandler.removeEffectFromIdOnTokenMultiple(
+      effectIds,
+      uuid,
+    );
+    return result;
+  },
+
   async toggleEffectFromIdOnTokenArr(...inAttributes) {
     if (!Array.isArray(inAttributes)) {
       throw error('addEffectOnTokenArr | inAttributes must be of type array');
@@ -631,6 +644,11 @@ const API = {
 
   async removeEffectFromIdOnToken(tokenId: string, effectId: string) {
     const result = await (<EffectInterface>this.effectInterface).removeEffectFromIdOnToken(effectId, <string>tokenId);
+    return result;
+  },
+
+  async removeEffectFromIdOnTokenMultiple(tokenId: string, effectIds: string[]) {
+    const result = await (<EffectInterface>this.effectInterface).removeEffectFromIdOnTokenMultiple(effectIds, <string>tokenId);
     return result;
   },
 

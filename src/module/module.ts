@@ -113,26 +113,26 @@ export const readyHooks = (): void => {
     module.updateToken(document, change, options, userId);
   });
 
-  // Hooks.on('updateActor', (actor: Actor, change, options, userId) => {
-  //   // TODO for now only dnd5e
-  //   let p = getProperty(change, API.PATH_ATTRIBUTES_SENSES);
-  //   // TODO to remove
-  //   if(!p){
-  //     p = getProperty(change, `data.attributes.senses`);
-  //   }
-  //   if(p){
-  //     if (actor.token) {
-  //       module.updateActor(<TokenDocument>actor.token, change, options, userId);
-  //     }else{
-  //       const token = canvas.tokens?.placeables.find((t:Token) =>{
-  //         return t.actor?.id === actor.id;
-  //       });
-  //       if(token){
-  //         module.updateActor(<TokenDocument>token.document, change, options, userId);
-  //       }
-  //     }
-  //   }
-  // });
+  Hooks.on('updateActor', (actor: Actor, change, options, userId) => {
+    // TODO for now only dnd5e
+    let p = getProperty(change, API.PATH_ATTRIBUTES_SENSES);
+    // TODO to remove
+    if(!p){
+      p = getProperty(change, `data.attributes.senses`);
+    }
+    if(p){
+      if (actor.token) {
+        module.updateActor(<TokenDocument>actor.token, change, options, userId);
+      }else{
+        const token = canvas.tokens?.placeables.find((t:Token) =>{
+          return t.actor?.id === actor.id;
+        });
+        if(token){
+          module.updateActor(<TokenDocument>token.document, change, options, userId);
+        }
+      }
+    }
+  });
 
   Hooks.on('addActiveEffect', async (effect, options) => {
     module.updateActiveEffect(effect, options, false);
@@ -252,6 +252,7 @@ const module = {
       change.flags[CONSTANTS.MODULE_NAME] &&
       !getProperty(change, `flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISILE}`)
     ) {
+      const setAeToRemove = new Set<string>();
       const sourceVisionCapabilities: VisionCapabilities = new VisionCapabilities(<Token>document.object);
       const p = getProperty(change, `flags.${CONSTANTS.MODULE_NAME}`);
       for (const key in p) {
@@ -378,7 +379,8 @@ const module = {
                 //const atcvEffectFlagData = <AtcvEffect>sourceToken.document?.getFlag(CONSTANTS.MODULE_NAME, senseData.visionId);
                 const actve = senseOrConditionValue.visionLevelValue ?? 0;
                 if (actve === 0 || actve === null || actve === undefined || !actve) {
-                  await API.removeEffectFromIdOnToken(<string>sourceToken.id, <string>activeEffectToRemove.id);
+                  //await API.removeEffectFromIdOnToken(<string>sourceToken.id, <string>activeEffectToRemove.id);
+                  setAeToRemove.add(<string>activeEffectToRemove.id);
                 }
               }
             }
@@ -393,6 +395,10 @@ const module = {
       //   // Hooks.callAll('sightRefresh', t);
       //   // t.refresh();
       // }
+      // FINALLY REMVE ALL THE ACTIVE EFFECT
+      if(setAeToRemove.size > 0){
+        API.removeEffectFromIdOnTokenMultiple(<string>sourceToken.id, Array.from(setAeToRemove));
+      }
     }
   },
   async updateActiveEffect(activeEffect: ActiveEffect, options: EffectChangeData, isRemoved: boolean) {

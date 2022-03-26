@@ -940,6 +940,7 @@ export async function prepareActiveEffectForConditionalVisibility(
   visionCapabilities: VisionCapabilities,
 ): Promise<Map<string, AtcvEffect>> {
   const mapToUpdate = new Map<string, AtcvEffect>();
+  const setAeToRemove = new Set<string>();
 
   // Make sure to remove anything with value 0
   for (const senseData of await API.getAllDefaultSensesAndConditions(sourceToken)) {
@@ -952,7 +953,8 @@ export async function prepareActiveEffectForConditionalVisibility(
       const atcvEffectFlagData = <AtcvEffect>sourceToken.document?.getFlag(CONSTANTS.MODULE_NAME, senseData.visionId);
       const actve = atcvEffectFlagData?.visionLevelValue;
       if (actve === 0 || actve === null || actve === undefined || !actve) {
-        await API.removeEffectFromIdOnToken(<string>sourceToken.id, <string>activeEffectToRemove.id);
+        // await API.removeEffectFromIdOnToken(<string>sourceToken.id, <string>activeEffectToRemove.id);
+        setAeToRemove.add(<string>activeEffectToRemove.id);
       }
     }
   }
@@ -1026,7 +1028,8 @@ export async function prepareActiveEffectForConditionalVisibility(
           activeEffectFounded.data?.changes || [],
         );
         if (sense.visionLevelValue != actve) {
-          await API.removeEffectFromIdOnToken(<string>sourceToken.id, <string>activeEffectFounded.id);
+          //await API.removeEffectFromIdOnToken(<string>sourceToken.id, <string>activeEffectFounded.id);
+          setAeToRemove.add(<string>activeEffectFounded.id);
         }
       }
     }
@@ -1103,10 +1106,16 @@ export async function prepareActiveEffectForConditionalVisibility(
           activeEffectFounded.data?.changes || [],
         );
         if (condition.visionLevelValue != actve) {
-          await API.removeEffectFromIdOnToken(<string>sourceToken.id, <string>activeEffectFounded.id);
+          //await API.removeEffectFromIdOnToken(<string>sourceToken.id, <string>activeEffectFounded.id);
+          setAeToRemove.add(<string>activeEffectFounded.id);
         }
       }
     }
+  }
+
+  // FINALLY REMVE ALL THE ACTIVE EFFECT
+  if(setAeToRemove.size > 0){
+    API.removeEffectFromIdOnTokenMultiple(<string>sourceToken.id, Array.from(setAeToRemove));
   }
 
   return mapToUpdate;

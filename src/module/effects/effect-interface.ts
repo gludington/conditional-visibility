@@ -597,6 +597,21 @@ export default class EffectInterface {
   }
 
   /**
+ * Removes the effect with the provided name from an token matching the
+ * provided UUID
+ *
+ * @param {string} effectIds - the id of the effect to remove
+ * @param {string} uuid - the uuid of the token to remove the effect from
+ */
+  async removeEffectFromIdOnTokenMultiple(effectIds: string[], uuid: string) {
+    if (isGMConnected()) {
+      return this._socket.executeAsGM('removeEffectFromIdOnTokenMultiple', effectIds, uuid);
+    } else {
+      return this._effectHandler.removeEffectFromIdOnTokenMultiple(effectIds, uuid);
+    }
+  }
+
+  /**
    * Adds the effect with the provided name to an token matching the provided
    * UUID
    *

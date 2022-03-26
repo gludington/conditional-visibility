@@ -101,6 +101,9 @@ export function registerSocket() {
   conditionalVisibilitySocket.register('removeEffectFromIdOnToken', (...args) =>
     API.removeEffectFromIdOnTokenArr(...args),
   );
+  conditionalVisibilitySocket.register('removeEffectFromIdOnTokenMultiple', (...args) =>
+    API.removeEffectFromIdOnTokenMultipleArr(...args),
+  );
   conditionalVisibilitySocket.register('findEffectByNameOnToken', (...args) => API.findEffectByNameOnTokenArr(...args));
   conditionalVisibilitySocket.register('updateEffectFromIdOnToken', (...args) =>
     API.updateEffectFromIdOnTokenArr(...args),

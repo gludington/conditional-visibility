@@ -1,5 +1,6 @@
-### 0.5.13-14-15-16
+### 0.5.13-14-15-16-17
 
+- Solved loop on mutliple delete active effect
 - Little bug fix 
 - Integration with mid-qol optional rule, when a token make a attack it will visible for the duration of the attack.
 

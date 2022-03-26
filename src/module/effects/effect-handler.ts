@@ -848,7 +848,7 @@ export default class EffectHandler {
    * @param {string} effectId - the id of the effect to remove
    * @param {string} uuid - the uuid of the token to remove the effect from
    */
-  async removeEffectFromIdOnToken(effectId, uuid) {
+  async removeEffectFromIdOnToken(effectId:string, uuid:string) {
     if (effectId) {
       const token = <Token>await this._foundryHelpers.getTokenByUuid(uuid);
       const actorEffects = <EmbeddedCollection<typeof ActiveEffect, ActorData>>token.actor?.data.effects;
@@ -856,10 +856,12 @@ export default class EffectHandler {
         //(activeEffect) => <boolean>activeEffect?.data?.flags?.isConvenient && <string>activeEffect.id == effectId,
         (activeEffect) => <string>activeEffect?.data?._id == effectId,
       );
-
-      await effectToRemove.update({ disabled: true });
-      await effectToRemove.delete();
-      log(`Removed effect ${effectToRemove?.data?.label} from ${token.name} - ${token.id}`);
+      if(effectToRemove){
+        // await effectToRemove.update({ disabled: true });
+        // await effectToRemove.delete();
+        await token.actor?.deleteEmbeddedDocuments('ActiveEffect', [<string>effectToRemove.id]);
+        log(`Removed effect ${effectToRemove?.data?.label} from ${token.name} - ${token.id}`);
+      }
     }
   }
 
@@ -872,10 +874,48 @@ export default class EffectHandler {
    */
   async removeEffectFromIdOnTokenArr(...inAttributes: any[]) {
     if (!Array.isArray(inAttributes)) {
-      throw error('removeEffectFromIdOnToken | inAttributes must be of type array');
+      throw error('removeEffectFromIdOnTokenArr | inAttributes must be of type array');
     }
     const [effectId, uuid] = inAttributes;
     return this.removeEffectFromIdOnToken(effectId, uuid);
+  }
+
+  /**
+   * Removes the effect with the provided name from an token matching the
+   * provided UUID
+   *
+   * @param {string} effectId - the id of the effect to remove
+   * @param {string} uuid - the uuid of the token to remove the effect from
+   */
+  async removeEffectFromIdOnTokenMultiple(effectIds:string[], uuid:string) {
+    if (effectIds) {
+      const token = <Token>await this._foundryHelpers.getTokenByUuid(uuid);
+      // const actorEffects = <EmbeddedCollection<typeof ActiveEffect, ActorData>>token.actor?.data.effects;
+      // const effectToRemove = <ActiveEffect>actorEffects.find(
+      //   //(activeEffect) => <boolean>activeEffect?.data?.flags?.isConvenient && <string>activeEffect.id == effectId,
+      //   (activeEffect) => <string>activeEffect?.data?._id == effectId,
+      // );
+
+      // await effectToRemove.update({ disabled: true });
+      // await effectToRemove.delete();
+      await token.actor?.deleteEmbeddedDocuments('ActiveEffect', effectIds);
+      log(`Removed effect ${effectIds.join(',')} from ${token.name} - ${token.id}`);
+    }
+  }
+
+  /**
+   * Removes the effect with the provided name from an token matching the
+   * provided UUID
+   *
+   * @param {string} effectId - the id of the effect to remove
+   * @param {string} uuid - the uuid of the token to remove the effect from
+   */
+  async removeEffectFromIdOnTokenMultipleArr(...inAttributes: any[]) {
+    if (!Array.isArray(inAttributes)) {
+      throw error('removeEffectFromIdOnTokenMultipleArr | inAttributes must be of type array');
+    }
+    const [effectIds, uuid] = inAttributes;
+    return this.removeEffectFromIdOnTokenMultiple(effectIds, uuid);
   }
 
   /**

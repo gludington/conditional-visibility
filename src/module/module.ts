@@ -65,6 +65,9 @@ export const initHooks = (): void => {
 
 export const setupHooks = (): void => {
   // setup all the hooks
+  API.effectInterface = new EffectInterface(CONSTANTS.MODULE_NAME) as unknown as typeof EffectInterface;
+  //@ts-ignore
+  API.effectInterface.initialize();
 
   //@ts-ignore
   window.ConditionalVisibility.API.effectInterface = new EffectInterface(CONSTANTS.MODULE_NAME);

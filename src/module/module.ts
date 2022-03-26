@@ -111,8 +111,23 @@ export const readyHooks = (): void => {
   });
 
   Hooks.on('updateActor', (actor: Actor, change, options, userId) => {
-    if (actor.token && getProperty(change, `data.attributes.senses`)) {
-      module.updateActor(<TokenDocument>actor.token, change, options, userId);
+    // TODO for now only dnd5e
+    let p = getProperty(change, API.PATH_ATTRIBUTES_SENSES);
+    // TODO to remove
+    if(!p){
+      p = getProperty(change, `data.attributes.senses`);
+    }
+    if(p){
+      if (actor.token) {
+        module.updateActor(<TokenDocument>actor.token, change, options, userId);
+      }else{
+        const token = canvas.tokens?.placeables.find((t:Token) =>{
+          return t.actor?.id === actor.id;
+        });
+        if(token){
+          module.updateActor(<TokenDocument>token.document, change, options, userId);
+        }
+      }
     }
   });
 
@@ -195,7 +210,11 @@ const module = {
     }
     // const sourceVisionCapabilities: VisionCapabilities = new VisionCapabilities(<Token>document.object);
     // TODO for now only dnd5e
-    const p = getProperty(change, `data.attributes.senses`);
+    let p = getProperty(change, API.PATH_ATTRIBUTES_SENSES);
+    // TODO to remove
+    if(!p){
+      p = getProperty(change, `data.attributes.senses`);
+    }
     for (const key in p) {
       const senseOrConditionIdKey = key;
       const senseOrConditionValue = <number>p[key];

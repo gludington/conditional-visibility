@@ -297,6 +297,14 @@ function defaultSettings(apply = false) {
       default: apply && SYSTEMS.DATA ? SYSTEMS.DATA.STEALTH_ID_LANG_SKILL : '',
       type: String,
     },
+    pathAttributesSenses: {
+      name: `${CONSTANTS.MODULE_NAME}.setting.pathAttributesSenses.name`,
+      hint: `${CONSTANTS.MODULE_NAME}.setting.pathAttributesSenses.hint`,
+      scope: 'world',
+      config: true,
+      default: apply && SYSTEMS.DATA ? SYSTEMS.DATA.PATH_ATTRIBUTES_SENSES : '',
+      type: String,
+    },
   };
 }
 

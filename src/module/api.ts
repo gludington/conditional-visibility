@@ -110,10 +110,19 @@ const API = {
   /**
    * The attributes used to track dynamic attributes in this system
    *
-   * @returns {array}
+   * @returns {string}
    */
   get STEALTH_ID_LANG_SKILL(): string {
     return <string>game.settings.get(CONSTANTS.MODULE_NAME, 'idLangStealthSkill') ?? 'Stealth';
+  },
+
+  /**
+   * The attributes used to track dynamic attributes in this system
+   *
+   * @returns {array}
+   */
+  get PATH_ATTRIBUTES_SENSES(): string {
+    return <string>game.settings.get(CONSTANTS.MODULE_NAME, 'pathAttributesSenses') ?? `data.attributes.senses`;
   },
 
   /**

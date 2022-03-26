@@ -17,6 +17,7 @@ export default {
   STEALTH_ACTIVE_SKILL: `data.skills.ste.value`,
   // STEALTH_ID_SKILL: `data.skills.ste`,
   STEALTH_ID_LANG_SKILL: `PF2E.SkillSte`, // SkillStealth
+  PATH_ATTRIBUTES_SENSES: `data.attributes.senses`,
   NPC_TYPE: `npc`,
   SENSES: <SenseData[]>[
     {

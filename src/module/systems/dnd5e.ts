@@ -9,6 +9,7 @@ export default {
   STEALTH_ACTIVE_SKILL: `data.skills.ste.total`,
   // STEALTH_ID_SKILL: `ste`,
   STEALTH_ID_LANG_SKILL: `DND5E.SkillSte`,
+  PATH_ATTRIBUTES_SENSES: `data.attributes.senses`,
   NPC_TYPE: `npc`,
   /**
    * The set of possible sensory perception types which an Actor may have.

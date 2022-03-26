@@ -478,8 +478,9 @@ export default class EffectHandler {
 
     // actor.deleteEmbeddedDocuments('ActiveEffect', [<string>effectToRemove.id]);
     // Why i need this ??? for avoid the double AE
-    await effectToRemove.update({ disabled: true });
-    await effectToRemove.delete();
+    // await effectToRemove.update({ disabled: true });
+    // await effectToRemove.delete();
+    await actor.deleteEmbeddedDocuments('ActiveEffect', [<string>effectToRemove.id]);
     log(`Removed effect ${effectName} from ${actor.name} - ${actor.id}`);
   }
 
@@ -512,8 +513,9 @@ export default class EffectHandler {
       //actor.deleteEmbeddedDocuments('ActiveEffect', [<string>effectToRemoveId]);
       // Why i need this ??? for avoid the double AE
       const effectToRemove = <ActiveEffect>actorEffects.find((activeEffect) => <string>activeEffect.id == effectId);
-      await effectToRemove.update({ disabled: true });
-      await effectToRemove.delete();
+      // await effectToRemove.update({ disabled: true });
+      // await effectToRemove.delete();
+      await actor.deleteEmbeddedDocuments('ActiveEffect', [<string>effectToRemove.id]);
       log(`Removed effect ${effectToRemove?.data?.label} from ${actor.name} - ${actor.id}`);
     }
   }
@@ -821,8 +823,9 @@ export default class EffectHandler {
 
     // token.deleteEmbeddedDocuments('ActiveEffect', [<string>effectToRemove.id]);
     // Why i need this ??? for avoid the double AE
-    await effectToRemove.update({ disabled: true });
-    await effectToRemove.delete();
+    // await effectToRemove.update({ disabled: true });
+    // await effectToRemove.delete();
+    await token.actor?.deleteEmbeddedDocuments('ActiveEffect', [<string>effectToRemove.id]);
     log(`Removed effect ${effectName} from ${token.name} - ${token.id}`);
   }
 
@@ -848,7 +851,7 @@ export default class EffectHandler {
    * @param {string} effectId - the id of the effect to remove
    * @param {string} uuid - the uuid of the token to remove the effect from
    */
-  async removeEffectFromIdOnToken(effectId:string, uuid:string) {
+  async removeEffectFromIdOnToken(effectId: string, uuid: string) {
     if (effectId) {
       const token = <Token>await this._foundryHelpers.getTokenByUuid(uuid);
       const actorEffects = <EmbeddedCollection<typeof ActiveEffect, ActorData>>token.actor?.data.effects;
@@ -856,7 +859,7 @@ export default class EffectHandler {
         //(activeEffect) => <boolean>activeEffect?.data?.flags?.isConvenient && <string>activeEffect.id == effectId,
         (activeEffect) => <string>activeEffect?.data?._id == effectId,
       );
-      if(effectToRemove){
+      if (effectToRemove) {
         // await effectToRemove.update({ disabled: true });
         // await effectToRemove.delete();
         await token.actor?.deleteEmbeddedDocuments('ActiveEffect', [<string>effectToRemove.id]);
@@ -887,7 +890,7 @@ export default class EffectHandler {
    * @param {string} effectId - the id of the effect to remove
    * @param {string} uuid - the uuid of the token to remove the effect from
    */
-  async removeEffectFromIdOnTokenMultiple(effectIds:string[], uuid:string) {
+  async removeEffectFromIdOnTokenMultiple(effectIds: string[], uuid: string) {
     if (effectIds) {
       const token = <Token>await this._foundryHelpers.getTokenByUuid(uuid);
       // const actorEffects = <EmbeddedCollection<typeof ActiveEffect, ActorData>>token.actor?.data.effects;

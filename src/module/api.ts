@@ -9,6 +9,7 @@ import {
   isStringEquals,
   mergeByProperty,
   prepareActiveEffectForConditionalVisibility,
+  shouldIncludeVision,
   warn,
 } from './lib/lib';
 import EffectInterface from './effects/effect-interface';
@@ -412,7 +413,6 @@ const API = {
     return result;
   },
 
-  
   async removeEffectFromIdOnTokenMultipleArr(...inAttributes: any[]) {
     if (!Array.isArray(inAttributes)) {
       throw error('removeEffectFromIdOnTokenMultiple | inAttributes must be of type array');
@@ -648,7 +648,10 @@ const API = {
   },
 
   async removeEffectFromIdOnTokenMultiple(tokenId: string, effectIds: string[]) {
-    const result = await (<EffectInterface>this.effectInterface).removeEffectFromIdOnTokenMultiple(effectIds, <string>tokenId);
+    const result = await (<EffectInterface>this.effectInterface).removeEffectFromIdOnTokenMultiple(
+      effectIds,
+      <string>tokenId,
+    );
     return result;
   },
 
@@ -1203,6 +1206,10 @@ const API = {
     for (const t of <Token[]>canvas.tokens?.placeables) {
       Hooks.callAll('sightRefresh', t);
     }
+  },
+
+  canSee(sourceToken: Token, targetToken: Token): boolean {
+    return <boolean>shouldIncludeVision(sourceToken, targetToken);
   },
 };
 

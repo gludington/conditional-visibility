@@ -1,4 +1,4 @@
-### 0.5.13-14-15-16-17
+### 0.5.13-14-15-16-17-18
 
 - Solved loop on mutliple delete active effect
 - Little bug fix 

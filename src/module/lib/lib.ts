@@ -1114,7 +1114,7 @@ export async function prepareActiveEffectForConditionalVisibility(
   }
 
   // FINALLY REMVE ALL THE ACTIVE EFFECT
-  if(setAeToRemove.size > 0){
+  if (setAeToRemove.size > 0) {
     API.removeEffectFromIdOnTokenMultiple(<string>sourceToken.id, Array.from(setAeToRemove));
   }
 

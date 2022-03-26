@@ -117,17 +117,17 @@ export const readyHooks = (): void => {
     // TODO for now only dnd5e
     let p = getProperty(change, API.PATH_ATTRIBUTES_SENSES);
     // TODO to remove
-    if(!p){
+    if (!p) {
       p = getProperty(change, `data.attributes.senses`);
     }
-    if(p){
+    if (p) {
       if (actor.token) {
         module.updateActor(<TokenDocument>actor.token, change, options, userId);
-      }else{
-        const token = canvas.tokens?.placeables.find((t:Token) =>{
+      } else {
+        const token = canvas.tokens?.placeables.find((t: Token) => {
           return t.actor?.id === actor.id;
         });
-        if(token){
+        if (token) {
           module.updateActor(<TokenDocument>token.document, change, options, userId);
         }
       }
@@ -215,7 +215,7 @@ const module = {
     // TODO for now only dnd5e
     let p = getProperty(change, API.PATH_ATTRIBUTES_SENSES);
     // TODO to remove
-    if(!p){
+    if (!p) {
       p = getProperty(change, `data.attributes.senses`);
     }
     for (const key in p) {
@@ -396,7 +396,7 @@ const module = {
       //   // t.refresh();
       // }
       // FINALLY REMVE ALL THE ACTIVE EFFECT
-      if(setAeToRemove.size > 0){
+      if (setAeToRemove.size > 0) {
         API.removeEffectFromIdOnTokenMultiple(<string>sourceToken.id, Array.from(setAeToRemove));
       }
     }

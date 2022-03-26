@@ -10,6 +10,7 @@ import {
   VisionCapabilities,
   SenseData,
   CheckerDebugData,
+  ConditionalVisibilityFlags,
 } from '../conditional-visibility-models.js';
 import EmbeddedCollection from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/abstract/embedded-collection.mjs';
 import {
@@ -357,8 +358,12 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
     return true;
   }
   // 1) Check if target token is hidden with standard hud feature of foundry and only GM can see
-  if(targetToken.data.hidden){
+  if (targetToken.data.hidden) {
     return false;
+  }
+  // 1.1) Check if target token is with the 'Force Visible' flag for Midi Qol integration
+  if (targetToken.document.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISILE)) {
+    return true;
   }
 
   // ===============================================
@@ -433,13 +438,13 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
   // 1 - Preparation of the active effect
   // =========================================
 
-  const sourceVisionLevels = 
-    getSensesFromToken(sourceToken.document, true).filter((atcvEffect) =>{
+  const sourceVisionLevels =
+    getSensesFromToken(sourceToken.document, true).filter((atcvEffect) => {
       return !atcvEffect.visionIsDisabled;
     }) ?? [];
 
-  const targetVisionLevels = 
-    getConditionsFromToken(targetToken.document, true).filter((atcvEffect) =>{
+  const targetVisionLevels =
+    getConditionsFromToken(targetToken.document, true).filter((atcvEffect) => {
       return !atcvEffect.visionIsDisabled;
     }) ?? [];
 
@@ -519,7 +524,7 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
           }`,
         );
         return true;
-      }else{
+      } else {
         return false;
       }
     }
@@ -535,37 +540,37 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
   // THIS WILL BE CHECK ONLY IF ONE CONDITION IS PRESENT ON THE TARGET AND THE CONDITION TYPE IS 'HIDDEN'
   if (game.settings.get(CONSTANTS.MODULE_NAME, 'autoPassivePerception')) {
     //if (sourceVisionLevels.length === 0) {
-      let isTheCaseWhenOnlyTheHiddenConditionIsPresentOnTarget = true;
-      let currentHiddenValue = 0;
-      for (const targetVisionLevel of targetVisionLevels) {
-        if (!isStringEquals(targetVisionLevel.visionId, AtcvEffectConditionFlags.HIDDEN)) {
-          isTheCaseWhenOnlyTheHiddenConditionIsPresentOnTarget = false;
-          break;
-        } else {
-          currentHiddenValue = <number>targetVisionLevel.visionLevelValue;
-        }
+    let isTheCaseWhenOnlyTheHiddenConditionIsPresentOnTarget = true;
+    let currentHiddenValue = 0;
+    for (const targetVisionLevel of targetVisionLevels) {
+      if (!isStringEquals(targetVisionLevel.visionId, AtcvEffectConditionFlags.HIDDEN)) {
+        isTheCaseWhenOnlyTheHiddenConditionIsPresentOnTarget = false;
+        break;
+      } else {
+        currentHiddenValue = <number>targetVisionLevel.visionLevelValue;
       }
-      if (!currentHiddenValue) {
-        currentHiddenValue = 0;
+    }
+    if (!currentHiddenValue) {
+      currentHiddenValue = 0;
+    }
+    // if (currentHiddenValue < stealthedPassive && game.settings.get(CONSTANTS.MODULE_NAME, 'autoPassivePerception')) {
+    //   debug(
+    //     `(8.1) Is the case when only the hidden condition is present on target but stealth passive > the the hidden value state : Is true, target ${
+    //       targetToken.data.name
+    //     } ${'is visible'} to source ${sourceToken.data.name}`,
+    //   );
+    //   currentHiddenValue = stealthedPassive;
+    // }
+    if (isTheCaseWhenOnlyTheHiddenConditionIsPresentOnTarget) {
+      if (perceptionPassive >= currentHiddenValue) {
+        debug(
+          `(8.2) Check if the current perception passive value is >= of the 'Hidden Perception passive value': Is true, target ${
+            targetToken.data.name
+          } ${'is visible'} to source ${sourceToken.data.name}`,
+        );
+        return true;
       }
-      // if (currentHiddenValue < stealthedPassive && game.settings.get(CONSTANTS.MODULE_NAME, 'autoPassivePerception')) {
-      //   debug(
-      //     `(8.1) Is the case when only the hidden condition is present on target but stealth passive > the the hidden value state : Is true, target ${
-      //       targetToken.data.name
-      //     } ${'is visible'} to source ${sourceToken.data.name}`,
-      //   );
-      //   currentHiddenValue = stealthedPassive;
-      // }
-      if (isTheCaseWhenOnlyTheHiddenConditionIsPresentOnTarget) {
-        if (perceptionPassive >= currentHiddenValue) {
-          debug(
-            `(8.2) Check if the current perception passive value is >= of the 'Hidden Perception passive value': Is true, target ${
-              targetToken.data.name
-            } ${'is visible'} to source ${sourceToken.data.name}`,
-          );
-          return true;
-        }
-      }
+    }
     //}
   }
   debug(
@@ -1172,7 +1177,7 @@ function _getCVFromToken(
       effectNameToSet,
       <string>effectEntity.data.icon,
       undefined,
-      effectEntity.data.disabled
+      effectEntity.data.disabled,
     );
     if (!atcvEffectTmp.visionId) {
       continue;
@@ -1244,7 +1249,7 @@ export function retrieveAtcvEffectFromActiveEffect(
   effectName: string,
   effectIcon: string,
   isSense: boolean | undefined = undefined,
-  isDisabled:boolean,
+  isDisabled: boolean,
 ): AtcvEffect {
   const atcvEffect: AtcvEffect = <any>{};
 

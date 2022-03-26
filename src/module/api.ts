@@ -12,7 +12,12 @@ import {
   warn,
 } from './lib/lib';
 import EffectInterface from './effects/effect-interface';
-import { AtcvEffect, AtcvEffectConditionFlags, SenseData } from './conditional-visibility-models';
+import {
+  AtcvEffect,
+  AtcvEffectConditionFlags,
+  ConditionalVisibilityFlags,
+  SenseData,
+} from './conditional-visibility-models';
 import { EnhancedConditions } from './cub/enhanced-conditions';
 import { canvas, game } from './settings';
 import Effect, { EffectSupport } from './effects/effect';
@@ -697,9 +702,22 @@ const API = {
       return isStringEquals(senseData.id, AtcvEffectConditionFlags.HIDDEN);
     });
     if (senseDataEffect) {
-      const atcvEffect = AtcvEffect.fromSenseData(senseDataEffect, value);
+      // const atcvEffect = AtcvEffect.fromSenseData(senseDataEffect, value);
       for (const token of tokens) {
-        (this as typeof API).addEffectConditionalVisibilityOnToken(token.id, atcvEffect, false);
+        //(this as typeof API).addEffectConditionalVisibilityOnToken(token.id, atcvEffect, false);
+        const sourceVisionLevels = getConditionsFromToken(token.document, true) ?? [];
+        for (const sourceVision of sourceVisionLevels) {
+          if (isStringEquals(sourceVision.visionId, AtcvEffectConditionFlags.HIDDEN)) {
+            const atcvEffect = sourceVision; //AtcvEffect.fromSenseData(senseDataEffect, 1);
+            await token?.document.setFlag(CONSTANTS.MODULE_NAME, AtcvEffectConditionFlags.HIDDEN, atcvEffect);
+          }
+        }
+        if (
+          game.modules.get('midi-qol')?.active &&
+          <boolean>(<any>(<any>game.settings.get('midi-qol', 'ConfigSettings'))?.optionalRules)?.removeHiddenInvis
+        ) {
+          await token.document.unsetFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISILE);
+        }
       }
     }
   },
@@ -709,10 +727,17 @@ const API = {
       const sourceVisionLevels = getConditionsFromToken(token.document, true) ?? [];
       for (const sourceVision of sourceVisionLevels) {
         if (isStringEquals(sourceVision.visionId, AtcvEffectConditionFlags.HIDDEN)) {
-          const atcvEffect = sourceVision; //AtcvEffect.fromSenseData(senseDataEffect, 1);
+          // const atcvEffect = sourceVision; //AtcvEffect.fromSenseData(senseDataEffect, 1);
           await token.document.unsetFlag(CONSTANTS.MODULE_NAME, AtcvEffectConditionFlags.HIDDEN);
         }
       }
+      if (
+        game.modules.get('midi-qol')?.active &&
+        <boolean>(<any>(<any>game.settings.get('midi-qol', 'ConfigSettings'))?.optionalRules)?.removeHiddenInvis
+      ) {
+        await token.document.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISILE, true);
+      }
+      await token.document.unsetFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISILE);
     }
   },
 
@@ -729,6 +754,12 @@ const API = {
       for (const atcvEffect of arr2) {
         await token.document.unsetFlag(CONSTANTS.MODULE_NAME, atcvEffect.visionId);
       }
+      if (
+        game.modules.get('midi-qol')?.active &&
+        <boolean>(<any>(<any>game.settings.get('midi-qol', 'ConfigSettings'))?.optionalRules)?.removeHiddenInvis
+      ) {
+        await token.document.unsetFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISILE);
+      }
     }
   },
 
@@ -740,6 +771,12 @@ const API = {
       // const senseDataEffect = allSensesAndConditionsData.find((senseData) => {
       //   return isStringEquals(senseData.id, conditionId);
       // });
+      if (
+        game.modules.get('midi-qol')?.active &&
+        <boolean>(<any>(<any>game.settings.get('midi-qol', 'ConfigSettings'))?.optionalRules)?.removeHiddenInvis
+      ) {
+        await token.document.unsetFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISILE);
+      }
       const sourceVisionLevels = getConditionsFromToken(token.document, true) ?? [];
       for (const sourceVision of sourceVisionLevels) {
         if (isStringEquals(sourceVision.visionId, conditionId)) {

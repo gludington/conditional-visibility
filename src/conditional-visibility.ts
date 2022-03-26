@@ -130,7 +130,7 @@ Hooks.once('libChangelogsReady', function () {
   libChangelogs.registerConflict(
     CONSTANTS.MODULE_NAME,
     'less-fog',
-    `With less-fog module enabled and active, The module "less fog" breaks the dm view of tokens. The gm still see an invisible token as other tokens, but the players don't so is a minor issue. The solution is just make sure the module 'Less Fog' settings panel 'Reveal Tokens' is false (uncheked box), is itoptional but advisable to set 'Reveal to All Players' is false (uncheked box) either.`,
+    `With less-fog module enabled and active. The module "less fog" breaks the dm view of tokens. The gm still see an invisible token as other tokens, but the players don't so is a minor issue. The solution is just make sure the module 'Less Fog' settings 'Reveal Tokens' and 'Reveal to All Players' are set to false (uncheked box) both.`,
     'minor',
   );
 
@@ -138,9 +138,8 @@ Hooks.once('libChangelogsReady', function () {
   libChangelogs.register(
     CONSTANTS.MODULE_NAME,
     `
-    - Solved module incompatibility with [Less Fog](https://github.com/trdischat/lessfog/)
-    - Add check only for condition and sense effect not disable, now if the effect is disabled is not consider from the checker very useful whith [Dfreds Panel Effects](https://github.com/DFreds/dfreds-effects-panel)
-    - Moved all the initialization to the init hook and made it non-async, because the hooks/wrappers/settings need to be registered before the canvas is drawn. This fixes the issue that the tokens are initially visible after login.    
+    - Little bug fix 
+    - Integration with mid-qol optional rule, when a token make a attack it will visible for the duration of the attack.       
     `,
     'minor',
   );

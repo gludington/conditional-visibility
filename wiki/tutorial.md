@@ -36,8 +36,11 @@ The calculation for the vision checks is split in many phase forall the use case
 
 0) ~~Check if source token has the vision enabled, if disabled is like the module is not active for that token.~~ 
 1) Check if target token is hidden with standard hud feature of foundry and only GM can see
-3) Check if the target is owned from the player if true you can see the token.
-4) Check for the token disposition:
+
+  - 1.1) Check if target token is with the 'Force Visible' flag for Midi Qol integration
+
+2) Check if the target is owned from the player if true you can see the token.
+3) Check for the token disposition:
 
   - 3.1) by default the check is applied to all token disposition Friendly, Neutral, Hostile, You can disable the check for all non hostile NPC with the module settings 'Disable for non hostile npc'
 
@@ -50,10 +53,15 @@ The calculation for the vision checks is split in many phase forall the use case
 
 6) Check if the source token has the active effect `blinded` active, if is true, you cannot see anything and return false.
 7) If not 'condition' are present on the target token return true (nothing to check).
+
    - 7.1) Auto passive perception check if module setting `autoPassivePerception` is enabled
+
 8) Check again for _passive perception vs passive stealth_ like on point 4) this time we use the hidden active effect like the stealth passive on the target token...THIS WILL BE CHECK ONLY IF ONE CONDITION IS PRESENT ON THE TARGET AND THE CONDITION TYPE IS 'HIDDEN', **REMEMBER THE HIDDEN VALUE OVERRIDE THE STEALTH PASSIVE VALUE IN THIS CASE, so is like you downgrade the stealth passive of the target token with this trick**
+
   - ~~8.1) Remember if the _Stealth passive value_ is > then the current hidden value and module setting `autoPassivePerception` is enabled, we use the stelath passive value instead the hidden value~~
+
   - 8.2) Check if the current perception passive value is >= of the _Hidden Perception passive value_:
+
 9)  Check if the source token has some 'sense' powerful enough to beat every 'condition' ont he target token:
 
   - 9.0) If no `ATCV.visioId` is founded return true (this shouldn't never happened is just for avoid some unwanted behavior)

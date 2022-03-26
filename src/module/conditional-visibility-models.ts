@@ -285,7 +285,7 @@ export class AtcvEffect {
       i18n(effect.name),
       effect.icon,
       undefined,
-      effect.isDisabled
+      effect.isDisabled,
     );
     /*
     let sensesOrConditions: SenseData[] = [];
@@ -311,7 +311,7 @@ export class AtcvEffect {
       i18n(activeEffect.data.label),
       <string>activeEffect.data.icon,
       undefined,
-      activeEffect.data.disabled
+      activeEffect.data.disabled,
     );
     /*
     let sensesOrConditions: SenseData[] = [];
@@ -342,6 +342,10 @@ export interface SenseData {
   conditionTargetImage: string; // [OPTIONAL] string path to the image applied on target token and used from the source token (the one you click on) for replace only for that player with a special sight
   conditionDistance: number; // [OPTIONAL] set a maximum distance for check the sight with this effect
   conditionType: string; // indicate the type of CV usually they are or 'sense' or 'condition' not both, **THIS IS ESSENTIAL FOR USE SENSE AND CONDITION NOT REGISTERED ON THE MODULE IF NOT FOUNDED BY DEFAULT IS CONSIDERED A SENSE**, so now you can just modify the AE and you are not forced to call the registered macro of the module CV, this is very useful for integration with other modules.
+}
+
+export enum ConditionalVisibilityFlags {
+  FORCE_VISILE = 'forcevisible',
 }
 
 export enum AtcvEffectSenseFlags {

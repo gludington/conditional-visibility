@@ -25,6 +25,7 @@ import {
   AtcvEffect,
   AtcvEffectConditionFlags,
   AtcvEffectSenseFlags,
+  ConditionalVisibilityFlags,
   SenseData,
   VisionCapabilities,
 } from './conditional-visibility-models';
@@ -87,7 +88,8 @@ export const setupHooks = (): void => {
   // //@ts-ignore
   // game[CONSTANTS.MODULE_NAME].API = window.ConditionalVisibility.API;
 
-  setApi(API);
+  //@ts-ignore
+  setApi(window.ConditionalVisibility.API);
 };
 
 export const readyHooks = (): void => {
@@ -223,7 +225,11 @@ const module = {
     if (!game.user?.isGM && !isPlayerOwned) {
       return;
     }
-    if (change.flags && change.flags[CONSTANTS.MODULE_NAME]) {
+    if (
+      change.flags &&
+      change.flags[CONSTANTS.MODULE_NAME] &&
+      !getProperty(change, `flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISILE}`)
+    ) {
       const sourceVisionCapabilities: VisionCapabilities = new VisionCapabilities(<Token>document.object);
       const p = getProperty(change, `flags.${CONSTANTS.MODULE_NAME}`);
       for (const key in p) {

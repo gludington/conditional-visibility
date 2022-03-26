@@ -356,6 +356,7 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
   if (!sourceToken || !targetToken) {
     return true;
   }
+  // 1) Check if target token is hidden with standard hud feature of foundry and only GM can see
   if(targetToken.data.hidden){
     return false;
   }
@@ -432,8 +433,15 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
   // 1 - Preparation of the active effect
   // =========================================
 
-  const sourceVisionLevels = getSensesFromToken(sourceToken.document, true) ?? [];
-  const targetVisionLevels = getConditionsFromToken(targetToken.document, true) ?? [];
+  const sourceVisionLevels = 
+    getSensesFromToken(sourceToken.document, true).filter((atcvEffect) =>{
+      return !atcvEffect.visionIsDisabled;
+    }) ?? [];
+
+  const targetVisionLevels = 
+    getConditionsFromToken(targetToken.document, true).filter((atcvEffect) =>{
+      return !atcvEffect.visionIsDisabled;
+    }) ?? [];
 
   const stealthedPassive = getProperty(<Actor>targetToken?.document?.actor, `data.${API.STEALTH_PASSIVE_SKILL}`) || 0;
   // 10 + Wisdom Score Modifier + Proficiency Bonus
@@ -503,6 +511,18 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
         targetToken.data.name
       } ${'is visible'} to source ${sourceToken.data.name}`,
     );
+    if (game.settings.get(CONSTANTS.MODULE_NAME, 'autoPassivePerception')) {
+      if (perceptionPassive >= stealthedPassive) {
+        debug(
+          `(7.1) Auto passive perception: Is true, target ${targetToken.data.name} ${'is visible'} to source ${
+            sourceToken.data.name
+          }`,
+        );
+        return true;
+      }else{
+        return false;
+      }
+    }
     return true;
   }
   debug(
@@ -666,7 +686,8 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
       if (isStringEquals(targetVisionLevel.visionId, AtcvEffectConditionFlags.HIDDEN)) {
         if (
           game.settings.get(CONSTANTS.MODULE_NAME, 'autoPassivePerception') &&
-          stealthedPassive > <number>targetVisionLevel.visionLevelValue
+          //stealthedPassive > <number>targetVisionLevel.visionLevelValue
+          perceptionPassive > <number>targetVisionLevel.visionLevelValue
         ) {
           sourceVisionLevelsValidForDebug.set(sourceVisionLevel.visionId, {
             atcvSourceEffect: sourceVisionLevel,
@@ -1086,89 +1107,6 @@ export async function prepareActiveEffectForConditionalVisibility(
   return mapToUpdate;
 }
 
-// export function getSensesFromToken(token: Token): AtcvEffect[] {
-//   return _getCVFromToken(token, API.SENSES, true);
-// }
-
-// export function getConditionsFromToken(token: Token): AtcvEffect[] {
-//   return _getCVFromToken(token, API.CONDITIONS, false);
-// }
-
-// function _getCVFromToken(token: Token, statusSights: SenseData[], isSense:boolean): AtcvEffect[] {
-//   if (!token) {
-//     info(`No token found`);
-//     return [];
-//   }
-//   const actor = <Actor>token.document?.actor || <Actor>token?.actor; // <Actor>token.document?.getActor() ||
-//   if (!actor) {
-//     info(`No actor found for token '${token.name}'`);
-//     return [];
-//   }
-//   const actorEffects = <EmbeddedCollection<typeof ActiveEffect, ActorData>>actor?.data.effects;
-//   //const totalEffects = <EmbeddedCollection<typeof ActiveEffect, ActorData>>actor?.data.effects.contents.filter(i => !i.data.disabled);
-//   const atcvEffects = actorEffects.filter(
-//     (entity) => !!entity.data.changes.find((effect) => effect.key.includes('ATCV')),
-//   );
-
-//   const statusEffects: AtcvEffect[] = [];
-
-//   for (const effectEntity of atcvEffects) {
-//     const effectNameToSet = effectEntity.name ? effectEntity.name : effectEntity.data.label;
-//     if (!effectNameToSet) {
-//       continue;
-//     }
-//     const effectSight = statusSights.find((a: SenseData) => {
-//       return isStringEquals(effectNameToSet, a.id) || isStringEquals(effectNameToSet, a.name);
-//     });
-//     // if is a AE with the label of the module (no id sorry)
-//       let atcvVisionElevation = true;
-//       let atcvConditionTargets: string[] = [];
-//       let atcvConditionSources: string[] = [];
-//       let atcvDistance = 0;
-//       let atcvValue = 0;
-//       let atcvTargetImage = '';
-//       let atcvType = ''; //isSense ? 'sense' : 'condition';
-
-//       atcvVisionElevation = retrieveAtcvElevationFromActiveEffect(effectEntity.data.changes);
-//       atcvConditionTargets = retrieveAtcvTargetsFromActiveEffect(effectEntity.data.changes);
-//       atcvConditionSources = retrieveAtcvSourcesFromActiveEffect(effectEntity.data.changes);
-//       atcvDistance = retrieveAtcvVisionLevelDistanceFromActiveEffect(effectEntity.data.changes);
-//       atcvValue = retrieveAtcvVisionLevelValueFromActiveEffect(effectEntity.data.changes);
-//       atcvTargetImage = retrieveAtcvVisionTargetImageFromActiveEffect(effectEntity.data.changes);
-//       atcvType = retrieveAtcvTypeFromActiveEffect(effectEntity.data.changes);
-//       if(isSense && atcvType != 'sense'){
-//         continue;
-//       }
-//       if(!isSense && atcvType != 'condition'){
-//         continue;
-//       }
-
-//       if (effectSight && isSense) {
-//         // look up if you have not basic AE and if the check elevation is not enabled
-//         if (
-//           !effectSight.conditionElevation &&
-//           effectSight.id != AtcvEffectSenseFlags.NONE &&
-//           effectSight.id != AtcvEffectSenseFlags.NORMAL &&
-//           effectSight.id != AtcvEffectSenseFlags.BLINDED
-//         ) {
-//           atcvVisionElevation = false;
-//         }
-//       }
-
-//       statusEffects.push({
-//         visionElevation: atcvVisionElevation,
-//         visionTargets: atcvConditionTargets,
-//         visionSources: atcvConditionSources,
-//         statusSight: effectSight,
-//         visionDistanceValue: atcvDistance,
-//         visionLevelValue: atcvValue,
-//         visionTargetImage: atcvTargetImage,
-//         visionType: atcvType,
-//       });
-//   }
-//   return statusEffects;
-// }
-
 export function getSensesFromToken(tokenDocument: TokenDocument | null, filterValueNoZero = false): AtcvEffect[] {
   return _getCVFromToken(tokenDocument, true, filterValueNoZero);
 }
@@ -1234,6 +1172,7 @@ function _getCVFromToken(
       effectNameToSet,
       <string>effectEntity.data.icon,
       undefined,
+      effectEntity.data.disabled
     );
     if (!atcvEffectTmp.visionId) {
       continue;
@@ -1299,140 +1238,13 @@ function _getCVFromToken(
   }
 }
 
-/*
-function _getCVFromToken(token: Token, isSense: boolean, filterValueNoZero = false): AtcvEffect[] {
-  if (!token) {
-    info(`No token found`);
-    return [];
-  }
-  const actor = <Actor>token.document?.actor || <Actor>token?.actor; // <Actor>token.document?.getActor() ||
-  if (!actor) {
-    info(`No actor found for token '${token.name}'`);
-    return [];
-  }
-  const actorEffects = <EmbeddedCollection<typeof ActiveEffect, ActorData>>actor?.data.effects;
-  //const totalEffects = <EmbeddedCollection<typeof ActiveEffect, ActorData>>actor?.data.effects.contents.filter(i => !i.data.disabled);
-  const atcvEffects = actorEffects.filter(
-    (entity) => !!entity.data.changes.find((effect) => effect.key.includes('ATCV')),
-  );
-
-  const statusEffects: AtcvEffect[] = [];
-
-  for (const effectEntity of atcvEffects) {
-    const effectNameToSet = effectEntity.name ? effectEntity.name : effectEntity.data.label;
-    if (!effectNameToSet) {
-      continue;
-    }
-    // const effectSight = statusSights.find((a: SenseData) => {
-    //   return isStringEquals(effectNameToSet, a.id) || isStringEquals(effectNameToSet, a.name);
-    // });
-    // if is a AE with the label of the module (no id sorry)
-    const atcvValue = retrieveAtcvVisionLevelValueFromActiveEffect(effectEntity.data.changes) || 0;
-    if (atcvValue == 0 && filterValueNoZero) {
-      continue;
-    }
-    const atcvCustomId = retrieveAtcvVisionLevelKeyFromActiveEffect(effectEntity.data.changes) || '';
-    const atcvVisionElevation = retrieveAtcvElevationFromActiveEffect(effectEntity.data.changes) || true;
-    const atcvConditionTargets = retrieveAtcvTargetsFromActiveEffect(effectEntity.data.changes) || [];
-    const atcvConditionSources = retrieveAtcvSourcesFromActiveEffect(effectEntity.data.changes) || [];
-    const atcvDistance = retrieveAtcvVisionLevelDistanceFromActiveEffect(effectEntity.data.changes) || 0;
-    const atcvTargetImage = retrieveAtcvVisionTargetImageFromActiveEffect(effectEntity.data.changes) || '';
-    let atcvType = retrieveAtcvTypeFromActiveEffect(effectEntity.data.changes) || '';
-    const atcvLevelMinIndex = retrieveAtcvLevelMinIndexFromActiveEffect(effectEntity.data.changes) || 0;
-    const atcvLevelMaxIndex = retrieveAtcvLevelMaxIndexFromActiveEffect(effectEntity.data.changes) || 10;
-    let atcvPath = '';
-
-    const effectSightSense = <SenseData>API.SENSES.find((a: SenseData) => {
-      return isStringEquals(effectNameToSet, a.id) || isStringEquals(effectNameToSet, a.name);
-    });
-    const effectSightCondition = <SenseData>API.CONDITIONS.find((a: SenseData) => {
-      return isStringEquals(effectNameToSet, a.id) || isStringEquals(effectNameToSet, a.name);
-    });
-
-    // TODO maybe i can do better than this ...
-    if (effectSightSense && !atcvType) {
-      atcvType = 'sense';
-    }
-    if (effectSightCondition && !atcvType) {
-      atcvType = 'condition';
-    }
-    if (isSense && !atcvType) {
-      atcvType = 'sense';
-    }
-    if (!isSense && !atcvType) {
-      atcvType = 'condition';
-    }
-    if (isSense && atcvType != 'sense') {
-      continue;
-    }
-    if (!isSense && atcvType != 'condition') {
-      continue;
-    }
-
-    if(effectSightSense){
-      atcvPath = effectSightSense.path;
-    }
-    if(effectSightCondition){
-      atcvPath = effectSightCondition.path;
-    }
-
-    statusEffects.push({
-      visionId: atcvCustomId,
-      visionName: effectNameToSet,
-      visionPath: atcvPath,
-      visionIcon: <string>effectEntity.data.icon,
-
-      visionElevation: atcvVisionElevation,
-      visionTargets: atcvConditionTargets,
-      visionSources: atcvConditionSources,
-      // statusSight: effectSight,
-      visionDistanceValue: atcvDistance,
-      visionLevelValue: atcvValue,
-      visionTargetImage: atcvTargetImage,
-      visionType: atcvType,
-      visionLevelMinIndex: atcvLevelMinIndex,
-      visionLevelMaxIndex: atcvLevelMaxIndex,
-    });
-  }
-  if (!filterValueNoZero) {
-    let sensesOrConditions: SenseData[] = [];
-    if (isSense) {
-      sensesOrConditions = API.SENSES;
-    } else {
-      sensesOrConditions = API.CONDITIONS;
-    }
-    for (const senseData of sensesOrConditions) {
-      const alreadyPresent = statusEffects.find((e) => {
-        return isStringEquals(e.visionId, senseData.id);
-      });
-      if (!alreadyPresent) {
-        const atcvEffect: AtcvEffect = {
-          visionId: senseData.id,
-          visionName: senseData.name,
-          visionElevation: senseData.conditionElevation,
-          visionTargets: senseData.conditionTargets,
-          visionSources: senseData.conditionSources,
-          // statusSight: effectSight,
-          visionDistanceValue: senseData.conditionDistance,
-          visionLevelValue: 0,
-          visionTargetImage: senseData.conditionTargetImage,
-          visionType: senseData.conditionType,
-          visionLevelMinIndex: senseData.visionLevelMinIndex,
-          visionLevelMaxIndex: senseData.visionLevelMaxIndex,
-        };
-        statusEffects.push(atcvEffect);
-      }
-    }
-  }
-  return statusEffects;
-}
-*/
 export function retrieveAtcvEffectFromActiveEffect(
   tokenDocument: TokenDocument,
   effectChanges: EffectChangeData[],
   effectName: string,
   effectIcon: string,
   isSense: boolean | undefined = undefined,
+  isDisabled:boolean,
 ): AtcvEffect {
   const atcvEffect: AtcvEffect = <any>{};
 
@@ -1587,6 +1399,8 @@ export function retrieveAtcvEffectFromActiveEffect(
       // this cannot be happening
     }
   }
+
+  atcvEffect.visionIsDisabled = String(isDisabled) === 'true' ? true : false;
 
   return AtcvEffect.mergeWithSensedataDefault(atcvEffect);
   //return atcvEffect;

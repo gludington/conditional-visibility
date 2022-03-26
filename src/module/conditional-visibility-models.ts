@@ -22,16 +22,17 @@ export class AtcvEffect {
   // Effect changes
   // statusSight: SenseData | undefined;
   visionLevelValue: number | undefined;
-  visionLevelMinIndex: number;
-  visionLevelMaxIndex: number;
+  // visionLevelMinIndex: number;
+  // visionLevelMaxIndex: number;
   visionElevation: boolean;
   visionTargets: string[];
   visionSources: string[];
   visionTargetImage: string;
   visionDistanceValue: number | undefined;
   visionType: string;
+  visionIsDisabled: boolean;
 
-  static fromSenseData(senseData: SenseData, visionLevelValue: number) {
+  static fromSenseData(senseData: SenseData, visionLevelValue: number, isDisabled = false) {
     let isSense = false;
     if (senseData.conditionType === 'sense') {
       isSense = true;
@@ -58,6 +59,7 @@ export class AtcvEffect {
     res.visionTargetImage = senseData.conditionTargetImage;
     res.visionDistanceValue = senseData.conditionDistance;
     res.visionType = senseData.conditionType ? senseData.conditionType : isSense ? 'sense' : 'condition';
+    res.visionIsDisabled = String(isDisabled) === 'true' ? true : false;
     return res;
   }
 
@@ -110,6 +112,9 @@ export class AtcvEffect {
     }
     // if(!res.visionType){
     //   res.visionType = isSense ? 'sense' : 'condition';
+    // }
+    // if(!res.visionIsDisabled){
+    //   res.visionIsDisabled = Stirng(IsDisabled) === 'true' ? true : false;
     // }
     return res;
   }
@@ -280,6 +285,7 @@ export class AtcvEffect {
       i18n(effect.name),
       effect.icon,
       undefined,
+      effect.isDisabled
     );
     /*
     let sensesOrConditions: SenseData[] = [];
@@ -305,6 +311,7 @@ export class AtcvEffect {
       i18n(activeEffect.data.label),
       <string>activeEffect.data.icon,
       undefined,
+      activeEffect.data.disabled
     );
     /*
     let sensesOrConditions: SenseData[] = [];
@@ -463,8 +470,9 @@ export class VisionCapabilities {
           let conditionSources: string[] = atcvEffectFlagData.visionSources || [];
           let conditionTargetImage = atcvEffectFlagData.visionTargetImage || '';
           let conditionType = atcvEffectFlagData.visionType || 'sense';
-          let conditionLevelMinIndex = atcvEffectFlagData.visionLevelMinIndex || 0;
-          let conditionLevelMaxIndex = atcvEffectFlagData.visionLevelMaxIndex || 10;
+          // let conditionLevelMinIndex = atcvEffectFlagData.visionLevelMinIndex || 0;
+          // let conditionLevelMaxIndex = atcvEffectFlagData.visionLevelMaxIndex || 10;
+          let conditionIsDisabled = atcvEffectFlagData.visionIsDisabled || false;
 
           const statusEffect = <AtcvEffect>{
             visionId: statusSight.id,
@@ -477,8 +485,9 @@ export class VisionCapabilities {
             visionTargetImage: conditionTargetImage ?? '',
             // statusSight: statusSight,
             visionType: conditionType,
-            visionLevelMinIndex: conditionLevelMinIndex,
-            visionLevelMaxIndex: conditionLevelMaxIndex,
+            // visionLevelMinIndex: conditionLevelMinIndex,
+            // visionLevelMaxIndex: conditionLevelMaxIndex,
+            visionIsDisabled: conditionIsDisabled,
           };
           this.senses.set(statusSight.id, statusEffect);
         }
@@ -521,8 +530,9 @@ export class VisionCapabilities {
           let conditionSources: string[] = atcvEffectFlagData.visionSources || [];
           let conditionTargetImage = atcvEffectFlagData.visionTargetImage || '';
           let conditionType = atcvEffectFlagData.visionType || 'condition';
-          let conditionLevelMinIndex = atcvEffectFlagData.visionLevelMinIndex || 0;
-          let conditionLevelMaxIndex = atcvEffectFlagData.visionLevelMaxIndex || 10;
+          // let conditionLevelMinIndex = atcvEffectFlagData.visionLevelMinIndex || 0;
+          // let conditionLevelMaxIndex = atcvEffectFlagData.visionLevelMaxIndex || 10;
+          let conditionIsDisabled = atcvEffectFlagData.visionIsDisabled || false;
 
           const statusEffect = <AtcvEffect>{
             visionId: statusSight.id,
@@ -535,8 +545,9 @@ export class VisionCapabilities {
             visionTargetImage: conditionTargetImage ?? '',
             // statusSight: statusSight,
             visionType: conditionType,
-            visionLevelMinIndex: conditionLevelMinIndex,
-            visionLevelMaxIndex: conditionLevelMaxIndex,
+            // visionLevelMinIndex: conditionLevelMinIndex,
+            // visionLevelMaxIndex: conditionLevelMaxIndex,
+            visionIsDisabled: conditionIsDisabled,
           };
           this.conditions.set(statusSight.id, statusEffect);
         }

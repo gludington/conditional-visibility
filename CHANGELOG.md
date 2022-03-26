@@ -1,3 +1,9 @@
+### 0.5.12
+
+- Solved module incompatibility with [Less Fog](https://github.com/trdischat/lessfog/)
+- Add check only for condition and sense effect not disable, now if the effect is disabled is not consider from the checker very useful whith [Dfreds Panel Effects](https://github.com/DFreds/dfreds-effects-panel)
+- Moved all the initialization to the init hook and made it non-async, because the hooks/wrappers/settings need to be registered before the canvas is drawn. This fixes the issue that the tokens are initially visible after login.
+
 ### 0.5.7-8-9-10-11
 
 - Apply integration with `data.attributes.sense` for dnd5 systerm

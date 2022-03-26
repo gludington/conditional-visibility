@@ -32,7 +32,7 @@ import { EffectChangeData } from '@league-of-foundry-developers/foundry-vtt-type
 import { EffectSupport } from './effects/effect';
 import { setApi } from '../conditional-visibility';
 
-export const initHooks = async (): Promise<void> => {
+export const initHooks = (): void => {
   // registerSettings();
   registerLibwrappers();
 
@@ -62,7 +62,7 @@ export const initHooks = async (): Promise<void> => {
   };
 };
 
-export const setupHooks = async (): Promise<void> => {
+export const setupHooks = (): void => {
   // setup all the hooks
 
   //@ts-ignore
@@ -90,7 +90,7 @@ export const setupHooks = async (): Promise<void> => {
   setApi(API);
 };
 
-export const readyHooks = async (): Promise<void> => {
+export const readyHooks = (): void => {
   checkSystem();
   registerHotkeys();
   Hooks.callAll(HOOKS.READY);

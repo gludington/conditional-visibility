@@ -1,3 +1,7 @@
+### 0.5.19
+
+- Big update transfer all the flags from `token.data.flags` to `token.actor.data.flags`. 
+
 ### 0.5.13-14-15-16-17-18
 
 - Solved loop on mutliple delete active effect

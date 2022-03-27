@@ -20,6 +20,7 @@ import {
 } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/module.mjs';
 import Effect from '../effects/effect.js';
 import { ConditionalVisibilityEffectDefinitions } from '../conditional-visibility-effect-definition';
+import { tokenToString } from 'typescript';
 
 // =============================
 // Module Generic function
@@ -362,7 +363,9 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
     return false;
   }
   // 1.1) Check if target token is with the 'Force Visible' flag for Midi Qol integration
-  if (targetToken.document.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISILE)) {
+  // if (targetToken.document.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISILE)) {
+  if (targetToken.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISILE) 
+    || targetToken.document.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISILE)) {
     return true;
   }
 
@@ -950,7 +953,9 @@ export async function prepareActiveEffectForConditionalVisibility(
         await API.findEffectByNameOnToken(<string>sourceToken.id, effectNameToCheckOnActor)
       );
       //const actve = sourceToken.document?.getFlag(CONSTANTS.MODULE_NAME, senseData.id);
-      const atcvEffectFlagData = <AtcvEffect>sourceToken.document?.getFlag(CONSTANTS.MODULE_NAME, senseData.visionId);
+      // const atcvEffectFlagData = <AtcvEffect>sourceToken.document?.getFlag(CONSTANTS.MODULE_NAME, senseData.visionId);
+      const atcvEffectFlagData = <AtcvEffect>sourceToken.actor?.getFlag(CONSTANTS.MODULE_NAME, senseData.visionId) 
+        ?? <AtcvEffect>sourceToken.document?.getFlag(CONSTANTS.MODULE_NAME, senseData.visionId);;
       const actve = atcvEffectFlagData?.visionLevelValue;
       if (actve === 0 || actve === null || actve === undefined || !actve) {
         // await API.removeEffectFromIdOnToken(<string>sourceToken.id, <string>activeEffectToRemove.id);
@@ -1619,8 +1624,12 @@ export function retrieveAtcvVisionLevelDistanceFromActiveEffect(effectChanges: E
 export async function toggleStealth(event) {
   //const stealthedWithHiddenConditionOri =
   //  this.object.document.getFlag(CONSTANTS.MODULE_NAME, AtcvEffectConditionFlags.HIDDEN) ?? 0;
+  // const atcvEffectFlagData = <AtcvEffect>(
+  //   this.object.document.getFlag(CONSTANTS.MODULE_NAME, AtcvEffectConditionFlags.HIDDEN)
+  // );
   const atcvEffectFlagData = <AtcvEffect>(
-    this.object.document.getFlag(CONSTANTS.MODULE_NAME, AtcvEffectConditionFlags.HIDDEN)
+    this.object.actor.getFlag(CONSTANTS.MODULE_NAME, AtcvEffectConditionFlags.HIDDEN) 
+    ?? this.object.document.getFlag(CONSTANTS.MODULE_NAME, AtcvEffectConditionFlags.HIDDEN)
   );
   let stealthedWithHiddenCondition = atcvEffectFlagData?.visionLevelValue ?? 0;
   let stealthedPassive = 0;
@@ -1697,17 +1706,26 @@ export async function toggleStealth(event) {
             selectedTokens = [<Token[]>canvas.tokens?.controlled][0];
           }
           for (const selectedToken of selectedTokens) {
+            const setAeToRemove = new Set<string>();
+            const actorEffects = <EmbeddedCollection<typeof ActiveEffect, ActorData>>selectedToken.actor?.data.effects;
             if (senseId != AtcvEffectSenseFlags.NONE && senseId != AtcvEffectSenseFlags.NORMAL) {
               const effect = <Effect>await ConditionalVisibilityEffectDefinitions.effect(senseId);
               if (effect) {
                 if (valStealthRoll == 0) {
-                  await API.removeEffectOnToken(selectedToken.id, i18n(<string>effect?.name));
-                  await selectedToken.document.unsetFlag(CONSTANTS.MODULE_NAME, senseId);
+                  // await API.removeEffectOnToken(selectedToken.id, i18n(<string>effect?.name));
+                  const effectToRemove = <ActiveEffect>(
+                    actorEffects.find((activeEffect) => isStringEquals(<string>activeEffect?.data?.label,<string>effect?.name))
+                  );
+                  if(effectToRemove){
+                    setAeToRemove.add(<string>effectToRemove.id);
+                  }
+                  // await selectedToken.document.unsetFlag(CONSTANTS.MODULE_NAME, senseId);
+                  await repairAndUnSetFlag(selectedToken, senseId);
                 } else {
-                  //await selectedToken.document.setFlag(CONSTANTS.MODULE_NAME, senseId, valStealthRoll);
                   const atcvEffectFlagData = AtcvEffect.fromEffect(this.object.document, effect);
                   atcvEffectFlagData.visionLevelValue = valStealthRoll;
-                  await selectedToken.document.setFlag(CONSTANTS.MODULE_NAME, senseId, atcvEffectFlagData);
+                  // await selectedToken.document.setFlag(CONSTANTS.MODULE_NAME, senseId, atcvEffectFlagData);
+                  await repairAndSetFlag(selectedToken, senseId, atcvEffectFlagData);
                 }
               } else {
                 warn(`Can't find effect definition for '${senseId}', maybe you forgot to registered that ?`, true);
@@ -1717,17 +1735,28 @@ export async function toggleStealth(event) {
               const effect = <Effect>await ConditionalVisibilityEffectDefinitions.effect(conditionId);
               if (effect) {
                 if (valStealthRoll == 0) {
-                  await API.removeEffectOnToken(selectedToken.id, i18n(<string>effect?.name));
-                  await selectedToken.document.unsetFlag(CONSTANTS.MODULE_NAME, conditionId);
+                  // await API.removeEffectOnToken(selectedToken.id, i18n(<string>effect?.name));
+                  const effectToRemove = <ActiveEffect>(
+                    actorEffects.find((activeEffect) => isStringEquals(<string>activeEffect?.data?.label,<string>effect?.name))
+                  );
+                  if(effectToRemove){
+                    setAeToRemove.add(<string>effectToRemove.id);
+                  }
+                  // await selectedToken.document.unsetFlag(CONSTANTS.MODULE_NAME, conditionId);
+                  await repairAndUnSetFlag(selectedToken, conditionId);
                 } else {
-                  //await selectedToken.document.setFlag(CONSTANTS.MODULE_NAME, conditionId, valStealthRoll);
                   const atcvEffectFlagData = AtcvEffect.fromEffect(this.object.document, effect);
                   atcvEffectFlagData.visionLevelValue = valStealthRoll;
-                  await selectedToken.document.setFlag(CONSTANTS.MODULE_NAME, conditionId, atcvEffectFlagData);
+                  // await selectedToken.document.setFlag(CONSTANTS.MODULE_NAME, conditionId, atcvEffectFlagData);
+                  await repairAndSetFlag(selectedToken, conditionId, atcvEffectFlagData);
                 }
               } else {
                 warn(`Can't find effect definition for '${conditionId}', maybe you forgot to registered that ?`, true);
               }
+            }
+            // FINALLY REMVE ALL THE ACTIVE EFFECT
+            if (setAeToRemove.size > 0) {
+              API.removeEffectFromIdOnTokenMultiple(<string>selectedToken.id, Array.from(setAeToRemove));
             }
           }
           event.currentTarget.classList.toggle('active', valStealthRoll && valStealthRoll != 0);
@@ -1851,3 +1880,49 @@ export function isTokenInRange(token: Token, object: Tile | Drawing | AmbientLig
 }
 
 // ========================================================================================
+
+export async function repairAndSetFlag(token:Token, key:string, value:any){
+  if(token.document.getFlag(CONSTANTS.MODULE_NAME,key)){
+    if(token.actor){
+      await token.actor?.setFlag(CONSTANTS.MODULE_NAME,key,value);
+    }
+    await token.document.unsetFlag(CONSTANTS.MODULE_NAME, key);
+  }else{
+    if(token.actor){
+      await token.actor?.setFlag(CONSTANTS.MODULE_NAME,key,value);
+    }
+  }
+}
+
+export async function repairAndUnSetFlag(token:Token, key:string){
+  if(token.document.getFlag(CONSTANTS.MODULE_NAME, key)){
+    await token.document.unsetFlag(CONSTANTS.MODULE_NAME, key);
+    if(token.actor){
+      await token.actor?.unsetFlag(CONSTANTS.MODULE_NAME,key);
+    }
+  }else{
+    if(token.actor){
+      await token.actor?.unsetFlag(CONSTANTS.MODULE_NAME, key);
+    }
+  }
+}
+
+// export async function repairAndGetFlag(token:Token, key:string):Promise<AtcvEffect|undefined>{
+//   if(token.document.getFlag(CONSTANTS.MODULE_NAME,key)){
+//     const currentValue = token.document.getFlag(CONSTANTS.MODULE_NAME,key);
+//     if(token.actor){
+//       await token.actor?.setFlag(CONSTANTS.MODULE_NAME,key,currentValue);
+//       await token.document.unsetFlag(CONSTANTS.MODULE_NAME, key);
+//       return <AtcvEffect>token.actor?.getFlag(CONSTANTS.MODULE_NAME,key);
+//     }else{
+//       await token.document.unsetFlag(CONSTANTS.MODULE_NAME, key);
+//       return undefined;
+//     }
+//   }else{
+//     if(token.actor){
+//       return <AtcvEffect>token.actor?.getFlag(CONSTANTS.MODULE_NAME,key);
+//     }else{
+//       return undefined;
+//     }
+//   }
+// }

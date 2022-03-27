@@ -437,35 +437,12 @@ export class VisionCapabilities {
     return sensesTmp;
   }
 
-  // async refreshSenses() {
-  //   for (const [key, value] of this.senses.entries()) {
-  //     // const statusSight = value.statusSight;
-  //     // const visionLevelValue = value.visionLevelValue;
-  //     //await this.token.document.setFlag(CONSTANTS.MODULE_NAME, key, visionLevelValue);
-  //     const atcvEffectFlagData = AtcvEffectFlagData.fromAtcvEffect(value);
-  //     await this.token.document.setFlag(CONSTANTS.MODULE_NAME, key, atcvEffectFlagData);
-  //     if (value.statusSight?.path) {
-  //       setProperty(this.token, <string>value.statusSight?.path, value.visionLevelValue);
-  //     }
-  //   }
-  // }
-
-  // retrieveSenseValue(statusSense: string): number | undefined {
-  //   let sense: number | undefined = undefined;
-  //   for (const statusEffect of this.senses.values()) {
-  //     const statusSight = <SenseData>statusEffect.statusSight;
-  //     if (statusSense == statusSight.id) {
-  //       sense = this.senses.get(statusSense)?.visionLevelValue;
-  //       break;
-  //     }
-  //   }
-  //   return sense;
-  // }
-
   addSenses() {
     Promise.all(
       API.SENSES.map(async (statusSight) => {
-        const atcvEffectFlagData = <AtcvEffect>this.token?.document?.getFlag(CONSTANTS.MODULE_NAME, statusSight.id);
+        // const atcvEffectFlagData = <AtcvEffect>this.token?.document?.getFlag(CONSTANTS.MODULE_NAME, statusSight.id);
+        const atcvEffectFlagData = <AtcvEffect>this.token?.actor?.getFlag(CONSTANTS.MODULE_NAME, statusSight.id)
+          ?? <AtcvEffect>this.token?.document?.getFlag(CONSTANTS.MODULE_NAME, statusSight.id);
         if (atcvEffectFlagData) {
           let visionLevelValue = atcvEffectFlagData.visionLevelValue || 0;
           let visionDistanceValue = atcvEffectFlagData.visionDistanceValue || 0;
@@ -509,23 +486,12 @@ export class VisionCapabilities {
     return coditionsTmp;
   }
 
-  // async refreshConditions() {
-  //   for (const [key, value] of this.conditions.entries()) {
-  //     //const statusSight = value.statusSight;
-  //     // const visionLevelValue = value.visionLevelValue;
-  //     // await this.token.document.setFlag(CONSTANTS.MODULE_NAME, key, visionLevelValue);
-  //     const atcvEffectFlagData = AtcvEffectFlagData.fromAtcvEffect(value);
-  //     await this.token.document.setFlag(CONSTANTS.MODULE_NAME, key, atcvEffectFlagData);
-  //     if (value.statusSight?.path) {
-  //       setProperty(this.token, <string>value.statusSight?.path, value.visionLevelValue);
-  //     }
-  //   }
-  // }
-
   addConditions() {
     Promise.all(
       API.CONDITIONS.map(async (statusSight) => {
-        const atcvEffectFlagData = <AtcvEffect>this.token.document?.getFlag(CONSTANTS.MODULE_NAME, statusSight.id);
+        // const atcvEffectFlagData = <AtcvEffect>this.token.document?.getFlag(CONSTANTS.MODULE_NAME, statusSight.id);
+        const atcvEffectFlagData = <AtcvEffect>this.token?.actor?.getFlag(CONSTANTS.MODULE_NAME, statusSight.id) 
+          ?? <AtcvEffect>this.token.document?.getFlag(CONSTANTS.MODULE_NAME, statusSight.id);
         if (atcvEffectFlagData) {
           let visionLevelValue = atcvEffectFlagData.visionLevelValue || 0;
           let visionDistanceValue = atcvEffectFlagData.visionDistanceValue || 0;
@@ -558,18 +524,6 @@ export class VisionCapabilities {
       }),
     );
   }
-
-  // retrieveConditionValue(statusSense: string): number | undefined {
-  //   let sense: number | undefined = undefined;
-  //   for (const statusEffect of this.conditions.values()) {
-  //     const statusSight = <SenseData>statusEffect.statusSight;
-  //     if (statusSense == statusSight.id) {
-  //       sense = this.senses.get(statusSense)?.visionLevelValue;
-  //       break;
-  //     }
-  //   }
-  //   return sense;
-  // }
 }
 
 export class CheckerDebugData {

@@ -138,8 +138,7 @@ Hooks.once('libChangelogsReady', function () {
   libChangelogs.register(
     CONSTANTS.MODULE_NAME,
     `
-    - Little bug fix 
-    - Integration with mid-qol optional rule, when a token make a attack it will visible for the duration of the attack.       
+    - Big update transfer all the flags from 'token.data.flags' to 'token.actor.data.flags'.
     `,
     'minor',
   );

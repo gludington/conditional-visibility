@@ -1,3 +1,7 @@
+### 0.5.21
+
+- Solved the issue User lacks permission to update Token in parent Scene (maybe ?)
+
 ### 0.5.20
 
 - Buf fix [[BUG] 'Disable for Non-Hostile' disables Conditional Visability's hiding of tokens for all tokens]](https://github.com/p4535992/conditional-visibility/issues/23)

@@ -138,7 +138,7 @@ Hooks.once('libChangelogsReady', function () {
   libChangelogs.register(
     CONSTANTS.MODULE_NAME,
     `
-    - Big update transfer all the flags from 'token.data.flags' to 'token.actor.data.flags'.
+    - Solved the issue User lacks permission to update Token in parent Scene (maybe ?).
     `,
     'minor',
   );

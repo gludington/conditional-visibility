@@ -563,6 +563,15 @@ Hooks.on('renderChatMessage', async (message: ChatMessage, html: JQuery<HTMLElem
     selectedTokens = [<Token[]>canvas.tokens?.controlled][0];
   }
 
+  const sourceToken = selectedTokens[0];
+  if (!sourceToken) {
+    return;
+  }
+  const isPlayerOwned = <boolean>sourceToken.document.isOwner;
+  if (!game.user?.isGM && !isPlayerOwned) {
+    return;
+  }
+
   let isStealth = false;
   // This work with TAH, LMRTFY and character sheet
   if (speakerInfo.message.roll) {

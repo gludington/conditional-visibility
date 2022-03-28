@@ -34,6 +34,7 @@ import {
 import { EffectChangeData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/data.mjs/effectChangeData';
 import { EffectSupport } from './effects/effect';
 import { setApi } from '../conditional-visibility';
+import { tokenToString } from 'typescript';
 
 export const initHooks = (): void => {
   // registerSettings();
@@ -240,6 +241,14 @@ const module = {
       !getProperty(change, `flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISILE}`)
     ) {
       module.updateToken(sourceToken.document, change, options, userId);
+    }else{
+      if(getProperty(<Actor>sourceToken.actor,`data.flags.${CONSTANTS.MODULE_NAME}`)){
+        // Refrsh for any ATCV update
+        canvas.perception.schedule({
+          lighting: { refresh: true },
+          sight: { refresh: true }
+        });
+      }
     }
   },
   async updateToken(document: TokenDocument, change, options, userId) {
@@ -422,6 +431,13 @@ const module = {
         API.removeEffectFromIdOnTokenMultiple(<string>sourceToken.id, Array.from(setAeToRemove));
       }
     }
+    if(getProperty(<Actor>sourceToken.actor,`data.flags.${CONSTANTS.MODULE_NAME}`)){
+      // Refrsh for any ATCV update
+      canvas.perception.schedule({
+        lighting: { refresh: true },
+        sight: { refresh: true }
+      });
+    }
   },
   async updateActiveEffect(activeEffect: ActiveEffect, options: EffectChangeData, isRemoved: boolean) {
     if (
@@ -548,6 +564,11 @@ const module = {
         }
       }
     }
+    // Refrsh for any ATCV update
+    canvas.perception.schedule({
+      lighting: { refresh: true },
+      sight: { refresh: true }
+    });
   },
   async dfredsConvenientEffectsReady(...args) {
     if (!game.settings.get(CONSTANTS.MODULE_NAME, 'disableDCEAutomaticImport')) {

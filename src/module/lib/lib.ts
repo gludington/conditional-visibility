@@ -424,7 +424,7 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
     return true;
   }
   debug(
-    `(3.2) Source token and target token are bot hostile: Is false, target ${
+    `(3.2) Source token and target token are both hostile: Is false, target ${
       targetToken.data.name
     } ${'is not visible'} to source ${sourceToken.data.name}`,
   );
@@ -433,7 +433,22 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
       targetActorDisposition === CONST.TOKEN_DISPOSITIONS.FRIENDLY ||
       targetActorDisposition === CONST.TOKEN_DISPOSITIONS.NEUTRAL
     ) {
-      return true;
+      // 3.3 Check if the source is a hostile token
+      if(sourceActorDisposition === CONST.TOKEN_DISPOSITIONS.HOSTILE){
+        // debug(
+        //   `(3.3) Source token is hostile: Is true, target ${
+        //     targetToken.data.name
+        //   } ${'is not visible'} to source ${sourceToken.data.name}`,
+        // );
+        // return false;
+      }else{
+        debug(
+          `(3.3) Source token is hostile: Is false, target ${
+            targetToken.data.name
+          } ${'is visible'} to source ${sourceToken.data.name}`,
+        );
+        return true;
+      }
     }
   }
 

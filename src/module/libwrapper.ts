@@ -1,7 +1,19 @@
 import { AtcvEffect, AtcvEffectConditionFlags, AtcvEffectSenseFlags } from './conditional-visibility-models';
 import API from './api';
 import CONSTANTS from './constants';
-import { debug, getSensesFromToken, i18n, isStringEquals, log, repairAndSetFlag, repairAndUnSetFlag, shouldIncludeVision, templateTokens, warn } from './lib/lib';
+import {
+  debug,
+  getSensesFromToken,
+  i18n,
+  isStringEquals,
+  is_real_number,
+  log,
+  repairAndSetFlag,
+  repairAndUnSetFlag,
+  shouldIncludeVision,
+  templateTokens,
+  warn,
+} from './lib/lib';
 import { canvas, game } from './settings';
 import { ConditionalVisibilityEffectDefinitions } from './conditional-visibility-effect-definition';
 import Effect from './effects/effect';
@@ -567,6 +579,7 @@ Hooks.on('renderChatMessage', async (message: ChatMessage, html: JQuery<HTMLElem
         let text = arr1[i];
         if (text) {
           text = text.toLowerCase().trim();
+          // TODO integration multisystem
           // Keywords to avoid for all the system ?
           if (text.indexOf('check') !== -1 || text.indexOf('ability') !== -1 || text.indexOf('skill') !== -1) {
             //
@@ -589,7 +602,8 @@ Hooks.on('renderChatMessage', async (message: ChatMessage, html: JQuery<HTMLElem
     if (isStealth) {
       //@ts-ignore
       let valStealthRoll = parseInt(rollChatTotal);
-      if (isNaN(valStealthRoll)) {
+      // if (isNaN(valStealthRoll)) {
+      if (!is_real_number(valStealthRoll)) {
         valStealthRoll = 0;
       }
 
@@ -601,16 +615,18 @@ Hooks.on('renderChatMessage', async (message: ChatMessage, html: JQuery<HTMLElem
           continue;
         }
         const setAeToRemove = new Set<string>();
-        const actorEffects = <EmbeddedCollection<typeof ActiveEffect, ActorData>>selectedToken.actor?.data.effects;  
+        const actorEffects = <EmbeddedCollection<typeof ActiveEffect, ActorData>>selectedToken.actor?.data.effects;
         if (senseId != AtcvEffectSenseFlags.NONE && senseId != AtcvEffectSenseFlags.NORMAL) {
           const effect = <Effect>await ConditionalVisibilityEffectDefinitions.effect(senseId);
           if (effect) {
             if (valStealthRoll == 0) {
               // await API.removeEffectOnToken(selectedToken.id, i18n(<string>effect?.name));
               const effectToRemove = <ActiveEffect>(
-                actorEffects.find((activeEffect) => isStringEquals(<string>activeEffect?.data?.label,<string>effect?.name))
+                actorEffects.find((activeEffect) =>
+                  isStringEquals(<string>activeEffect?.data?.label, <string>effect?.name),
+                )
               );
-              if(effectToRemove){
+              if (effectToRemove) {
                 setAeToRemove.add(<string>effectToRemove.id);
               }
               // await selectedToken.document.unsetFlag(CONSTANTS.MODULE_NAME, senseId);
@@ -632,18 +648,20 @@ Hooks.on('renderChatMessage', async (message: ChatMessage, html: JQuery<HTMLElem
             if (valStealthRoll == 0) {
               // await API.removeEffectOnToken(selectedToken.id, i18n(<string>effect?.name));
               const effectToRemove = <ActiveEffect>(
-                actorEffects.find((activeEffect) => isStringEquals(<string>activeEffect?.data?.label,<string>effect?.name))
+                actorEffects.find((activeEffect) =>
+                  isStringEquals(<string>activeEffect?.data?.label, <string>effect?.name),
+                )
               );
-              if(effectToRemove){
+              if (effectToRemove) {
                 setAeToRemove.add(<string>effectToRemove.id);
               }
               // await selectedToken.document.unsetFlag(CONSTANTS.MODULE_NAME, conditionId);
-              await repairAndUnSetFlag(selectedToken,  conditionId);
+              await repairAndUnSetFlag(selectedToken, conditionId);
             } else {
               const atcvEffectFlagData = AtcvEffect.fromEffect(selectedToken.document, effect);
               atcvEffectFlagData.visionLevelValue = valStealthRoll;
               // await selectedToken.document.setFlag(CONSTANTS.MODULE_NAME, conditionId, atcvEffectFlagData);
-              await repairAndSetFlag(selectedToken,  conditionId, atcvEffectFlagData);
+              await repairAndSetFlag(selectedToken, conditionId, atcvEffectFlagData);
             }
           } else {
             warn(`Can't find effect definition for '${conditionId}'`, true);
@@ -661,7 +679,8 @@ Hooks.on('renderChatMessage', async (message: ChatMessage, html: JQuery<HTMLElem
     const rollChatTotal = $(message.data.content).find('.total').html() || '0';
     //@ts-ignore
     let valStealthRoll = parseInt(rollChatTotal);
-    if (isNaN(valStealthRoll)) {
+    // if (isNaN(valStealthRoll)) {
+    if (!is_real_number(valStealthRoll)) {
       valStealthRoll = 0;
     }
     if (valStealthRoll === 0) {
@@ -676,6 +695,7 @@ Hooks.on('renderChatMessage', async (message: ChatMessage, html: JQuery<HTMLElem
         let text = arr1[i];
         if (text) {
           text = text.toLowerCase().trim();
+          // TODO integration multisystem
           // Keywords to avoid for all the system ?
           if (text.indexOf('check') !== -1 || text.indexOf('ability') !== -1 || text.indexOf('skill') !== -1) {
             //
@@ -703,25 +723,27 @@ Hooks.on('renderChatMessage', async (message: ChatMessage, html: JQuery<HTMLElem
           continue;
         }
         const setAeToRemove = new Set<string>();
-        const actorEffects = <EmbeddedCollection<typeof ActiveEffect, ActorData>>selectedToken.actor?.data.effects; 
+        const actorEffects = <EmbeddedCollection<typeof ActiveEffect, ActorData>>selectedToken.actor?.data.effects;
         if (senseId != AtcvEffectSenseFlags.NONE && senseId != AtcvEffectSenseFlags.NORMAL) {
           const effect = <Effect>await ConditionalVisibilityEffectDefinitions.effect(senseId);
           if (effect) {
             if (valStealthRoll == 0) {
               // await API.removeEffectOnToken(selectedToken.id, i18n(<string>effect?.name));
               const effectToRemove = <ActiveEffect>(
-                actorEffects.find((activeEffect) => isStringEquals(<string>activeEffect?.data?.label,<string>effect?.name))
+                actorEffects.find((activeEffect) =>
+                  isStringEquals(<string>activeEffect?.data?.label, <string>effect?.name),
+                )
               );
-              if(effectToRemove){
+              if (effectToRemove) {
                 setAeToRemove.add(<string>effectToRemove.id);
               }
               // await selectedToken.document.unsetFlag(CONSTANTS.MODULE_NAME, senseId);
-              await repairAndUnSetFlag(selectedToken,  senseId);
+              await repairAndUnSetFlag(selectedToken, senseId);
             } else {
               const atcvEffectFlagData = AtcvEffect.fromEffect(selectedToken.document, effect);
               atcvEffectFlagData.visionLevelValue = valStealthRoll;
               // await selectedToken.document.setFlag(CONSTANTS.MODULE_NAME, senseId, atcvEffectFlagData);
-              await repairAndSetFlag(selectedToken,  senseId,  atcvEffectFlagData);
+              await repairAndSetFlag(selectedToken, senseId, atcvEffectFlagData);
             }
           } else {
             warn(`Can't find effect definition for '${senseId}'`, true);
@@ -734,9 +756,11 @@ Hooks.on('renderChatMessage', async (message: ChatMessage, html: JQuery<HTMLElem
             if (valStealthRoll == 0) {
               // await API.removeEffectOnToken(selectedToken.id, i18n(<string>effect?.name));
               const effectToRemove = <ActiveEffect>(
-                actorEffects.find((activeEffect) => isStringEquals(<string>activeEffect?.data?.label,<string>effect?.name))
+                actorEffects.find((activeEffect) =>
+                  isStringEquals(<string>activeEffect?.data?.label, <string>effect?.name),
+                )
               );
-              if(effectToRemove){
+              if (effectToRemove) {
                 setAeToRemove.add(<string>effectToRemove.id);
               }
               // await selectedToken.document.unsetFlag(CONSTANTS.MODULE_NAME, conditionId);
@@ -779,7 +803,7 @@ async function rollSkillHandler(wrapped, skillId, options, ...rest) {
   ) {
     //@ts-ignore
     let valStealthRoll = parseInt(rollChatTotal);
-    if (isNaN(valStealthRoll)) {
+    if(is_real_number(valStealthRoll)){
       valStealthRoll = 0;
     }
 

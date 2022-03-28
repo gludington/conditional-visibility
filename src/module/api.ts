@@ -7,6 +7,7 @@ import {
   i18n,
   info,
   isStringEquals,
+  is_real_number,
   mergeByProperty,
   prepareActiveEffectForConditionalVisibility,
   repairAndSetFlag,
@@ -749,7 +750,7 @@ const API = {
           <boolean>(<any>(<any>game.settings.get('midi-qol', 'ConfigSettings'))?.optionalRules)?.removeHiddenInvis
         ) {
           // await token.document.unsetFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISILE);
-          repairAndUnSetFlag(token,ConditionalVisibilityFlags.FORCE_VISILE);
+          repairAndUnSetFlag(token, ConditionalVisibilityFlags.FORCE_VISILE);
         }
       }
     }
@@ -769,10 +770,10 @@ const API = {
         <boolean>(<any>(<any>game.settings.get('midi-qol', 'ConfigSettings'))?.optionalRules)?.removeHiddenInvis
       ) {
         // await token.document.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISILE, true);
-        repairAndSetFlag(token,ConditionalVisibilityFlags.FORCE_VISILE, true);
+        repairAndSetFlag(token, ConditionalVisibilityFlags.FORCE_VISILE, true);
       }
       // await token.document.unsetFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISILE);
-      repairAndUnSetFlag(token,ConditionalVisibilityFlags.FORCE_VISILE);
+      repairAndUnSetFlag(token, ConditionalVisibilityFlags.FORCE_VISILE);
     }
   },
 
@@ -784,19 +785,19 @@ const API = {
       const arr = getSensesFromToken(token.document, true);
       for (const atcvEffect of arr) {
         // await token.document.unsetFlag(CONSTANTS.MODULE_NAME, atcvEffect.visionId);
-        repairAndUnSetFlag(token,atcvEffect.visionId);
+        repairAndUnSetFlag(token, atcvEffect.visionId);
       }
       const arr2 = getConditionsFromToken(token.document, true);
       for (const atcvEffect of arr2) {
         // await token.document.unsetFlag(CONSTANTS.MODULE_NAME, atcvEffect.visionId);
-        repairAndUnSetFlag(token,atcvEffect.visionId);
+        repairAndUnSetFlag(token, atcvEffect.visionId);
       }
       if (
         game.modules.get('midi-qol')?.active &&
         <boolean>(<any>(<any>game.settings.get('midi-qol', 'ConfigSettings'))?.optionalRules)?.removeHiddenInvis
       ) {
         // await token.document.unsetFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISILE);
-        repairAndUnSetFlag(token,ConditionalVisibilityFlags.FORCE_VISILE);
+        repairAndUnSetFlag(token, ConditionalVisibilityFlags.FORCE_VISILE);
       }
     }
   },
@@ -814,14 +815,14 @@ const API = {
         <boolean>(<any>(<any>game.settings.get('midi-qol', 'ConfigSettings'))?.optionalRules)?.removeHiddenInvis
       ) {
         //await token.document.unsetFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISILE);
-        repairAndUnSetFlag(token,ConditionalVisibilityFlags.FORCE_VISILE);
+        repairAndUnSetFlag(token, ConditionalVisibilityFlags.FORCE_VISILE);
       }
       const sourceVisionLevels = getConditionsFromToken(token.document, true) ?? [];
       for (const sourceVision of sourceVisionLevels) {
         if (isStringEquals(sourceVision.visionId, conditionId)) {
           const atcvEffect = sourceVision; //AtcvEffect.fromSenseData(senseDataEffect, 1);
           // await token?.document.setFlag(CONSTANTS.MODULE_NAME, conditionId, atcvEffect);
-          repairAndSetFlag(token,ConditionalVisibilityFlags.FORCE_VISILE, atcvEffect);
+          repairAndSetFlag(token, ConditionalVisibilityFlags.FORCE_VISILE, atcvEffect);
         }
       }
     }
@@ -1170,7 +1171,8 @@ const API = {
       const stealthActiveSetting = API.STEALTH_ACTIVE_SKILL; //game.settings.get(CONSTANTS.MODULE_NAME, 'passiveStealthSkill');
       //document.actor.data
       const stealthActive = <number>getProperty(<Actor>token?.document?.actor, `data.${stealthActiveSetting}`);
-      if (stealthActiveSetting && stealthActive && !isNaN(stealthActive)) {
+      if (stealthActiveSetting && stealthActive && is_real_number(stealthActive)) {
+        // && !isNaN(stealthActive)) {
         const roll = await new Roll('1d20 + (' + stealthActive + ')').roll();
         mytotal = <number>roll.total;
       }

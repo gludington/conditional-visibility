@@ -126,6 +126,15 @@ export const registerSettings = function (): void {
     type: Boolean,
   });
 
+  game.settings.register(CONSTANTS.MODULE_NAME, 'doNotUseSocketLibFeature', {
+    name: `${CONSTANTS.MODULE_NAME}.setting.doNotUseSocketLibFeature.name`,
+    hint: `${CONSTANTS.MODULE_NAME}.setting.doNotUseSocketLibFeature.hint`,
+    scope: 'world',
+    config: true,
+    type: Boolean,
+    default: false,
+  });
+
   // ========================================================================
 
   game.settings.register(CONSTANTS.MODULE_NAME, 'debug', {
@@ -427,6 +436,15 @@ function otherSettings(apply = false) {
       config: true,
       default: true,
       type: Boolean,
+    },
+
+    doNotUseSocketLibFeature: {
+      name: `${CONSTANTS.MODULE_NAME}.setting.doNotUseSocketLibFeature.name`,
+      hint: `${CONSTANTS.MODULE_NAME}.setting.doNotUseSocketLibFeature.hint`,
+      scope: 'world',
+      config: true,
+      type: Boolean,
+      default: true,
     },
   };
 }

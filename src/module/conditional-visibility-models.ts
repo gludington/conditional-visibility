@@ -441,8 +441,9 @@ export class VisionCapabilities {
     Promise.all(
       API.SENSES.map(async (statusSight) => {
         // const atcvEffectFlagData = <AtcvEffect>this.token?.document?.getFlag(CONSTANTS.MODULE_NAME, statusSight.id);
-        const atcvEffectFlagData = <AtcvEffect>this.token?.actor?.getFlag(CONSTANTS.MODULE_NAME, statusSight.id)
-          ?? <AtcvEffect>this.token?.document?.getFlag(CONSTANTS.MODULE_NAME, statusSight.id);
+        const atcvEffectFlagData =
+          <AtcvEffect>this.token?.actor?.getFlag(CONSTANTS.MODULE_NAME, statusSight.id) ??
+          <AtcvEffect>this.token?.document?.getFlag(CONSTANTS.MODULE_NAME, statusSight.id);
         if (atcvEffectFlagData) {
           let visionLevelValue = atcvEffectFlagData.visionLevelValue || 0;
           let visionDistanceValue = atcvEffectFlagData.visionDistanceValue || 0;
@@ -490,8 +491,9 @@ export class VisionCapabilities {
     Promise.all(
       API.CONDITIONS.map(async (statusSight) => {
         // const atcvEffectFlagData = <AtcvEffect>this.token.document?.getFlag(CONSTANTS.MODULE_NAME, statusSight.id);
-        const atcvEffectFlagData = <AtcvEffect>this.token?.actor?.getFlag(CONSTANTS.MODULE_NAME, statusSight.id) 
-          ?? <AtcvEffect>this.token.document?.getFlag(CONSTANTS.MODULE_NAME, statusSight.id);
+        const atcvEffectFlagData =
+          <AtcvEffect>this.token?.actor?.getFlag(CONSTANTS.MODULE_NAME, statusSight.id) ??
+          <AtcvEffect>this.token.document?.getFlag(CONSTANTS.MODULE_NAME, statusSight.id);
         if (atcvEffectFlagData) {
           let visionLevelValue = atcvEffectFlagData.visionLevelValue || 0;
           let visionDistanceValue = atcvEffectFlagData.visionDistanceValue || 0;

@@ -939,7 +939,8 @@ export default class EffectHandler {
       const token = <Token>await this._foundryHelpers.getTokenByUuid(uuid);
       if (!origin) {
         const sceneId = (token?.scene && token.scene.id) || canvas.scene?.id;
-        origin = `Scene.${sceneId}.Token.${token.id}`;
+        // origin = `Scene.${sceneId}.Token.${token.id}`;
+        origin = token.actor ? `Actor.${token.actor?.id}` : `Scene.${sceneId}.Token.${token.id}`;
       }
       // const activeEffectData = effect.convertToActiveEffectData({
       //   origin,
@@ -1032,7 +1033,9 @@ export default class EffectHandler {
       const token = <Token>await this._foundryHelpers.getTokenByUuid(uuid);
       if (!activeEffectData.origin) {
         const sceneId = (token?.scene && token.scene.id) || canvas.scene?.id;
-        activeEffectData.origin = `Scene.${sceneId}.Token.${token.id}`;
+        // const origin = `Scene.${sceneId}.Token.${token.id}`
+        const origin = token.actor ? `Actor.${token.actor?.id}` : `Scene.${sceneId}.Token.${token.id}`;
+        activeEffectData.origin = origin;
       }
       await token.actor?.createEmbeddedDocuments('ActiveEffect', [<Record<string, any>>activeEffectData]);
       log(`Added effect ${activeEffectData.label} to ${token.name} - ${token.id}`);
@@ -1056,7 +1059,8 @@ export default class EffectHandler {
 
     if (!origin) {
       const sceneId = (token?.scene && token.scene.id) || canvas.scene?.id;
-      origin = `Scene.${sceneId}.Token.${token.id}`;
+      // origin = `Scene.${sceneId}.Token.${token.id}`;
+      origin = token.actor ? `Actor.${token.actor?.id}` : `Scene.${sceneId}.Token.${token.id}`;
     }
     // const activeEffectDataUpdated = effectUpdated.convertToActiveEffectData({
     //   origin,
@@ -1090,7 +1094,8 @@ export default class EffectHandler {
 
     if (!origin) {
       const sceneId = (token?.scene && token.scene.id) || canvas.scene?.id;
-      origin = `Scene.${sceneId}.Token.${token.id}`;
+      // origin = `Scene.${sceneId}.Token.${token.id}`;
+      origin = token.actor ? `Actor.${token.actor?.id}` : `Scene.${sceneId}.Token.${token.id}`;
     }
     // const activeEffectDataUpdated = effectUpdated.convertToActiveEffectData({
     //   origin,
@@ -1128,7 +1133,8 @@ export default class EffectHandler {
 
     if (!origin) {
       const sceneId = (token?.scene && token.scene.id) || canvas.scene?.id;
-      origin = `Scene.${sceneId}.Token.${token.id}`;
+      // origin = `Scene.${sceneId}.Token.${token.id}`;
+      origin = token.actor ? `Actor.${token.actor?.id}` : `Scene.${sceneId}.Token.${token.id}`;
     }
     const activeEffectDataUpdated = effectUpdated;
     // if(origin) activeEffectDataUpdated.origin = origin;
@@ -1165,7 +1171,8 @@ export default class EffectHandler {
 
     if (!origin) {
       const sceneId = (token?.scene && token.scene.id) || canvas.scene?.id;
-      origin = `Scene.${sceneId}.Token.${token.id}`;
+      // origin = `Scene.${sceneId}.Token.${token.id}`;
+      origin = token.actor ? `Actor.${token.actor?.id}` : `Scene.${sceneId}.Token.${token.id}`;
     }
     const activeEffectDataUpdated = effectUpdated;
     // if(origin) activeEffectDataUpdated.origin = origin;

@@ -26,12 +26,57 @@ import { tokenToString } from 'typescript';
 // Module Generic function
 // =============================
 
-export function isGMConnected(): boolean {
-  return Array.from(<Users>game.users).find((user) => user.isGM && user.active) ? true : false;
+export async function getToken(documentUuid) {
+  const document = await fromUuid(documentUuid);
+  //@ts-ignore
+  return document?.token ?? document;
+}
+
+export function is_UUID(inId) {
+  return typeof inId === 'string' && (inId.match(/\./g) || []).length && !inId.endsWith('.');
+}
+
+export function getUuid(target) {
+  // If it's an actor, get its TokenDocument
+  // If it's a token, get its Document
+  // If it's a TokenDocument, just use it
+  // Otherwise fail
+  const document = getDocument(target);
+  return document?.uuid ?? false;
+}
+
+export function getDocument(target) {
+  if (target instanceof foundry.abstract.Document) return target;
+  return target?.document;
+}
+
+export function is_real_number(inNumber) {
+  return !isNaN(inNumber) && typeof inNumber === 'number' && isFinite(inNumber);
+}
+
+export function isGMConnected() {
+  return !!Array.from(<Users>game.users).find((user) => user.isGM && user.active);
+}
+
+export function isGMConnectedAndSocketLibEnable() {
+  return isGMConnected() && !game.settings.get(CONSTANTS.MODULE_NAME, 'doNotUseSocketLibFeature');
 }
 
 export function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export function isActiveGM(user) {
+  return user.active && user.isGM;
+}
+
+export function getActiveGMs() {
+  return game.users?.filter(isActiveGM);
+}
+
+export function isResponsibleGM() {
+  if (!game.user?.isGM) return false;
+  return !getActiveGMs()?.some((other) => other.data._id < <string>game.user?.data._id);
 }
 
 // ================================
@@ -364,8 +409,10 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
   }
   // 1.1) Check if target token is with the 'Force Visible' flag for Midi Qol integration
   // if (targetToken.document.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISILE)) {
-  if (targetToken.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISILE) 
-    || targetToken.document.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISILE)) {
+  if (
+    targetToken.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISILE) ||
+    targetToken.document.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISILE)
+  ) {
     return true;
   }
 
@@ -434,18 +481,18 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
       targetActorDisposition === CONST.TOKEN_DISPOSITIONS.NEUTRAL
     ) {
       // 3.3 Check if the source is a hostile token
-      if(sourceActorDisposition === CONST.TOKEN_DISPOSITIONS.HOSTILE){
+      if (sourceActorDisposition === CONST.TOKEN_DISPOSITIONS.HOSTILE) {
         // debug(
         //   `(3.3) Source token is hostile: Is true, target ${
         //     targetToken.data.name
         //   } ${'is not visible'} to source ${sourceToken.data.name}`,
         // );
         // return false;
-      }else{
+      } else {
         debug(
-          `(3.3) Source token is hostile: Is false, target ${
-            targetToken.data.name
-          } ${'is visible'} to source ${sourceToken.data.name}`,
+          `(3.3) Source token is hostile: Is false, target ${targetToken.data.name} ${'is visible'} to source ${
+            sourceToken.data.name
+          }`,
         );
         return true;
       }
@@ -969,8 +1016,9 @@ export async function prepareActiveEffectForConditionalVisibility(
       );
       //const actve = sourceToken.document?.getFlag(CONSTANTS.MODULE_NAME, senseData.id);
       // const atcvEffectFlagData = <AtcvEffect>sourceToken.document?.getFlag(CONSTANTS.MODULE_NAME, senseData.visionId);
-      const atcvEffectFlagData = <AtcvEffect>sourceToken.actor?.getFlag(CONSTANTS.MODULE_NAME, senseData.visionId) 
-        ?? <AtcvEffect>sourceToken.document?.getFlag(CONSTANTS.MODULE_NAME, senseData.visionId);;
+      const atcvEffectFlagData =
+        <AtcvEffect>sourceToken.actor?.getFlag(CONSTANTS.MODULE_NAME, senseData.visionId) ??
+        <AtcvEffect>sourceToken.document?.getFlag(CONSTANTS.MODULE_NAME, senseData.visionId);
       const actve = atcvEffectFlagData?.visionLevelValue;
       if (actve === 0 || actve === null || actve === undefined || !actve) {
         // await API.removeEffectFromIdOnToken(<string>sourceToken.id, <string>activeEffectToRemove.id);
@@ -1326,7 +1374,8 @@ export function retrieveAtcvEffectFromActiveEffect(
               myresult = parseInt(eval(roll.result));
             }
             //myvalue = roll.total || 0;
-            if (isNaN(myresult)) {
+            // if (isNaN(myresult)) {
+            if (!is_real_number(myresult)) {
               warn(`The formula '${formula}' doesn't return a number we set the default 1`, true);
               myvalue = 1;
             } else {
@@ -1335,7 +1384,8 @@ export function retrieveAtcvEffectFromActiveEffect(
           } else {
             myvalue = Number(change.value);
           }
-          if (isNaN(myvalue)) {
+          // if (isNaN(myvalue)) {
+          if (!is_real_number(myvalue)) {
             myvalue = 1;
           }
         }
@@ -1466,7 +1516,8 @@ export function retrieveAtcvVisionLevelValueFromActiveEffect(token: Token, effec
   } else {
     atcvValue = Number(atcvValueChange.value);
   }
-  if (isNaN(atcvValue)) {
+  // if (isNaN(atcvValue)) {
+  if (!is_real_number(atcvValue)) {
     return 1;
   }
   return atcvValue;
@@ -1643,8 +1694,8 @@ export async function toggleStealth(event) {
   //   this.object.document.getFlag(CONSTANTS.MODULE_NAME, AtcvEffectConditionFlags.HIDDEN)
   // );
   const atcvEffectFlagData = <AtcvEffect>(
-    this.object.actor.getFlag(CONSTANTS.MODULE_NAME, AtcvEffectConditionFlags.HIDDEN) 
-    ?? this.object.document.getFlag(CONSTANTS.MODULE_NAME, AtcvEffectConditionFlags.HIDDEN)
+    (this.object.actor.getFlag(CONSTANTS.MODULE_NAME, AtcvEffectConditionFlags.HIDDEN) ??
+      this.object.document.getFlag(CONSTANTS.MODULE_NAME, AtcvEffectConditionFlags.HIDDEN))
   );
   let stealthedWithHiddenCondition = atcvEffectFlagData?.visionLevelValue ?? 0;
   let stealthedPassive = 0;
@@ -1699,7 +1750,8 @@ export async function toggleStealth(event) {
           const currentstealth = parseInt(html.find('div.form-group').children()[5]?.value);
           //@ts-ignore
           let valStealthRoll = parseInt(html.find('div.form-group').children()[8]?.value);
-          if (isNaN(valStealthRoll)) {
+          // if (isNaN(valStealthRoll)) {
+          if (!is_real_number(valStealthRoll)) {
             valStealthRoll = 0;
           }
           //@ts-ignore
@@ -1729,9 +1781,11 @@ export async function toggleStealth(event) {
                 if (valStealthRoll == 0) {
                   // await API.removeEffectOnToken(selectedToken.id, i18n(<string>effect?.name));
                   const effectToRemove = <ActiveEffect>(
-                    actorEffects.find((activeEffect) => isStringEquals(<string>activeEffect?.data?.label,<string>effect?.name))
+                    actorEffects.find((activeEffect) =>
+                      isStringEquals(<string>activeEffect?.data?.label, <string>effect?.name),
+                    )
                   );
-                  if(effectToRemove){
+                  if (effectToRemove) {
                     setAeToRemove.add(<string>effectToRemove.id);
                   }
                   // await selectedToken.document.unsetFlag(CONSTANTS.MODULE_NAME, senseId);
@@ -1752,9 +1806,11 @@ export async function toggleStealth(event) {
                 if (valStealthRoll == 0) {
                   // await API.removeEffectOnToken(selectedToken.id, i18n(<string>effect?.name));
                   const effectToRemove = <ActiveEffect>(
-                    actorEffects.find((activeEffect) => isStringEquals(<string>activeEffect?.data?.label,<string>effect?.name))
+                    actorEffects.find((activeEffect) =>
+                      isStringEquals(<string>activeEffect?.data?.label, <string>effect?.name),
+                    )
                   );
-                  if(effectToRemove){
+                  if (effectToRemove) {
                     setAeToRemove.add(<string>effectToRemove.id);
                   }
                   // await selectedToken.document.unsetFlag(CONSTANTS.MODULE_NAME, conditionId);
@@ -1829,7 +1885,8 @@ export function getDistanceSightFromToken(token: Token) {
 function getPerfectVisionVisionRange(token: Token): number {
   let sightLimit = parseFloat(<string>token.document.getFlag('perfect-vision', 'sightLimit'));
 
-  if (Number.isNaN(sightLimit)) {
+  // if (isNaN(sightLimit)) {
+  if (!is_real_number(sightLimit)) {
     sightLimit = parseFloat(<string>canvas.scene?.getFlag('perfect-vision', 'sightLimit'));
   }
   return sightLimit;
@@ -1896,30 +1953,38 @@ export function isTokenInRange(token: Token, object: Tile | Drawing | AmbientLig
 
 // ========================================================================================
 
-export async function repairAndSetFlag(token:Token, key:string, value:any){
-  if(token.document.getFlag(CONSTANTS.MODULE_NAME,key)){
-    if(token.actor){
-      await token.actor?.setFlag(CONSTANTS.MODULE_NAME,key,value);
+export async function repairAndSetFlag(token: Token, key: string, value: any) {
+  if (token.document.getFlag(CONSTANTS.MODULE_NAME, key)) {
+    if (token.actor) {
+      await token.actor?.setFlag(CONSTANTS.MODULE_NAME, key, value);
     }
     await token.document.unsetFlag(CONSTANTS.MODULE_NAME, key);
-  }else{
-    if(token.actor){
-      await token.actor?.setFlag(CONSTANTS.MODULE_NAME,key,value);
+  } else {
+    if (token.actor) {
+      await token.actor?.setFlag(CONSTANTS.MODULE_NAME, key, value);
     }
   }
+  canvas.perception.schedule({
+    lighting: { refresh: true },
+    sight: { refresh: true },
+  });
 }
 
-export async function repairAndUnSetFlag(token:Token, key:string){
-  if(token.document.getFlag(CONSTANTS.MODULE_NAME, key)){
+export async function repairAndUnSetFlag(token: Token, key: string) {
+  if (token.document.getFlag(CONSTANTS.MODULE_NAME, key)) {
     await token.document.unsetFlag(CONSTANTS.MODULE_NAME, key);
-    if(token.actor){
-      await token.actor?.unsetFlag(CONSTANTS.MODULE_NAME,key);
+    if (token.actor) {
+      await token.actor?.unsetFlag(CONSTANTS.MODULE_NAME, key);
     }
-  }else{
-    if(token.actor){
+  } else {
+    if (token.actor) {
       await token.actor?.unsetFlag(CONSTANTS.MODULE_NAME, key);
     }
   }
+  canvas.perception.schedule({
+    lighting: { refresh: true },
+    sight: { refresh: true },
+  });
 }
 
 // export async function repairAndGetFlag(token:Token, key:string):Promise<AtcvEffect|undefined>{

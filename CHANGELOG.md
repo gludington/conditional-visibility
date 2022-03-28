@@ -1,3 +1,8 @@
+### 0.5.20
+
+- Buf fix [[BUG] 'Disable for Non-Hostile' disables Conditional Visability's hiding of tokens for all tokens]](https://github.com/p4535992/conditional-visibility/issues/23)
+- Remove `canvas.perception.schedule` it's seem there is a lag problem i cannot solve [High token count](https://github.com/p4535992/conditional-visibility/issues/24)
+
 ### 0.5.19
 
 - Big update transfer all the flags from `token.data.flags` to `token.actor.data.flags`. 

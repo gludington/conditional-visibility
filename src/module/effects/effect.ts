@@ -592,7 +592,8 @@ export class EffectSupport {
       token = tokenOrTokenId;
     }
     const sceneId = (token?.scene && token.scene.id) || canvas.scene?.id;
-    const origin = `Scene.${sceneId}.Token.${token.id}`;
+    // const origin = `Scene.${sceneId}.Token.${token.id}`;
+    const origin = token.actor ? `Actor.${token.actor?.id}` : `Scene.${sceneId}.Token.${token.id}`;
     return origin;
   }
 

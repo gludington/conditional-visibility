@@ -1964,10 +1964,10 @@ export async function repairAndSetFlag(token: Token, key: string, value: any) {
       await token.actor?.setFlag(CONSTANTS.MODULE_NAME, key, value);
     }
   }
-  canvas.perception.schedule({
-    lighting: { refresh: true },
-    sight: { refresh: true },
-  });
+  // canvas.perception.schedule({
+  //   lighting: { refresh: true },
+  //   sight: { refresh: true },
+  // });
 }
 
 export async function repairAndUnSetFlag(token: Token, key: string) {
@@ -1981,10 +1981,10 @@ export async function repairAndUnSetFlag(token: Token, key: string) {
       await token.actor?.unsetFlag(CONSTANTS.MODULE_NAME, key);
     }
   }
-  canvas.perception.schedule({
-    lighting: { refresh: true },
-    sight: { refresh: true },
-  });
+  // canvas.perception.schedule({
+  //   lighting: { refresh: true },
+  //   sight: { refresh: true },
+  // });
 }
 
 // export async function repairAndGetFlag(token:Token, key:string):Promise<AtcvEffect|undefined>{

@@ -15,7 +15,7 @@ import { canvas, game } from './module/settings';
 import { preloadTemplates } from './module/preloadTemplates';
 import { registerHotkeys } from './module/hotkeys';
 import CONSTANTS from './module/constants';
-import { error, log } from './module/lib/lib';
+import { dialogWarning, error, log } from './module/lib/lib';
 import { initHooks, readyHooks, setupHooks } from './module/module';
 import API from './module/api';
 
@@ -62,6 +62,12 @@ Hooks.once('ready', function () {
     let word = 'install and activate';
     if (game.modules.get('socketlib')) word = 'activate';
     throw error(`Requires the 'socketlib' module. Please ${word} it.`);
+  }
+  if (game.modules.get('less-fog')?.active && game.user?.isGM) {
+    dialogWarning(`With less-fog module enabled and active. The module "less fog" breaks the dm view of tokens. The gm still see an invisible token as other tokens, but the players don't so is a minor issue. The solution is just make sure the module 'Less Fog' settings 'Reveal Tokens' and 'Reveal to All Players' are set to false (uncheked box) both.`)
+  }
+  if (game.modules.get('levels')?.active && game.user?.isGM) {
+    dialogWarning(`With levels module enabled and active, **if the scene is with "Token vision" set to false (unchecked box)**, after selected a token and click on the canvas with the option "Release on left click" enable the hidden token are visible for a small instant this is a incompatibility with the [Levels](https://github.com/theripper93/Levels) module i cannot solve, the simple solution is just enable the token vision on the current scene.`)
   }
 
   // if (!isGMConnected()) {
@@ -139,6 +145,7 @@ Hooks.once('libChangelogsReady', function () {
     CONSTANTS.MODULE_NAME,
     `
     - Solved the issue User lacks permission to update Token in parent Scene (maybe ?).
+    - Remove 'canvas.perception.schedule' it's seem there is a lag problem i cannot solve [High token count](https://github.com/p4535992/conditional-visibility/issues/24)
     `,
     'minor',
   );

@@ -1,6 +1,7 @@
 ### 0.5.21
 
 - Solved the issue User lacks permission to update Token in parent Scene (maybe ?)
+- Remove `canvas.perception.schedule` it's seem there is a lag problem i cannot solve [High token count](https://github.com/p4535992/conditional-visibility/issues/24)
 
 ### 0.5.20
 

@@ -5,7 +5,7 @@
     {{#each senses as |sense|}}
         <div class="form-group">
             <label style="display:flex"><img src="{{sense.visionIcon}}" style="height:25px; width:25px; margin: 3px;"/>{{localize sense.visionName}}</label>
-            <input type="number" min=-1 step=1 {{#if sense.visionLevelValue}} value="{{sense.visionLevelValue}}" {{else}} value="0" {{/if}} name="actor.flags.conditional-visibility.{{sense.visionId}}.visionLevelValue"/>
+            <input type="number" min=-1 step=1 {{#if sense.visionLevelValue}} value="{{sense.visionLevelValue}}" {{else}} value="0" {{/if}} name="actor.data.flags.conditional-visibility.{{sense.visionId}}.visionLevelValue"/>
         </div>
     {{/each}}
 </fieldset>
@@ -15,8 +15,8 @@
     <div class="form-group">
         <label>{{localize "conditional-visibility.token.config.forcevisible.title"}}</label>
         <input
-            id="actor.flags.conditional-visibility.forcevisible"
-            name="actor.flags.conditional-visibility.forcevisible"
+            id="actor.data.flags.conditional-visibility.forcevisible"
+            name="actor.data.flags.conditional-visibility.forcevisible"
             type="checkbox"
             value="{{forcevisible}}"
             {{#if forcevisible}} checked {{else}}  {{/if}}
@@ -28,7 +28,7 @@
     {{#each conditions as |condition|}}
         <div class="form-group">
             <label style="display:flex"><img src="{{condition.visionIcon}}" style="height:25px; width:25px; margin: 3px; background: #454545"/>{{localize condition.visionName}}</label>
-            <input type="number" min=-1 step=1 {{#if condition.visionLevelValue}} value="{{condition.visionLevelValue}}" {{else}} value="0" {{/if}} name="actor.flags.conditional-visibility.{{condition.visionId}}.visionLevelValue"/>
+            <input type="number" min=-1 step=1 {{#if condition.visionLevelValue}} value="{{condition.visionLevelValue}}" {{else}} value="0" {{/if}} name="actor.data.flags.conditional-visibility.{{condition.visionId}}.visionLevelValue"/>
         </div>
     {{/each}}
 </fieldset>

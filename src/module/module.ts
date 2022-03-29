@@ -273,8 +273,8 @@ const module = {
     let p;
     if (
       change.flags &&
-      change.flags[CONSTANTS.MODULE_NAME] &&
-      !getProperty(change, `flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`)
+      change.flags[CONSTANTS.MODULE_NAME]
+      // !getProperty(change, `flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`)
     ) {
       isEnabledForToken = true;
       p = getProperty(change, `flags.${CONSTANTS.MODULE_NAME}`);
@@ -282,11 +282,11 @@ const module = {
     if (
       change.flags &&
       change.actor &&
-      change.actor.flags[CONSTANTS.MODULE_NAME] &&
-      !getProperty(change, `actor.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`)
+      change.actor.data.flags[CONSTANTS.MODULE_NAME]
+      // !getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`)
     ) {
       isEnabledForToken = true;
-      p = getProperty(change, `actor.flags.${CONSTANTS.MODULE_NAME}`);
+      p = getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}`);
     }
     if (isEnabledForToken) {
       const setAeToRemove = new Set<string>();
@@ -295,6 +295,10 @@ const module = {
       for (const key in p) {
         const senseOrConditionIdKey = key;
         const senseOrConditionValue = <AtcvEffect>p[key];
+        if (senseOrConditionIdKey ===  ConditionalVisibilityFlags.FORCE_VISIBLE || typeof senseOrConditionValue === 'boolean' || senseOrConditionValue instanceof Boolean) {
+          await sourceToken.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE, senseOrConditionValue);
+          continue;
+        }
         if (senseOrConditionIdKey.includes('-=')) {
           continue;
         }

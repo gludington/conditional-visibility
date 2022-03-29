@@ -186,32 +186,24 @@ export function sightLayerPrototypeTokenVisionHandlerNoLevels(wrapped, ...args) 
   if (gm) {
     return true;
   }
-  /*
-  let ownedTokens = <Token[]>canvas.tokens?.placeables.filter((token) => token.isOwner && (!token.data.hidden || gm));
-  if (ownedTokens.length === 0 || !canvas.tokens?.controlled[0]) {
-    ownedTokens = <Token[]>(
-      canvas.tokens?.placeables.filter((token) => (token.observer || token.isOwner) && (!token.data.hidden || gm))
-    );
-  }
-  */
-  const ownedTokens = getOwnedTokens();
-  for (const token of <Token[]>canvas.tokens?.placeables) {
-    if (ownedTokens.includes(token)) {
-      continue;
-    }
-    let tokenVisible = canvas.scene?.data.tokenVision ? false : gm || !token.data.hidden;
-    if (token.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE)) {
-      token.visible = true;
-      return wrapped(...args);
-    }
-    for (const ownedToken of ownedTokens) {
-      if (shouldIncludeVision(ownedToken, token)) {
-        tokenVisible = true;
-      } else {
-        tokenVisible = false;
+
+  //const ownedTokens = getOwnedTokens();
+  const ownedTokens = <Token[]>canvas.tokens?.controlled;
+  if (ownedTokens && ownedTokens.length > 0) {
+    for (const token of <Token[]>canvas.tokens?.placeables) {
+      if (ownedTokens.includes(token)) {
+        continue;
       }
+      let tokenVisible = canvas.scene?.data.tokenVision ? false : gm || !token.data.hidden;
+      for (const ownedToken of ownedTokens) {
+        if (shouldIncludeVision(ownedToken, token)) {
+          tokenVisible = true;
+        } else {
+          tokenVisible = false;
+        }
+      }
+      token.visible = tokenVisible;
     }
-    token.visible = tokenVisible;
   }
   return wrapped(...args);
 }
@@ -289,7 +281,9 @@ export function overrideVisibilityTestHandler(wrapped, ...args) {
 
 // export function sightLayerPrototypeTestVisibilityHandler(wrapped, point, { tolerance = 2, object = null } = {}) {
 export function sightLayerPrototypeTestVisibilityHandler(wrapped, ...args) {
-  const [point, { tolerance = 2, object = null } = {}] = args;
+  // eslint-disable-next-line prefer-const
+  let [point, { tolerance = 2, object = null } = {}] = args;
+  tolerance = Math.min(object.w, object.h) / 4;
   const res = wrapped(point, { tolerance: tolerance, object: object });
   // need a token object
   if (!object) {
@@ -310,6 +304,7 @@ export function sightLayerPrototypeTestVisibilityHandler(wrapped, ...args) {
   // this.sources is a map of selected tokens (may be size 0) all tokens
   // contribute to the vision so iterate through the tokens
   // TODO find a better and fat way to prepera the sources array
+  /*
   let mySources: Token[] = [];
   if (!this.sources || this.sources.size === 0) {
     // return res;
@@ -324,6 +319,8 @@ export function sightLayerPrototypeTestVisibilityHandler(wrapped, ...args) {
       }
     }
   }
+  */
+  const mySources = <Token[]>canvas.tokens?.controlled;
   if (!mySources || mySources.length === 0) {
     return res;
   }

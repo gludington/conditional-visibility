@@ -350,6 +350,7 @@ export enum ConditionalVisibilityFlags {
   FORCE_VISIBLE = 'forcevisible',
   DATA_SENSES = 'datasenses',
   DATA_CONDITIONS = 'dataconditions',
+  // MAX_SIGHT_DISTANCE = 'maxsightdistance'
 }
 
 export enum AtcvEffectSenseFlags {

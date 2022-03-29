@@ -1,7 +1,6 @@
 import { ActiveEffectDataProperties } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/data.mjs/activeEffectData';
 import { EffectChangeData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/data.mjs/effectChangeData';
 import { PropertiesToSource } from '@league-of-foundry-developers/foundry-vtt-types/src/types/helperTypes';
-import { SenseData } from '../conditional-visibility-models';
 import { duplicateExtended, i18n } from '../lib/lib';
 import { canvas, game } from '../settings';
 

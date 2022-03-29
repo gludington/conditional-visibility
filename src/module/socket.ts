@@ -73,19 +73,19 @@ export function registerSocket() {
 
   // Actor
 
-  conditionalVisibilitySocket.register('toggleEffectFromIdOnActor', (...args) =>
-    API.toggleEffectFromIdOnActorArr(...args),
-  );
-  conditionalVisibilitySocket.register('hasEffectAppliedOnActor', (...args) => API.hasEffectAppliedOnActorArr(...args));
-  conditionalVisibilitySocket.register('hasEffectAppliedFromIdOnActor', (...args) =>
-    API.hasEffectAppliedFromIdOnActorArr(...args),
-  );
-  conditionalVisibilitySocket.register('addEffectOnActor', (...args) => API.addEffectOnActorArr(...args));
-  conditionalVisibilitySocket.register('removeEffectOnActor', (...args) => API.removeEffectOnActorArr(...args));
-  conditionalVisibilitySocket.register('removeEffectFromIdOnActor', (...args) =>
-    API.removeEffectFromIdOnActorArr(...args),
-  );
-  conditionalVisibilitySocket.register('findEffectByNameOnActor', (...args) => API.findEffectByNameOnActorArr(...args));
+  // conditionalVisibilitySocket.register('toggleEffectFromIdOnActor', (...args) =>
+  //   API.toggleEffectFromIdOnActorArr(...args),
+  // );
+  // conditionalVisibilitySocket.register('hasEffectAppliedOnActor', (...args) => API.hasEffectAppliedOnActorArr(...args));
+  // conditionalVisibilitySocket.register('hasEffectAppliedFromIdOnActor', (...args) =>
+  //   API.hasEffectAppliedFromIdOnActorArr(...args),
+  // );
+  // conditionalVisibilitySocket.register('addEffectOnActor', (...args) => API.addEffectOnActorArr(...args));
+  // conditionalVisibilitySocket.register('removeEffectOnActor', (...args) => API.removeEffectOnActorArr(...args));
+  // conditionalVisibilitySocket.register('removeEffectFromIdOnActor', (...args) =>
+  //   API.removeEffectFromIdOnActorArr(...args),
+  // );
+  // conditionalVisibilitySocket.register('findEffectByNameOnActor', (...args) => API.findEffectByNameOnActorArr(...args));
 
   // Token
 

@@ -420,7 +420,7 @@ const API = {
 
   async removeEffectFromIdOnTokenMultipleArr(...inAttributes: any[]) {
     if (!Array.isArray(inAttributes)) {
-      throw error('removeEffectFromIdOnTokenMultiple | inAttributes must be of type array');
+      throw error('removeEffectFromIdOnTokenMultipleArr | inAttributes must be of type array');
     }
     const [effectIds, uuid] = inAttributes;
     const result = await (<EffectInterface>this.effectInterface)._effectHandler.removeEffectFromIdOnTokenMultiple(

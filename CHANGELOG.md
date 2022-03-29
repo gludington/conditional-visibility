@@ -1,11 +1,12 @@
 ### 0.5.21
 
-- Solved the issue User lacks permission to update Token in parent Scene (maybe ?)
+- Add 'Force Visible' checkbox on token configuration, for avoid the checks of CV on specific token
+- Tyr again solved the issue User lacks permission to update Token in parent Scene (maybe ?)
 - Remove `canvas.perception.schedule` it's seem there is a lag problem i cannot solve [High token count](https://github.com/p4535992/conditional-visibility/issues/24)
 
 ### 0.5.20
 
-- Buf fix [[BUG] 'Disable for Non-Hostile' disables Conditional Visability's hiding of tokens for all tokens]](https://github.com/p4535992/conditional-visibility/issues/23)
+- Buf fix [[BUG] 'Disable for Non-Hostile' disables Conditional Visibility's hiding of tokens for all tokens]](https://github.com/p4535992/conditional-visibility/issues/23)
 - Remove `canvas.perception.schedule` it's seem there is a lag problem i cannot solve [High token count](https://github.com/p4535992/conditional-visibility/issues/24)
 
 ### 0.5.19

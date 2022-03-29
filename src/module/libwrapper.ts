@@ -189,10 +189,9 @@ export function sightLayerPrototypeTokenVisionHandlerNoLevels(wrapped, ...args) 
       continue;
     }
     let tokenVisible = canvas.scene?.data.tokenVision ? false : gm || !token.data.hidden;
-    if (
-      token.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE) != undefined
-    ) {
-      tokenVisible = <boolean>token.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE) ?? tokenVisible;
+    if (token.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE)){
+      token.visible = true;
+      return wrapped(...args);
     }
     for (const ownedToken of ownedTokens) {
       if (shouldIncludeVision(ownedToken, token)) {
@@ -270,10 +269,8 @@ export function sightLayerPrototypeTokenVisionHandlerNoLevels(wrapped, ...args) 
 
 export function overrideVisibilityTestHandler(wrapped, ...args) {
   const [sourceToken, targetToken] = args;
-  if (
-    targetToken.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE) != undefined
-  ) {
-    return <boolean>targetToken.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE) ?? false;
+  if (<boolean>targetToken.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE)) {
+    return wrapped(...args);
   }
   const isCVVisible = shouldIncludeVision(sourceToken, targetToken);
   return isCVVisible ? wrapped(...args) : false;
@@ -296,10 +293,8 @@ export function sightLayerPrototypeTestVisibilityHandler(wrapped, ...args) {
   if (!tokenToCheckIfIsVisible.data) {
     return res;
   }
-  if (
-    tokenToCheckIfIsVisible.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE) != undefined
-  ) {
-    return <boolean>tokenToCheckIfIsVisible.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE) ?? res;
+  if (tokenToCheckIfIsVisible.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE)) {
+    return res;
   }
   // this.sources is a map of selected tokens (may be size 0) all tokens
   // contribute to the vision so iterate through the tokens
@@ -652,12 +647,10 @@ Hooks.on('renderChatMessage', async (message: ChatMessage, html: JQuery<HTMLElem
               if (effectToRemove) {
                 setAeToRemove.add(<string>effectToRemove.id);
               }
-              // await selectedToken.document.unsetFlag(CONSTANTS.MODULE_NAME, senseId);
               await repairAndUnSetFlag(selectedToken, senseId);
             } else {
               const atcvEffectFlagData = AtcvEffect.fromEffect(selectedToken.document, effect);
               atcvEffectFlagData.visionLevelValue = valStealthRoll;
-              // await selectedToken.document.setFlag(CONSTANTS.MODULE_NAME, senseId, atcvEffectFlagData);
               await repairAndSetFlag(selectedToken, senseId, atcvEffectFlagData);
             }
           } else {
@@ -678,12 +671,10 @@ Hooks.on('renderChatMessage', async (message: ChatMessage, html: JQuery<HTMLElem
               if (effectToRemove) {
                 setAeToRemove.add(<string>effectToRemove.id);
               }
-              // await selectedToken.document.unsetFlag(CONSTANTS.MODULE_NAME, conditionId);
               await repairAndUnSetFlag(selectedToken, conditionId);
             } else {
               const atcvEffectFlagData = AtcvEffect.fromEffect(selectedToken.document, effect);
               atcvEffectFlagData.visionLevelValue = valStealthRoll;
-              // await selectedToken.document.setFlag(CONSTANTS.MODULE_NAME, conditionId, atcvEffectFlagData);
               await repairAndSetFlag(selectedToken, conditionId, atcvEffectFlagData);
             }
           } else {
@@ -760,12 +751,10 @@ Hooks.on('renderChatMessage', async (message: ChatMessage, html: JQuery<HTMLElem
               if (effectToRemove) {
                 setAeToRemove.add(<string>effectToRemove.id);
               }
-              // await selectedToken.document.unsetFlag(CONSTANTS.MODULE_NAME, senseId);
               await repairAndUnSetFlag(selectedToken, senseId);
             } else {
               const atcvEffectFlagData = AtcvEffect.fromEffect(selectedToken.document, effect);
               atcvEffectFlagData.visionLevelValue = valStealthRoll;
-              // await selectedToken.document.setFlag(CONSTANTS.MODULE_NAME, senseId, atcvEffectFlagData);
               await repairAndSetFlag(selectedToken, senseId, atcvEffectFlagData);
             }
           } else {
@@ -786,12 +775,10 @@ Hooks.on('renderChatMessage', async (message: ChatMessage, html: JQuery<HTMLElem
               if (effectToRemove) {
                 setAeToRemove.add(<string>effectToRemove.id);
               }
-              // await selectedToken.document.unsetFlag(CONSTANTS.MODULE_NAME, conditionId);
               await repairAndUnSetFlag(selectedToken, conditionId);
             } else {
               const atcvEffectFlagData = AtcvEffect.fromEffect(selectedToken.document, effect);
               atcvEffectFlagData.visionLevelValue = valStealthRoll;
-              // await selectedToken.document.setFlag(CONSTANTS.MODULE_NAME, conditionId, atcvEffectFlagData);
               await repairAndSetFlag(selectedToken, conditionId, atcvEffectFlagData);
             }
           } else {

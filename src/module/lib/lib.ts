@@ -1849,12 +1849,10 @@ export async function toggleStealth(event) {
                   if (effectToRemove) {
                     setAeToRemove.add(<string>effectToRemove.id);
                   }
-                  // await selectedToken.document.unsetFlag(CONSTANTS.MODULE_NAME, senseId);
                   await repairAndUnSetFlag(selectedToken, senseId);
                 } else {
                   const atcvEffectFlagData = AtcvEffect.fromEffect(this.object.document, effect);
                   atcvEffectFlagData.visionLevelValue = valStealthRoll;
-                  // await selectedToken.document.setFlag(CONSTANTS.MODULE_NAME, senseId, atcvEffectFlagData);
                   await repairAndSetFlag(selectedToken, senseId, atcvEffectFlagData);
                 }
               } else {
@@ -1874,12 +1872,10 @@ export async function toggleStealth(event) {
                   if (effectToRemove) {
                     setAeToRemove.add(<string>effectToRemove.id);
                   }
-                  // await selectedToken.document.unsetFlag(CONSTANTS.MODULE_NAME, conditionId);
                   await repairAndUnSetFlag(selectedToken, conditionId);
                 } else {
                   const atcvEffectFlagData = AtcvEffect.fromEffect(this.object.document, effect);
                   atcvEffectFlagData.visionLevelValue = valStealthRoll;
-                  // await selectedToken.document.setFlag(CONSTANTS.MODULE_NAME, conditionId, atcvEffectFlagData);
                   await repairAndSetFlag(selectedToken, conditionId, atcvEffectFlagData);
                 }
               } else {
@@ -2076,23 +2072,3 @@ export async function repairAndUnSetFlag(token: Token, key: string) {
     // });
   }
 }
-
-// export async function repairAndGetFlag(token:Token, key:string):Promise<AtcvEffect|undefined>{
-//   if(token.document.getFlag(CONSTANTS.MODULE_NAME,key)){
-//     const currentValue = token.document.getFlag(CONSTANTS.MODULE_NAME,key);
-//     if(token.actor){
-//       await token.actor?.setFlag(CONSTANTS.MODULE_NAME,key,currentValue);
-//       await token.document.unsetFlag(CONSTANTS.MODULE_NAME, key);
-//       return <AtcvEffect>token.actor?.getFlag(CONSTANTS.MODULE_NAME,key);
-//     }else{
-//       await token.document.unsetFlag(CONSTANTS.MODULE_NAME, key);
-//       return undefined;
-//     }
-//   }else{
-//     if(token.actor){
-//       return <AtcvEffect>token.actor?.getFlag(CONSTANTS.MODULE_NAME,key);
-//     }else{
-//       return undefined;
-//     }
-//   }
-// }

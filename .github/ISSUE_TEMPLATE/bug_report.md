@@ -11,6 +11,8 @@ assignees: ''
 
 **Before open any issue**
 
+_If the problem is related to the sight check so for questions like "i can't see" or "i can see" this or that please apply the following steps_
+
 1) Enable the module setting _"Enable debugging"_
 2) Click F12 go to the _console_ tab 
 3) make the test you want and replicate the error

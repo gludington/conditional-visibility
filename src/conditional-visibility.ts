@@ -64,10 +64,10 @@ Hooks.once('ready', function () {
     throw error(`Requires the 'socketlib' module. Please ${word} it.`);
   }
   if (game.modules.get('less-fog')?.active && game.user?.isGM) {
-    dialogWarning(`With less-fog module enabled and active. The module "less fog" breaks the dm view of tokens. The gm still see an invisible token as other tokens, but the players don't so is a minor issue. The solution is just make sure the module 'Less Fog' settings 'Reveal Tokens' and 'Reveal to All Players' are set to false (uncheked box) both.`)
+    dialogWarning(`With less-fog module enabled and active. The module "less fog" breaks the dm view of tokens. The gm still see an invisible token as other tokens, but the players don't so is a minor issue. The solution is just make sure the module 'Less Fog' settings 'Reveal Tokens' and 'Reveal to All Players' are set to false (unchecked box) both.`)
   }
   if (game.modules.get('levels')?.active && game.user?.isGM) {
-    dialogWarning(`With levels module enabled and active, **if the scene is with "Token vision" set to false (unchecked box)**, after selected a token and click on the canvas with the option "Release on left click" enable the hidden token are visible for a small instant this is a incompatibility with the [Levels](https://github.com/theripper93/Levels) module i cannot solve, the simple solution is just enable the token vision on the current scene.`)
+    dialogWarning(`With levels module enabled and active, <b>if the scene is with "Token vision" set to false (unchecked box)</b>, after selected a token and click on the canvas with the option "Release on left click" enable the hidden token are visible for a small instant this is a incompatibility with the [Levels](https://github.com/theripper93/Levels) module i cannot solve, the simple solution is just enable the token vision on the current scene.`)
   }
 
   // if (!isGMConnected()) {
@@ -136,7 +136,7 @@ Hooks.once('libChangelogsReady', function () {
   libChangelogs.registerConflict(
     CONSTANTS.MODULE_NAME,
     'less-fog',
-    `With less-fog module enabled and active. The module "less fog" breaks the dm view of tokens. The gm still see an invisible token as other tokens, but the players don't so is a minor issue. The solution is just make sure the module 'Less Fog' settings 'Reveal Tokens' and 'Reveal to All Players' are set to false (uncheked box) both.`,
+    `With less-fog module enabled and active. The module "less fog" breaks the dm view of tokens. The gm still see an invisible token as other tokens, but the players don't so is a minor issue. The solution is just make sure the module 'Less Fog' settings 'Reveal Tokens' and 'Reveal to All Players' are set to false (unchecked box) both.`,
     'minor',
   );
 
@@ -144,7 +144,8 @@ Hooks.once('libChangelogsReady', function () {
   libChangelogs.register(
     CONSTANTS.MODULE_NAME,
     `
-    - Solved the issue User lacks permission to update Token in parent Scene (maybe ?).
+    - Add 'Force Visible' checkbox on token configuration, for avoid the checks of CV on specific token
+    - Tyr again solved the issue User lacks permission to update Token in parent Scene (maybe ?)
     - Remove 'canvas.perception.schedule' it's seem there is a lag problem i cannot solve [High token count](https://github.com/p4535992/conditional-visibility/issues/24)
     `,
     'minor',

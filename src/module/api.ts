@@ -742,14 +742,14 @@ const API = {
         for (const sourceVision of sourceVisionLevels) {
           if (isStringEquals(sourceVision.visionId, AtcvEffectConditionFlags.HIDDEN)) {
             const atcvEffect = sourceVision;
-            await token?.document.setFlag(CONSTANTS.MODULE_NAME, AtcvEffectConditionFlags.HIDDEN, atcvEffect);
+            repairAndSetFlag(token, AtcvEffectConditionFlags.HIDDEN, atcvEffect);
           }
         }
         if (
           game.modules.get('midi-qol')?.active &&
           <boolean>(<any>(<any>game.settings.get('midi-qol', 'ConfigSettings'))?.optionalRules)?.removeHiddenInvis
         ) {
-          repairAndUnSetFlag(token, ConditionalVisibilityFlags.FORCE_VISIBLE);
+          await token.actor?.unsetFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE);
         }
       }
     }
@@ -761,7 +761,8 @@ const API = {
       for (const sourceVision of sourceVisionLevels) {
         if (isStringEquals(sourceVision.visionId, AtcvEffectConditionFlags.HIDDEN)) {
           // const atcvEffect = sourceVision; //AtcvEffect.fromSenseData(senseDataEffect, 1);
-          await token.document.unsetFlag(CONSTANTS.MODULE_NAME, AtcvEffectConditionFlags.HIDDEN);
+          // await token.actor.unsetFlag(CONSTANTS.MODULE_NAME, AtcvEffectConditionFlags.HIDDEN);
+          repairAndUnSetFlag(token, AtcvEffectConditionFlags.HIDDEN);
         }
       }
       if (
@@ -771,9 +772,6 @@ const API = {
         if(token.actor){
           await token.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE, true);
         }
-      }
-      if(token.actor){
-        await token.actor.unsetFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE);
       }
     }
   },
@@ -785,20 +783,17 @@ const API = {
     for (const token of tokens) {
       const arr = getSensesFromTokenFast(token.document, true);
       for (const atcvEffect of arr) {
-        // await token.document.unsetFlag(CONSTANTS.MODULE_NAME, atcvEffect.visionId);
         repairAndUnSetFlag(token, atcvEffect.visionId);
       }
       const arr2 = getConditionsFromTokenFast(token.document, true);
       for (const atcvEffect of arr2) {
-        // await token.document.unsetFlag(CONSTANTS.MODULE_NAME, atcvEffect.visionId);
         repairAndUnSetFlag(token, atcvEffect.visionId);
       }
       if (
         game.modules.get('midi-qol')?.active &&
         <boolean>(<any>(<any>game.settings.get('midi-qol', 'ConfigSettings'))?.optionalRules)?.removeHiddenInvis
       ) {
-        // await token.document.unsetFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISILE);
-        repairAndUnSetFlag(token, ConditionalVisibilityFlags.FORCE_VISIBLE);
+        await token.actor?.unsetFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE);
       }
     }
   },
@@ -815,15 +810,13 @@ const API = {
         game.modules.get('midi-qol')?.active &&
         <boolean>(<any>(<any>game.settings.get('midi-qol', 'ConfigSettings'))?.optionalRules)?.removeHiddenInvis
       ) {
-        //await token.document.unsetFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISILE);
-        repairAndUnSetFlag(token, ConditionalVisibilityFlags.FORCE_VISIBLE);
+        await token.actor?.unsetFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE);;
       }
       const sourceVisionLevels = getConditionsFromTokenFast(token.document, true) ?? [];
       for (const sourceVision of sourceVisionLevels) {
         if (isStringEquals(sourceVision.visionId, conditionId)) {
           const atcvEffect = sourceVision; //AtcvEffect.fromSenseData(senseDataEffect, 1);
-          // await token?.document.setFlag(CONSTANTS.MODULE_NAME, conditionId, atcvEffect);
-          repairAndSetFlag(token, ConditionalVisibilityFlags.FORCE_VISIBLE, atcvEffect);
+          await token.actor?.setFlag(CONSTANTS.MODULE_NAME, conditionId, atcvEffect);
         }
       }
     }

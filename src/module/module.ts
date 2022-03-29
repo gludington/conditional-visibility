@@ -203,6 +203,7 @@ const module = {
       // flags: tokenConfig.object.data.flags[CONSTANTS.MODULE_NAME] ?? {},
       senses: sensesTemplateData,
       conditions: conditionsTemplateData,
+      forcevisible: tokenConfig.actor.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE) ?? false
     }).then((extraSenses) => {
       visionTab.append(extraSenses);
     });
@@ -787,12 +788,10 @@ const module = {
                 if (effectToRemove) {
                   setAeToRemove.add(<string>effectToRemove.id);
                 }
-                // await selectedToken.document.unsetFlag(CONSTANTS.MODULE_NAME, senseId);
                 await repairAndUnSetFlag(selectedToken, senseId);
               } else {
                 const atcvEffectFlagData = AtcvEffect.fromEffect(selectedToken.document, effect);
                 atcvEffectFlagData.visionLevelValue = valStealthRoll;
-                // await selectedToken.document.setFlag(CONSTANTS.MODULE_NAME, senseId, atcvEffectFlagData);
                 await repairAndSetFlag(selectedToken, senseId, atcvEffectFlagData);
               }
             } else {
@@ -813,12 +812,10 @@ const module = {
                 if (effectToRemove) {
                   setAeToRemove.add(<string>effectToRemove.id);
                 }
-                // await selectedToken.document.unsetFlag(CONSTANTS.MODULE_NAME, conditionId);
                 await repairAndUnSetFlag(selectedToken, conditionId);
               } else {
                 const atcvEffectFlagData = AtcvEffect.fromEffect(selectedToken.document, effect);
                 atcvEffectFlagData.visionLevelValue = valStealthRoll;
-                // await selectedToken.document.setFlag(CONSTANTS.MODULE_NAME, conditionId, atcvEffectFlagData);
                 await repairAndSetFlag(selectedToken, conditionId, atcvEffectFlagData);
               }
             } else {
@@ -895,12 +892,10 @@ const module = {
                 if (effectToRemove) {
                   setAeToRemove.add(<string>effectToRemove.id);
                 }
-                // await selectedToken.document.unsetFlag(CONSTANTS.MODULE_NAME, senseId);
                 await repairAndUnSetFlag(selectedToken, senseId);
               } else {
                 const atcvEffectFlagData = AtcvEffect.fromEffect(selectedToken.document, effect);
                 atcvEffectFlagData.visionLevelValue = valStealthRoll;
-                // await selectedToken.document.setFlag(CONSTANTS.MODULE_NAME, senseId, atcvEffectFlagData);
                 await repairAndSetFlag(selectedToken, senseId, atcvEffectFlagData);
               }
             } else {
@@ -921,12 +916,10 @@ const module = {
                 if (effectToRemove) {
                   setAeToRemove.add(<string>effectToRemove.id);
                 }
-                // await selectedToken.document.unsetFlag(CONSTANTS.MODULE_NAME, conditionId);
                 await repairAndUnSetFlag(selectedToken, conditionId);
               } else {
                 const atcvEffectFlagData = AtcvEffect.fromEffect(selectedToken.document, effect);
                 atcvEffectFlagData.visionLevelValue = valStealthRoll;
-                // await selectedToken.document.setFlag(CONSTANTS.MODULE_NAME, conditionId, atcvEffectFlagData);
                 await repairAndSetFlag(selectedToken, conditionId, atcvEffectFlagData);
               }
             } else {

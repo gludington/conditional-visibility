@@ -11,6 +11,8 @@ import {
   i18n,
   retrieveAtcvEffectFromActiveEffect,
   isStringEquals,
+  getConditionsFromTokenFast,
+  getSensesFromTokenFast,
 } from './lib/lib';
 export class AtcvEffect {
   // Effect Base
@@ -345,7 +347,9 @@ export interface SenseData {
 }
 
 export enum ConditionalVisibilityFlags {
-  FORCE_VISILE = 'forcevisible',
+  FORCE_VISIBLE = 'forcevisible',
+  DATA_SENSES = 'datasenses',
+  DATA_CONDITIONS = 'dataconditions'
 }
 
 export enum AtcvEffectSenseFlags {

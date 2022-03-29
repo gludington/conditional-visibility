@@ -20,7 +20,6 @@ import {
 } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/module.mjs';
 import Effect from '../effects/effect.js';
 import { ConditionalVisibilityEffectDefinitions } from '../conditional-visibility-effect-definition';
-import { tokenToString } from 'typescript';
 
 // =============================
 // Module Generic function
@@ -30,6 +29,20 @@ export async function getToken(documentUuid) {
   const document = await fromUuid(documentUuid);
   //@ts-ignore
   return document?.token ?? document;
+}
+
+export function getOwnedTokens():Token[]{
+  const gm = game.user?.isGM;
+  if (gm) {
+    return <Token[]>canvas.tokens?.placeables;
+  }
+  let ownedTokens = <Token[]>canvas.tokens?.placeables.filter((token) => token.isOwner && (!token.data.hidden || gm));
+  if (ownedTokens.length === 0 || !canvas.tokens?.controlled[0]) {
+    ownedTokens = <Token[]>(
+      canvas.tokens?.placeables.filter((token) => (token.observer || token.isOwner) && (!token.data.hidden || gm))
+    );
+  }
+  return ownedTokens;
 }
 
 export function is_UUID(inId) {
@@ -410,8 +423,8 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
   // 1.1) Check if target token is with the 'Force Visible' flag for Midi Qol integration
   // if (targetToken.document.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISILE)) {
   if (
-    targetToken.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISILE) ||
-    targetToken.document.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISILE)
+    targetToken.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE) ||
+    targetToken.document.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE)
   ) {
     return true;
   }
@@ -502,7 +515,7 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
   // ========================================
   // 1 - Preparation of the active effect
   // =========================================
-
+  /*
   const sourceVisionLevels =
     getSensesFromToken(sourceToken.document, true).filter((atcvEffect) => {
       return !atcvEffect.visionIsDisabled;
@@ -512,6 +525,12 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
     getConditionsFromToken(targetToken.document, true).filter((atcvEffect) => {
       return !atcvEffect.visionIsDisabled;
     }) ?? [];
+  */
+  const sourceVisionLevels =
+    getSensesFromTokenFast(sourceToken.document, true, true) ?? [];
+
+  const targetVisionLevels =
+    getConditionsFromTokenFast(targetToken.document, true, true) ?? [];
 
   const stealthedPassive = getProperty(<Actor>targetToken?.document?.actor, `data.${API.STEALTH_PASSIVE_SKILL}`) || 0;
   // 10 + Wisdom Score Modifier + Proficiency Bonus
@@ -654,7 +673,7 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
   // 9) Check if the source token has some 'sense' powerful enough to beat every 'condition' ont he target token:
   const visibleForTypeOfSenseByIndex = [...sourceVisionLevels].map((sourceVisionLevel: AtcvEffect) => {
     const resultsOnTarget = targetVisionLevels.map((targetVisionLevel: AtcvEffect) => {
-      // 9.0) If no `ATCV.visioId` is founded on the target token return true (this shoudldn't never happened is just for avoid some unwanted behaviour)
+      // 9.0) If no `ATCV.<visionId>` is founded on the target token return true (this shoudldn't never happened is just for avoid some unwanted behaviour)
       if (!targetVisionLevel || !targetVisionLevel.visionId) {
         sourceVisionLevelsValidForDebug.set(sourceVisionLevel.visionId, {
           atcvSourceEffect: sourceVisionLevel,
@@ -663,7 +682,7 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
         });
         sourceVisionLevelsValid.set(sourceVisionLevel.visionId, sourceVisionLevel);
         debug(
-          `(9) If no 'ATCV.visioId' is founded on the target token: Is true, target ${
+          `(9) If no 'ATCV.<visionId>' is founded on the target token: Is true, target ${
             targetToken.data.name
           } ${'is visible'} to source ${sourceToken.data.name}`,
         );
@@ -671,7 +690,7 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
       }
 
       debug(
-        `(9) If no 'ATCV.visioId' is founded on the target token: Is false, target ${
+        `(9) If no 'ATCV.<visionId>' is founded on the target token: Is false, target ${
           targetToken.data.name
         } ${'is not visible'} to source ${sourceToken.data.name}`,
       );
@@ -1187,6 +1206,48 @@ export async function prepareActiveEffectForConditionalVisibility(
   }
 
   return mapToUpdate;
+}
+
+export function getSensesFromTokenFast(tokenDocument: TokenDocument, filterValueNoZero = false, filterIsDisabled = false): AtcvEffect[] {
+  const atcvEffects = <AtcvEffect[]>tokenDocument.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES) ?? [];
+  if(atcvEffects.length > 0){
+    return atcvEffects;
+  }else{
+    const atcvEffectsObject = getProperty(<Actor>tokenDocument?.actor,`data.flags.${CONSTANTS.MODULE_NAME}`);
+    for (const key in atcvEffectsObject) {
+      const senseIdKey = key;
+      const senseValue = <AtcvEffect>atcvEffectsObject[key];
+      if(filterValueNoZero && senseValue.visionLevelValue == 0){
+        continue;
+      }
+      if(filterIsDisabled && senseValue.visionIsDisabled){
+        continue;
+      }
+      atcvEffects.push(senseValue);
+    }
+    return atcvEffects.filter((a) => a.visionType === 'sense');
+  }
+}
+
+export function getConditionsFromTokenFast(tokenDocument: TokenDocument, filterValueNoZero = false, filterIsDisabled = false): AtcvEffect[] {
+  const atcvEffects = <AtcvEffect[]>tokenDocument.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_CONDITIONS) ?? [];
+  if(atcvEffects.length > 0){
+    return atcvEffects;
+  }else{
+    const atcvEffectsObject = getProperty(<Actor>tokenDocument?.actor,`data.flags.${CONSTANTS.MODULE_NAME}`);
+    for (const key in atcvEffectsObject) {
+      const conditionIdKey = key;
+      const conditionValue = <AtcvEffect>atcvEffectsObject[key];
+      if(filterValueNoZero && conditionValue.visionLevelValue == 0){
+        continue;
+      }
+      if(filterIsDisabled && conditionValue.visionIsDisabled){
+        continue;
+      }
+      atcvEffects.push(conditionValue);
+    }
+    return atcvEffects.filter((a) => a.visionType === 'condition');
+  }
 }
 
 export function getSensesFromToken(tokenDocument: TokenDocument | null, filterValueNoZero = false): AtcvEffect[] {
@@ -1953,38 +2014,67 @@ export function isTokenInRange(token: Token, object: Tile | Drawing | AmbientLig
 
 // ========================================================================================
 
-export async function repairAndSetFlag(token: Token, key: string, value: any) {
-  if (token.document.getFlag(CONSTANTS.MODULE_NAME, key)) {
-    if (token.actor) {
+export async function repairAndSetFlag(token: Token, key: string, value: AtcvEffect) {
+  if(token.actor){
+    if (token.document.getFlag(CONSTANTS.MODULE_NAME, key)) {
+      await token.actor?.setFlag(CONSTANTS.MODULE_NAME, key, value);
+      await token.document.unsetFlag(CONSTANTS.MODULE_NAME, key);
+    } else {
       await token.actor?.setFlag(CONSTANTS.MODULE_NAME, key, value);
     }
-    await token.document.unsetFlag(CONSTANTS.MODULE_NAME, key);
-  } else {
-    if (token.actor) {
-      await token.actor?.setFlag(CONSTANTS.MODULE_NAME, key, value);
+    let data:AtcvEffect[] = [];
+    if(value.visionType === 'sense'){
+      data = <AtcvEffect[]>token.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES) ?? [];
     }
+    else if(value.visionType === 'condition'){
+      data = <AtcvEffect[]>token.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_CONDITIONS) ?? [];
+    }else {
+      return;
+    }
+
+    //Find index of specific object using findIndex method.
+    const objIndex = data.findIndex((obj => obj.visionId === value.visionId));
+    if(objIndex >= 0){
+      //Update object's name property.
+      data[objIndex] = value;
+    }else{
+      data.push(value);
+    }
+    data = data.filter((a) => {
+      return a.visionLevelValue != 0 &&
+        a.visionLevelValue != undefined &&
+        a.visionLevelValue != null &&
+        is_real_number(a.visionLevelValue) &&
+        !a.visionIsDisabled;
+    });
+    if(value.visionType === 'sense'){
+      token.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES, data);
+    }
+    else if(value.visionType === 'condition'){
+      token.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_CONDITIONS, data);
+    }else {
+      // DO NOTHING
+    }
+    // canvas.perception.schedule({
+    //   lighting: { refresh: true },
+    //   sight: { refresh: true },
+    // });
   }
-  // canvas.perception.schedule({
-  //   lighting: { refresh: true },
-  //   sight: { refresh: true },
-  // });
 }
 
 export async function repairAndUnSetFlag(token: Token, key: string) {
-  if (token.document.getFlag(CONSTANTS.MODULE_NAME, key)) {
-    await token.document.unsetFlag(CONSTANTS.MODULE_NAME, key);
-    if (token.actor) {
+  if (token.actor) {
+    if (token.document.getFlag(CONSTANTS.MODULE_NAME, key)) {
+      await token.document.unsetFlag(CONSTANTS.MODULE_NAME, key);
+      await token.actor?.unsetFlag(CONSTANTS.MODULE_NAME, key);
+    } else {
       await token.actor?.unsetFlag(CONSTANTS.MODULE_NAME, key);
     }
-  } else {
-    if (token.actor) {
-      await token.actor?.unsetFlag(CONSTANTS.MODULE_NAME, key);
-    }
+    // canvas.perception.schedule({
+    //   lighting: { refresh: true },
+    //   sight: { refresh: true },
+    // });
   }
-  // canvas.perception.schedule({
-  //   lighting: { refresh: true },
-  //   sight: { refresh: true },
-  // });
 }
 
 // export async function repairAndGetFlag(token:Token, key:string):Promise<AtcvEffect|undefined>{

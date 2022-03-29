@@ -1,9 +1,11 @@
-import { AtcvEffect, AtcvEffectConditionFlags, AtcvEffectSenseFlags } from './conditional-visibility-models';
+import { AtcvEffect, AtcvEffectConditionFlags, AtcvEffectSenseFlags, ConditionalVisibilityFlags } from './conditional-visibility-models';
 import API from './api';
 import CONSTANTS from './constants';
 import {
   debug,
+  getOwnedTokens,
   getSensesFromToken,
+  getSensesFromTokenFast,
   i18n,
   isStringEquals,
   is_real_number,
@@ -169,31 +171,29 @@ export function registerLibwrappers() {
 // }
 
 export function sightLayerPrototypeTokenVisionHandlerNoLevels(wrapped, ...args) {
-  // const sightLayer = <SightLayer>this;
-  // if (game.user?.isGM) {
-  // 	return true;
-  // }
-  // return wrapped(args);
-  // if(!sightLayer.tokenVision){
-  //   return wrapped(args);
-  // } else {
-  //   return true;
-  // }
   const gm = game.user?.isGM;
   if (gm) {
     return true;
   }
+  /*
   let ownedTokens = <Token[]>canvas.tokens?.placeables.filter((token) => token.isOwner && (!token.data.hidden || gm));
   if (ownedTokens.length === 0 || !canvas.tokens?.controlled[0]) {
     ownedTokens = <Token[]>(
       canvas.tokens?.placeables.filter((token) => (token.observer || token.isOwner) && (!token.data.hidden || gm))
     );
   }
+  */
+  const ownedTokens = getOwnedTokens();
   for (const token of <Token[]>canvas.tokens?.placeables) {
     if (ownedTokens.includes(token)) {
       continue;
     }
     let tokenVisible = canvas.scene?.data.tokenVision ? false : gm || !token.data.hidden;
+    if (
+      token.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE) != undefined
+    ) {
+      tokenVisible = <boolean>token.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE) ?? tokenVisible;
+    }
     for (const ownedToken of ownedTokens) {
       if (shouldIncludeVision(ownedToken, token)) {
         tokenVisible = true;
@@ -270,6 +270,11 @@ export function sightLayerPrototypeTokenVisionHandlerNoLevels(wrapped, ...args) 
 
 export function overrideVisibilityTestHandler(wrapped, ...args) {
   const [sourceToken, targetToken] = args;
+  if (
+    targetToken.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE) != undefined
+  ) {
+    return <boolean>targetToken.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE) ?? false;
+  }
   const isCVVisible = shouldIncludeVision(sourceToken, targetToken);
   return isCVVisible ? wrapped(...args) : false;
 }
@@ -291,8 +296,15 @@ export function sightLayerPrototypeTestVisibilityHandler(wrapped, ...args) {
   if (!tokenToCheckIfIsVisible.data) {
     return res;
   }
+  if (
+    tokenToCheckIfIsVisible.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE) != undefined
+  ) {
+    return <boolean>tokenToCheckIfIsVisible.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE) ?? res;
+  }
   // this.sources is a map of selected tokens (may be size 0) all tokens
   // contribute to the vision so iterate through the tokens
+  // TODO need this only with eagle eye integration
+  /*
   let mySources: Token[] = [];
   if (!this.sources || this.sources.size === 0) {
     // return res;
@@ -310,7 +322,8 @@ export function sightLayerPrototypeTestVisibilityHandler(wrapped, ...args) {
   if (!mySources || mySources.length === 0) {
     return res;
   }
-  const visible_to_sources = [...mySources].map((s) => {
+  */
+  const visible_to_sources = [...this.sources].map((s) => {
     // get the token elevation
     const controlledToken = s; //<Token>s.object;
     // if any active effects blocks, then the token is not visible for that sight source
@@ -319,18 +332,19 @@ export function sightLayerPrototypeTestVisibilityHandler(wrapped, ...args) {
     return is_visible ?? false;
   });
 
-  const sourcesNames = <string[]>mySources.map((e) => {
-    return e.data.name;
-    //return e.object.data.name;
-  });
-
   // if any source has vision to the token, the token is visible
   const is_visible = visible_to_sources.reduce((total, curr) => total || curr, false);
-  debug(
-    `target ${tokenToCheckIfIsVisible.data.name} ${
-      is_visible ? 'is visible' : 'is not visible'
-    } to sources ${sourcesNames.join(',')}`,
-  );
+  if (game.settings.get(CONSTANTS.MODULE_NAME, 'debug')) {
+    const sourcesNames = <string[]>this.sources.map((e) => {
+      return e.data.name;
+      //return e.object.data.name;
+    });
+    debug(
+      `target ${tokenToCheckIfIsVisible.data.name} ${
+        is_visible ? 'is visible' : 'is not visible'
+      } to sources ${sourcesNames.join(',')}`,
+    );
+  }
 
   return is_visible;
 }
@@ -346,7 +360,7 @@ export const tokenPrototypeDrawHandler = function (wrapped, ...args) {
     return;
   }
   const tokenData: Token = this as Token;
-  const atcvEffects = getSensesFromToken(tokenData.document);
+  const atcvEffects = getSensesFromTokenFast(tokenData.document);
   let currentActvEffect: AtcvEffect | undefined = undefined;
   // Get the one with major priority they already are sorted for priority so the first one is the right one
   for (const atcvEffect of atcvEffects) {
@@ -527,7 +541,7 @@ export const tokenPrototypeDrawHandler = function (wrapped, ...args) {
 //   }
 //   return wrapped(...args);
 // };
-
+/*
 Hooks.on('renderChatMessage', async (message: ChatMessage, html: JQuery<HTMLElement>, speakerInfo) => {
   if (!game?.ready) {
     return;
@@ -792,7 +806,7 @@ Hooks.on('renderChatMessage', async (message: ChatMessage, html: JQuery<HTMLElem
     }
   }
 });
-
+*/
 /* THIS IS SADLY NOT MULTISYSTEM
 async function rollSkillHandler(wrapped, skillId, options, ...rest) {
   const result = await wrapped(skillId, options, ...rest);

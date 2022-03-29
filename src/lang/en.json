@@ -50,8 +50,8 @@
   "conditional-visibility.token.config.conditions.title": "Conditions",
   "conditional-visibility.token.config.extraSenseInstructions": "Additional senses that may enhance vision, for unlimited range use <= -1, for disable/remove use 0",
   "conditional-visibility.token.config.extraConditionInstructions": "Additional conditions that may enhance vision, for unlimited range use <= -1, for disable/remove use 0",
-  "conditional-visibility.token.config.forcevisible.title":"Force visible",
-  "conditional-visibility.token.config.forcevisible.notes":"If checked (true value), this setting will let see this token, without any control from CV and applied the standard behaviour of foundry",
+  "conditional-visibility.token.config.forcevisible.title": "Force visible",
+  "conditional-visibility.token.config.forcevisible.notes": "If checked (true value), this setting will let see this token, without any control from CV and applied the standard behaviour of foundry",
 
   "conditional-visibility.invisible": "Invisible",
   "conditional-visibility.obscured": "Obscured",

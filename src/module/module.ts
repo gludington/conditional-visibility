@@ -203,7 +203,7 @@ const module = {
       // flags: tokenConfig.object.data.flags[CONSTANTS.MODULE_NAME] ?? {},
       senses: sensesTemplateData,
       conditions: conditionsTemplateData,
-      forcevisible: tokenConfig.actor.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE) ?? false
+      forcevisible: tokenConfig.actor.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE) ?? false,
     }).then((extraSenses) => {
       visionTab.append(extraSenses);
     });
@@ -677,7 +677,7 @@ const module = {
       html.find('.toggleStealth').click(toggleStealth.bind(app));
     }
   },
-  async renderChatMessage(...args){
+  async renderChatMessage(...args) {
     const [message, html, speakerInfo] = args; // message: ChatMessage, html: JQuery<HTMLElement>, speakerInfo
     if (!game?.ready) {
       return;
@@ -933,5 +933,5 @@ const module = {
         }
       }
     }
-  }
+  },
 };

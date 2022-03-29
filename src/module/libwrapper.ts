@@ -1,4 +1,9 @@
-import { AtcvEffect, AtcvEffectConditionFlags, AtcvEffectSenseFlags, ConditionalVisibilityFlags } from './conditional-visibility-models';
+import {
+  AtcvEffect,
+  AtcvEffectConditionFlags,
+  AtcvEffectSenseFlags,
+  ConditionalVisibilityFlags,
+} from './conditional-visibility-models';
 import API from './api';
 import CONSTANTS from './constants';
 import {
@@ -189,7 +194,7 @@ export function sightLayerPrototypeTokenVisionHandlerNoLevels(wrapped, ...args) 
       continue;
     }
     let tokenVisible = canvas.scene?.data.tokenVision ? false : gm || !token.data.hidden;
-    if (token.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE)){
+    if (token.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE)) {
       token.visible = true;
       return wrapped(...args);
     }

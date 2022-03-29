@@ -349,7 +349,7 @@ export interface SenseData {
 export enum ConditionalVisibilityFlags {
   FORCE_VISIBLE = 'forcevisible',
   DATA_SENSES = 'datasenses',
-  DATA_CONDITIONS = 'dataconditions'
+  DATA_CONDITIONS = 'dataconditions',
 }
 
 export enum AtcvEffectSenseFlags {

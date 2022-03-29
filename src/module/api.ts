@@ -769,7 +769,7 @@ const API = {
         game.modules.get('midi-qol')?.active &&
         <boolean>(<any>(<any>game.settings.get('midi-qol', 'ConfigSettings'))?.optionalRules)?.removeHiddenInvis
       ) {
-        if(token.actor){
+        if (token.actor) {
           await token.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE, true);
         }
       }
@@ -810,7 +810,7 @@ const API = {
         game.modules.get('midi-qol')?.active &&
         <boolean>(<any>(<any>game.settings.get('midi-qol', 'ConfigSettings'))?.optionalRules)?.removeHiddenInvis
       ) {
-        await token.actor?.unsetFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE);;
+        await token.actor?.unsetFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE);
       }
       const sourceVisionLevels = getConditionsFromTokenFast(token.document, true) ?? [];
       for (const sourceVision of sourceVisionLevels) {

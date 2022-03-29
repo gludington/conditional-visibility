@@ -31,7 +31,7 @@ export async function getToken(documentUuid) {
   return document?.token ?? document;
 }
 
-export function getOwnedTokens():Token[]{
+export function getOwnedTokens(): Token[] {
   const gm = game.user?.isGM;
   if (gm) {
     return <Token[]>canvas.tokens?.placeables;
@@ -526,11 +526,9 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
       return !atcvEffect.visionIsDisabled;
     }) ?? [];
   */
-  const sourceVisionLevels =
-    getSensesFromTokenFast(sourceToken.document, true, true) ?? [];
+  const sourceVisionLevels = getSensesFromTokenFast(sourceToken.document, true, true) ?? [];
 
-  const targetVisionLevels =
-    getConditionsFromTokenFast(targetToken.document, true, true) ?? [];
+  const targetVisionLevels = getConditionsFromTokenFast(targetToken.document, true, true) ?? [];
 
   const stealthedPassive = getProperty(<Actor>targetToken?.document?.actor, `data.${API.STEALTH_PASSIVE_SKILL}`) || 0;
   // 10 + Wisdom Score Modifier + Proficiency Bonus
@@ -1208,19 +1206,24 @@ export async function prepareActiveEffectForConditionalVisibility(
   return mapToUpdate;
 }
 
-export function getSensesFromTokenFast(tokenDocument: TokenDocument, filterValueNoZero = false, filterIsDisabled = false): AtcvEffect[] {
-  const atcvEffects = <AtcvEffect[]>tokenDocument.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES) ?? [];
-  if(atcvEffects.length > 0){
+export function getSensesFromTokenFast(
+  tokenDocument: TokenDocument,
+  filterValueNoZero = false,
+  filterIsDisabled = false,
+): AtcvEffect[] {
+  const atcvEffects =
+    <AtcvEffect[]>tokenDocument.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES) ?? [];
+  if (atcvEffects.length > 0) {
     return atcvEffects;
-  }else{
-    const atcvEffectsObject = getProperty(<Actor>tokenDocument?.actor,`data.flags.${CONSTANTS.MODULE_NAME}`);
+  } else {
+    const atcvEffectsObject = getProperty(<Actor>tokenDocument?.actor, `data.flags.${CONSTANTS.MODULE_NAME}`);
     for (const key in atcvEffectsObject) {
       const senseIdKey = key;
       const senseValue = <AtcvEffect>atcvEffectsObject[key];
-      if(filterValueNoZero && senseValue.visionLevelValue == 0){
+      if (filterValueNoZero && senseValue.visionLevelValue == 0) {
         continue;
       }
-      if(filterIsDisabled && senseValue.visionIsDisabled){
+      if (filterIsDisabled && senseValue.visionIsDisabled) {
         continue;
       }
       atcvEffects.push(senseValue);
@@ -1229,19 +1232,24 @@ export function getSensesFromTokenFast(tokenDocument: TokenDocument, filterValue
   }
 }
 
-export function getConditionsFromTokenFast(tokenDocument: TokenDocument, filterValueNoZero = false, filterIsDisabled = false): AtcvEffect[] {
-  const atcvEffects = <AtcvEffect[]>tokenDocument.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_CONDITIONS) ?? [];
-  if(atcvEffects.length > 0){
+export function getConditionsFromTokenFast(
+  tokenDocument: TokenDocument,
+  filterValueNoZero = false,
+  filterIsDisabled = false,
+): AtcvEffect[] {
+  const atcvEffects =
+    <AtcvEffect[]>tokenDocument.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_CONDITIONS) ?? [];
+  if (atcvEffects.length > 0) {
     return atcvEffects;
-  }else{
-    const atcvEffectsObject = getProperty(<Actor>tokenDocument?.actor,`data.flags.${CONSTANTS.MODULE_NAME}`);
+  } else {
+    const atcvEffectsObject = getProperty(<Actor>tokenDocument?.actor, `data.flags.${CONSTANTS.MODULE_NAME}`);
     for (const key in atcvEffectsObject) {
       const conditionIdKey = key;
       const conditionValue = <AtcvEffect>atcvEffectsObject[key];
-      if(filterValueNoZero && conditionValue.visionLevelValue == 0){
+      if (filterValueNoZero && conditionValue.visionLevelValue == 0) {
         continue;
       }
-      if(filterIsDisabled && conditionValue.visionIsDisabled){
+      if (filterIsDisabled && conditionValue.visionIsDisabled) {
         continue;
       }
       atcvEffects.push(conditionValue);
@@ -2011,44 +2019,45 @@ export function isTokenInRange(token: Token, object: Tile | Drawing | AmbientLig
 // ========================================================================================
 
 export async function repairAndSetFlag(token: Token, key: string, value: AtcvEffect) {
-  if(token.actor){
+  if (token.actor) {
     if (token.document.getFlag(CONSTANTS.MODULE_NAME, key)) {
       await token.actor?.setFlag(CONSTANTS.MODULE_NAME, key, value);
       await token.document.unsetFlag(CONSTANTS.MODULE_NAME, key);
     } else {
       await token.actor?.setFlag(CONSTANTS.MODULE_NAME, key, value);
     }
-    let data:AtcvEffect[] = [];
-    if(value.visionType === 'sense'){
+    let data: AtcvEffect[] = [];
+    if (value.visionType === 'sense') {
       data = <AtcvEffect[]>token.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES) ?? [];
-    }
-    else if(value.visionType === 'condition'){
-      data = <AtcvEffect[]>token.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_CONDITIONS) ?? [];
-    }else {
+    } else if (value.visionType === 'condition') {
+      data =
+        <AtcvEffect[]>token.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_CONDITIONS) ?? [];
+    } else {
       return;
     }
 
     //Find index of specific object using findIndex method.
-    const objIndex = data.findIndex((obj => obj.visionId === value.visionId));
-    if(objIndex >= 0){
+    const objIndex = data.findIndex((obj) => obj.visionId === value.visionId);
+    if (objIndex >= 0) {
       //Update object's name property.
       data[objIndex] = value;
-    }else{
+    } else {
       data.push(value);
     }
     data = data.filter((a) => {
-      return a.visionLevelValue != 0 &&
+      return (
+        a.visionLevelValue != 0 &&
         a.visionLevelValue != undefined &&
         a.visionLevelValue != null &&
         is_real_number(a.visionLevelValue) &&
-        !a.visionIsDisabled;
+        !a.visionIsDisabled
+      );
     });
-    if(value.visionType === 'sense'){
+    if (value.visionType === 'sense') {
       token.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES, data);
-    }
-    else if(value.visionType === 'condition'){
+    } else if (value.visionType === 'condition') {
       token.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_CONDITIONS, data);
-    }else {
+    } else {
       // DO NOTHING
     }
     // canvas.perception.schedule({

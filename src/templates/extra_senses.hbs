@@ -19,7 +19,7 @@
             name="actor.flags.conditional-visibility.forcevisible"
             type="checkbox"
             value="{{forcevisible}}"
-            {{#if forcevisible}} checked {{else}}  {{/if}} />
+            {{#if forcevisible}} checked {{else}}  {{/if}}
             onclick="$(this).attr('value', this.checked ? true : false)"
         />
         <p class="notes">{{localize "conditional-visibility.token.config.forcevisible.notes"}}</p>

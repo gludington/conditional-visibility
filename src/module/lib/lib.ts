@@ -1228,7 +1228,9 @@ export function getSensesFromTokenFast(
       }
       atcvEffects.push(senseValue);
     }
-    return atcvEffects.filter((a) => a.visionType === 'sense');
+    const senses = atcvEffects.filter((a) => a.visionType === 'sense') ?? [];
+    tokenDocument.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES, senses);
+    return senses;
   }
 }
 
@@ -1254,7 +1256,9 @@ export function getConditionsFromTokenFast(
       }
       atcvEffects.push(conditionValue);
     }
-    return atcvEffects.filter((a) => a.visionType === 'condition');
+    const consitions = atcvEffects.filter((a) => a.visionType === 'condition') ?? [];
+    tokenDocument.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES, consitions);
+    return consitions;
   }
 }
 
@@ -1833,7 +1837,7 @@ export async function toggleStealth(event) {
           if (valStealthRoll < passivestealth && !disablePassiveRecovery) {
             valStealthRoll = passivestealth;
           }
-
+          /*
           let selectedTokens = <Token[]>[];
           if (this.object) {
             selectedTokens = [this.object];
@@ -1841,6 +1845,8 @@ export async function toggleStealth(event) {
           if (!selectedTokens || selectedTokens.length == 0) {
             selectedTokens = [<Token[]>canvas.tokens?.controlled][0];
           }
+          */
+          const selectedTokens = <Token[]>canvas.tokens?.controlled;
           for (const selectedToken of selectedTokens) {
             const setAeToRemove = new Set<string>();
             const actorEffects = <EmbeddedCollection<typeof ActiveEffect, ActorData>>selectedToken.actor?.data.effects;

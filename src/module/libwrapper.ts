@@ -1,13 +1,9 @@
-import {
-  AtcvEffect,
-  AtcvEffectConditionFlags,
-  AtcvEffectSenseFlags,
-  ConditionalVisibilityFlags,
-} from './conditional-visibility-models';
+import { AtcvEffect, AtcvEffectConditionFlags, AtcvEffectSenseFlags, ConditionalVisibilityFlags } from './conditional-visibility-models';
 import API from './api';
 import CONSTANTS from './constants';
 import {
   debug,
+  duplicateExtended,
   getOwnedTokens,
   getSensesFromToken,
   getSensesFromTokenFast,
@@ -176,6 +172,16 @@ export function registerLibwrappers() {
 // }
 
 export function sightLayerPrototypeTokenVisionHandlerNoLevels(wrapped, ...args) {
+  // const sightLayer = <SightLayer>this;
+  // if (game.user?.isGM) {
+  // 	return true;
+  // }
+  // return wrapped(args);
+  // if(!sightLayer.tokenVision){
+  //   return wrapped(args);
+  // } else {
+  //   return true;
+  // }
   const gm = game.user?.isGM;
   if (gm) {
     return true;
@@ -303,8 +309,7 @@ export function sightLayerPrototypeTestVisibilityHandler(wrapped, ...args) {
   }
   // this.sources is a map of selected tokens (may be size 0) all tokens
   // contribute to the vision so iterate through the tokens
-  // TODO need this only with eagle eye integration
-  /*
+  // TODO find a better and fat way to prepera the sources array
   let mySources: Token[] = [];
   if (!this.sources || this.sources.size === 0) {
     // return res;
@@ -322,8 +327,8 @@ export function sightLayerPrototypeTestVisibilityHandler(wrapped, ...args) {
   if (!mySources || mySources.length === 0) {
     return res;
   }
-  */
-  const visible_to_sources = [...this.sources].map((s) => {
+
+  const visible_to_sources = [...mySources].map((s) => {
     // get the token elevation
     const controlledToken = s; //<Token>s.object;
     // if any active effects blocks, then the token is not visible for that sight source
@@ -574,7 +579,7 @@ Hooks.on('renderChatMessage', async (message: ChatMessage, html: JQuery<HTMLElem
     selectedTokens = [token];
   }
   if (!selectedTokens || selectedTokens.length == 0) {
-    selectedTokens = [<Token[]>canvas.tokens?.controlled][0];
+    selectedTokens = [<Token[]>canvas.tokens?.controlled];
   }
 
   const sourceToken = selectedTokens[0];

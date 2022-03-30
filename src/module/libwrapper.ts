@@ -1,11 +1,6 @@
 import { AtcvEffect, ConditionalVisibilityFlags } from './conditional-visibility-models';
 import CONSTANTS from './constants';
-import {
-  debug,
-  getSensesFromTokenFast,
-  shouldIncludeVisionV2,
-  warn,
-} from './lib/lib';
+import { debug, getSensesFromTokenFast, shouldIncludeVisionV2, warn } from './lib/lib';
 import { canvas, game } from './settings';
 
 export function registerLibwrappers() {
@@ -327,7 +322,7 @@ export function sightLayerPrototypeTestVisibilityHandler(wrapped, ...args) {
   for (let i = 0; i < mySources.length; i++) {
     const controlledToken = mySources[i];
     is_visible = shouldIncludeVisionV2(controlledToken, tokenToCheckIfIsVisible);
-    if(is_visible){
+    if (is_visible) {
       break;
     }
   }

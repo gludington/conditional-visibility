@@ -296,8 +296,16 @@ const module = {
       for (const key in p) {
         const senseOrConditionIdKey = key;
         const senseOrConditionValue = <AtcvEffect>p[key];
-        if (senseOrConditionIdKey ===  ConditionalVisibilityFlags.FORCE_VISIBLE || typeof senseOrConditionValue === 'boolean' || senseOrConditionValue instanceof Boolean) {
-          await sourceToken.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE, senseOrConditionValue);
+        if (
+          senseOrConditionIdKey === ConditionalVisibilityFlags.FORCE_VISIBLE ||
+          typeof senseOrConditionValue === 'boolean' ||
+          senseOrConditionValue instanceof Boolean
+        ) {
+          await sourceToken.actor?.setFlag(
+            CONSTANTS.MODULE_NAME,
+            ConditionalVisibilityFlags.FORCE_VISIBLE,
+            senseOrConditionValue,
+          );
           continue;
         }
         if (senseOrConditionIdKey.includes('-=')) {

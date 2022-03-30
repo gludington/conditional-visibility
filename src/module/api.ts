@@ -939,9 +939,7 @@ const API = {
 
     const isSense = senseDataEffect.visionType === 'sense';
     if (!effect) {
-      const sensesAndConditionOrderByName = <AtcvEffect[]>(
-        await getAllDefaultSensesAndConditions(token)
-      );
+      const sensesAndConditionOrderByName = <AtcvEffect[]>await getAllDefaultSensesAndConditions(token);
       const senseOrCondition = <AtcvEffect>sensesAndConditionOrderByName.find((sense: AtcvEffect) => {
         return (
           isStringEquals(sense.visionId, senseDataEffect.visionId) ||
@@ -1075,11 +1073,7 @@ const API = {
 
   async unRegisterCondition(senseDataIdOrName: string): Promise<void> {
     const conditionsData = <SenseData[]>game.settings.get(CONSTANTS.MODULE_NAME, 'conditions');
-    const newConditionsData = await _unregisterSenseData(
-      senseDataIdOrName,
-      conditionsData,
-      'condition',
-    );
+    const newConditionsData = await _unregisterSenseData(senseDataIdOrName, conditionsData, 'condition');
     if (newConditionsData && newConditionsData.length > 0) {
       await game.settings.set(CONSTANTS.MODULE_NAME, 'conditions', newConditionsData);
       info(`Unregister condition '${senseDataIdOrName}`, true);

@@ -1177,7 +1177,6 @@ export function getSensesFromTokenFast(
   filterValueNoZero = false,
   filterIsDisabled = false,
 ): AtcvEffect[] {
-
   // let maxSightDistance =
   //   <number>tokenDocument.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.MAX_SIGHT_DISTANCE) ?? 0;
   // if(maxSightDistance <=0){
@@ -1213,7 +1212,6 @@ export function getConditionsFromTokenFast(
   filterValueNoZero = false,
   filterIsDisabled = false,
 ): AtcvEffect[] {
-
   // let maxSightDistance =
   //   <number>tokenDocument.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.MAX_SIGHT_DISTANCE) ?? 0;
   // if(maxSightDistance <=0){
@@ -1731,7 +1729,7 @@ export async function toggleStealth(event) {
   hud.render(true);
 }
 
-export function getDistanceSightFromToken(token: Token):number {
+export function getDistanceSightFromToken(token: Token): number {
   let sightDistance = 0;
   // if (token.hasSight) {
 
@@ -1917,7 +1915,7 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
   }
   // 1) Check if target token is hidden with standard hud feature of foundry and only GM can see
   if (targetToken.data.hidden) {
-    return game.user?.isGM ? true :false;
+    return game.user?.isGM ? true : false;
   }
   // 1.1) Check if target token is with the 'Force Visible' flag for Midi Qol integration
   // if (targetToken.document.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE)) {
@@ -1974,7 +1972,10 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
 
   if (game.settings.get(CONSTANTS.MODULE_NAME, 'disableForNonHostileNpc')) {
     // 3.3 Check if the source is a hostile token
-    if (targetActorDisposition != CONST.TOKEN_DISPOSITIONS.HOSTILE && sourceActorDisposition != CONST.TOKEN_DISPOSITIONS.HOSTILE) {
+    if (
+      targetActorDisposition != CONST.TOKEN_DISPOSITIONS.HOSTILE &&
+      sourceActorDisposition != CONST.TOKEN_DISPOSITIONS.HOSTILE
+    ) {
       debug(`(3.3) Is true, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
       return true;
     }
@@ -1990,7 +1991,8 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
   const stealthedPassive = getProperty(<Actor>targetToken?.document?.actor, `data.${API.STEALTH_PASSIVE_SKILL}`) || 0;
   // 10 + Wisdom Score Modifier + Proficiency Bonus
   //@ts-ignore
-  const perceptionPassive = getProperty(<Actor>sourceToken?.document?.actor, `data.${API.PERCEPTION_PASSIVE_SKILL}`) || 0;
+  const perceptionPassive =
+    getProperty(<Actor>sourceToken?.document?.actor, `data.${API.PERCEPTION_PASSIVE_SKILL}`) || 0;
 
   // 4) If module setting `autoPassivePerception` is enabled, check by default if
   // _Perception Passive of the system_ is `>` of the _Stealth Passive of the System_,
@@ -2095,29 +2097,41 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
     for (let j = 0; j < targetVisionLevels.length; j++) {
       const targetVisionLevel = targetVisionLevels[j];
       // 9.0) If no `ATCV.<visionId>` is founded on the target token return true (this shouldn't never happened is just for avoid some unwanted behavior)
-      if (!targetVisionLevel
-        || !targetVisionLevel.visionId
-        || targetVisionLevel.visionId === AtcvEffectSenseFlags.NORMAL
-        || targetVisionLevel.visionId === AtcvEffectSenseFlags.NONE) {
+      if (
+        !targetVisionLevel ||
+        !targetVisionLevel.visionId ||
+        targetVisionLevel.visionId === AtcvEffectSenseFlags.NORMAL ||
+        targetVisionLevel.visionId === AtcvEffectSenseFlags.NONE
+      ) {
         // sourceVisionLevelsValid.set(sourceVisionLevel.visionId, true);
         // sourceVisionLevelsValid.set(sourceVisionLevel.visionId+j, <number>targetVisionLevel.visionLevelValue);
         sourceVisionLevelsValid.push(<number>targetVisionLevel.visionLevelValue);
-        debug(`[${sourceVisionLevel.visionId}][${targetVisionLevel.visionId}](9.0) Is true, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
+        debug(
+          `[${sourceVisionLevel.visionId}][${targetVisionLevel.visionId}](9.0) Is true, '${sourceToken.data.name}' can see '${targetToken.data.name}'`,
+        );
         continue;
       }
       // 9.1) Check for explicit `ATCV.conditionTargets` and `ATCV.conditionSources`, this control make avoid the following 9.X check
-      if (sourceVisionLevel?.visionTargets?.length > 0
-          && !sourceVisionLevel?.visionTargets.includes(<string>targetVisionLevel.visionId)) {
-          // sourceVisionLevelsValid.set(sourceVisionLevel.visionId, false);
-          // sourceVisionLevelsValid.delete(sourceVisionLevel.visionId);
-          debug(`[${sourceVisionLevel.visionId}][${targetVisionLevel.visionId}](9.1.1) Is false, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
-          continue;
+      if (
+        sourceVisionLevel?.visionTargets?.length > 0 &&
+        !sourceVisionLevel?.visionTargets.includes(<string>targetVisionLevel.visionId)
+      ) {
+        // sourceVisionLevelsValid.set(sourceVisionLevel.visionId, false);
+        // sourceVisionLevelsValid.delete(sourceVisionLevel.visionId);
+        debug(
+          `[${sourceVisionLevel.visionId}][${targetVisionLevel.visionId}](9.1.1) Is false, '${sourceToken.data.name}' can see '${targetToken.data.name}'`,
+        );
+        continue;
       }
-      if (targetVisionLevel?.visionSources?.length > 0
-          && !targetVisionLevel?.visionSources.includes(<string>sourceVisionLevel.visionId)) {
-          // sourceVisionLevelsValid.set(sourceVisionLevel.visionId, false);
-          debug(`[${sourceVisionLevel.visionId}][${targetVisionLevel.visionId}](9.1.2) Is false, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
-          continue;
+      if (
+        targetVisionLevel?.visionSources?.length > 0 &&
+        !targetVisionLevel?.visionSources.includes(<string>sourceVisionLevel.visionId)
+      ) {
+        // sourceVisionLevelsValid.set(sourceVisionLevel.visionId, false);
+        debug(
+          `[${sourceVisionLevel.visionId}][${targetVisionLevel.visionId}](9.1.2) Is false, '${sourceToken.data.name}' can see '${targetToken.data.name}'`,
+        );
+        continue;
       }
       // 9.2) If the 'condition' on the target token is `NONE` return true
       //if (isStringEquals(targetVisionLevel.visionId, AtcvEffectConditionFlags.NONE)) {
@@ -2125,7 +2139,9 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
         // sourceVisionLevelsValid.set(sourceVisionLevel.visionId, true);
         // sourceVisionLevelsValid.set(sourceVisionLevel.visionId+j, <number>targetVisionLevel.visionLevelValue);
         sourceVisionLevelsValid.push(<number>targetVisionLevel.visionLevelValue);
-        debug(`[${sourceVisionLevel.visionId}][${targetVisionLevel.visionId}](9.2) Is true, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
+        debug(
+          `[${sourceVisionLevel.visionId}][${targetVisionLevel.visionId}](9.2) Is true, '${sourceToken.data.name}' can see '${targetToken.data.name}'`,
+        );
         continue;
       }
 
@@ -2133,32 +2149,45 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
       if (sourceVisionLevel?.visionElevation && sourceTokenElevation < targetTokenElevation) {
         // sourceVisionLevelsValid.set(sourceVisionLevel.visionId, false);
         // sourceVisionLevelsValid.delete(sourceVisionLevel.visionId);
-        debug(`[${sourceVisionLevel.visionId}][${targetVisionLevel.visionId}](9.2.1) Is false, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
+        debug(
+          `[${sourceVisionLevel.visionId}][${targetVisionLevel.visionId}](9.2.1) Is false, '${sourceToken.data.name}' can see '${targetToken.data.name}'`,
+        );
         continue;
       }
 
       // 9.2.2 old 11)  Check if `ATCV.conditionDistance` is valorized if is set to a numeric value, will check if the tokens are near enough to remain hidden (remember -1 is infinity distance).
-      if (<number>sourceVisionLevel?.visionDistanceValue > 0 && <number>sourceVisionLevel?.visionDistanceValue < tokenDistance) {
+      if (
+        <number>sourceVisionLevel?.visionDistanceValue > 0 &&
+        <number>sourceVisionLevel?.visionDistanceValue < tokenDistance
+      ) {
         // sourceVisionLevelsValid.set(sourceVisionLevel.visionId, false);
         // sourceVisionLevelsValid.delete(sourceVisionLevel.visionId);
-        debug(`[${sourceVisionLevel.visionId}][${targetVisionLevel.visionId}](9.2.2) Is false, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
+        debug(
+          `[${sourceVisionLevel.visionId}][${targetVisionLevel.visionId}](9.2.2) Is false, '${sourceToken.data.name}' can see '${targetToken.data.name}'`,
+        );
         continue;
       }
 
       // 9.3) If the 'condition' on the target token is `HIDDEN` and the _Perception Passive of the system_
       // of the source token is `>` of the current sense value, we use the  _Perception Passive of the system_ for the checking and return true if is `>` of the condition value set.
-      if (targetVisionLevel.visionId === AtcvEffectConditionFlags.HIDDEN && game.settings.get(CONSTANTS.MODULE_NAME, 'autoPassivePerception')) {
-        if (perceptionPassive > <number>targetVisionLevel.visionLevelValue
-        ) {
+      if (
+        targetVisionLevel.visionId === AtcvEffectConditionFlags.HIDDEN &&
+        game.settings.get(CONSTANTS.MODULE_NAME, 'autoPassivePerception')
+      ) {
+        if (perceptionPassive > <number>targetVisionLevel.visionLevelValue) {
           // sourceVisionLevelsValid.set(sourceVisionLevel.visionId, true);
           // sourceVisionLevelsValid.set(sourceVisionLevel.visionId+j, <number>targetVisionLevel.visionLevelValue);
           sourceVisionLevelsValid.push(<number>targetVisionLevel.visionLevelValue);
-          debug(`[${sourceVisionLevel.visionId}][${targetVisionLevel.visionId}](9.3) Is true, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
+          debug(
+            `[${sourceVisionLevel.visionId}][${targetVisionLevel.visionId}](9.3) Is true, '${sourceToken.data.name}' can see '${targetToken.data.name}'`,
+          );
           continue;
-        }else{
+        } else {
           // sourceVisionLevelsValid.set(sourceVisionLevel.visionId, false);
           // sourceVisionLevelsValid.delete(sourceVisionLevel.visionId);
-          debug(`[${sourceVisionLevel.visionId}][${targetVisionLevel.visionId}](9.3) Is false, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
+          debug(
+            `[${sourceVisionLevel.visionId}][${targetVisionLevel.visionId}](9.3) Is false, '${sourceToken.data.name}' can see '${targetToken.data.name}'`,
+          );
           continue;
         }
       }
@@ -2168,27 +2197,35 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
 
       // sourceVisionLevelsValid.set(sourceVisionLevel.visionId+j, <number>targetVisionLevel.visionLevelValue);
       sourceVisionLevelsValid.push(<number>targetVisionLevel.visionLevelValue);
-      debug(`[${sourceVisionLevel.visionId}][${targetVisionLevel.visionId}](9.4) Is true, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
+      debug(
+        `[${sourceVisionLevel.visionId}][${targetVisionLevel.visionId}](9.4) Is true, '${sourceToken.data.name}' can see '${targetToken.data.name}'`,
+      );
     }
 
     // 12) Check if the vision level value of the filtered  'sense' on the source token is a number `>=` of the vision level value of the filtered 'condition' on the target token,
     // if the sense is set to `-1` this check is automatically skipped. If the condition and the sense are both set with value `-1` the condition won.
-    if(sourceVisionLevelsValid.length == 0){
-      debug(`[${sourceVisionLevel.visionId}](12.1) Is false, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
+    if (sourceVisionLevelsValid.length == 0) {
+      debug(
+        `[${sourceVisionLevel.visionId}](12.1) Is false, '${sourceToken.data.name}' can see '${targetToken.data.name}'`,
+      );
       continue;
     }
     // the "-1" case
-    if(sourceVisionLevelsValid.includes(-1)){
-      debug(`[${sourceVisionLevel.visionId}](12.2) Is false, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
+    if (sourceVisionLevelsValid.includes(-1)) {
+      debug(
+        `[${sourceVisionLevel.visionId}](12.2) Is false, '${sourceToken.data.name}' can see '${targetToken.data.name}'`,
+      );
       continue;
     }
     const result =
       <number>sourceVisionLevel.visionLevelValue <= -1 ||
       <number>sourceVisionLevel.visionLevelValue >= Math.max(...sourceVisionLevelsValid);
-      // <number>sourceVisionLevel.visionLevelValue >= <number>targetVisionLevel.visionLevelValue;
+    // <number>sourceVisionLevel.visionLevelValue >= <number>targetVisionLevel.visionLevelValue;
     //return result;
-    if(result){
-      debug(`[${sourceVisionLevel.visionId}](12.3) Is true, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
+    if (result) {
+      debug(
+        `[${sourceVisionLevel.visionId}](12.3) Is true, '${sourceToken.data.name}' can see '${targetToken.data.name}'`,
+      );
       resultFinal = result;
       // This sense is enough for see the target we exit the loop for velocity without check the other
       break;

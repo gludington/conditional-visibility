@@ -204,7 +204,8 @@ const module = {
       // flags: tokenConfig.object.data.flags[CONSTANTS.MODULE_NAME] ?? {},
       senses: sensesTemplateData,
       conditions: conditionsTemplateData,
-      forcevisible: tokenConfig.actor.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE) ?? false,
+      dataforcevisible:
+        tokenConfig.actor.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE) ?? false,
     }).then((extraSenses) => {
       visionTab.append(extraSenses);
     });
@@ -248,7 +249,9 @@ const module = {
     if (
       change.flags &&
       change.flags[CONSTANTS.MODULE_NAME] &&
-      !getProperty(change, `flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`)
+      !getProperty(change, `flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`) &&
+      !getProperty(change, `flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_SENSES}`) &&
+      !getProperty(change, `flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_CONDITIONS}`)
     ) {
       module.updateToken(sourceToken.document, change, options, userId);
     } else {
@@ -477,14 +480,16 @@ const module = {
       return;
     }
     //@ts-ignore
-    if (!options?.changes) {
-      return;
-    }
+    // if (!options?.changes) {
+    //   return;
+    // }
     if (
       //@ts-ignore
-      options?.changes.length <= 0 ||
+      options?.changes &&
       //@ts-ignore
-      !options.changes?.find((effect) => effect.key.includes('ATCV'))
+      (options?.changes.length <= 0 ||
+        //@ts-ignore
+        !options.changes?.find((effect) => effect.key.includes('ATCV')))
     ) {
       if (isRemoved) {
         for (const sourceToken of tokenArray) {
@@ -527,31 +532,29 @@ const module = {
             }
             const updateKey = change.key.slice(5);
             for (const tokenToSet of tokenArray) {
-              //@ts-ignore
-              if (updateValue == options.changes.find((a) => change.key === a.key)?.value) {
-                if (tokenToSet.actor?.getFlag(CONSTANTS.MODULE_NAME, updateKey) != updateValue) {
-                  const atcvEffectFlagData = AtcvEffect.fromActiveEffect(tokenToSet.document, atcvEffect);
-                  await repairAndSetFlag(tokenToSet, updateKey, atcvEffectFlagData);
-                }
-                continue;
-              }
               const isPlayerOwned = <boolean>tokenToSet.document.isOwner;
               if (!isPlayerOwned) {
                 continue;
               }
+              //@ts-ignore
+              // if (updateValue == options.changes.find((a) => change.key === a.key)?.value) {
+              //   if (tokenToSet.actor?.getFlag(CONSTANTS.MODULE_NAME, updateKey) != updateValue) {
+              //     const atcvEffectFlagData = AtcvEffect.fromActiveEffect(tokenToSet.document, atcvEffect);
+              //     await repairAndSetFlag(tokenToSet, updateKey, atcvEffectFlagData);
+              //   }
+              //   continue;
+              // }
               const sensesData = await getAllDefaultSensesAndConditions(tokenToSet);
               for (const statusSight of sensesData) {
                 if (updateKey === statusSight.visionId) {
                   // TODO TO CHECK IF WE NEED TO FILTER THE TOKENS AGAIN MAYBE WITH A ADDITIONAL ATCV active change data effect ?
-                  /*
                   const currentAtcvEffectFlagData = <AtcvEffect>(
                     // tokenToSet?.document.getFlag(CONSTANTS.MODULE_NAME, updateKey)
                     (tokenToSet?.actor?.getFlag(CONSTANTS.MODULE_NAME, updateKey) ??
                       tokenToSet?.document.getFlag(CONSTANTS.MODULE_NAME, updateKey))
                   );
                   const currentValue = String(<number>currentAtcvEffectFlagData?.visionLevelValue) ?? '0';
-                  */
-                  const currentValue = String(<number>statusSight.visionLevelValue) ?? '0';
+                  // const currentValue = String(<number>statusSight.visionLevelValue) ?? '0';
                   if (change.value != currentValue) {
                     if (isRemoved || currentValue == '0') {
                       await repairAndUnSetFlag(tokenToSet, updateKey);

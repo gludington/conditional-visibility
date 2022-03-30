@@ -345,7 +345,7 @@ export interface SenseData {
 }
 
 export enum ConditionalVisibilityFlags {
-  FORCE_VISIBLE = 'forcevisible',
+  FORCE_VISIBLE = 'dataforcevisible',
   DATA_SENSES = 'datasenses',
   DATA_CONDITIONS = 'dataconditions',
   // MAX_SIGHT_DISTANCE = 'maxsightdistance'

@@ -1870,10 +1870,11 @@ export async function repairAndSetFlag(token: Token, key: string, value: AtcvEff
 
     let data: AtcvEffect[] = [];
     if (value.visionType === 'sense') {
-      data = <AtcvEffect[]>token.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES) ?? [];
+      // data = <AtcvEffect[]>token.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES) ?? [];
+      data = getSensesFromToken(token.document, true);
     } else if (value.visionType === 'condition') {
-      data =
-        <AtcvEffect[]>token.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_CONDITIONS) ?? [];
+      // data = <AtcvEffect[]>token.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_CONDITIONS) ?? [];
+      data = getConditionsFromToken(token.document, true);
     } else {
       return;
     }
@@ -1902,7 +1903,6 @@ export async function repairAndSetFlag(token: Token, key: string, value: AtcvEff
     } else {
       // DO NOTHING
     }
-
     // canvas.perception.schedule({
     //   lighting: { refresh: true },
     //   sight: { refresh: true },

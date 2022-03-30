@@ -997,9 +997,8 @@ export async function prepareActiveEffectForConditionalVisibility(
       const activeEffectToRemove = <ActiveEffect>(
         await API.findEffectByNameOnToken(<string>sourceToken.id, effectNameToCheckOnActor)
       );
-      const atcvEffectFlagData =
-        <AtcvEffect>sourceToken.actor?.getFlag(CONSTANTS.MODULE_NAME, senseData.visionId);
-      if(activeEffectToRemove && atcvEffectFlagData?.visionId){
+      const atcvEffectFlagData = <AtcvEffect>sourceToken.actor?.getFlag(CONSTANTS.MODULE_NAME, senseData.visionId);
+      if (activeEffectToRemove && atcvEffectFlagData?.visionId) {
         const actve = atcvEffectFlagData?.visionLevelValue;
         if (actve === 0 || actve === null || actve === undefined || !actve) {
           // await API.removeEffectFromIdOnToken(<string>sourceToken.id, <string>activeEffectToRemove.id);
@@ -1185,8 +1184,8 @@ export function getSensesFromTokenFast(
 
   const atcvEffects =
     <AtcvEffect[]>tokenDocument.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES) ?? [];
-  
-  if(atcvEffects.filter((a) => !a.visionId).length > 0){
+
+  if (atcvEffects.filter((a) => !a.visionId).length > 0) {
     // const atcvEffectsTmp = atcvEffects.filter((a) => a.visionId);
     tokenDocument.actor?.unsetFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES);
     return getSensesFromToken(tokenDocument);
@@ -1197,9 +1196,11 @@ export function getSensesFromTokenFast(
     const atcvEffectsObject = getProperty(<Actor>tokenDocument?.actor, `data.flags.${CONSTANTS.MODULE_NAME}`);
     for (const key in atcvEffectsObject) {
       const senseIdKey = key;
-      if(senseIdKey == ConditionalVisibilityFlags.DATA_SENSES ||
+      if (
+        senseIdKey == ConditionalVisibilityFlags.DATA_SENSES ||
         senseIdKey == ConditionalVisibilityFlags.DATA_CONDITIONS ||
-        senseIdKey == ConditionalVisibilityFlags.FORCE_VISIBLE){
+        senseIdKey == ConditionalVisibilityFlags.FORCE_VISIBLE
+      ) {
         continue;
       }
       const senseValue = <AtcvEffect>atcvEffectsObject[key];
@@ -1231,7 +1232,7 @@ export function getConditionsFromTokenFast(
 
   const atcvEffects =
     <AtcvEffect[]>tokenDocument.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_CONDITIONS) ?? [];
-  if(atcvEffects.filter((a) => !a.visionId).length > 0){
+  if (atcvEffects.filter((a) => !a.visionId).length > 0) {
     // const atcvEffectsTmp = atcvEffects.filter((a) => a.visionId);
     tokenDocument.actor?.unsetFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_CONDITIONS);
     return getConditionsFromToken(tokenDocument);
@@ -1242,9 +1243,11 @@ export function getConditionsFromTokenFast(
     const atcvEffectsObject = getProperty(<Actor>tokenDocument?.actor, `data.flags.${CONSTANTS.MODULE_NAME}`);
     for (const key in atcvEffectsObject) {
       const conditionIdKey = key;
-      if(conditionIdKey == ConditionalVisibilityFlags.DATA_SENSES ||
+      if (
+        conditionIdKey == ConditionalVisibilityFlags.DATA_SENSES ||
         conditionIdKey == ConditionalVisibilityFlags.DATA_CONDITIONS ||
-        conditionIdKey == ConditionalVisibilityFlags.FORCE_VISIBLE){
+        conditionIdKey == ConditionalVisibilityFlags.FORCE_VISIBLE
+      ) {
         continue;
       }
       const conditionValue = <AtcvEffect>atcvEffectsObject[key];
@@ -1447,7 +1450,6 @@ export function retrieveAtcvEffectFromActiveEffect(
               myresult = parseInt(eval(roll.result));
             }
             //myvalue = roll.total || 0;
-            // if (isNaN(myresult)) {
             if (!is_real_number(myresult)) {
               warn(`The formula '${formula}' doesn't return a number we set the default 1`, true);
               myvalue = 1;
@@ -1457,7 +1459,6 @@ export function retrieveAtcvEffectFromActiveEffect(
           } else {
             myvalue = Number(change.value);
           }
-          // if (isNaN(myvalue)) {
           if (!is_real_number(myvalue)) {
             myvalue = 1;
           }
@@ -1589,7 +1590,6 @@ export function retrieveAtcvVisionLevelValueFromActiveEffect(token: Token, effec
   } else {
     atcvValue = Number(atcvValueChange.value);
   }
-  // if (isNaN(atcvValue)) {
   if (!is_real_number(atcvValue)) {
     return 1;
   }
@@ -1659,7 +1659,6 @@ export async function toggleStealth(event) {
           const currentstealth = parseInt(html.find('div.form-group').children()[5]?.value);
           //@ts-ignore
           let valStealthRoll = parseInt(html.find('div.form-group').children()[8]?.value);
-          // if (isNaN(valStealthRoll)) {
           if (!is_real_number(valStealthRoll)) {
             valStealthRoll = 0;
           }
@@ -1793,7 +1792,6 @@ export function getDistanceSightFromToken(token: Token): number {
 function getPerfectVisionVisionRange(token: Token): number {
   let sightLimit = parseFloat(<string>token.document.getFlag('perfect-vision', 'sightLimit'));
 
-  // if (isNaN(sightLimit)) {
   if (!is_real_number(sightLimit)) {
     sightLimit = parseFloat(<string>canvas.scene?.getFlag('perfect-vision', 'sightLimit'));
   }
@@ -1869,7 +1867,7 @@ export async function repairAndSetFlag(token: Token, key: string, value: AtcvEff
     } else {
       await token.actor?.setFlag(CONSTANTS.MODULE_NAME, key, value);
     }
-    
+
     let data: AtcvEffect[] = [];
     if (value.visionType === 'sense') {
       data = <AtcvEffect[]>token.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES) ?? [];
@@ -1900,11 +1898,11 @@ export async function repairAndSetFlag(token: Token, key: string, value: AtcvEff
     if (value.visionType === 'sense') {
       await token.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES, data);
     } else if (value.visionType === 'condition') {
-      await  token.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_CONDITIONS, data);
+      await token.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_CONDITIONS, data);
     } else {
       // DO NOTHING
     }
-    
+
     // canvas.perception.schedule({
     //   lighting: { refresh: true },
     //   sight: { refresh: true },
@@ -2115,7 +2113,7 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
   for (let i = 0; i < sourceVisionLevels.length; i++) {
     // const sourceVisionLevelsValid: Map<string, number> = new Map<string, number>();
     const sourceVisionLevelsValid: number[] = [];
-    const sourceVisionLevel = targetVisionLevels[i];
+    const sourceVisionLevel = sourceVisionLevels[i];
     for (let j = 0; j < targetVisionLevels.length; j++) {
       const targetVisionLevel = targetVisionLevels[j];
       // 9.0) If no `ATCV.<visionId>` is founded on the target token return true (this shouldn't never happened is just for avoid some unwanted behavior)

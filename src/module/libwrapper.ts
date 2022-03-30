@@ -618,7 +618,6 @@ Hooks.on('renderChatMessage', async (message: ChatMessage, html: JQuery<HTMLElem
     if (isStealth) {
       //@ts-ignore
       let valStealthRoll = parseInt(rollChatTotal);
-      // if (isNaN(valStealthRoll)) {
       if (!is_real_number(valStealthRoll)) {
         valStealthRoll = 0;
       }
@@ -691,7 +690,6 @@ Hooks.on('renderChatMessage', async (message: ChatMessage, html: JQuery<HTMLElem
     const rollChatTotal = $(message.data.content).find('.total').html() || '0';
     //@ts-ignore
     let valStealthRoll = parseInt(rollChatTotal);
-    // if (isNaN(valStealthRoll)) {
     if (!is_real_number(valStealthRoll)) {
       valStealthRoll = 0;
     }

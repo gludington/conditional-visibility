@@ -316,8 +316,6 @@ const module = {
           continue;
         }
         if (
-          //// !senseOrConditionValue.visionLevelValue ||
-          // isNaN(<any>senseOrConditionValue.visionLevelValue) ||
           !is_real_number(senseOrConditionValue.visionLevelValue) ||
           senseOrConditionValue.visionLevelValue === undefined ||
           senseOrConditionValue.visionLevelValue === null
@@ -435,7 +433,7 @@ const module = {
               const activeEffectToRemove = <ActiveEffect>(
                 await API.findEffectByNameOnToken(<string>sourceToken.id, effectNameToCheckOnActor)
               );
-              if(activeEffectToRemove){
+              if (activeEffectToRemove) {
                 const actve = senseOrConditionValue.visionLevelValue ?? 0;
                 if (actve === 0 || actve === null || actve === undefined || !actve) {
                   //await API.removeEffectFromIdOnToken(<string>sourceToken.id, <string>activeEffectToRemove.id);
@@ -446,14 +444,6 @@ const module = {
           }
         }
       } // Fine for
-      // TODO check better solution
-      // conditionalVisibilitySocket.executeForEveryone('sightRefreshCV', sourceToken);
-      // for (const t of <Token[]>canvas.tokens?.placeables) {
-      //   t.updateSource();
-      //   // t.document.update();
-      //   // Hooks.callAll('sightRefresh', t);
-      //   // t.refresh();
-      // }
       // FINALLY REMVE ALL THE ACTIVE EFFECT
       if (setAeToRemove.size > 0) {
         API.removeEffectFromIdOnTokenMultiple(<string>sourceToken.id, Array.from(setAeToRemove));
@@ -487,10 +477,10 @@ const module = {
       return;
     }
     //@ts-ignore
-    if (!options?.changes){
+    if (!options?.changes) {
       return;
     }
-    if(
+    if (
       //@ts-ignore
       options?.changes.length <= 0 ||
       //@ts-ignore
@@ -508,11 +498,10 @@ const module = {
             await repairAndUnSetFlag(sourceToken, sense?.visionId);
           }
         }
-      }else{
+      } else {
         return;
       }
-    }else{
-      
+    } else {
       const totalEffects = <ActiveEffect[]>actor?.effects.contents.filter((i) => !i.data.disabled);
       const atcvEffects = totalEffects.filter(
         (entity) => !!entity.data.changes.find((effect) => effect.key.includes('ATCV')),
@@ -533,12 +522,19 @@ const module = {
               continue;
             }
             const updateValue = change.value;
-            //@ts-ignore
-            if(updateValue == options.changes.find((a) => change.key === a.key)?.value){
+            if (change.key.startsWith('ATCV.condition')) {
               continue;
             }
             const updateKey = change.key.slice(5);
             for (const tokenToSet of tokenArray) {
+              //@ts-ignore
+              if (updateValue == options.changes.find((a) => change.key === a.key)?.value) {
+                if (tokenToSet.actor?.getFlag(CONSTANTS.MODULE_NAME, updateKey) != updateValue) {
+                  const atcvEffectFlagData = AtcvEffect.fromActiveEffect(tokenToSet.document, atcvEffect);
+                  await repairAndSetFlag(tokenToSet, updateKey, atcvEffectFlagData);
+                }
+                continue;
+              }
               const isPlayerOwned = <boolean>tokenToSet.document.isOwner;
               if (!isPlayerOwned) {
                 continue;
@@ -578,11 +574,6 @@ const module = {
         }
       }
     }
-    // Refrsh for any ATCV update
-    // canvas.perception.schedule({
-    //   lighting: { refresh: true },
-    //   sight: { refresh: true },
-    // });
   },
   async dfredsConvenientEffectsReady(...args) {
     if (!game.settings.get(CONSTANTS.MODULE_NAME, 'disableDCEAutomaticImport')) {
@@ -764,7 +755,6 @@ const module = {
       if (isStealth) {
         //@ts-ignore
         let valStealthRoll = parseInt(rollChatTotal);
-        // if (isNaN(valStealthRoll)) {
         if (!is_real_number(valStealthRoll)) {
           valStealthRoll = 0;
         }
@@ -837,7 +827,6 @@ const module = {
       const rollChatTotal = $(message.data.content).find('.total').html() || '0';
       //@ts-ignore
       let valStealthRoll = parseInt(rollChatTotal);
-      // if (isNaN(valStealthRoll)) {
       if (!is_real_number(valStealthRoll)) {
         valStealthRoll = 0;
       }

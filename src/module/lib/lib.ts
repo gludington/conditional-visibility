@@ -1,4 +1,3 @@
-import { EffectSupport } from './../effects/effect';
 import { EffectChangeData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/data.mjs/effectChangeData';
 import CONSTANTS from '../constants.js';
 import API from '../api.js';
@@ -9,7 +8,6 @@ import {
   AtcvEffectConditionFlags,
   VisionCapabilities,
   SenseData,
-  CheckerDebugData,
   ConditionalVisibilityFlags,
 } from '../conditional-visibility-models.js';
 import EmbeddedCollection from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/abstract/embedded-collection.mjs';
@@ -993,7 +991,7 @@ export async function prepareActiveEffectForConditionalVisibility(
   const setAeToRemove = new Set<string>();
 
   // Make sure to remove anything with value 0
-  for (const senseData of await API.getAllDefaultSensesAndConditions(sourceToken)) {
+  for (const senseData of await getAllDefaultSensesAndConditions(sourceToken)) {
     const effectNameToCheckOnActor = i18n(<string>senseData?.visionName);
     if (await API.hasEffectAppliedOnToken(<string>sourceToken.id, effectNameToCheckOnActor, true)) {
       const activeEffectToRemove = <ActiveEffect>(
@@ -1580,170 +1578,6 @@ export function retrieveAtcvVisionLevelValueFromActiveEffect(token: Token, effec
   return atcvValue;
 }
 
-/*
-export function retrieveAtcvVisionLevelKeyFromActiveEffect(effectChanges: EffectChangeData[]): string {
-  let atcvKey = '';
-  const effectEntityChanges = effectChanges.sort((a, b) => <number>a.priority - <number>b.priority);
-  const atcvKeyChange = <EffectChangeData>effectEntityChanges.find((aee) => {
-    if (aee.key.startsWith('ATCV.') && !aee.key.startsWith('ATCV.condition') && aee.value) {
-      const updateKey = aee.key.slice(5);
-      return updateKey;
-    }
-  });
-  atcvKey = atcvKeyChange.key.slice(5);
-  return atcvKey;
-}
-
-export function retrieveAtcvElevationFromActiveEffect(effectChanges: EffectChangeData[]): boolean {
-  let checkElevationAcvt = false;
-  const effectEntityChanges = effectChanges.sort((a, b) => <number>a.priority - <number>b.priority);
-  for (const change of effectEntityChanges) {
-    if (isStringEquals(change.key, 'ATCV.conditionElevation') && change.value) {
-      checkElevationAcvt = change.value === 'true';
-      break;
-    }
-  }
-  return checkElevationAcvt;
-}
-
-export function retrieveAtcvTypeFromActiveEffect(effectChanges: EffectChangeData[]): string {
-  let checkTypeAcvt = '';
-  const effectEntityChanges = effectChanges.sort((a, b) => <number>a.priority - <number>b.priority);
-  for (const change of effectEntityChanges) {
-    if (isStringEquals(change.key, 'ATCV.conditionType') && change.value) {
-      checkTypeAcvt = String(change.value);
-      break;
-    }
-  }
-  return checkTypeAcvt;
-}
-
-export function retrieveAtcvLevelMinIndexFromActiveEffect(effectChanges: EffectChangeData[]): number {
-  let checkLevelMinIndexAcvt = 0;
-  const effectEntityChanges = effectChanges.sort((a, b) => <number>a.priority - <number>b.priority);
-  for (const change of effectEntityChanges) {
-    if (isStringEquals(change.key, 'ATCV.conditionLevelMinIndex') && change.value) {
-      checkLevelMinIndexAcvt = Number(change.value);
-      break;
-    }
-  }
-  return checkLevelMinIndexAcvt;
-}
-
-export function retrieveAtcvLevelMaxIndexFromActiveEffect(effectChanges: EffectChangeData[]): number {
-  let checkLevelMaxIndexAcvt = 10;
-  const effectEntityChanges = effectChanges.sort((a, b) => <number>a.priority - <number>b.priority);
-  for (const change of effectEntityChanges) {
-    if (isStringEquals(change.key, 'ATCV.conditionLevelMaxIndex') && change.value) {
-      checkLevelMaxIndexAcvt = Number(change.value);
-      break;
-    }
-  }
-  return checkLevelMaxIndexAcvt;
-}
-
-export function retrieveAtcvTargetImageFromActiveEffect(effectChanges: EffectChangeData[]): string {
-  let checkTargetImageAcvt = '';
-  const effectEntityChanges = effectChanges.sort((a, b) => <number>a.priority - <number>b.priority);
-  for (const change of effectEntityChanges) {
-    if (isStringEquals(change.key, 'ATCV.conditionTargetImage') && change.value) {
-      checkTargetImageAcvt = String(change.value);
-      break;
-    }
-  }
-  return checkTargetImageAcvt;
-}
-
-export function retrieveAtcvTargetsFromActiveEffect(effectChanges: EffectChangeData[]): string[] {
-  let checkTargetsAcvt: string[] = [];
-  const effectEntityChanges = effectChanges.sort((a, b) => <number>a.priority - <number>b.priority);
-  for (const change of effectEntityChanges) {
-    if (isStringEquals(change.key, 'ATCV.conditionTargets') && change.value) {
-      const inTags = <any>change.value;
-      if (!(typeof inTags === 'string' || inTags instanceof RegExp || Array.isArray(inTags))) {
-        error(`'ATCV.conditionTargets' must be of type string or array`);
-      }
-      let providedTags = typeof inTags === 'string' ? inTags.split(',') : inTags;
-
-      if (!Array.isArray(providedTags)) providedTags = [providedTags];
-
-      for(const t of providedTags) {
-        if (!(typeof t === 'string' || t instanceof RegExp)) {
-          error(`'ATCV.conditionTargets' in array must be of type string or regexp`);
-        }
-      });
-
-      checkTargetsAcvt = providedTags.map((t) => (t instanceof RegExp ? t : t.trim()));
-      break;
-    }
-  }
-  return checkTargetsAcvt;
-}
-
-export function retrieveAtcvSourcesFromActiveEffect(effectChanges: EffectChangeData[]): string[] {
-  let checkSourcesAcvt: string[] = [];
-  const effectEntityChanges = effectChanges.sort((a, b) => <number>a.priority - <number>b.priority);
-  for (const change of effectEntityChanges) {
-    if (isStringEquals(change.key, 'ATCV.conditionSources') && change.value) {
-      const inTags = <any>change.value;
-      if (!(typeof inTags === 'string' || inTags instanceof RegExp || Array.isArray(inTags))) {
-        error(`'ATCV.conditionSources' must be of type string or array`);
-      }
-      let providedTags = typeof inTags === 'string' ? inTags.split(',') : inTags;
-
-      if (!Array.isArray(providedTags)) providedTags = [providedTags];
-
-      for(const t of providedTags) {
-        if (!(typeof t === 'string' || t instanceof RegExp)) {
-          error(`'ATCV.conditionSources' in array must be of type string or regexp`);
-        }
-      });
-
-      checkSourcesAcvt = providedTags.map((t) => (t instanceof RegExp ? t : t.trim()));
-      break;
-    }
-  }
-  return checkSourcesAcvt;
-}
-
-export function retrieveAtcvVisionTargetImageFromActiveEffect(effectChanges: EffectChangeData[]): string {
-  let atcvValue: any = '';
-  const effectEntityChanges = effectChanges.sort((a, b) => <number>a.priority - <number>b.priority);
-  atcvValue = effectEntityChanges.find((aee) => {
-    if (isStringEquals(aee.key, 'ATCV.conditionTargetImage') && aee.value) {
-      return aee;
-    }
-  });
-  if (!atcvValue) {
-    // Ignore ???
-    return '';
-  }
-  return String(atcvValue.value);
-}
-
-export function retrieveAtcvVisionLevelDistanceFromActiveEffect(effectChanges: EffectChangeData[]): number {
-  let distance = 0;
-  const effectEntityChanges = effectChanges.sort((a, b) => <number>a.priority - <number>b.priority);
-  const conditionDistanceAE = effectEntityChanges.find(
-    (aee) => isStringEquals(aee.key, 'ATCV.conditionDistance') && aee.value,
-  );
-  const conditionDistance = Number(conditionDistanceAE?.value);
-  if (conditionDistance > 0) {
-    distance = conditionDistance;
-  }
-  // if is a AE with the label of the module (no id sorry)
-  //Look up for ATL dim and bright sight to manage distance
-  // const dimSightAE = effectEntityChanges.find((aee) => isStringEquals(aee.key, 'ATL.dimSight') && aee.value);
-  // const brightSightAE = effectEntityChanges.find((aee) => isStringEquals(aee.key, 'ATL.brightSight') && aee.value);
-  // const brightSight = Number(brightSightAE?.value);
-  // const dimSight = Number(dimSightAE?.value);
-  // if (brightSight || dimSight) {
-  //   distance = Math.max(brightSight, dimSight);
-  // }
-  return distance;
-}
-*/
-
 export async function toggleStealth(event) {
   //const stealthedWithHiddenConditionOri =
   //  this.object.document.getFlag(CONSTANTS.MODULE_NAME, AtcvEffectConditionFlags.HIDDEN) ?? 0;
@@ -2091,6 +1925,7 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
     targetToken.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE) ||
     targetToken.document.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE)
   ) {
+    debug(`(1.1) Is true, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
     return true;
   }
 
@@ -2103,6 +1938,7 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
   //const isPlayerOwned = <boolean>targetToken.actor?.hasPlayerOwner;
   const isPlayerOwned = <boolean>targetToken.isOwner;
   if (!game.user?.isGM && (isPlayerOwned || targetToken.owner)) {
+    debug(`(2) Is true, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
     return true;
   }
 
@@ -2132,12 +1968,14 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
     sourceActorDisposition == CONST.TOKEN_DISPOSITIONS.HOSTILE &&
     targetActorDisposition == CONST.TOKEN_DISPOSITIONS.HOSTILE
   ) {
+    debug(`(3.2) Is true, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
     return true;
   }
 
   if (game.settings.get(CONSTANTS.MODULE_NAME, 'disableForNonHostileNpc')) {
     // 3.3 Check if the source is a hostile token
     if (targetActorDisposition != CONST.TOKEN_DISPOSITIONS.HOSTILE && sourceActorDisposition != CONST.TOKEN_DISPOSITIONS.HOSTILE) {
+      debug(`(3.3) Is true, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
       return true;
     }
   }
@@ -2160,6 +1998,7 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
   if (game.settings.get(CONSTANTS.MODULE_NAME, 'autoPassivePerception')) {
     if (targetVisionLevels.length == 0) {
       if (perceptionPassive >= stealthedPassive) {
+        debug(`(4) Is true, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
         return true;
       }
     }
@@ -2169,6 +2008,7 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
   if (sourceVisionLevels.length === 0) {
     // 5.1) If at least a condition is present on target it should be false else with no 'sense' on source e no ' condition' on target is true
     if (targetVisionLevels.length === 0) {
+      debug(`(5.1) Is true, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
       return true;
     }
   }
@@ -2178,6 +2018,7 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
   for (let i = 0; i < sourceVisionLevels.length; i++) {
     if (sourceVisionLevels[i].visionId === AtcvEffectSenseFlags.BLINDED) {
       // Someone is blind
+      debug(`(6) Is false, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
       return false;
     }
   }
@@ -2187,8 +2028,10 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
     if (game.settings.get(CONSTANTS.MODULE_NAME, 'autoPassivePerception')) {
       // 7.1)
       if (perceptionPassive >= stealthedPassive) {
+        debug(`(7.1) Is true, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
         return true;
       } else {
+        debug(`(7.1) Is false, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
         return false;
       }
     }
@@ -2200,6 +2043,7 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
   if (game.settings.get(CONSTANTS.MODULE_NAME, 'autoPassivePerception') && targetVisionLevels.length == 1) {
     if (targetVisionLevels[0].visionId == AtcvEffectConditionFlags.HIDDEN) {
       if (perceptionPassive >= (<number>targetVisionLevels[0].visionLevelValue ?? 0)) {
+        debug(`(8) Is true, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
         return true;
       }
     }
@@ -2245,7 +2089,8 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
 
   // 9) Check if the source token has some 'sense' powerful enough to beat every 'condition' ont he target token:
   for (let i = 0; i < sourceVisionLevels.length; i++) {
-    const sourceVisionLevelsValid: Map<string, number> = new Map<string, number>();
+    // const sourceVisionLevelsValid: Map<string, number> = new Map<string, number>();
+    const sourceVisionLevelsValid: number[] = [];
     const sourceVisionLevel = targetVisionLevels[i];
     for (let j = 0; j < targetVisionLevels.length; j++) {
       const targetVisionLevel = targetVisionLevels[j];
@@ -2255,41 +2100,48 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
         || targetVisionLevel.visionId === AtcvEffectSenseFlags.NORMAL
         || targetVisionLevel.visionId === AtcvEffectSenseFlags.NONE) {
         // sourceVisionLevelsValid.set(sourceVisionLevel.visionId, true);
-        sourceVisionLevelsValid.set(sourceVisionLevel.visionId, <number>targetVisionLevel.visionLevelValue);
+        // sourceVisionLevelsValid.set(sourceVisionLevel.visionId+j, <number>targetVisionLevel.visionLevelValue);
+        sourceVisionLevelsValid.push(<number>targetVisionLevel.visionLevelValue);
+        debug(`[${sourceVisionLevel.visionId}][${targetVisionLevel.visionId}](9.0) Is true, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
         continue;
       }
       // 9.1) Check for explicit `ATCV.conditionTargets` and `ATCV.conditionSources`, this control make avoid the following 9.X check
       if (sourceVisionLevel?.visionTargets?.length > 0
           && !sourceVisionLevel?.visionTargets.includes(<string>targetVisionLevel.visionId)) {
           // sourceVisionLevelsValid.set(sourceVisionLevel.visionId, false);
-          sourceVisionLevelsValid.delete(sourceVisionLevel.visionId);
+          // sourceVisionLevelsValid.delete(sourceVisionLevel.visionId);
+          debug(`[${sourceVisionLevel.visionId}][${targetVisionLevel.visionId}](9.1.1) Is false, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
           continue;
       }
       if (targetVisionLevel?.visionSources?.length > 0
           && !targetVisionLevel?.visionSources.includes(<string>sourceVisionLevel.visionId)) {
           // sourceVisionLevelsValid.set(sourceVisionLevel.visionId, false);
-          sourceVisionLevelsValid.delete(sourceVisionLevel.visionId);
+          debug(`[${sourceVisionLevel.visionId}][${targetVisionLevel.visionId}](9.1.2) Is false, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
           continue;
       }
       // 9.2) If the 'condition' on the target token is `NONE` return true
       //if (isStringEquals(targetVisionLevel.visionId, AtcvEffectConditionFlags.NONE)) {
       if (targetVisionLevel.visionId === AtcvEffectConditionFlags.NONE) {
         // sourceVisionLevelsValid.set(sourceVisionLevel.visionId, true);
-        sourceVisionLevelsValid.set(sourceVisionLevel.visionId, <number>targetVisionLevel.visionLevelValue);
+        // sourceVisionLevelsValid.set(sourceVisionLevel.visionId+j, <number>targetVisionLevel.visionLevelValue);
+        sourceVisionLevelsValid.push(<number>targetVisionLevel.visionLevelValue);
+        debug(`[${sourceVisionLevel.visionId}][${targetVisionLevel.visionId}](9.2) Is true, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
         continue;
       }
-      // TODO update documentation
-      // 10)  Check if `ATCV.conditionElevation` if set to true, will check if the source token and target token are at the same level .
+
+      // 9.2.1 old 10)  Check if `ATCV.conditionElevation` if set to true, will check if the source token and target token are at the same level .
       if (sourceVisionLevel?.visionElevation && sourceTokenElevation < targetTokenElevation) {
         // sourceVisionLevelsValid.set(sourceVisionLevel.visionId, false);
-        sourceVisionLevelsValid.delete(sourceVisionLevel.visionId);
+        // sourceVisionLevelsValid.delete(sourceVisionLevel.visionId);
+        debug(`[${sourceVisionLevel.visionId}][${targetVisionLevel.visionId}](9.2.1) Is false, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
         continue;
       }
-      // TODO update documentation
-      // 11)  Check if `ATCV.conditionDistance` is valorized if is set to a numeric value, will check if the tokens are near enough to remain hidden (remember -1 is infinity distance).
+
+      // 9.2.2 old 11)  Check if `ATCV.conditionDistance` is valorized if is set to a numeric value, will check if the tokens are near enough to remain hidden (remember -1 is infinity distance).
       if (<number>sourceVisionLevel?.visionDistanceValue > 0 && <number>sourceVisionLevel?.visionDistanceValue < tokenDistance) {
         // sourceVisionLevelsValid.set(sourceVisionLevel.visionId, false);
-        sourceVisionLevelsValid.delete(sourceVisionLevel.visionId);
+        // sourceVisionLevelsValid.delete(sourceVisionLevel.visionId);
+        debug(`[${sourceVisionLevel.visionId}][${targetVisionLevel.visionId}](9.2.2) Is false, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
         continue;
       }
 
@@ -2299,11 +2151,14 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
         if (perceptionPassive > <number>targetVisionLevel.visionLevelValue
         ) {
           // sourceVisionLevelsValid.set(sourceVisionLevel.visionId, true);
-          sourceVisionLevelsValid.set(sourceVisionLevel.visionId, <number>targetVisionLevel.visionLevelValue);
+          // sourceVisionLevelsValid.set(sourceVisionLevel.visionId+j, <number>targetVisionLevel.visionLevelValue);
+          sourceVisionLevelsValid.push(<number>targetVisionLevel.visionLevelValue);
+          debug(`[${sourceVisionLevel.visionId}][${targetVisionLevel.visionId}](9.3) Is true, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
           continue;
         }else{
           // sourceVisionLevelsValid.set(sourceVisionLevel.visionId, false);
-          sourceVisionLevelsValid.delete(sourceVisionLevel.visionId);
+          // sourceVisionLevelsValid.delete(sourceVisionLevel.visionId);
+          debug(`[${sourceVisionLevel.visionId}][${targetVisionLevel.visionId}](9.3) Is false, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
           continue;
         }
       }
@@ -2311,32 +2166,101 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
       // 9.4)  The range of 'condition' level [`conditionLevelMinIndex,conditionLevelMaxIndex`], must be between the 'sense' range level [`conditionLevelMinIndex,conditionLevelMaxIndex`] like explained on the [tables](./tables.md).
       // REMOVED TO COMPLICATED WE USE SOURCES AND TARGETS
 
-      sourceVisionLevelsValid.set(sourceVisionLevel.visionId, <number>targetVisionLevel.visionLevelValue);
+      // sourceVisionLevelsValid.set(sourceVisionLevel.visionId+j, <number>targetVisionLevel.visionLevelValue);
+      sourceVisionLevelsValid.push(<number>targetVisionLevel.visionLevelValue);
+      debug(`[${sourceVisionLevel.visionId}][${targetVisionLevel.visionId}](9.4) Is true, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
     }
-
-    // TODO something is not right....if i have mutliple condition and at least one is false i lose the info about the others, but is a question of velocity ....
 
     // 12) Check if the vision level value of the filtered  'sense' on the source token is a number `>=` of the vision level value of the filtered 'condition' on the target token,
     // if the sense is set to `-1` this check is automatically skipped. If the condition and the sense are both set with value `-1` the condition won.
-    if(sourceVisionLevelsValid.has(sourceVisionLevel.visionId)){
-      // the "-1" case
-      // if (<number>targetVisionLevel.visionLevelValue <= -1) {
-      if (<number>sourceVisionLevelsValid.get(sourceVisionLevel.visionId) <= -1) {
-        // Do nothing
-        //return false;
-      } else {
-        const result =
-          <number>sourceVisionLevel.visionLevelValue <= -1 ||
-          <number>sourceVisionLevel.visionLevelValue >= <number>sourceVisionLevelsValid.get(sourceVisionLevel.visionId);
-          // <number>sourceVisionLevel.visionLevelValue >= <number>targetVisionLevel.visionLevelValue;
-        //return result;
-        if(result){
-          resultFinal = result;
-          break;
-        }
-      }
+    if(sourceVisionLevelsValid.length == 0){
+      debug(`[${sourceVisionLevel.visionId}](12.1) Is false, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
+      continue;
+    }
+    // the "-1" case
+    if(sourceVisionLevelsValid.includes(-1)){
+      debug(`[${sourceVisionLevel.visionId}](12.2) Is false, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
+      continue;
+    }
+    const result =
+      <number>sourceVisionLevel.visionLevelValue <= -1 ||
+      <number>sourceVisionLevel.visionLevelValue >= Math.max(...sourceVisionLevelsValid);
+      // <number>sourceVisionLevel.visionLevelValue >= <number>targetVisionLevel.visionLevelValue;
+    //return result;
+    if(result){
+      debug(`[${sourceVisionLevel.visionId}](12.3) Is true, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
+      resultFinal = result;
+      // This sense is enough for see the target we exit the loop for velocity without check the other
+      break;
     }
   }
 
   return resultFinal;
+}
+
+export function getAllDefaultSensesAndConditions(token: Token | null): AtcvEffect[] {
+  const allSensesAndConditions: AtcvEffect[] = [];
+  if (token) {
+    allSensesAndConditions.push(...getSensesFromToken(token.document));
+    allSensesAndConditions.push(...getConditionsFromToken(token.document));
+  } else {
+    allSensesAndConditions.push(...getSensesFromToken(null));
+    allSensesAndConditions.push(...getConditionsFromToken(null));
+  }
+
+  const sensesOrderByName = allSensesAndConditions.sort((a, b) => a.visionName.localeCompare(b.visionName));
+  return sensesOrderByName;
+}
+
+export async function _registerSenseData(
+  senseData: SenseData,
+  sensesDataList: SenseData[],
+  conditionType: string,
+): Promise<SenseData[] | undefined> {
+  if (!senseData.id) {
+    warn(`Cannot register the ${conditionType} with id empty or null`, true);
+    return;
+  }
+  if (!senseData.name) {
+    warn(`Cannot register the ${conditionType} with name empty or null`, true);
+    return;
+  }
+  const sensesAndConditionDataList = <AtcvEffect[]>await getAllDefaultSensesAndConditions(null);
+  const senseAlreadyExistsId = sensesAndConditionDataList.find((a: AtcvEffect) => a.visionId == senseData.id);
+  const senseAlreadyExistsName = sensesAndConditionDataList.find((a: AtcvEffect) => a.visionName == senseData.name);
+  if (senseAlreadyExistsId) {
+    warn(`Cannot register the ${conditionType} with id '${senseData.id}' because already exists`, true);
+    return;
+  }
+  if (senseAlreadyExistsName) {
+    warn(`Cannot register the ${conditionType} with name '${senseData.name}' because already exists`, true);
+    return;
+  }
+  sensesDataList.push(senseData);
+  return sensesDataList;
+}
+
+export async function _unregisterSenseData(
+  senseDataIdOrName: string,
+  sensesDataList: SenseData[],
+  valueComment: string,
+): Promise<SenseData[] | undefined> {
+  if (!senseDataIdOrName) {
+    warn(`Cannot unregister the ${valueComment} with id empty or null`, true);
+    return;
+  }
+  const sensesAndConditionDataList = <AtcvEffect[]>await getAllDefaultSensesAndConditions(null);
+  const senseAlreadyExistsId = <AtcvEffect>(
+    sensesAndConditionDataList.find(
+      (a: AtcvEffect) => a.visionId == senseDataIdOrName || a.visionName == senseDataIdOrName,
+    )
+  );
+  if (!senseAlreadyExistsId) {
+    warn(`Cannot unregister the ${valueComment} with id '${senseDataIdOrName}' because is not exists exists`, true);
+    return;
+  }
+  sensesDataList = sensesDataList.filter(function (el) {
+    return el.id != senseAlreadyExistsId.visionId;
+  });
+  return sensesDataList;
 }

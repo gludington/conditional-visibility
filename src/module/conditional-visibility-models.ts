@@ -11,8 +11,6 @@ import {
   i18n,
   retrieveAtcvEffectFromActiveEffect,
   isStringEquals,
-  getConditionsFromTokenFast,
-  getSensesFromTokenFast,
 } from './lib/lib';
 export class AtcvEffect {
   // Effect Base

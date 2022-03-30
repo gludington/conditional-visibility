@@ -64,23 +64,27 @@ The calculation for the vision checks is split in many phase forall the use case
 
 9)  Check if the source token has some 'sense' powerful enough to beat every 'condition' ont he target token:
 
-  - 9.0) If no `ATCV.visioId` is founded return true (this shouldn't never happened is just for avoid some unwanted behavior)
+  - 9.0) If no `ATCV.visionId` is founded return true (this shouldn't never happened is just for avoid some unwanted behavior)
 
   - 9.1) Check for implict and explicit `ATCV.conditionTargets` and `ATCV.conditionSources`, this control make avoid the following 9.X check, like explained on the [tables](./tables.md)
 
   - 9.2) If the 'condition' on the target token is `NONE` return true
 
+  - 9.2.1) Check if `ATCV.conditionElevation` is != 0, will check if the source token and target token are at the same level.
+
+  - 9.2.2) Check if `ATCV.conditionDistance` is valorized if is set to a numeric value, will check if the tokens are near enough to remain hidden (remember -1 is infinity distance).
+
   - 9.3) If the 'condition' on the target token is `HIDDEN` and the _Perception Passive of the system_ of the source token is `>` of the current sense value, we use the  _Perception Passive of the system_ for the checking and return ture if is `>` of the condition value set.
 
   - ~~9.4)  The range of 'condition' level [`conditionLevelMinIndex,conditionLevelMaxIndex`], must be between the 'sense' range level [`conditionLevelMinIndex,conditionLevelMaxIndex`] like explained on the [tables](./tables.md)~~.
 
-10) Check if `ATCV.conditionElevation` is != 0, will check if the source token and target token are at the same level.
-11) Check if `ATCV.conditionDistance` is valorized if is set to a numeric value, will check if the tokens are near enough to remain hidden (remember -1 is infinity distance).
+10) ~~Check if `ATCV.conditionElevation` is != 0, will check if the source token and target token are at the same level.~~
+11) ~~Check if `ATCV.conditionDistance` is valorized if is set to a numeric value, will check if the tokens are near enough to remain hidden (remember -1 is infinity distance).~~
 12) Check if the vision level value of the filtered  'sense' on the source token is a number `>=` of the vision level value of the filtered 'condition' on the target token, if the sense is set to `-1` this check is automatically skipped. If the condition and the sense are both set with value `-1` the condition won.
 
 ## What active effect data changes are used from this module ?
 
-Every active effect data of this is module use any chnages with the prefix `ATCV` acronym for _Active Token Conditional Visibility_ .
+Every active effect data of this is module use any changes with the prefix `ATCV` acronym for _Active Token Conditional Visibility_ .
 
 **NOTE:** by default all _senses_ are passive AE and all _conditions_ are _temporary_ AE
 **NOTE:** for now every active effect can have only one `ATCV.<sense or condition id>`,`ATCV.conditionElevation`,`ATCV.conditionTargets`,`ATCV.conditionSources` key at the time, if multiple are set we get only the first for the checking
@@ -140,9 +144,9 @@ ConditionalVisibility.API.registerCondition({
 
 checkout more details on the [API](./api.md) documentation.
 
-### Option 2: Simply create a new active effect wihtout use the register method
+### Option 2: Simply create a new active effect without use the register method
 
-Just create a active effect with these two minimal change
+Just create a active effect with these two minimal change on your active effect
 
 | Key Syntax                      | Type    | Description                         | Examples Active Effect Data [Key = value] |
 | :------------------------------:|:-------:|:-----------------------------------:|:--------:|

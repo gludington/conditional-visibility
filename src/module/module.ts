@@ -7,6 +7,7 @@ import HOOKS from './hooks';
 import {
   debug,
   duplicateExtended,
+  getAllDefaultSensesAndConditions,
   getConditionsFromToken,
   getSensesFromToken,
   i18n,
@@ -227,7 +228,7 @@ const module = {
     for (const key in p) {
       const senseOrConditionIdKey = key;
       const senseOrConditionValue = <number>p[key];
-      const atcvEffectFlagData = API.getAllDefaultSensesAndConditions(sourceToken).find((senseData: AtcvEffect) => {
+      const atcvEffectFlagData = getAllDefaultSensesAndConditions(sourceToken).find((senseData: AtcvEffect) => {
         return isStringEquals(senseData.visionId, senseOrConditionIdKey);
       });
       if (!atcvEffectFlagData) {
@@ -416,7 +417,7 @@ const module = {
           //   //}
           // //}
           // Make sure to remove anything with value 0
-          for (const senseData of await API.getAllDefaultSensesAndConditions(sourceToken)) {
+          for (const senseData of await getAllDefaultSensesAndConditions(sourceToken)) {
             if (senseData.visionId === senseOrConditionIdKey) {
               const effectNameToCheckOnActor = i18n(<string>senseData?.visionName);
               const activeEffectToRemove = <ActiveEffect>(
@@ -507,7 +508,7 @@ const module = {
             if (!isPlayerOwned) {
               continue;
             }
-            const sensesData = await API.getAllDefaultSensesAndConditions(tokenToSet);
+            const sensesData = await getAllDefaultSensesAndConditions(tokenToSet);
             for (const statusSight of sensesData) {
               if (updateKey === statusSight.visionId) {
                 // TODO TO CHECK IF WE NEED TO FILTER THE TOKENS AGAIN MAYBE WITH A ADDITIONAL ATCV active change data effect ?
@@ -558,7 +559,7 @@ const module = {
     } else {
       if (isRemoved) {
         for (const sourceToken of tokenArray) {
-          const sense = (await API.getAllDefaultSensesAndConditions(sourceToken)).find((sense: AtcvEffect) => {
+          const sense = (await getAllDefaultSensesAndConditions(sourceToken)).find((sense: AtcvEffect) => {
             return (
               isStringEquals(sense.visionName, <string>activeEffect.name) ||
               isStringEquals(sense.visionName, activeEffect.data.label)

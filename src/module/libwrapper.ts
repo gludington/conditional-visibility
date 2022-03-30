@@ -1,27 +1,12 @@
-import { AtcvEffect, AtcvEffectConditionFlags, AtcvEffectSenseFlags, ConditionalVisibilityFlags } from './conditional-visibility-models';
-import API from './api';
+import { AtcvEffect, ConditionalVisibilityFlags } from './conditional-visibility-models';
 import CONSTANTS from './constants';
 import {
   debug,
-  duplicateExtended,
-  getOwnedTokens,
-  getSensesFromToken,
   getSensesFromTokenFast,
-  i18n,
-  isStringEquals,
-  is_real_number,
-  log,
-  repairAndSetFlag,
-  repairAndUnSetFlag,
-  shouldIncludeVision,
-  templateTokens,
+  shouldIncludeVisionV2,
   warn,
 } from './lib/lib';
 import { canvas, game } from './settings';
-import { ConditionalVisibilityEffectDefinitions } from './conditional-visibility-effect-definition';
-import Effect from './effects/effect';
-import EmbeddedCollection from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/abstract/embedded-collection.mjs';
-import { ActorData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/module.mjs';
 
 export function registerLibwrappers() {
   //@ts-ignore
@@ -196,7 +181,7 @@ export function sightLayerPrototypeTokenVisionHandlerNoLevels(wrapped, ...args) 
       }
       let tokenVisible = canvas.scene?.data.tokenVision ? false : gm || !token.data.hidden;
       for (const ownedToken of ownedTokens) {
-        if (shouldIncludeVision(ownedToken, token)) {
+        if (shouldIncludeVisionV2(ownedToken, token)) {
           tokenVisible = true;
         } else {
           tokenVisible = false;
@@ -237,7 +222,7 @@ export function sightLayerPrototypeTokenVisionHandlerNoLevels(wrapped, ...args) 
 //       }
 //       let tokenVisible = canvas.scene?.data.tokenVision ? false : gm || !token.data.hidden;
 //       for (const ownedToken of ownedTokens) {
-//         if (shouldIncludeVision(ownedToken, token)) {
+//         if (shouldIncludeVisionV2(ownedToken, token)) {
 //           tokenVisible = true;
 //         } else {
 //           tokenVisible = false;
@@ -258,7 +243,7 @@ export function sightLayerPrototypeTokenVisionHandlerNoLevels(wrapped, ...args) 
 //       }
 //       let tokenVisible = canvas.scene?.data.tokenVision ? false : !token.data.hidden;
 //       for (const ownedToken of ownedTokens) {
-//         if (shouldIncludeVision(ownedToken, token)) {
+//         if (shouldIncludeVisionV2(ownedToken, token)) {
 //           tokenVisible = true;
 //         } else {
 //           tokenVisible = false;
@@ -275,7 +260,7 @@ export function overrideVisibilityTestHandler(wrapped, ...args) {
   if (<boolean>targetToken.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE)) {
     return wrapped(...args);
   }
-  const isCVVisible = shouldIncludeVision(sourceToken, targetToken);
+  const isCVVisible = shouldIncludeVisionV2(sourceToken, targetToken);
   return isCVVisible ? wrapped(...args) : false;
 }
 
@@ -325,19 +310,30 @@ export function sightLayerPrototypeTestVisibilityHandler(wrapped, ...args) {
     return res;
   }
 
+  /*
   const visible_to_sources = [...mySources].map((s) => {
     // get the token elevation
     const controlledToken = s; //<Token>s.object;
     // if any active effects blocks, then the token is not visible for that sight source
-    const is_visible = shouldIncludeVision(controlledToken, tokenToCheckIfIsVisible);
+    const is_visible = shouldIncludeVisionV2(controlledToken, tokenToCheckIfIsVisible);
     // log(`terrains ${is_visible ? 'do not block' : 'do block'}`, terrains_block);
     return is_visible ?? false;
   });
-
   // if any source has vision to the token, the token is visible
   const is_visible = visible_to_sources.reduce((total, curr) => total || curr, false);
+  */
+
+  let is_visible = false;
+  for (let i = 0; i < mySources.length; i++) {
+    const controlledToken = mySources[i];
+    is_visible = shouldIncludeVisionV2(controlledToken, tokenToCheckIfIsVisible);
+    if(is_visible){
+      break;
+    }
+  }
+
   if (game.settings.get(CONSTANTS.MODULE_NAME, 'debug')) {
-    const sourcesNames = <string[]>this.sources.map((e) => {
+    const sourcesNames = <string[]>mySources.map((e) => {
       return e.data.name;
       //return e.object.data.name;
     });

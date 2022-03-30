@@ -405,7 +405,7 @@ export function templateTokens(template) {
   }
   //game.user?.updateTokenTargets(targets);
 }
-
+/*
 export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boolean | null {
   // if (!sourceToken) {
   //   sourceToken = <Token>getFirstPlayerTokenSelected();
@@ -515,17 +515,7 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
   // ========================================
   // 1 - Preparation of the active effect
   // =========================================
-  /*
-  const sourceVisionLevels =
-    getSensesFromToken(sourceToken.document, true).filter((atcvEffect) => {
-      return !atcvEffect.visionIsDisabled;
-    }) ?? [];
 
-  const targetVisionLevels =
-    getConditionsFromToken(targetToken.document, true).filter((atcvEffect) => {
-      return !atcvEffect.visionIsDisabled;
-    }) ?? [];
-  */
   const sourceVisionLevels = getSensesFromTokenFast(sourceToken.document, true, true) ?? [];
 
   const targetVisionLevels = getConditionsFromTokenFast(targetToken.document, true, true) ?? [];
@@ -802,36 +792,6 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
       return false;
       // 9.4)  The range of 'condition' level [`conditionLevelMinIndex,conditionLevelMaxIndex`], must be between the 'sense' range level [`conditionLevelMinIndex,conditionLevelMaxIndex`] like explained on the [tables](./tables.md).
       // REMOVED TO COMPLCIATED WE USE SOURCES AND TARGETS
-      /*
-      const result =
-        <number>sourceVisionLevel?.visionLevelMinIndex <= <number>targetVisionLevel?.visionLevelMinIndex &&
-        <number>sourceVisionLevel?.visionLevelMaxIndex >= <number>targetVisionLevel?.visionLevelMaxIndex;
-      if (result) {
-        sourceVisionLevelsValidForDebug.set(sourceVisionLevel.visionId, {
-          atcvSourceEffect: sourceVisionLevel,
-          atcvTargetEffect: targetVisionLevel,
-          checkerResult: true,
-        });
-        sourceVisionLevelsValid.set(sourceVisionLevel.visionId, sourceVisionLevel);
-        debug(
-          `(9.4) The range of 'condition' level ['conditionLevelMinIndex,conditionLevelMaxIndex'], must be between the 'sense' range level ['conditionLevelMinIndex,conditionLevelMaxIndex']: Is true, target ${
-            targetToken.data.name
-          } ${'is visible'} to source ${sourceToken.data.name}`,
-        );
-      } else {
-        sourceVisionLevelsValidForDebug.set(sourceVisionLevel.visionId, {
-          atcvSourceEffect: sourceVisionLevel,
-          atcvTargetEffect: targetVisionLevel,
-          checkerResult: false,
-        });
-        debug(
-          `(9.4) The range of 'condition' level ['conditionLevelMinIndex,conditionLevelMaxIndex'], must be between the 'sense' range level ['conditionLevelMinIndex,conditionLevelMaxIndex']: Is false, target ${
-            targetToken.data.name
-          } ${'is not visible'} to source ${sourceToken.data.name}`,
-        );
-      }
-      return result;
-      */
     });
 
     // if any source has vision to the token, the token is visible
@@ -1024,7 +984,7 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
 
   return canYouSeeMeByLevelValue;
 }
-
+*/
 export async function prepareActiveEffectForConditionalVisibility(
   sourceToken: Token,
   visionCapabilities: VisionCapabilities,
@@ -2113,7 +2073,11 @@ export async function repairAndUnSetFlag(token: Token, key: string) {
   }
 }
 
-export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): boolean | null {
+/**
+ * Checker version 2
+ * @href https://javascript.plainenglish.io/which-type-of-loop-is-fastest-in-javascript-ec834a0f21b9
+ */
+export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): boolean {
   if (!sourceToken || !targetToken) {
     return true;
   }
@@ -2122,7 +2086,7 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
     return game.user?.isGM ? true :false;
   }
   // 1.1) Check if target token is with the 'Force Visible' flag for Midi Qol integration
-  // if (targetToken.document.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISILE)) {
+  // if (targetToken.document.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE)) {
   if (
     targetToken.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE) ||
     targetToken.document.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE)
@@ -2210,9 +2174,9 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
   }
 
   // 6) Check if the source token has the active effect `blinded` active, if is true, you cannot see anything and return false.
-  for (const sourceStatusEffect of sourceVisionLevels) {
-    //if (isStringEquals(sourceStatusEffect.visionId, AtcvEffectSenseFlags.BLINDED)) {
-    if (sourceStatusEffect.visionId === AtcvEffectSenseFlags.BLINDED) {
+  // for (const sourceStatusEffect of sourceVisionLevels) {
+  for (let i = 0; i < sourceVisionLevels.length; i++) {
+    if (sourceVisionLevels[i].visionId === AtcvEffectSenseFlags.BLINDED) {
       // Someone is blind
       return false;
     }
@@ -2233,16 +2197,24 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
 
   // 8) Check again for _passive perception vs passive stealth_ like on point 4) this time we use the hidden active effect like the stealth passive on the target token...
   // THIS WILL BE CHECK ONLY IF ONE CONDITION IS PRESENT ON THE TARGET AND THE CONDITION TYPE IS 'HIDDEN'
-  if (game.settings.get(CONSTANTS.MODULE_NAME, 'autoPassivePerception')) {
+  if (game.settings.get(CONSTANTS.MODULE_NAME, 'autoPassivePerception') && targetVisionLevels.length == 1) {
+    if (targetVisionLevels[0].visionId == AtcvEffectConditionFlags.HIDDEN) {
+      if (perceptionPassive >= (<number>targetVisionLevels[0].visionLevelValue ?? 0)) {
+        return true;
+      }
+    }
+    /*
     //if (sourceVisionLevels.length === 0) {
     let isTheCaseWhenOnlyTheHiddenConditionIsPresentOnTarget = true;
     let currentHiddenValue = 0;
-    for (const targetVisionLevel of targetVisionLevels) {
-      if (targetVisionLevel.visionId != AtcvEffectConditionFlags.HIDDEN) {
+    // for (const targetVisionLevel of targetVisionLevels) {
+    for (let i = 0; i < targetVisionLevels.length; i++) {
+      if (targetVisionLevels[i].visionId != AtcvEffectConditionFlags.HIDDEN) {
         isTheCaseWhenOnlyTheHiddenConditionIsPresentOnTarget = false;
         break;
       } else {
-        currentHiddenValue = <number>targetVisionLevel.visionLevelValue;
+        currentHiddenValue = <number>targetVisionLevels[i].visionLevelValue;
+        break;
       }
     }
     if (!currentHiddenValue) {
@@ -2257,131 +2229,114 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
       }
     }
     //}
+    */
   }
 
   // ========================================
   // 2 - Check for the correct status sight
   // =========================================
 
-  const sourceVisionLevelsValid: Map<string, AtcvEffect> = new Map<string, AtcvEffect>();
+  // Is better put hese here so we calculate just one time
+  const sourceTokenElevation = getElevationToken(sourceToken);
+  const targetTokenElevation = getElevationToken(targetToken);
+  const tokenDistance = getUnitTokenDist(sourceToken, targetToken);
+
+  let resultFinal = false;
 
   // 9) Check if the source token has some 'sense' powerful enough to beat every 'condition' ont he target token:
-  const visibleForTypeOfSenseByIndex = [...sourceVisionLevels].map((sourceVisionLevel: AtcvEffect) => {
-    const resultsOnTarget = targetVisionLevels.map((targetVisionLevel: AtcvEffect) => {
-      // 9.0) If no `ATCV.<visionId>` is founded on the target token return true (this shoudldn't never happened is just for avoid some unwanted behaviour)
-      if (!targetVisionLevel || !targetVisionLevel.visionId) {
-        sourceVisionLevelsValid.set(sourceVisionLevel.visionId, sourceVisionLevel);
-        return true;
+  for (let i = 0; i < sourceVisionLevels.length; i++) {
+    const sourceVisionLevelsValid: Map<string, number> = new Map<string, number>();
+    const sourceVisionLevel = targetVisionLevels[i];
+    for (let j = 0; j < targetVisionLevels.length; j++) {
+      const targetVisionLevel = targetVisionLevels[j];
+      // 9.0) If no `ATCV.<visionId>` is founded on the target token return true (this shouldn't never happened is just for avoid some unwanted behavior)
+      if (!targetVisionLevel
+        || !targetVisionLevel.visionId
+        || targetVisionLevel.visionId === AtcvEffectSenseFlags.NORMAL
+        || targetVisionLevel.visionId === AtcvEffectSenseFlags.NONE) {
+        // sourceVisionLevelsValid.set(sourceVisionLevel.visionId, true);
+        sourceVisionLevelsValid.set(sourceVisionLevel.visionId, <number>targetVisionLevel.visionLevelValue);
+        continue;
       }
-
       // 9.1) Check for explicit `ATCV.conditionTargets` and `ATCV.conditionSources`, this control make avoid the following 9.X check
-      if (sourceVisionLevel?.visionTargets?.length > 0) {
-        if (sourceVisionLevel?.visionTargets.includes(<string>targetVisionLevel.visionId)) {
-          sourceVisionLevelsValid.set(sourceVisionLevel.visionId, sourceVisionLevel);
-          return true;
-        } else {
-          return false;
-        }
+      if (sourceVisionLevel?.visionTargets?.length > 0
+          && !sourceVisionLevel?.visionTargets.includes(<string>targetVisionLevel.visionId)) {
+          // sourceVisionLevelsValid.set(sourceVisionLevel.visionId, false);
+          sourceVisionLevelsValid.delete(sourceVisionLevel.visionId);
+          continue;
       }
-
-      if (targetVisionLevel?.visionSources?.length > 0) {
-        if (targetVisionLevel?.visionSources.includes(<string>sourceVisionLevel.visionId)) {
-          sourceVisionLevelsValid.set(sourceVisionLevel.visionId, sourceVisionLevel);
-          return true;
-        } else {
-          return false;
-        }
+      if (targetVisionLevel?.visionSources?.length > 0
+          && !targetVisionLevel?.visionSources.includes(<string>sourceVisionLevel.visionId)) {
+          // sourceVisionLevelsValid.set(sourceVisionLevel.visionId, false);
+          sourceVisionLevelsValid.delete(sourceVisionLevel.visionId);
+          continue;
       }
-
       // 9.2) If the 'condition' on the target token is `NONE` return true
       //if (isStringEquals(targetVisionLevel.visionId, AtcvEffectConditionFlags.NONE)) {
       if (targetVisionLevel.visionId === AtcvEffectConditionFlags.NONE) {
-        sourceVisionLevelsValid.set(sourceVisionLevel.visionId, sourceVisionLevel);
-        return true;
+        // sourceVisionLevelsValid.set(sourceVisionLevel.visionId, true);
+        sourceVisionLevelsValid.set(sourceVisionLevel.visionId, <number>targetVisionLevel.visionLevelValue);
+        continue;
+      }
+      // TODO update documentation
+      // 10)  Check if `ATCV.conditionElevation` if set to true, will check if the source token and target token are at the same level .
+      if (sourceVisionLevel?.visionElevation && sourceTokenElevation < targetTokenElevation) {
+        // sourceVisionLevelsValid.set(sourceVisionLevel.visionId, false);
+        sourceVisionLevelsValid.delete(sourceVisionLevel.visionId);
+        continue;
+      }
+      // TODO update documentation
+      // 11)  Check if `ATCV.conditionDistance` is valorized if is set to a numeric value, will check if the tokens are near enough to remain hidden (remember -1 is infinity distance).
+      if (<number>sourceVisionLevel?.visionDistanceValue > 0 && <number>sourceVisionLevel?.visionDistanceValue < tokenDistance) {
+        // sourceVisionLevelsValid.set(sourceVisionLevel.visionId, false);
+        sourceVisionLevelsValid.delete(sourceVisionLevel.visionId);
+        continue;
       }
 
       // 9.3) If the 'condition' on the target token is `HIDDEN` and the _Perception Passive of the system_
-      // of the source token is `>` of the current sense value, we use the  _Perception Passive of the system_ for the checking and return ture if is `>` of the condition value setted.
-      if (targetVisionLevel.visionId === AtcvEffectConditionFlags.HIDDEN) {
-        if (
-          game.settings.get(CONSTANTS.MODULE_NAME, 'autoPassivePerception') &&
-          perceptionPassive > <number>targetVisionLevel.visionLevelValue
+      // of the source token is `>` of the current sense value, we use the  _Perception Passive of the system_ for the checking and return true if is `>` of the condition value set.
+      if (targetVisionLevel.visionId === AtcvEffectConditionFlags.HIDDEN && game.settings.get(CONSTANTS.MODULE_NAME, 'autoPassivePerception')) {
+        if (perceptionPassive > <number>targetVisionLevel.visionLevelValue
         ) {
-          sourceVisionLevelsValid.set(sourceVisionLevel.visionId, sourceVisionLevel);
-          return true;
+          // sourceVisionLevelsValid.set(sourceVisionLevel.visionId, true);
+          sourceVisionLevelsValid.set(sourceVisionLevel.visionId, <number>targetVisionLevel.visionLevelValue);
+          continue;
+        }else{
+          // sourceVisionLevelsValid.set(sourceVisionLevel.visionId, false);
+          sourceVisionLevelsValid.delete(sourceVisionLevel.visionId);
+          continue;
         }
       }
-      return false;
+
       // 9.4)  The range of 'condition' level [`conditionLevelMinIndex,conditionLevelMaxIndex`], must be between the 'sense' range level [`conditionLevelMinIndex,conditionLevelMaxIndex`] like explained on the [tables](./tables.md).
-      // REMOVED TO COMPLCIATED WE USE SOURCES AND TARGETS
-    });
+      // REMOVED TO COMPLICATED WE USE SOURCES AND TARGETS
 
-    // if any source has vision to the token, the token is visible
-    let resultFinal = resultsOnTarget.reduce((total, curr) => total || curr, false);
-
-    if (resultFinal) {
-      // 10)  Check if `ATCV.conditionElevation` if set to true, will check if the source token and target token are at the same level .
-      if (sourceVisionLevel?.visionElevation) {
-        const tokenElevation = getElevationToken(sourceToken);
-        const targetElevation = getElevationToken(targetToken);
-        if (tokenElevation < targetElevation) {
-          resultFinal = false;
-        }
-      }
-      // 11)  Check if `ATCV.conditionDistance` is valorized if is set to a numeric value, will check if the tokens are near enough to remain hidden (remember -1 is infinity distance).
-      if (sourceVisionLevel?.visionDistanceValue && sourceVisionLevel?.visionDistanceValue != 0) {
-        const tokenDistance = getUnitTokenDist(sourceToken, targetToken);
-        if (sourceVisionLevel?.visionDistanceValue != -1 && sourceVisionLevel?.visionDistanceValue < tokenDistance) {
-          resultFinal = false;
-        }
-      }
+      sourceVisionLevelsValid.set(sourceVisionLevel.visionId, <number>targetVisionLevel.visionLevelValue);
     }
-    return resultFinal;
-  });
 
-  let canYouSeeMeByLevelIndex = false;
-  canYouSeeMeByLevelIndex = visibleForTypeOfSenseByIndex.reduce((total, curr) => total || curr, false);
+    // TODO something is not right....if i have mutliple condition and at least one is false i lose the info about the others, but is a question of velocity ....
 
-  if (!canYouSeeMeByLevelIndex) {
-    return canYouSeeMeByLevelIndex;
-  }
-
-  // ========================================
-  // 3 - Check for the correct value number
-  // =========================================
-
-  // 12) Check if the vision level value of the filtered  'sense' on the source token is a number `>=` of the vision level value of the filtered 'condition' on the target token,
-  // if the sense is set to `-1` this check is automatically skipped. If the condition and the sense are both set with value `-1` the condition won.
-  const visibleForTypeOfSenseByValue = [...sourceVisionLevelsValid.values()].map((sourceVisionLevel: AtcvEffect) => {
-    const resultsOnTarget = targetVisionLevels.map((targetVisionLevel) => {
-      if (!targetVisionLevel || !targetVisionLevel.visionId) {
-        return true;
-      }
-      if (
-        targetVisionLevel.visionId === AtcvEffectSenseFlags.NORMAL ||
-        targetVisionLevel.visionId === AtcvEffectSenseFlags.NONE
-      ) {
-        return true;
-      }
+    // 12) Check if the vision level value of the filtered  'sense' on the source token is a number `>=` of the vision level value of the filtered 'condition' on the target token,
+    // if the sense is set to `-1` this check is automatically skipped. If the condition and the sense are both set with value `-1` the condition won.
+    if(sourceVisionLevelsValid.has(sourceVisionLevel.visionId)){
       // the "-1" case
-      if (<number>targetVisionLevel.visionLevelValue <= -1) {
-        return false;
+      // if (<number>targetVisionLevel.visionLevelValue <= -1) {
+      if (<number>sourceVisionLevelsValid.get(sourceVisionLevel.visionId) <= -1) {
+        // Do nothing
+        //return false;
       } else {
         const result =
           <number>sourceVisionLevel.visionLevelValue <= -1 ||
-          <number>sourceVisionLevel.visionLevelValue >= <number>targetVisionLevel.visionLevelValue;
-        return result;
+          <number>sourceVisionLevel.visionLevelValue >= <number>sourceVisionLevelsValid.get(sourceVisionLevel.visionId);
+          // <number>sourceVisionLevel.visionLevelValue >= <number>targetVisionLevel.visionLevelValue;
+        //return result;
+        if(result){
+          resultFinal = result;
+          break;
+        }
       }
-    });
+    }
+  }
 
-    // if any source has vision to the token, the token is visible
-    const resultFinal = resultsOnTarget.reduce((total, curr) => total || curr, false);
-    return resultFinal;
-  });
-
-  let canYouSeeMeByLevelValue = false;
-  // if any source has vision to the token, the token is visible
-  canYouSeeMeByLevelValue = visibleForTypeOfSenseByValue.reduce((total, curr) => total || curr, false);
-
-  return canYouSeeMeByLevelValue;
+  return resultFinal;
 }

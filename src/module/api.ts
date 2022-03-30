@@ -14,7 +14,7 @@ import {
   prepareActiveEffectForConditionalVisibility,
   repairAndSetFlag,
   repairAndUnSetFlag,
-  shouldIncludeVision,
+  shouldIncludeVisionV2,
   warn,
 } from './lib/lib';
 import EffectInterface from './effects/effect-interface';
@@ -1215,7 +1215,7 @@ const API = {
   },
 
   canSee(sourceToken: Token, targetToken: Token): boolean {
-    return <boolean>shouldIncludeVision(sourceToken, targetToken);
+    return <boolean>shouldIncludeVisionV2(sourceToken, targetToken);
   },
 };
 

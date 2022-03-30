@@ -274,8 +274,10 @@ const module = {
     let p;
     if (
       change.flags &&
-      change.flags[CONSTANTS.MODULE_NAME]
+      change.flags[CONSTANTS.MODULE_NAME] &&
       // !getProperty(change, `flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`)
+      !getProperty(change, `flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_SENSES}`) &&
+      !getProperty(change, `flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_CONDITIONS}`)
     ) {
       isEnabledForToken = true;
       p = getProperty(change, `flags.${CONSTANTS.MODULE_NAME}`);
@@ -283,8 +285,10 @@ const module = {
     if (
       change.flags &&
       change.actor &&
-      change.actor.data.flags[CONSTANTS.MODULE_NAME]
+      change.actor.data.flags[CONSTANTS.MODULE_NAME] &&
       // !getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`)
+      !getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_SENSES}`) &&
+      !getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_CONDITIONS}`)
     ) {
       isEnabledForToken = true;
       p = getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}`);
@@ -431,7 +435,7 @@ const module = {
               const activeEffectToRemove = <ActiveEffect>(
                 await API.findEffectByNameOnToken(<string>sourceToken.id, effectNameToCheckOnActor)
               );
-              if (activeEffectToRemove) {
+              if(activeEffectToRemove){
                 const actve = senseOrConditionValue.visionLevelValue ?? 0;
                 if (actve === 0 || actve === null || actve === undefined || !actve) {
                   //await API.removeEffectFromIdOnToken(<string>sourceToken.id, <string>activeEffectToRemove.id);
@@ -464,107 +468,34 @@ const module = {
     // }
   },
   async updateActiveEffect(activeEffect: ActiveEffect, options: EffectChangeData, isRemoved: boolean) {
-    if (
-      !activeEffect.data?.changes ||
-      activeEffect.data?.changes.length <= 0 ||
-      !activeEffect.data.changes?.find((effect) => effect.key.includes('ATCV'))
-    ) {
-      return;
-    }
     const actor = <Actor>activeEffect.parent;
-    const totalEffects = <ActiveEffect[]>actor?.effects.contents.filter((i) => !i.data.disabled);
-    const atcvEffects = totalEffects.filter(
-      (entity) => !!entity.data.changes.find((effect) => effect.key.includes('ATCV')),
-    );
-    if (activeEffect.data.disabled || isRemoved) {
-      const atcvEffectsChanges = activeEffect.data.changes.filter((entity) => entity.key.includes('ATCV'));
-      if (atcvEffectsChanges && atcvEffectsChanges.length > 0) {
-        atcvEffects.push(activeEffect);
-      }
-    }
-
-    const entity = <Actor>activeEffect.parent;
-    if (entity.documentName !== 'Actor') {
+    if (actor.documentName !== 'Actor') {
       return;
     }
-    let link = getProperty(entity, 'data.token.actorLink');
+    let link = getProperty(actor, 'data.token.actorLink');
     if (link === undefined) {
       link = true;
     }
     let tokenArray: Token[] = [];
     if (!link) {
       //@ts-ignore
-      tokenArray = [entity.token?.object];
+      tokenArray = [actor.token?.object];
     } else {
-      tokenArray = entity.getActiveTokens();
+      tokenArray = actor.getActiveTokens();
     }
     if (tokenArray === []) {
       return;
     }
-
-    if (atcvEffects.length > 0) {
-      for (const atcvEffect of atcvEffects) {
-        const changes = atcvEffect.data.changes.sort((a, b) => <number>a.priority - <number>b.priority);
-        // Apply all changes
-        for (const change of changes) {
-          if (!change.key.includes('ATCV')) {
-            continue;
-          }
-          const updateKey = change.key.slice(5);
-          for (const tokenToSet of tokenArray) {
-            const isPlayerOwned = <boolean>tokenToSet.document.isOwner;
-            if (!isPlayerOwned) {
-              continue;
-            }
-            const sensesData = await getAllDefaultSensesAndConditions(tokenToSet);
-            for (const statusSight of sensesData) {
-              if (updateKey === statusSight.visionId) {
-                // TODO TO CHECK IF WE NEED TO FILTER THE TOKENS AGAIN MAYBE WITH A ADDITIONAL ATCV active change data effect ?
-                const currentAtcvEffectFlagData = <AtcvEffect>(
-                  // tokenToSet?.document.getFlag(CONSTANTS.MODULE_NAME, updateKey)
-                  (tokenToSet?.actor?.getFlag(CONSTANTS.MODULE_NAME, updateKey) ??
-                    tokenToSet?.document.getFlag(CONSTANTS.MODULE_NAME, updateKey))
-                );
-                const currentValue = String(<number>currentAtcvEffectFlagData?.visionLevelValue) ?? '0';
-                if (change.value != currentValue) {
-                  if (isRemoved || currentValue == '0') {
-                    // await tokenToSet?.document.unsetFlag(CONSTANTS.MODULE_NAME, updateKey);
-                    await repairAndUnSetFlag(tokenToSet, updateKey);
-                  } else {
-                    const atcvEffectFlagData = AtcvEffect.fromActiveEffect(tokenToSet.document, atcvEffect);
-                    // await tokenToSet?.document.setFlag(CONSTANTS.MODULE_NAME, updateKey, atcvEffectFlagData);
-                    await repairAndSetFlag(tokenToSet, updateKey, atcvEffectFlagData);
-                  }
-                  // REMOVES SOME PEOPLE DOESN'T WANT THIS ? AND I'M NOT SURE HOW OTHER MODULES CAN WORK WITH THIS
-                  // if (statusSight?.visionPath && statusSight?.visionPath.toLowerCase().includes('data')) {
-                  //   if (isRemoved || currentValue == '0') {
-                  //     setProperty(tokenToSet.document, <string>statusSight?.visionPath, 0);
-                  //   } else {
-                  //     setProperty(tokenToSet.document, <string>statusSight?.visionPath, change.value);
-                  //   }
-                  // }
-                } else {
-                  // Strange bug fixing
-                  if (isRemoved && activeEffect.id === atcvEffect.id) {
-                    // await tokenToSet?.document.unsetFlag(CONSTANTS.MODULE_NAME, updateKey);
-                    await repairAndUnSetFlag(tokenToSet, updateKey);
-                  }
-                }
-                break;
-              }
-            }
-            // TODO check better solution
-            // conditionalVisibilitySocket.executeForEveryone('updateSourceCV', tokenToSet);
-            // for (const t of <Token[]>canvas.tokens?.placeables) {
-            //   t.updateSource();
-            //   // t.document.update();
-            //   // Hooks.callAll('sightRefresh', t);
-            //   // t.refresh();
-            // }
-          }
-        }
-      }
-    } else {
+    //@ts-ignore
+    if (!options?.changes){
+      return;
+    }
+    if(
+      //@ts-ignore
+      options?.changes.length <= 0 ||
+      //@ts-ignore
+      !options.changes?.find((effect) => effect.key.includes('ATCV'))
+    ) {
       if (isRemoved) {
         for (const sourceToken of tokenArray) {
           const sense = (await getAllDefaultSensesAndConditions(sourceToken)).find((sense: AtcvEffect) => {
@@ -574,16 +505,75 @@ const module = {
             );
           });
           if (sense?.visionId) {
-            // await sourceToken?.document.unsetFlag(CONSTANTS.MODULE_NAME, sense?.visionId);
             await repairAndUnSetFlag(sourceToken, sense?.visionId);
-            // TODO check better solution
-            //conditionalVisibilitySocket.executeForEveryone('updateSourceCV', sourceToken);
-            // for (const t of <Token[]>canvas.tokens?.placeables) {
-            //   t.updateSource();
-            //   // t.document.update();
-            //   // Hooks.callAll('sightRefresh', t);
-            //   // t.refresh();
-            // }
+          }
+        }
+      }else{
+        return;
+      }
+    }else{
+      
+      const totalEffects = <ActiveEffect[]>actor?.effects.contents.filter((i) => !i.data.disabled);
+      const atcvEffects = totalEffects.filter(
+        (entity) => !!entity.data.changes.find((effect) => effect.key.includes('ATCV')),
+      );
+      if (activeEffect.data.disabled || isRemoved) {
+        const atcvEffectsChanges = activeEffect.data.changes.filter((entity) => entity.key.includes('ATCV'));
+        if (atcvEffectsChanges && atcvEffectsChanges.length > 0) {
+          atcvEffects.push(activeEffect);
+        }
+      }
+
+      if (atcvEffects.length > 0) {
+        for (const atcvEffect of atcvEffects) {
+          const changes = atcvEffect.data.changes.sort((a, b) => <number>a.priority - <number>b.priority);
+          // Apply all changes
+          for (const change of changes) {
+            if (!change.key.includes('ATCV')) {
+              continue;
+            }
+            const updateValue = change.value;
+            //@ts-ignore
+            if(updateValue == options.changes.find((a) => change.key === a.key)?.value){
+              continue;
+            }
+            const updateKey = change.key.slice(5);
+            for (const tokenToSet of tokenArray) {
+              const isPlayerOwned = <boolean>tokenToSet.document.isOwner;
+              if (!isPlayerOwned) {
+                continue;
+              }
+              const sensesData = await getAllDefaultSensesAndConditions(tokenToSet);
+              for (const statusSight of sensesData) {
+                if (updateKey === statusSight.visionId) {
+                  // TODO TO CHECK IF WE NEED TO FILTER THE TOKENS AGAIN MAYBE WITH A ADDITIONAL ATCV active change data effect ?
+                  /*
+                  const currentAtcvEffectFlagData = <AtcvEffect>(
+                    // tokenToSet?.document.getFlag(CONSTANTS.MODULE_NAME, updateKey)
+                    (tokenToSet?.actor?.getFlag(CONSTANTS.MODULE_NAME, updateKey) ??
+                      tokenToSet?.document.getFlag(CONSTANTS.MODULE_NAME, updateKey))
+                  );
+                  const currentValue = String(<number>currentAtcvEffectFlagData?.visionLevelValue) ?? '0';
+                  */
+                  const currentValue = String(<number>statusSight.visionLevelValue) ?? '0';
+                  if (change.value != currentValue) {
+                    if (isRemoved || currentValue == '0') {
+                      await repairAndUnSetFlag(tokenToSet, updateKey);
+                    } else {
+                      const atcvEffectFlagData = AtcvEffect.fromActiveEffect(tokenToSet.document, atcvEffect);
+                      await repairAndSetFlag(tokenToSet, updateKey, atcvEffectFlagData);
+                    }
+                  } else {
+                    // Strange bug fixing
+                    if (isRemoved && activeEffect.id === atcvEffect.id) {
+                      // await tokenToSet?.document.unsetFlag(CONSTANTS.MODULE_NAME, updateKey);
+                      await repairAndUnSetFlag(tokenToSet, updateKey);
+                    }
+                  }
+                  break;
+                }
+              }
+            }
           }
         }
       }

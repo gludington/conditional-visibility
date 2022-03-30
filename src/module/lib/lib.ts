@@ -514,9 +514,9 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
   // 1 - Preparation of the active effect
   // =========================================
 
-  const sourceVisionLevels = getSensesFromTokenFast(sourceToken.document, true, true) ?? [];
+  const sourceVisionLevels = getSensesFromToken(sourceToken.document, true, true) ?? [];
 
-  const targetVisionLevels = getConditionsFromTokenFast(targetToken.document, true, true) ?? [];
+  const targetVisionLevels = getConditionsFromToken(targetToken.document, true, true) ?? [];
 
   const stealthedPassive = getProperty(<Actor>targetToken?.document?.actor, `data.${API.STEALTH_PASSIVE_SKILL}`) || 0;
   // 10 + Wisdom Score Modifier + Proficiency Bonus
@@ -997,15 +997,14 @@ export async function prepareActiveEffectForConditionalVisibility(
       const activeEffectToRemove = <ActiveEffect>(
         await API.findEffectByNameOnToken(<string>sourceToken.id, effectNameToCheckOnActor)
       );
-      //const actve = sourceToken.document?.getFlag(CONSTANTS.MODULE_NAME, senseData.id);
-      // const atcvEffectFlagData = <AtcvEffect>sourceToken.document?.getFlag(CONSTANTS.MODULE_NAME, senseData.visionId);
       const atcvEffectFlagData =
-        <AtcvEffect>sourceToken.actor?.getFlag(CONSTANTS.MODULE_NAME, senseData.visionId) ??
-        <AtcvEffect>sourceToken.document?.getFlag(CONSTANTS.MODULE_NAME, senseData.visionId);
-      const actve = atcvEffectFlagData?.visionLevelValue;
-      if (actve === 0 || actve === null || actve === undefined || !actve) {
-        // await API.removeEffectFromIdOnToken(<string>sourceToken.id, <string>activeEffectToRemove.id);
-        setAeToRemove.add(<string>activeEffectToRemove.id);
+        <AtcvEffect>sourceToken.actor?.getFlag(CONSTANTS.MODULE_NAME, senseData.visionId);
+      if(activeEffectToRemove && atcvEffectFlagData?.visionId){
+        const actve = atcvEffectFlagData?.visionLevelValue;
+        if (actve === 0 || actve === null || actve === undefined || !actve) {
+          // await API.removeEffectFromIdOnToken(<string>sourceToken.id, <string>activeEffectToRemove.id);
+          setAeToRemove.add(<string>activeEffectToRemove.id);
+        }
       }
     }
   }
@@ -1186,12 +1185,23 @@ export function getSensesFromTokenFast(
 
   const atcvEffects =
     <AtcvEffect[]>tokenDocument.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES) ?? [];
+  
+  if(atcvEffects.filter((a) => !a.visionId).length > 0){
+    // const atcvEffectsTmp = atcvEffects.filter((a) => a.visionId);
+    tokenDocument.actor?.unsetFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES);
+    return getSensesFromToken(tokenDocument);
+  }
   if (atcvEffects.length > 0) {
     return atcvEffects;
   } else {
     const atcvEffectsObject = getProperty(<Actor>tokenDocument?.actor, `data.flags.${CONSTANTS.MODULE_NAME}`);
     for (const key in atcvEffectsObject) {
       const senseIdKey = key;
+      if(senseIdKey == ConditionalVisibilityFlags.DATA_SENSES ||
+        senseIdKey == ConditionalVisibilityFlags.DATA_CONDITIONS ||
+        senseIdKey == ConditionalVisibilityFlags.FORCE_VISIBLE){
+        continue;
+      }
       const senseValue = <AtcvEffect>atcvEffectsObject[key];
       if (filterValueNoZero && senseValue.visionLevelValue == 0) {
         continue;
@@ -1221,12 +1231,22 @@ export function getConditionsFromTokenFast(
 
   const atcvEffects =
     <AtcvEffect[]>tokenDocument.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_CONDITIONS) ?? [];
+  if(atcvEffects.filter((a) => !a.visionId).length > 0){
+    // const atcvEffectsTmp = atcvEffects.filter((a) => a.visionId);
+    tokenDocument.actor?.unsetFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_CONDITIONS);
+    return getConditionsFromToken(tokenDocument);
+  }
   if (atcvEffects.length > 0) {
     return atcvEffects;
   } else {
     const atcvEffectsObject = getProperty(<Actor>tokenDocument?.actor, `data.flags.${CONSTANTS.MODULE_NAME}`);
     for (const key in atcvEffectsObject) {
       const conditionIdKey = key;
+      if(conditionIdKey == ConditionalVisibilityFlags.DATA_SENSES ||
+        conditionIdKey == ConditionalVisibilityFlags.DATA_CONDITIONS ||
+        conditionIdKey == ConditionalVisibilityFlags.FORCE_VISIBLE){
+        continue;
+      }
       const conditionValue = <AtcvEffect>atcvEffectsObject[key];
       if (filterValueNoZero && conditionValue.visionLevelValue == 0) {
         continue;
@@ -1236,9 +1256,9 @@ export function getConditionsFromTokenFast(
       }
       atcvEffects.push(conditionValue);
     }
-    const consitions = atcvEffects.filter((a) => a.visionType === 'condition') ?? [];
-    tokenDocument.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES, consitions);
-    return consitions;
+    const conditions = atcvEffects.filter((a) => a.visionType === 'condition') ?? [];
+    tokenDocument.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_CONDITIONS, conditions);
+    return conditions;
   }
 }
 
@@ -1849,6 +1869,7 @@ export async function repairAndSetFlag(token: Token, key: string, value: AtcvEff
     } else {
       await token.actor?.setFlag(CONSTANTS.MODULE_NAME, key, value);
     }
+    
     let data: AtcvEffect[] = [];
     if (value.visionType === 'sense') {
       data = <AtcvEffect[]>token.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES) ?? [];
@@ -1877,12 +1898,13 @@ export async function repairAndSetFlag(token: Token, key: string, value: AtcvEff
       );
     });
     if (value.visionType === 'sense') {
-      token.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES, data);
+      await token.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES, data);
     } else if (value.visionType === 'condition') {
-      token.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_CONDITIONS, data);
+      await  token.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_CONDITIONS, data);
     } else {
       // DO NOTHING
     }
+    
     // canvas.perception.schedule({
     //   lighting: { refresh: true },
     //   sight: { refresh: true },

@@ -403,7 +403,9 @@ export function templateTokens(template) {
   }
   //game.user?.updateTokenTargets(targets);
 }
-/*
+/**
+ * @deprecated
+ */
 export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boolean | null {
   // if (!sourceToken) {
   //   sourceToken = <Token>getFirstPlayerTokenSelected();
@@ -514,9 +516,9 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
   // 1 - Preparation of the active effect
   // =========================================
 
-  const sourceVisionLevels = getSensesFromToken(sourceToken.document, true, true) ?? [];
+  const sourceVisionLevels = getSensesFromTokenFast(sourceToken.document, true, true) ?? [];
 
-  const targetVisionLevels = getConditionsFromToken(targetToken.document, true, true) ?? [];
+  const targetVisionLevels = getConditionsFromTokenFast(targetToken.document, true, true) ?? [];
 
   const stealthedPassive = getProperty(<Actor>targetToken?.document?.actor, `data.${API.STEALTH_PASSIVE_SKILL}`) || 0;
   // 10 + Wisdom Score Modifier + Proficiency Bonus
@@ -982,7 +984,7 @@ export function shouldIncludeVision(sourceToken: Token, targetToken: Token): boo
 
   return canYouSeeMeByLevelValue;
 }
-*/
+
 export async function prepareActiveEffectForConditionalVisibility(
   sourceToken: Token,
   visionCapabilities: VisionCapabilities,
@@ -1187,7 +1189,7 @@ export function getSensesFromTokenFast(
 
   if (atcvEffects.filter((a) => !a.visionId).length > 0) {
     // const atcvEffectsTmp = atcvEffects.filter((a) => a.visionId);
-    tokenDocument.actor?.unsetFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES);
+    // tokenDocument.actor?.unsetFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES);
     return getSensesFromToken(tokenDocument);
   }
   if (atcvEffects.length > 0) {
@@ -1234,7 +1236,7 @@ export function getConditionsFromTokenFast(
     <AtcvEffect[]>tokenDocument.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_CONDITIONS) ?? [];
   if (atcvEffects.filter((a) => !a.visionId).length > 0) {
     // const atcvEffectsTmp = atcvEffects.filter((a) => a.visionId);
-    tokenDocument.actor?.unsetFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_CONDITIONS);
+    // tokenDocument.actor?.unsetFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_CONDITIONS);
     return getConditionsFromToken(tokenDocument);
   }
   if (atcvEffects.length > 0) {

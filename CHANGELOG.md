@@ -1,4 +1,4 @@
-### 0.5.23-24
+### 0.5.23-24-25
 
 - Bug fix on unset flag and repair method
 

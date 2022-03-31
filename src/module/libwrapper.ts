@@ -1,6 +1,6 @@
 import { AtcvEffect, ConditionalVisibilityFlags } from './conditional-visibility-models';
 import CONSTANTS from './constants';
-import { debug, getSensesFromTokenFast, shouldIncludeVisionV2, warn } from './lib/lib';
+import { debug, getSensesFromTokenFast, shouldIncludeVision, shouldIncludeVisionV2, warn } from './lib/lib';
 import { canvas, game } from './settings';
 
 export function registerLibwrappers() {
@@ -174,6 +174,7 @@ export function sightLayerPrototypeTokenVisionHandlerNoLevels(wrapped, ...args) 
       if (ownedTokens.includes(token)) {
         continue;
       }
+      // eslint-disable-next-line prefer-const
       let tokenVisible = canvas.scene?.data.tokenVision ? false : gm || !token.data.hidden;
       for (const ownedToken of ownedTokens) {
         if (shouldIncludeVisionV2(ownedToken, token)) {
@@ -252,14 +253,79 @@ export function sightLayerPrototypeTokenVisionHandlerNoLevels(wrapped, ...args) 
 
 export function overrideVisibilityTestHandler(wrapped, ...args) {
   const [sourceToken, targetToken] = args;
-  if (<boolean>targetToken.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE)) {
+  // const isPlayerOwned = <boolean>targetToken.isOwner;
+  // if (!game.user?.isGM && (isPlayerOwned || targetToken.owner)) {
+  if (targetToken.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE)) {
     return wrapped(...args);
   }
-  const isCVVisible = shouldIncludeVisionV2(sourceToken, targetToken);
+  // }
+  // eslint-disable-next-line prefer-const
+  let isCVVisible = true;
+  isCVVisible = shouldIncludeVisionV2(sourceToken, targetToken);
   return isCVVisible ? wrapped(...args) : false;
 }
 
-// export function sightLayerPrototypeTestVisibilityHandler(wrapped, point, { tolerance = 2, object = null } = {}) {
+/*
+export function sightLayerPrototypeTestVisibilityHandlerOLD(wrapped, ...args) {
+  const [point, { tolerance = 2, object = null } = {}] = args;
+  const res = wrapped(point, { tolerance: tolerance, object: object });
+  // need a token object
+  if (!object) {
+    return res;
+  }
+  // Assume for the moment that the base function tests only infinite walls based on fov / los.
+  // If so, then if a token is not seen, elevation will not change that.
+  if (!res) {
+    return res;
+  }
+  const tokenToCheckIfIsVisible = <Token>object;
+  if (!tokenToCheckIfIsVisible.data) {
+    return res;
+  }
+  // this.sources is a map of selected tokens (may be size 0) all tokens
+  // contribute to the vision so iterate through the tokens
+  let mySources: Token[] = [];
+  if (!this.sources || this.sources.size === 0) {
+    // return res;
+    mySources = <Token[]>canvas.tokens?.controlled;
+  } else {
+    const uniqueIds = new Set();
+    for (const element of this.sources) {
+      const isDuplicate = uniqueIds.has(element.key);
+      uniqueIds.add(element.key);
+      if (!isDuplicate) {
+        mySources.push(<Token>element.object);
+      }
+    }
+  }
+  if (!mySources || mySources.length === 0) {
+    return res;
+  }
+  const visible_to_sources = [...mySources].map((s) => {
+    // get the token elevation
+    const controlledToken = s; //<Token>s.object;
+    // if any active effects blocks, then the token is not visible for that sight source
+    const is_visible = shouldIncludeVision(controlledToken, tokenToCheckIfIsVisible);
+    // log(`terrains ${is_visible ? 'do not block' : 'do block'}`, terrains_block);
+    return is_visible ?? false;
+  });
+
+  const sourcesNames = <string[]>mySources.map((e) => {
+    return e.data.name;
+    //return e.object.data.name;
+  });
+
+  // if any source has vision to the token, the token is visible
+  const is_visible = visible_to_sources.reduce((total, curr) => total || curr, false);
+  debug(
+    `target ${tokenToCheckIfIsVisible.data.name} ${
+      is_visible ? 'is visible' : 'is not visible'
+    } to sources ${sourcesNames.join(',')}`,
+  );
+
+  return is_visible;
+}
+*/
 export function sightLayerPrototypeTestVisibilityHandler(wrapped, ...args) {
   // eslint-disable-next-line prefer-const
   let [point, { tolerance = 2, object = null } = {}] = args;
@@ -278,9 +344,14 @@ export function sightLayerPrototypeTestVisibilityHandler(wrapped, ...args) {
   if (!tokenToCheckIfIsVisible.data) {
     return res;
   }
+
+  // const isPlayerOwned = <boolean>tokenToCheckIfIsVisible.isOwner;
+  // if (!game.user?.isGM && (isPlayerOwned || tokenToCheckIfIsVisible.owner)) {
   if (tokenToCheckIfIsVisible.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE)) {
     return res;
   }
+  // }
+
   // this.sources is a map of selected tokens (may be size 0) all tokens
   // contribute to the vision so iterate through the tokens
   // TODO find a better and fat way to prepera the sources array
@@ -320,6 +391,7 @@ export function sightLayerPrototypeTestVisibilityHandler(wrapped, ...args) {
     return res;
   }
   */
+  // eslint-disable-next-line prefer-const
   let is_visible = false;
   for (let i = 0; i < mySources.length; i++) {
     const controlledToken = mySources[i];

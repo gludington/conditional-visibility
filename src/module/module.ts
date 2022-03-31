@@ -46,7 +46,9 @@ export const initHooks = (): void => {
   Hooks.once('socketlib.ready', registerSocket);
 
   Hooks.on('dfreds-convenient-effects.ready', (...args) => {
-    module.dfredsConvenientEffectsReady(...args);
+    if (game.user?.isGM) {
+      module.dfredsConvenientEffectsReady(...args);
+    }
   });
 
   if (game.settings.get(CONSTANTS.MODULE_NAME, 'debugHooks')) {

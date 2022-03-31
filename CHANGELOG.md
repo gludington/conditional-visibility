@@ -1,3 +1,9 @@
+### 0.5.22
+
+- Solved https://github.com/p4535992/conditional-visibility/issues/25
+- Possibily solved https://github.com/p4535992/conditional-visibility/issues/24
+- Possibly solved https://github.com/p4535992/conditional-visibility/issues/12#issuecomment-1083758580
+
 ### 0.5.21 [BREAKING CHANGE]
 
 - Add 'Force Visible' checkbox on token configuration, for avoid the checks of CV on specific token

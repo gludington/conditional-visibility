@@ -284,7 +284,7 @@ export function sightLayerPrototypeTestVisibilityHandler(wrapped, ...args) {
   // this.sources is a map of selected tokens (may be size 0) all tokens
   // contribute to the vision so iterate through the tokens
   // TODO find a better and fat way to prepera the sources array
-  /*
+  
   let mySources: Token[] = [];
   if (!this.sources || this.sources.size === 0) {
     // return res;
@@ -299,12 +299,9 @@ export function sightLayerPrototypeTestVisibilityHandler(wrapped, ...args) {
       }
     }
   }
-  */
-  const mySources = <Token[]>canvas.tokens?.controlled;
   if (!mySources || mySources.length === 0) {
     return res;
   }
-
   /*
   const visible_to_sources = [...mySources].map((s) => {
     // get the token elevation
@@ -317,7 +314,12 @@ export function sightLayerPrototypeTestVisibilityHandler(wrapped, ...args) {
   // if any source has vision to the token, the token is visible
   const is_visible = visible_to_sources.reduce((total, curr) => total || curr, false);
   */
-
+  /*
+  const mySources = <Token[]>canvas.tokens?.controlled;
+  if (!mySources || mySources.length === 0) {
+    return res;
+  }
+  */
   let is_visible = false;
   for (let i = 0; i < mySources.length; i++) {
     const controlledToken = mySources[i];
@@ -326,6 +328,7 @@ export function sightLayerPrototypeTestVisibilityHandler(wrapped, ...args) {
       break;
     }
   }
+  
 
   if (game.settings.get(CONSTANTS.MODULE_NAME, 'debug')) {
     const sourcesNames = <string[]>mySources.map((e) => {

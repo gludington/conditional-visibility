@@ -247,6 +247,7 @@ const module = {
         }
       }
     } // Fine for
+    // TODO to remove
     if (
       change.flags &&
       change.flags[CONSTANTS.MODULE_NAME] &&
@@ -257,40 +258,60 @@ const module = {
       module.updateToken(sourceToken.document, change, options, userId);
     }
     else if (
-      change.flags &&
-      change.flags[CONSTANTS.MODULE_NAME] &&
+      change.actor &&
+      change.actor.data &&
+      change.actor.data.flags[CONSTANTS.MODULE_NAME] &&
       !getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`) &&
       !getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_SENSES}`) &&
       !getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_CONDITIONS}`)
     ) {
       module.updateToken(sourceToken.document, change, options, userId);
     }
-
+    // TODO to remove
     if (
       change.flags &&
       change.flags[CONSTANTS.MODULE_NAME] &&
-      getProperty(change, `flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`) &&
+      getProperty(change, `flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`) != null &&
+      getProperty(change, `flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`) != undefined &&
       !getProperty(change, `flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_SENSES}`) &&
       !getProperty(change, `flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_CONDITIONS}`)
     ) {
-      await sourceToken.actor?.setFlag(
-        CONSTANTS.MODULE_NAME,
-        ConditionalVisibilityFlags.FORCE_VISIBLE,
-        getProperty(change, `flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`),
-      );
+      const forceVisible = !!getProperty(change, `flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`);
+      if(forceVisible){
+        await sourceToken.actor?.setFlag(
+          CONSTANTS.MODULE_NAME,
+          ConditionalVisibilityFlags.FORCE_VISIBLE,
+          forceVisible
+        );
+      }else{
+        await sourceToken.actor?.unsetFlag(
+          CONSTANTS.MODULE_NAME,
+          ConditionalVisibilityFlags.FORCE_VISIBLE
+        );
+      }
     }
     else if (
-      change.flags &&
-      change.flags[CONSTANTS.MODULE_NAME] &&
-      getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`) &&
+      change.actor &&
+      change.actor.data &&
+      change.actor.data.flags[CONSTANTS.MODULE_NAME] &&
+      getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`) != null &&
+      getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`) != undefined &&
       !getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_SENSES}`) &&
       !getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_CONDITIONS}`)
     ) {
-      await sourceToken.actor?.setFlag(
-        CONSTANTS.MODULE_NAME,
-        ConditionalVisibilityFlags.FORCE_VISIBLE,
-        getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`),
-      );
+      const forceVisible = !!getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`);
+      if(forceVisible){
+        await sourceToken.actor?.setFlag(
+          CONSTANTS.MODULE_NAME,
+          ConditionalVisibilityFlags.FORCE_VISIBLE,
+          forceVisible
+        );
+      }else{
+        await sourceToken.actor?.unsetFlag(
+          CONSTANTS.MODULE_NAME,
+          ConditionalVisibilityFlags.FORCE_VISIBLE
+        );
+      }
     }
   },
   async updateToken(document: TokenDocument, change, options, userId) {
@@ -308,7 +329,7 @@ const module = {
     if (
       change.flags &&
       change.flags[CONSTANTS.MODULE_NAME] &&
-      !getProperty(change, `flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`) &&
+      // !getProperty(change, `flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`) &&
       !getProperty(change, `flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_SENSES}`) &&
       !getProperty(change, `flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_CONDITIONS}`)
     ) {
@@ -316,10 +337,10 @@ const module = {
       p = getProperty(change, `flags.${CONSTANTS.MODULE_NAME}`);
     }
     if (
-      change.flags &&
       change.actor &&
+      change.actor.data &&
       change.actor.data.flags[CONSTANTS.MODULE_NAME] &&
-      !getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`) &&
+      // !getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`) &&
       !getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_SENSES}`) &&
       !getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_CONDITIONS}`)
     ) {
@@ -465,17 +486,27 @@ const module = {
       }
     }
     if (
-      change.flags &&
-      change.flags[CONSTANTS.MODULE_NAME] &&
-      getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`) &&
+      change.actor &&
+      change.actor.data &&
+      change.actor.data.flags[CONSTANTS.MODULE_NAME] &&
+      getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`) != null &&
+      getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`) != undefined &&
       !getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_SENSES}`) &&
       !getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_CONDITIONS}`)
     ) {
-      await sourceToken.actor?.setFlag(
-        CONSTANTS.MODULE_NAME,
-        ConditionalVisibilityFlags.FORCE_VISIBLE,
-        getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`),
-      );
+      const forceVisible = !!getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`);
+      if(forceVisible){
+        await sourceToken.actor?.setFlag(
+          CONSTANTS.MODULE_NAME,
+          ConditionalVisibilityFlags.FORCE_VISIBLE,
+          forceVisible
+        );
+      }else{
+        await sourceToken.actor?.unsetFlag(
+          CONSTANTS.MODULE_NAME,
+          ConditionalVisibilityFlags.FORCE_VISIBLE
+        );
+      }
     }
   },
   async updateActiveEffect(activeEffect: ActiveEffect, options: EffectChangeData, isRemoved: boolean) {

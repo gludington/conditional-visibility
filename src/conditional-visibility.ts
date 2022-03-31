@@ -148,11 +148,9 @@ Hooks.once('libChangelogsReady', function () {
   libChangelogs.register(
     CONSTANTS.MODULE_NAME,
     `
-    - Add 'Force Visible' checkbox on token configuration, for avoid the checks of CV on specific token
-    - Tyr again solved the issue User lacks permission to update Token in parent Scene (maybe ?)
-    - Remove 'canvas.perception.schedule' it's seem there is a lag problem i cannot solve [High token count](https://github.com/p4535992/conditional-visibility/issues/24)
-    - Add 'Force Visible' checkbox on token configuration, for avoid the checks of CV on specific token
-    - Full rewrite of the checker (version 2), max velocity now for support abnorm number of token wihtout walls between them.
+    - Solved https://github.com/p4535992/conditional-visibility/issues/25
+    - Possibily solved https://github.com/p4535992/conditional-visibility/issues/24
+    - Possibly solved https://github.com/p4535992/conditional-visibility/issues/12#issuecomment-1083758580
     `,
     'minor',
   );

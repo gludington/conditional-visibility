@@ -187,8 +187,9 @@ const module = {
     const conditionsTemplateData: any[] = [];
     for (const s of conditions) {
       if (s.visionId != AtcvEffectConditionFlags.NONE) {
-        const s2: any = duplicateExtended(s);
+        const s2:AtcvEffect = <AtcvEffect>duplicateExtended(s);
         // const currentAtcvEffectFlagData = <AtcvEffect>tokenConfig.object.getFlag(CONSTANTS.MODULE_NAME, s.visionId);
+        /*
         const currentAtcvEffectFlagData =
           <AtcvEffect>tokenConfig.actor.getFlag(CONSTANTS.MODULE_NAME, s.visionId) ??
           <AtcvEffect>tokenConfig.object.getFlag(CONSTANTS.MODULE_NAME, s.visionId);
@@ -197,11 +198,14 @@ const module = {
         } else {
           s2.value = 0;
         }
+        */
+        if (!i18n(s2.visionName).endsWith('(CV)')) {
+          s2.visionName = i18n(s2.visionName) + ' (CV)';
+        }
         conditionsTemplateData.push(s2);
       }
     }
     renderTemplate(`modules/${CONSTANTS.MODULE_NAME}/templates/extra_senses.hbs`, {
-      // flags: tokenConfig.object.data.flags[CONSTANTS.MODULE_NAME] ?? {},
       senses: sensesTemplateData,
       conditions: conditionsTemplateData,
       dataforcevisible:
@@ -219,8 +223,7 @@ const module = {
     if (!game.user?.isGM && !isPlayerOwned) {
       return;
     }
-    // const sourceVisionCapabilities: VisionCapabilities = new VisionCapabilities(<Token>document.object);
-    // TODO for now only dnd5e
+    // TODO for now only dnd5e for now
     let p = getProperty(change, API.PATH_ATTRIBUTES_SENSES);
     // TODO to remove
     if (!p) {
@@ -235,13 +238,11 @@ const module = {
       if (!atcvEffectFlagData) {
         warn(`Can't find a senseData for the sense '${senseOrConditionIdKey}'`, true);
       } else {
-        // const effects = ConditionalVisibilityEffectDefinitions.all(senseOrConditionValue, atcvEffectFlagData.visionLevelValue);
         if (senseOrConditionValue && <number>senseOrConditionValue > 0) {
           atcvEffectFlagData.visionDistanceValue = senseOrConditionValue;
           if (!atcvEffectFlagData.visionLevelValue || atcvEffectFlagData.visionLevelValue === 0) {
             atcvEffectFlagData.visionLevelValue = 1;
           }
-          // await sourceToken?.document.setFlag(CONSTANTS.MODULE_NAME, senseOrConditionIdKey, atcvEffectFlagData);
           await repairAndSetFlag(sourceToken, senseOrConditionIdKey, atcvEffectFlagData);
         }
       }
@@ -254,14 +255,42 @@ const module = {
       !getProperty(change, `flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_CONDITIONS}`)
     ) {
       module.updateToken(sourceToken.document, change, options, userId);
-    } else {
-      // if (getProperty(<Actor>sourceToken.actor, `data.flags.${CONSTANTS.MODULE_NAME}`)) {
-      //   // Refrsh for any ATCV update
-      //   canvas.perception.schedule({
-      //     lighting: { refresh: true },
-      //     sight: { refresh: true },
-      //   });
-      // }
+    }
+    else if (
+      change.flags &&
+      change.flags[CONSTANTS.MODULE_NAME] &&
+      !getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`) &&
+      !getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_SENSES}`) &&
+      !getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_CONDITIONS}`)
+    ) {
+      module.updateToken(sourceToken.document, change, options, userId);
+    }
+
+    if (
+      change.flags &&
+      change.flags[CONSTANTS.MODULE_NAME] &&
+      getProperty(change, `flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`) &&
+      !getProperty(change, `flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_SENSES}`) &&
+      !getProperty(change, `flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_CONDITIONS}`)
+    ) {
+      await sourceToken.actor?.setFlag(
+        CONSTANTS.MODULE_NAME,
+        ConditionalVisibilityFlags.FORCE_VISIBLE,
+        getProperty(change, `flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`),
+      );
+    }
+    else if (
+      change.flags &&
+      change.flags[CONSTANTS.MODULE_NAME] &&
+      getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`) &&
+      !getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_SENSES}`) &&
+      !getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_CONDITIONS}`)
+    ) {
+      await sourceToken.actor?.setFlag(
+        CONSTANTS.MODULE_NAME,
+        ConditionalVisibilityFlags.FORCE_VISIBLE,
+        getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`),
+      );
     }
   },
   async updateToken(document: TokenDocument, change, options, userId) {
@@ -275,10 +304,11 @@ const module = {
     }
     let isEnabledForToken = false;
     let p;
+    // TODO remove on 0.6.X
     if (
       change.flags &&
       change.flags[CONSTANTS.MODULE_NAME] &&
-      // !getProperty(change, `flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`)
+      !getProperty(change, `flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`) &&
       !getProperty(change, `flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_SENSES}`) &&
       !getProperty(change, `flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_CONDITIONS}`)
     ) {
@@ -289,7 +319,7 @@ const module = {
       change.flags &&
       change.actor &&
       change.actor.data.flags[CONSTANTS.MODULE_NAME] &&
-      // !getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`)
+      !getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`) &&
       !getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_SENSES}`) &&
       !getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_CONDITIONS}`)
     ) {
@@ -303,19 +333,19 @@ const module = {
       for (const key in p) {
         const senseOrConditionIdKey = key;
         const senseOrConditionValue = <AtcvEffect>p[key];
-        if (
-          senseOrConditionIdKey === ConditionalVisibilityFlags.FORCE_VISIBLE ||
-          typeof senseOrConditionValue === 'boolean' ||
-          senseOrConditionValue instanceof Boolean
-        ) {
-          await sourceToken.actor?.setFlag(
-            CONSTANTS.MODULE_NAME,
-            ConditionalVisibilityFlags.FORCE_VISIBLE,
-            senseOrConditionValue,
-          );
-          continue;
-        }
-        if (senseOrConditionIdKey.includes('-=')) {
+        // if (
+        //   senseOrConditionIdKey === ConditionalVisibilityFlags.FORCE_VISIBLE ||
+        //   typeof senseOrConditionValue === 'boolean' ||
+        //   senseOrConditionValue instanceof Boolean
+        // ) {
+        //   await sourceToken.actor?.setFlag(
+        //     CONSTANTS.MODULE_NAME,
+        //     ConditionalVisibilityFlags.FORCE_VISIBLE,
+        //     senseOrConditionValue,
+        //   );
+        //   continue;
+        // }
+        if (senseOrConditionIdKey.includes('-=') || senseOrConditionIdKey.startsWith('data')) {
           continue;
         }
         if (
@@ -350,25 +380,26 @@ const module = {
           //   );
           // });
 
-          const isSense = <AtcvEffect>getSensesFromToken(sourceToken.document).find((sense: AtcvEffect) => {
+          const senseAtcvEffect = <AtcvEffect>getSensesFromToken(sourceToken.document).find((sense: AtcvEffect) => {
             return (
               isStringEquals(<string>sense.visionId, senseOrConditionId) ||
               isStringEquals(<string>sense.visionName, senseOrConditionId)
             );
           });
-          const isCondition = <AtcvEffect>getConditionsFromToken(sourceToken.document).find((sense: AtcvEffect) => {
+          const conditionAtcvEffect = <AtcvEffect>getConditionsFromToken(sourceToken.document).find((sense: AtcvEffect) => {
             return (
               isStringEquals(<string>sense.visionId, senseOrConditionId) ||
               isStringEquals(<string>sense.visionName, senseOrConditionId)
             );
           });
-          if (!isSense && !isCondition) {
+
+          if (!senseAtcvEffect && !conditionAtcvEffect) {
             warn(
               `The effect found for id '${senseOrConditionId}' on the token '${document.name}' is not a 'sense' or a 'condition', this is impossible check out the active effect changes on the token`,
             );
             return;
           }
-          if (isSense) {
+          if (senseAtcvEffect) {
             const cur = <AtcvEffect>sourceVisionCapabilities.senses.get(senseOrConditionId);
             if (cur) {
               if (!cur.visionType) {
@@ -377,10 +408,10 @@ const module = {
               cur.visionLevelValue = <number>senseOrConditionValue.visionLevelValue;
               sourceVisionCapabilities.senses.set(senseOrConditionId, cur);
             } else {
-              if (!isSense.visionType) {
-                isSense.visionType = 'sense';
+              if (!senseAtcvEffect.visionType) {
+                senseAtcvEffect.visionType = 'sense';
               }
-              sourceVisionCapabilities.senses.set(senseOrConditionId, isSense);
+              sourceVisionCapabilities.senses.set(senseOrConditionId, senseAtcvEffect);
             }
           } else {
             const cur = <AtcvEffect>sourceVisionCapabilities.conditions.get(senseOrConditionId);
@@ -391,21 +422,14 @@ const module = {
               cur.visionLevelValue = <number>senseOrConditionValue.visionLevelValue;
               sourceVisionCapabilities.conditions.set(senseOrConditionId, cur);
             } else {
-              if (!isCondition.visionType) {
-                isCondition.visionType = 'condition';
+              if (!conditionAtcvEffect.visionType) {
+                conditionAtcvEffect.visionType = 'condition';
               }
-              sourceVisionCapabilities.conditions.set(senseOrConditionId, isCondition);
+              sourceVisionCapabilities.conditions.set(senseOrConditionId, conditionAtcvEffect);
             }
           }
           if (sourceVisionCapabilities.hasSenses() || sourceVisionCapabilities.hasConditions()) {
             await prepareActiveEffectForConditionalVisibility(sourceToken, sourceVisionCapabilities);
-
-            // if (!game.user?.isGM && isGMConnected()) {
-            //   return conditionalVisibilitySocket.executeAsGM('prepareActiveEffectForConditionalVisibility', sourceToken, sourceVisionCapabilities);
-            // } else {
-            //   await prepareActiveEffectForConditionalVisibility(sourceToken, sourceVisionCapabilities);
-            // }
-
             // TODO CHECK IF We don't need the modification of the effect start this anyway
             // const mapFlagsToUpdated = <Map<string,AtcvEffect>>await prepareActiveEffectForConditionalVisibility(token, sourceVisionCapabilities);
             // for (const [atcvEffectKey, atcvEffectValue] of mapFlagsToUpdated) {
@@ -417,18 +441,6 @@ const module = {
           senseOrConditionValue.visionLevelValue === null ||
           senseOrConditionValue.visionLevelValue === undefined
         ) {
-          // //for (const senseData of await API.getAllDefaultSensesAndConditions(token)) {
-          // //  const effectNameToCheckOnActor = i18n(<string>senseData?.visionName);
-          // const effectNameToCheckOnActor = i18n(senseOrConditionValue.visionName)
-          //   //if (await API.hasEffectAppliedOnToken(<string>token.id, effectNameToCheckOnActor, true)) {
-          //     const activeEffectToRemove = <ActiveEffect>(
-          //       await API.findEffectByNameOnToken(<string>token.id, effectNameToCheckOnActor)
-          //     );
-          //     if(activeEffectToRemove){
-          //       await API.removeEffectFromIdOnToken(<string>token.id, <string>activeEffectToRemove.id);
-          //     }
-          //   //}
-          // //}
           // Make sure to remove anything with value 0
           for (const senseData of await getAllDefaultSensesAndConditions(sourceToken)) {
             if (senseData.visionId === senseOrConditionIdKey) {
@@ -447,24 +459,42 @@ const module = {
           }
         }
       } // Fine for
-      // FINALLY REMVE ALL THE ACTIVE EFFECT
+      // FINALLY REMOVE ALL THE ACTIVE EFFECT
       if (setAeToRemove.size > 0) {
         API.removeEffectFromIdOnTokenMultiple(<string>sourceToken.id, Array.from(setAeToRemove));
       }
     }
-    // if (getProperty(<Actor>sourceToken.actor, `data.flags.${CONSTANTS.MODULE_NAME}`)) {
-    //   // Refrsh for any ATCV update
-    //   canvas.perception.schedule({
-    //     lighting: { refresh: true },
-    //     sight: { refresh: true },
-    //   });
-    // }
+    if (
+      change.flags &&
+      change.flags[CONSTANTS.MODULE_NAME] &&
+      getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`) &&
+      !getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_SENSES}`) &&
+      !getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_CONDITIONS}`)
+    ) {
+      await sourceToken.actor?.setFlag(
+        CONSTANTS.MODULE_NAME,
+        ConditionalVisibilityFlags.FORCE_VISIBLE,
+        getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`),
+      );
+    }
   },
   async updateActiveEffect(activeEffect: ActiveEffect, options: EffectChangeData, isRemoved: boolean) {
     const actor = <Actor>activeEffect.parent;
+    if (!actor) {
+      return;
+    }
     if (actor.documentName !== 'Actor') {
       return;
     }
+    const isPlayerOwned = <boolean>actor.token?.isOwner;
+    if (!game.user?.isGM && !isPlayerOwned) {
+      return;
+    }
+    const sourceToken = <Token>actor.token?.object;
+    if (!sourceToken) {
+      return;
+    }
+    /*
     let link = getProperty(actor, 'data.token.actorLink');
     if (link === undefined) {
       link = true;
@@ -479,10 +509,8 @@ const module = {
     if (tokenArray === []) {
       return;
     }
-    //@ts-ignore
-    // if (!options?.changes) {
-    //   return;
-    // }
+    const sourceToken = tokenArray[0];
+    */
     if (
       //@ts-ignore
       options?.changes &&
@@ -492,7 +520,7 @@ const module = {
         !options.changes?.find((effect) => effect.key.includes('ATCV')))
     ) {
       if (isRemoved) {
-        for (const sourceToken of tokenArray) {
+        // for (const sourceToken of tokenArray) {
           const sense = (await getAllDefaultSensesAndConditions(sourceToken)).find((sense: AtcvEffect) => {
             return (
               isStringEquals(sense.visionName, <string>activeEffect.name) ||
@@ -502,7 +530,7 @@ const module = {
           if (sense?.visionId) {
             await repairAndUnSetFlag(sourceToken, sense?.visionId);
           }
-        }
+        // }
       } else {
         return;
       }
@@ -531,11 +559,11 @@ const module = {
               continue;
             }
             const updateKey = change.key.slice(5);
-            for (const tokenToSet of tokenArray) {
-              const isPlayerOwned = <boolean>tokenToSet.document.isOwner;
-              if (!isPlayerOwned) {
-                continue;
-              }
+            // for (const sourceToken of tokenArray) {
+              // const isPlayerOwned = <boolean>sourceToken.document.isOwner;
+              // if (!isPlayerOwned) {
+              //   continue;
+              // }
               //@ts-ignore
               // if (updateValue == options.changes.find((a) => change.key === a.key)?.value) {
               //   if (tokenToSet.actor?.getFlag(CONSTANTS.MODULE_NAME, updateKey) != updateValue) {
@@ -544,35 +572,34 @@ const module = {
               //   }
               //   continue;
               // }
-              const sensesData = await getAllDefaultSensesAndConditions(tokenToSet);
+              const sensesData = await getAllDefaultSensesAndConditions(sourceToken);
               for (const statusSight of sensesData) {
                 if (updateKey === statusSight.visionId) {
                   // TODO TO CHECK IF WE NEED TO FILTER THE TOKENS AGAIN MAYBE WITH A ADDITIONAL ATCV active change data effect ?
                   const currentAtcvEffectFlagData = <AtcvEffect>(
-                    // tokenToSet?.document.getFlag(CONSTANTS.MODULE_NAME, updateKey)
-                    (tokenToSet?.actor?.getFlag(CONSTANTS.MODULE_NAME, updateKey) ??
-                      tokenToSet?.document.getFlag(CONSTANTS.MODULE_NAME, updateKey))
+                    (sourceToken?.actor?.getFlag(CONSTANTS.MODULE_NAME, updateKey) ??
+                      sourceToken?.document.getFlag(CONSTANTS.MODULE_NAME, updateKey))
                   );
                   const currentValue = String(<number>currentAtcvEffectFlagData?.visionLevelValue) ?? '0';
                   // const currentValue = String(<number>statusSight.visionLevelValue) ?? '0';
                   if (change.value != currentValue) {
                     if (isRemoved || currentValue == '0') {
-                      await repairAndUnSetFlag(tokenToSet, updateKey);
+                      await repairAndUnSetFlag(sourceToken, updateKey);
                     } else {
-                      const atcvEffectFlagData = AtcvEffect.fromActiveEffect(tokenToSet.document, atcvEffect);
-                      await repairAndSetFlag(tokenToSet, updateKey, atcvEffectFlagData);
+                      const atcvEffectFlagData = AtcvEffect.fromActiveEffect(sourceToken.document, atcvEffect);
+                      await repairAndSetFlag(sourceToken, updateKey, atcvEffectFlagData);
                     }
                   } else {
                     // Strange bug fixing
                     if (isRemoved && activeEffect.id === atcvEffect.id) {
                       // await tokenToSet?.document.unsetFlag(CONSTANTS.MODULE_NAME, updateKey);
-                      await repairAndUnSetFlag(tokenToSet, updateKey);
+                      await repairAndUnSetFlag(sourceToken, updateKey);
                     }
                   }
                   break;
                 }
               }
-            }
+            // }
           }
         }
       }
@@ -684,24 +711,37 @@ const module = {
     }
     let tokenChatId = <string>speakerInfo.message.speaker.token;
     const actorChatId = <string>speakerInfo.message.speaker.actor;
+    let sourceToken: Token | null = null;
 
-    if (!actorChatId) {
-      return;
-    }
-
-    const actor = <Actor>game.actors?.get(actorChatId);
-    if (!tokenChatId) {
-      if (actor.getActiveTokens()?.length > 0) {
-        tokenChatId = <string>actor.getActiveTokens()[0].id;
+    if(actorChatId){
+      const actor = <Actor>game.actors?.get(actorChatId);
+      const isPlayerOwnedActor = <boolean>actor?.isOwner;
+      if (actor && !game.user?.isGM && !isPlayerOwnedActor) {
+        return;
       }
-    }
-    let token: Token | null = null;
-    if (tokenChatId) {
-      token = <Token>canvas.tokens?.placeables.find((t) => {
+      if (!tokenChatId) {
+        if (actor.getActiveTokens()?.length > 0) {
+          tokenChatId = <string>actor.getActiveTokens()[0].id;
+        }
+      }
+      if (tokenChatId) {
+        sourceToken = <Token>canvas.tokens?.placeables.find((t) => {
+          return t.id === tokenChatId;
+        });
+      }
+    }else if(tokenChatId){
+      sourceToken = <Token>canvas.tokens?.placeables.find((t) => {
         return t.id === tokenChatId;
       });
     }
-
+    if(!sourceToken){
+      return;
+    }
+    const isPlayerOwned = <boolean>sourceToken.document.isOwner;
+    if (!game.user?.isGM && !isPlayerOwned) {
+      return;
+    }
+    /*
     let selectedTokens = <Token[]>[];
     if (token) {
       selectedTokens = [token];
@@ -718,6 +758,7 @@ const module = {
     if (!game.user?.isGM && !isPlayerOwned) {
       return;
     }
+    */
 
     let isStealth = false;
     // This work with TAH, LMRTFY and character sheet
@@ -765,10 +806,11 @@ const module = {
         const senseId = AtcvEffectSenseFlags.NONE;
         const conditionId = AtcvEffectConditionFlags.HIDDEN;
 
-        for (const selectedToken of selectedTokens) {
-          if (!selectedToken) {
-            continue;
-          }
+        const selectedToken = sourceToken;
+        // for (const selectedToken of selectedTokens) {
+          // if (!selectedToken) {
+          //   continue;
+          // }
           const setAeToRemove = new Set<string>();
           const actorEffects = <EmbeddedCollection<typeof ActiveEffect, ActorData>>selectedToken.actor?.data.effects;
           if (senseId != AtcvEffectSenseFlags.NONE && senseId != AtcvEffectSenseFlags.NORMAL) {
@@ -822,7 +864,7 @@ const module = {
           if (setAeToRemove.size > 0) {
             API.removeEffectFromIdOnTokenMultiple(<string>selectedToken.id, Array.from(setAeToRemove));
           }
-        }
+        // }
       }
     }
     // This work with Monk TokenBar
@@ -867,11 +909,11 @@ const module = {
       if (isStealth) {
         const senseId = AtcvEffectSenseFlags.NONE;
         const conditionId = AtcvEffectConditionFlags.HIDDEN;
-
-        for (const selectedToken of selectedTokens) {
-          if (!selectedToken) {
-            continue;
-          }
+        const selectedToken = sourceToken;
+        // for (const selectedToken of selectedTokens) {
+        //   if (!selectedToken) {
+        //     continue;
+        //   }
           const setAeToRemove = new Set<string>();
           const actorEffects = <EmbeddedCollection<typeof ActiveEffect, ActorData>>selectedToken.actor?.data.effects;
           if (senseId != AtcvEffectSenseFlags.NONE && senseId != AtcvEffectSenseFlags.NORMAL) {
@@ -925,7 +967,7 @@ const module = {
           if (setAeToRemove.size > 0) {
             API.removeEffectFromIdOnTokenMultiple(<string>selectedToken.id, Array.from(setAeToRemove));
           }
-        }
+        // }
       }
     }
   },

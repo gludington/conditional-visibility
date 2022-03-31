@@ -1860,48 +1860,121 @@ export function isTokenInRange(token: Token, object: Tile | Drawing | AmbientLig
 // ========================================================================================
 
 export async function repairAndSetFlag(token: Token, key: string, value: AtcvEffect) {
+  const isPlayerOwned = <boolean>token.document.isOwner;
+  if (!game.user?.isGM && !isPlayerOwned) {
+    return;
+  }
   if (token.actor) {
+    const effectNameToCheckOnActor = i18n(<string>value.visionName);
+    const activeEffectFounded = <ActiveEffect>(
+      await API.findEffectByNameOnToken(<string>token.id, effectNameToCheckOnActor)
+    );
+    let thereISADifference = false;
+    if (activeEffectFounded) {
+      //@ts-ignore
+      const data = <ActiveEffectData>duplicateExtended(activeEffectFounded.data);
+      for (const aee of data?.changes) {
+        if (aee.key.startsWith('ATCV.')) {
+          let updateKey = '';
+          if (!aee.key.startsWith('ATCV.condition')) {
+            updateKey = aee.key.slice(5);
+            if(aee.value != String(value?.visionLevelValue)){
+              thereISADifference = true;
+            }
+          } else if (aee.key.startsWith('ATCV.conditionElevation')) {
+            if(aee.value != String(value?.visionElevation)){
+              thereISADifference = true;
+            }
+          } else if (aee.key.startsWith('ATCV.conditionDistance')) {
+            if(aee.value != String(value?.visionDistanceValue)){
+              thereISADifference = true;
+            }
+          } else if (aee.key.startsWith('ATCV.conditionTargets')) {
+            if(aee.value != String(value?.visionTargets)){
+              thereISADifference = true;
+            }
+          } else if (aee.key.startsWith('ATCV.conditionSources')) {
+            if(aee.value != String(value?.visionSources)){
+              thereISADifference = true;
+            }
+          } else if (aee.key.startsWith('ATCV.conditionTargetImage')) {
+            if(aee.value != String(value?.visionTargetImage)){
+              thereISADifference = true;
+            }
+          } else if (aee.key.startsWith('ATCV.conditionType')) {
+            if(aee.value != String(value?.visionType)){
+              thereISADifference = true;
+            }
+          }
+          if(updateKey === value.visionId){
+            break;
+          }else{
+            thereISADifference = false;
+          }
+        }
+      }
+    }else{
+      thereISADifference = true;
+    }
     if (token.document.getFlag(CONSTANTS.MODULE_NAME, key)) {
-      await token.actor?.setFlag(CONSTANTS.MODULE_NAME, key, value);
       await token.document.unsetFlag(CONSTANTS.MODULE_NAME, key);
-    } else {
+    }
+    if (token.actor.getFlag(CONSTANTS.MODULE_NAME, 'conditionElevation')) {
+      await token.actor.unsetFlag(CONSTANTS.MODULE_NAME, 'conditionElevation');
+    }
+    if (token.actor.getFlag(CONSTANTS.MODULE_NAME, 'conditionDistance')) {
+      await token.actor.unsetFlag(CONSTANTS.MODULE_NAME, 'conditionDistance');
+    }
+    if (token.actor.getFlag(CONSTANTS.MODULE_NAME, 'conditionTargets')) {
+      await token.actor.unsetFlag(CONSTANTS.MODULE_NAME, 'conditionTargets');
+    }
+    if (token.actor.getFlag(CONSTANTS.MODULE_NAME, 'conditionSources')) {
+      await token.actor.unsetFlag(CONSTANTS.MODULE_NAME, 'conditionSources');
+    }
+    if (token.actor.getFlag(CONSTANTS.MODULE_NAME, 'conditionTargetImage')) {
+      await token.actor.unsetFlag(CONSTANTS.MODULE_NAME, 'conditionTargetImage');
+    }
+    if (token.actor.getFlag(CONSTANTS.MODULE_NAME, 'conditionType')) {
+      await token.actor.unsetFlag(CONSTANTS.MODULE_NAME, 'conditionType');
+    }
+
+    if(thereISADifference){
       await token.actor?.setFlag(CONSTANTS.MODULE_NAME, key, value);
-    }
+      let data: AtcvEffect[] = [];
+      if (value.visionType === 'sense') {
+        // data = <AtcvEffect[]>token.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES) ?? [];
+        data = getSensesFromToken(token.document, true);
+      } else if (value.visionType === 'condition') {
+        // data = <AtcvEffect[]>token.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_CONDITIONS) ?? [];
+        data = getConditionsFromToken(token.document, true);
+      } else {
+        return;
+      }
 
-    let data: AtcvEffect[] = [];
-    if (value.visionType === 'sense') {
-      // data = <AtcvEffect[]>token.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES) ?? [];
-      data = getSensesFromToken(token.document, true);
-    } else if (value.visionType === 'condition') {
-      // data = <AtcvEffect[]>token.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_CONDITIONS) ?? [];
-      data = getConditionsFromToken(token.document, true);
-    } else {
-      return;
-    }
-
-    //Find index of specific object using findIndex method.
-    const objIndex = data.findIndex((obj) => obj.visionId === value.visionId);
-    if (objIndex >= 0) {
-      //Update object's name property.
-      data[objIndex] = value;
-    } else {
-      data.push(value);
-    }
-    data = data.filter((a) => {
-      return (
-        a.visionLevelValue != 0 &&
-        a.visionLevelValue != undefined &&
-        a.visionLevelValue != null &&
-        is_real_number(a.visionLevelValue) &&
-        !a.visionIsDisabled
-      );
-    });
-    if (value.visionType === 'sense') {
-      await token.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES, data);
-    } else if (value.visionType === 'condition') {
-      await token.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_CONDITIONS, data);
-    } else {
-      // DO NOTHING
+      //Find index of specific object using findIndex method.
+      const objIndex = data.findIndex((obj) => obj.visionId === value.visionId);
+      if (objIndex >= 0) {
+        //Update object's name property.
+        data[objIndex] = value;
+      } else {
+        data.push(value);
+      }
+      data = data.filter((a) => {
+        return (
+          a.visionLevelValue != 0 &&
+          a.visionLevelValue != undefined &&
+          a.visionLevelValue != null &&
+          is_real_number(a.visionLevelValue) &&
+          !a.visionIsDisabled
+        );
+      });
+      if (value.visionType === 'sense') {
+        await token.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES, data);
+      } else if (value.visionType === 'condition') {
+        await token.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_CONDITIONS, data);
+      } else {
+        // DO NOTHING
+      }
     }
     // canvas.perception.schedule({
     //   lighting: { refresh: true },
@@ -1911,13 +1984,33 @@ export async function repairAndSetFlag(token: Token, key: string, value: AtcvEff
 }
 
 export async function repairAndUnSetFlag(token: Token, key: string) {
+  const isPlayerOwned = <boolean>token.document.isOwner;
+  if (!game.user?.isGM && !isPlayerOwned) {
+    return;
+  }
   if (token.actor) {
     if (token.document.getFlag(CONSTANTS.MODULE_NAME, key)) {
       await token.document.unsetFlag(CONSTANTS.MODULE_NAME, key);
-      await token.actor?.unsetFlag(CONSTANTS.MODULE_NAME, key);
-    } else {
-      await token.actor?.unsetFlag(CONSTANTS.MODULE_NAME, key);
     }
+    if (token.actor.getFlag(CONSTANTS.MODULE_NAME, 'conditionElevation')) {
+      await token.actor.unsetFlag(CONSTANTS.MODULE_NAME, 'conditionElevation');
+    }
+    if (token.actor.getFlag(CONSTANTS.MODULE_NAME, 'conditionDistance')) {
+      await token.actor.unsetFlag(CONSTANTS.MODULE_NAME, 'conditionDistance');
+    }
+    if (token.actor.getFlag(CONSTANTS.MODULE_NAME, 'conditionTargets')) {
+      await token.actor.unsetFlag(CONSTANTS.MODULE_NAME, 'conditionTargets');
+    }
+    if (token.actor.getFlag(CONSTANTS.MODULE_NAME, 'conditionSources')) {
+      await token.actor.unsetFlag(CONSTANTS.MODULE_NAME, 'conditionSources');
+    }
+    if (token.actor.getFlag(CONSTANTS.MODULE_NAME, 'conditionTargetImage')) {
+      await token.actor.unsetFlag(CONSTANTS.MODULE_NAME, 'conditionTargetImage');
+    }
+    if (token.actor.getFlag(CONSTANTS.MODULE_NAME, 'conditionType')) {
+      await token.actor.unsetFlag(CONSTANTS.MODULE_NAME, 'conditionType');
+    }
+    await token.actor?.unsetFlag(CONSTANTS.MODULE_NAME, key);
     // canvas.perception.schedule({
     //   lighting: { refresh: true },
     //   sight: { refresh: true },
@@ -2102,7 +2195,7 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
   // 2 - Check for the correct status sight
   // =========================================
 
-  // Is better put hese here so we calculate just one time
+  // Is better put these here so we calculate just one time
   const sourceTokenElevation = getElevationToken(sourceToken);
   const targetTokenElevation = getElevationToken(targetToken);
   const tokenDistance = getUnitTokenDist(sourceToken, targetToken);

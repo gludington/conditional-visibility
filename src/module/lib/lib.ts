@@ -1913,6 +1913,24 @@ export async function repairAndSetFlag(token: Token, key: string, value: AtcvEff
           }
         }
       }
+      if (!thereISADifference) {
+        const currentAtcvEffectFlagData = <AtcvEffect>token?.actor?.getFlag(CONSTANTS.MODULE_NAME, key);
+        if (value.visionLevelValue != currentAtcvEffectFlagData.visionLevelValue) {
+          thereISADifference = true;
+        } else if (value.visionElevation != currentAtcvEffectFlagData.visionElevation) {
+          thereISADifference = true;
+        } else if (value.visionDistanceValue != currentAtcvEffectFlagData.visionDistanceValue) {
+          thereISADifference = true;
+        } else if (value.visionTargets != currentAtcvEffectFlagData.visionTargets) {
+          thereISADifference = true;
+        } else if (value.visionSources != currentAtcvEffectFlagData.visionSources) {
+          thereISADifference = true;
+        } else if (value.visionTargetImage != currentAtcvEffectFlagData.visionTargetImage) {
+          thereISADifference = true;
+        } else if (value.visionType != currentAtcvEffectFlagData.visionType) {
+          thereISADifference = true;
+        }
+      }
     } else {
       thereISADifference = true;
     }

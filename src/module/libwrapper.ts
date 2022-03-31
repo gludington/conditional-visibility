@@ -284,7 +284,7 @@ export function sightLayerPrototypeTestVisibilityHandler(wrapped, ...args) {
   // this.sources is a map of selected tokens (may be size 0) all tokens
   // contribute to the vision so iterate through the tokens
   // TODO find a better and fat way to prepera the sources array
-  
+
   let mySources: Token[] = [];
   if (!this.sources || this.sources.size === 0) {
     // return res;
@@ -328,7 +328,6 @@ export function sightLayerPrototypeTestVisibilityHandler(wrapped, ...args) {
       break;
     }
   }
-  
 
   if (game.settings.get(CONSTANTS.MODULE_NAME, 'debug')) {
     const sourcesNames = <string[]>mySources.map((e) => {

@@ -1,3 +1,7 @@
+### 0.5.23
+
+- Bug fix on unset flag and repair method
+
 ### 0.5.22
 
 - Solved https://github.com/p4535992/conditional-visibility/issues/25

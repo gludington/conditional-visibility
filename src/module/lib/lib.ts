@@ -1878,42 +1878,42 @@ export async function repairAndSetFlag(token: Token, key: string, value: AtcvEff
           let updateKey = '';
           if (!aee.key.startsWith('ATCV.condition')) {
             updateKey = aee.key.slice(5);
-            if(aee.value != String(value?.visionLevelValue)){
+            if (aee.value != String(value?.visionLevelValue)) {
               thereISADifference = true;
             }
           } else if (aee.key.startsWith('ATCV.conditionElevation')) {
-            if(aee.value != String(value?.visionElevation)){
+            if (aee.value != String(value?.visionElevation)) {
               thereISADifference = true;
             }
           } else if (aee.key.startsWith('ATCV.conditionDistance')) {
-            if(aee.value != String(value?.visionDistanceValue)){
+            if (aee.value != String(value?.visionDistanceValue)) {
               thereISADifference = true;
             }
           } else if (aee.key.startsWith('ATCV.conditionTargets')) {
-            if(aee.value != String(value?.visionTargets)){
+            if (aee.value != String(value?.visionTargets)) {
               thereISADifference = true;
             }
           } else if (aee.key.startsWith('ATCV.conditionSources')) {
-            if(aee.value != String(value?.visionSources)){
+            if (aee.value != String(value?.visionSources)) {
               thereISADifference = true;
             }
           } else if (aee.key.startsWith('ATCV.conditionTargetImage')) {
-            if(aee.value != String(value?.visionTargetImage)){
+            if (aee.value != String(value?.visionTargetImage)) {
               thereISADifference = true;
             }
           } else if (aee.key.startsWith('ATCV.conditionType')) {
-            if(aee.value != String(value?.visionType)){
+            if (aee.value != String(value?.visionType)) {
               thereISADifference = true;
             }
           }
-          if(updateKey === value.visionId){
+          if (updateKey === value.visionId) {
             break;
-          }else{
+          } else {
             thereISADifference = false;
           }
         }
       }
-    }else{
+    } else {
       thereISADifference = true;
     }
     if (token.document.getFlag(CONSTANTS.MODULE_NAME, key)) {
@@ -1938,7 +1938,7 @@ export async function repairAndSetFlag(token: Token, key: string, value: AtcvEff
       await token.actor.unsetFlag(CONSTANTS.MODULE_NAME, 'conditionType');
     }
 
-    if(thereISADifference){
+    if (thereISADifference) {
       await token.actor?.setFlag(CONSTANTS.MODULE_NAME, key, value);
       let data: AtcvEffect[] = [];
       if (value.visionType === 'sense') {
@@ -2011,6 +2011,45 @@ export async function repairAndUnSetFlag(token: Token, key: string) {
       await token.actor.unsetFlag(CONSTANTS.MODULE_NAME, 'conditionType');
     }
     await token.actor?.unsetFlag(CONSTANTS.MODULE_NAME, key);
+
+    const isSense = !!API.SENSES.find((sense: SenseData) => {
+      return isStringEquals(sense.id, key);
+    });
+    const isCondition = !!API.CONDITIONS.find((sense: SenseData) => {
+      return isStringEquals(sense.id, key);
+    });
+    let data: AtcvEffect[] = [];
+    if (isSense) {
+      // data = <AtcvEffect[]>token.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES) ?? [];
+      data = getSensesFromToken(token.document, true);
+    } else if (isCondition) {
+      // data = <AtcvEffect[]>token.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_CONDITIONS) ?? [];
+      data = getConditionsFromToken(token.document, true);
+    } else {
+      return;
+    }
+    //Find index of specific object using findIndex method.
+    const objIndex = data.findIndex((obj) => obj.visionId === key);
+    if (objIndex >= 0) {
+      //Update object's name property.
+      data.splice(objIndex, 1); // 2nd parameter means remove one item only
+    }
+    data = data.filter((a) => {
+      return (
+        a.visionLevelValue != 0 &&
+        a.visionLevelValue != undefined &&
+        a.visionLevelValue != null &&
+        is_real_number(a.visionLevelValue) &&
+        !a.visionIsDisabled
+      );
+    });
+    if (isSense) {
+      await token.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES, data);
+    } else if (isCondition) {
+      await token.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_CONDITIONS, data);
+    } else {
+      // DO NOTHING
+    }
     // canvas.perception.schedule({
     //   lighting: { refresh: true },
     //   sight: { refresh: true },

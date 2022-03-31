@@ -2301,6 +2301,8 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
           debug(
             `[${sourceVisionLevel.visionId}][${targetVisionLevel.visionId}](9.3) Is false, '${sourceToken.data.name}' can see '${targetToken.data.name}'`,
           );
+          // TODO particolar case is false but we put the value anyway
+          sourceVisionLevelsValid.push(<number>targetVisionLevel.visionLevelValue);
           continue;
         }
       }

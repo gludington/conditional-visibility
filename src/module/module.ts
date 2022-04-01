@@ -146,12 +146,12 @@ export const readyHooks = (): void => {
     module.updateActiveEffect(effect, options, true);
   });
 
-  Hooks.on('renderTokenHUD', (app, html, data) => {
-    // Only GM can see this
-    if (game.user?.isGM) {
-      module.renderTokenHUD(app, html, data);
-    }
-  });
+  // Hooks.on('renderTokenHUD', (app, html, data) => {
+  //   // Only GM can see this
+  //   if (game.user?.isGM) {
+  //     module.renderTokenHUD(app, html, data);
+  //   }
+  // });
 
   Hooks.on('renderChatMessage', async (message: ChatMessage, html: JQuery<HTMLElement>, speakerInfo) => {
     module.renderChatMessage(message, html, speakerInfo);

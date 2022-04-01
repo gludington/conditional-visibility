@@ -1,6 +1,6 @@
 import { AtcvEffect, ConditionalVisibilityFlags } from './conditional-visibility-models';
 import CONSTANTS from './constants';
-import { debug, getSensesFromTokenFast, shouldIncludeVision, shouldIncludeVisionV2, warn } from './lib/lib';
+import { debug, getOwnedTokens, getSensesFromTokenFast, shouldIncludeVision, shouldIncludeVisionV2, warn } from './lib/lib';
 import { canvas, game } from './settings';
 
 export function registerLibwrappers() {
@@ -167,11 +167,12 @@ export function sightLayerPrototypeTokenVisionHandlerNoLevels(wrapped, ...args) 
     return true;
   }
 
-  //const ownedTokens = getOwnedTokens();
-  const ownedTokens = <Token[]>canvas.tokens?.controlled;
+  const ownedTokens = getOwnedTokens();
+  // const ownedTokens = <Token[]>canvas.tokens?.controlled;
   if (ownedTokens && ownedTokens.length > 0) {
     for (const token of <Token[]>canvas.tokens?.placeables) {
       if (ownedTokens.includes(token)) {
+        token.visible = true;
         continue;
       }
       // eslint-disable-next-line prefer-const

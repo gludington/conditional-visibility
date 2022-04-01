@@ -2157,8 +2157,11 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
   // 1 - Preparation of the active effect
   // =========================================
 
-  const sourceVisionLevels = getSensesFromTokenFast(sourceToken.document, true, true) ?? [];
-  const targetVisionLevels = getConditionsFromTokenFast(targetToken.document, true, true) ?? [];
+  // const sourceVisionLevels:AtcvEffect[] = getSensesFromTokenFast(sourceToken.document, true, true) ?? [];
+  // const targetVisionLevels:AtcvEffect[] = getConditionsFromTokenFast(targetToken.document, true, true) ?? [];
+
+  const sourceVisionLevels = <AtcvEffect[]>sourceToken.document.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES) ?? [];
+  const targetVisionLevels = <AtcvEffect[]>targetToken.document.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_CONDITIONS) ?? [];
 
   const stealthedPassive = getProperty(<Actor>targetToken?.document?.actor, `data.${API.STEALTH_PASSIVE_SKILL}`) || 0;
   // 10 + Wisdom Score Modifier + Proficiency Bonus
@@ -2190,7 +2193,7 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
   // 6) Check if the source token has the active effect `blinded` active, if is true, you cannot see anything and return false.
   // for (const sourceStatusEffect of sourceVisionLevels) {
   for (let i = 0; i < sourceVisionLevels.length; i++) {
-    if (sourceVisionLevels[i].visionId === AtcvEffectSenseFlags.BLINDED) {
+    if (sourceVisionLevels[i].visionId === AtcvEffectSenseFlags.BLINDED && sourceVisionLevels[i].visionLevelValue != 0) {
       // Someone is blind
       debug(`(6) Is false, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
       return false;

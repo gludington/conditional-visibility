@@ -1032,26 +1032,48 @@ export async function prepareActiveEffectForConditionalVisibility(
         // if (sense.visionLevelValue != actve) {
         //@ts-ignore
         const data = <ActiveEffectData>duplicateExtended(activeEffectFounded.data);
+        let thereISADifference = false;
         for (const aee of data?.changes) {
           if (aee.key.startsWith('ATCV.')) {
             if (!aee.key.startsWith('ATCV.condition') && sense.visionLevelValue) {
+              if(aee.value != String(sense.visionLevelValue)){
+                thereISADifference = true;
+              }
               aee.value = String(sense.visionLevelValue);
             } else if (aee.key.startsWith('ATCV.conditionElevation') && sense.visionElevation) {
+              if(aee.value != String(sense.visionElevation)){
+                thereISADifference = true;
+              }
               aee.value = String(sense.visionElevation);
             } else if (aee.key.startsWith('ATCV.conditionDistance') && sense.visionDistanceValue) {
+              if(aee.value != String(sense.visionDistanceValue)){
+                thereISADifference = true;
+              }
               aee.value = String(sense.visionDistanceValue);
             } else if (aee.key.startsWith('ATCV.conditionTargets') && sense.visionTargets) {
+              if(aee.value != String(sense.visionTargets.join(','))){
+                thereISADifference = true;
+              }
               aee.value = sense.visionTargets.join(',');
             } else if (aee.key.startsWith('ATCV.conditionSources') && sense.visionSources) {
+              if(aee.value != String(sense.visionSources.join(','))){
+                thereISADifference = true;
+              }
               aee.value = sense.visionSources.join(',');
             } else if (aee.key.startsWith('ATCV.conditionTargetImage') && sense.visionTargetImage) {
+              if(aee.value != String(sense.visionTargetImage)){
+                thereISADifference = true;
+              }
               aee.value = sense.visionTargetImage;
             } else if (aee.key.startsWith('ATCV.conditionType') && sense.visionType) {
+              if(aee.value != String(sense.visionType)){
+                thereISADifference = true;
+              }
               aee.value = sense.visionType;
             }
           }
         }
-        if (data?.changes.length > 0) {
+        if (thereISADifference && data?.changes.length > 0) {
           await API.updateActiveEffectFromIdOnToken(
             <string>sourceToken.id,
             <string>activeEffectFounded.id,
@@ -1106,26 +1128,48 @@ export async function prepareActiveEffectForConditionalVisibility(
         // if (condition.visionLevelValue != actve) {
         //@ts-ignore
         const data = <ActiveEffectData>duplicateExtended(activeEffectFounded.data);
+        let thereISADifference = false;
         for (const aee of data?.changes) {
           if (aee.key.startsWith('ATCV.')) {
             if (!aee.key.startsWith('ATCV.condition') && condition.visionLevelValue) {
+              if(aee.value != String(condition.visionLevelValue)){
+                thereISADifference = true;
+              }
               aee.value = String(condition.visionLevelValue);
             } else if (aee.key.startsWith('ATCV.conditionElevation') && condition.visionElevation) {
+              if(aee.value != String(condition.visionElevation)){
+                thereISADifference = true;
+              }
               aee.value = String(condition.visionElevation);
             } else if (aee.key.startsWith('ATCV.conditionDistance') && condition.visionDistanceValue) {
+              if(aee.value != String(condition.visionDistanceValue)){
+                thereISADifference = true;
+              }
               aee.value = String(condition.visionDistanceValue);
             } else if (aee.key.startsWith('ATCV.conditionTargets') && condition.visionTargets) {
+              if(aee.value != String(condition.visionTargets.join(','))){
+                thereISADifference = true;
+              }
               aee.value = condition.visionTargets.join(',');
             } else if (aee.key.startsWith('ATCV.conditionSources') && condition.visionSources) {
+              if(aee.value != String(condition.visionSources.join(','))){
+                thereISADifference = true;
+              }
               aee.value = condition.visionSources.join(',');
             } else if (aee.key.startsWith('ATCV.conditionTargetImage') && condition.visionTargetImage) {
+              if(aee.value != String(condition.visionTargetImage)){
+                thereISADifference = true;
+              }
               aee.value = condition.visionTargetImage;
             } else if (aee.key.startsWith('ATCV.conditionType') && condition.visionType) {
+              if(aee.value != String(condition.visionType)){
+                thereISADifference = true;
+              }
               aee.value = condition.visionType;
             }
           }
         }
-        if (data?.changes.length > 0) {
+        if (thereISADifference && data?.changes.length > 0) {
           await API.updateActiveEffectFromIdOnToken(
             <string>sourceToken.id,
             <string>activeEffectFounded.id,

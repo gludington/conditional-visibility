@@ -29,10 +29,14 @@ export async function getToken(documentUuid) {
   return document?.token ?? document;
 }
 
-export function getOwnedTokens(): Token[] {
+export function getOwnedTokens(priorityToControlledIfGM:boolean): Token[] {
   const gm = game.user?.isGM;
   if (gm) {
-    return <Token[]>canvas.tokens?.placeables;
+    if(priorityToControlledIfGM){
+      return <Token[]>canvas.tokens?.controlled;
+    }else{
+      return <Token[]>canvas.tokens?.placeables;
+    }
   }
   let ownedTokens = <Token[]>canvas.tokens?.placeables.filter((token) => token.isOwner && (!token.data.hidden || gm));
   if (ownedTokens.length === 0 || !canvas.tokens?.controlled[0]) {

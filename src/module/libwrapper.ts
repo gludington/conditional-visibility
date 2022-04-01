@@ -163,17 +163,19 @@ export function sightLayerPrototypeTokenVisionHandlerNoLevels(wrapped, ...args) 
   //   return true;
   // }
   const gm = game.user?.isGM;
-  if (gm) {
-    return true;
-  }
+  // if (gm) {
+  //   return wrapped(...args);
+  // }
 
-  const ownedTokens = getOwnedTokens();
-  // const ownedTokens = <Token[]>canvas.tokens?.controlled;
+  const ownedTokens = getOwnedTokens(true);
+  const someoneIsSelected = <number>canvas.tokens?.controlled?.length > 0;
   if (ownedTokens && ownedTokens.length > 0) {
     for (const token of <Token[]>canvas.tokens?.placeables) {
       if (ownedTokens.includes(token)) {
-        token.visible = true;
-        continue;
+        if(gm && !someoneIsSelected){
+          token.visible = true;
+          continue;
+        }
       }
       // eslint-disable-next-line prefer-const
       let tokenVisible = canvas.scene?.data.tokenVision ? false : gm || !token.data.hidden;

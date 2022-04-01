@@ -1,3 +1,7 @@
+### 0.5.29
+
+- Solved hidden door ???
+
 ### 0.5.28
 
 - Solved starnge loop case by forcing a check during the update of the active effect ???

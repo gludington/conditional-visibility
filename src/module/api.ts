@@ -263,7 +263,7 @@ const API = {
       throw error('hasEffectAppliedArr | inAttributes must be of type array');
     }
     const [effectName, uuid] = inAttributes;
-    const result = await (<EffectInterface>this.effectInterface)._effectHandler.hasEffectApplied(effectName, uuid);
+    const result = (<EffectInterface>this.effectInterface)._effectHandler.hasEffectApplied(effectName, uuid);
     return result;
   },
 
@@ -272,7 +272,7 @@ const API = {
       throw error('hasEffectAppliedOnActorArr | inAttributes must be of type array');
     }
     const [effectName, uuid, includeDisabled] = inAttributes;
-    const result = await (<EffectInterface>this.effectInterface)._effectHandler.hasEffectAppliedOnActor(
+    const result = (<EffectInterface>this.effectInterface)._effectHandler.hasEffectAppliedOnActor(
       effectName,
       uuid,
       includeDisabled,
@@ -285,7 +285,7 @@ const API = {
       throw error('hasEffectAppliedFromIdOnActorArr | inAttributes must be of type array');
     }
     const [effectId, uuid, includeDisabled] = inAttributes;
-    const result = await (<EffectInterface>this.effectInterface)._effectHandler.hasEffectAppliedFromIdOnActor(
+    const result = (<EffectInterface>this.effectInterface)._effectHandler.hasEffectAppliedFromIdOnActor(
       effectId,
       uuid,
       includeDisabled,
@@ -361,7 +361,7 @@ const API = {
       throw error('hasEffectAppliedOnTokenArr | inAttributes must be of type array');
     }
     const [effectName, uuid, includeDisabled] = inAttributes;
-    const result = await (<EffectInterface>this.effectInterface)._effectHandler.hasEffectAppliedOnToken(
+    const result = (<EffectInterface>this.effectInterface)._effectHandler.hasEffectAppliedOnToken(
       effectName,
       uuid,
       includeDisabled,
@@ -374,7 +374,7 @@ const API = {
       throw error('hasEffectAppliedFromIdOnTokenArr | inAttributes must be of type array');
     }
     const [effectId, uuid, includeDisabled] = inAttributes;
-    const result = await (<EffectInterface>this.effectInterface)._effectHandler.hasEffectAppliedFromIdOnToken(
+    const result = (<EffectInterface>this.effectInterface)._effectHandler.hasEffectAppliedFromIdOnToken(
       effectId,
       uuid,
       includeDisabled,
@@ -544,12 +544,12 @@ const API = {
   },
 
   async hasEffectAppliedOnActor(actorId: string, effectName: string, includeDisabled:boolean) {
-    const result = await (<EffectInterface>this.effectInterface).hasEffectAppliedOnActor(effectName, <string>actorId, includeDisabled);
+    const result = (<EffectInterface>this.effectInterface).hasEffectAppliedOnActor(effectName, <string>actorId, includeDisabled);
     return result;
   },
 
   async hasEffectAppliedFromIdOnActor(actorId: string, effectId: string, includeDisabled:boolean) {
-    const result = await (<EffectInterface>this.effectInterface).hasEffectAppliedFromIdOnActor(effectId, <string>actorId, includeDisabled);
+    const result = (<EffectInterface>this.effectInterface).hasEffectAppliedFromIdOnActor(effectId, <string>actorId, includeDisabled);
     return result;
   },
 
@@ -600,7 +600,7 @@ const API = {
   },
 
   async hasEffectAppliedOnToken(tokenId: string, effectName: string, includeDisabled: boolean) {
-    const result = await (<EffectInterface>this.effectInterface).hasEffectAppliedOnToken(
+    const result = (<EffectInterface>this.effectInterface).hasEffectAppliedOnToken(
       effectName,
       <string>tokenId,
       includeDisabled,
@@ -609,7 +609,7 @@ const API = {
   },
 
   async hasEffectAppliedFromIdOnToken(tokenId: string, effectId: string, includeDisabled: boolean) {
-    const result = await (<EffectInterface>this.effectInterface).hasEffectAppliedFromIdOnToken(
+    const result = (<EffectInterface>this.effectInterface).hasEffectAppliedFromIdOnToken(
       effectId,
       <string>tokenId,
       includeDisabled,

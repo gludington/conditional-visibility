@@ -137,13 +137,13 @@ export default class EffectInterface {
   /**
    * Checks to see if any of the current active effects applied to the actor
    * with the given UUID match the effect name and are a convenient effect
-   *
+   * @deprecated remove from dfreds
    * @param {string} effectName - the name of the effect to check
    * @param {string} uuid - the uuid of the actor to see if the effect is
    * applied to
-   * @returns {Promise<boolean>} true if the effect is applied, false otherwise
+   * @returns {boolean} true if the effect is applied, false otherwise
    */
-  async hasEffectApplied(effectName: string, uuid: string) {
+  hasEffectApplied(effectName: string, uuid: string):boolean {
     if (isGMConnectedAndSocketLibEnable()) {
       return this._socket.executeAsGM('hasEffectApplied', effectName, uuid);
     } else {
@@ -167,7 +167,7 @@ export default class EffectInterface {
     //   return;
     // }
 
-    const actor = await this._foundryHelpers.getActorByUuid(uuid);
+    const actor = this._foundryHelpers.getActorByUuid(uuid);
 
     if (!actor) {
       ui.notifications?.error(`Actor ${uuid} could not be found`);
@@ -206,7 +206,7 @@ export default class EffectInterface {
     //   return;
     // }
 
-    const actor = await this._foundryHelpers.getActorByUuid(uuid);
+    const actor = this._foundryHelpers.getActorByUuid(uuid);
 
     if (!actor) {
       ui.notifications?.error(`Actor ${uuid} could not be found`);
@@ -251,7 +251,7 @@ export default class EffectInterface {
   async addEffectWith({ effectData, uuid, origin, overlay }) {
     const effect = new Effect(effectData);
 
-    const actor = await this._foundryHelpers.getActorByUuid(uuid);
+    const actor = this._foundryHelpers.getActorByUuid(uuid);
 
     if (!actor) {
       ui.notifications?.error(`Actor ${uuid} could not be found`);
@@ -316,13 +316,7 @@ export default class EffectInterface {
   //   return this._socket.executeAsGM('removeActorDataChanges', effectName, uuid);
   // }
 
-  // /**
-  //  * Prompts the user to select a nested effect from the choices available
-  //  *
-  //  * @param {Effect} effect - the parent effect
-  //  * @returns {Effect} the chosen nested effect
-  //  */
-  // async getNestedEffectSelection(effect) {
+  // async _getNestedEffectSelection(effect) {
   //   const content = await renderTemplate(
   //     'modules/dfreds-convenient-effects/templates/nested-effects-dialog.html',
   //     { parentEffect: effect }
@@ -346,6 +340,26 @@ export default class EffectInterface {
   //   );
   // }
 
+  // /**
+  //  * Adds the given effect name to the status effects. Note that Foundry
+  //  * needs to be refreshed to reflect the changes on the token HUD.
+  //  *
+  //  * @param {string} effectName - the effect name to add as a status effect
+  //  */
+  // async addStatusEffect(effectName) {
+  //   await this._settings.addStatusEffect(effectName);
+  // }
+
+  // /**
+  //  * Removes the given effect name from the status effects. Note that Foundry
+  //  * needs to be refreshed to reflect the changes on the token HUD.
+  //  *
+  //  * @param {string} effectName - the effect name to remove as a status effect
+  //  */
+  //  async removeStatusEffect(effectName) {
+  //   await this._settings.removeStatusEffect(effectName);
+  // }
+
   // ============================================================
   // Additional feature for retrocompatibility
   // ============================================================
@@ -363,7 +377,7 @@ export default class EffectInterface {
    * @param {string} includeDisabled - if true include the applied disabled effect
    * @returns {boolean} true if the effect is applied, false otherwise
    */
-  async hasEffectAppliedOnActor(effectName: string, uuid: string, includeDisabled: boolean): Promise<boolean> {
+  hasEffectAppliedOnActor(effectName: string, uuid: string, includeDisabled: boolean): boolean {
     if (isGMConnectedAndSocketLibEnable()) {
       return this._socket.executeAsGM('hasEffectAppliedOnActor', effectName, uuid, includeDisabled);
     } else {
@@ -380,7 +394,7 @@ export default class EffectInterface {
    * @param {string} includeDisabled - if true include the applied disabled effect
    * @returns {boolean} true if the effect is applied, false otherwise
    */
-  async hasEffectAppliedFromIdOnActor(effectId: string, uuid: string, includeDisabled: boolean): Promise<boolean> {
+  hasEffectAppliedFromIdOnActor(effectId: string, uuid: string, includeDisabled: boolean): boolean {
     if (isGMConnectedAndSocketLibEnable()) {
       return this._socket.executeAsGM('hasEffectAppliedFromIdOnActor', effectId, uuid, includeDisabled);
     } else {
@@ -541,7 +555,7 @@ export default class EffectInterface {
    * @param {string} includeDisabled - if true include the applied disabled effect
    * @returns {boolean} true if the effect is applied, false otherwise
    */
-  async hasEffectAppliedOnToken(effectName: string, uuid: string, includeDisabled: boolean): Promise<boolean> {
+  hasEffectAppliedOnToken(effectName: string, uuid: string, includeDisabled: boolean): boolean {
     if (isGMConnectedAndSocketLibEnable()) {
       return this._socket.executeAsGM('hasEffectAppliedOnToken', effectName, uuid, includeDisabled);
     } else {
@@ -558,7 +572,7 @@ export default class EffectInterface {
    * @param {string} includeDisabled - if true include the applied disabled effect
    * @returns {boolean} true if the effect is applied, false otherwise
    */
-  async hasEffectAppliedFromIdOnToken(effectId: string, uuid: string, includeDisabled: boolean): Promise<boolean> {
+  hasEffectAppliedFromIdOnToken(effectId: string, uuid: string, includeDisabled: boolean): boolean {
     if (isGMConnectedAndSocketLibEnable()) {
       return this._socket.executeAsGM('hasEffectAppliedFromIdOnToken', effectId, uuid, includeDisabled);
     } else {
@@ -651,7 +665,7 @@ export default class EffectInterface {
       return;
     }
 
-    const token = <Token>await this._foundryHelpers.getTokenByUuid(uuid);
+    const token = <Token>this._foundryHelpers.getTokenByUuid(uuid);
     // const tokenEffects = <PropertiesToSource<ActiveEffectDataProperties>[]>token?.data.actorData.effects ?? [];
     // const effects = <PropertiesToSource<ActiveEffectDataProperties>[]>tokenEffects.map(
     //   //(activeEffect) => <boolean>activeEffect?.data?.flags?.isConvenient && <string>activeEffect.id == effectId,

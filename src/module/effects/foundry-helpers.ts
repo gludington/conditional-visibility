@@ -14,7 +14,7 @@ export default class FoundryHelpers {
    *
    * @returns {string[]} actor uuids for selected or targeted tokens
    */
-   getActorUuidsFromCanvas():string[] {
+  getActorUuidsFromCanvas(): string[] {
     if (canvas.tokens?.controlled.length == 0 && game.user?.targets.size == 0) {
       return [];
     }
@@ -22,7 +22,7 @@ export default class FoundryHelpers {
     // if (this._settings.prioritizeTargets && game.user?.targets.size !== 0) {
     //   return Array.from(game.user?.targets).map((token) => token.actor?.uuid);
     // } else {
-      return <string[]>canvas.tokens?.controlled.map((token) => token.actor?.uuid);
+    return <string[]>canvas.tokens?.controlled.map((token) => token.actor?.uuid);
     // }
   }
 

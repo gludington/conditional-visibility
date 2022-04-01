@@ -25,8 +25,8 @@
   "conditional-visibility.setting.idStealthSkill.hint": "[This is system dependent] Make sense only with 'Auto hide on stealth rolls' setting set to true. Here you can configure what attribute id is used from the system for tell is a stealth roll.For example, in D&D5e system, the attribute used is the id of the skill \"ste\" so you'd put that in this setting.",
   "conditional-visibility.setting.idLangStealthSkill.name": "The lang key of the attribute used from the system for the stealth skill",
   "conditional-visibility.setting.idLangStealthSkill.hint": "[This is system dependent] Make sense only with 'Auto hide on stealth rolls' setting set to true. Here you can configure what attribute id is used from the system for tell is a stealth roll.For example, in D&D5e system, the attribute used is the lang key of the skill \"DND5E.SkillSte\" so you'd put that in this setting.",
-  "conditional-visibility.setting.pathAttributesSenses.name": "The data path to the senses of the actor",
-  "conditional-visibility.setting.pathAttributesSenses.hint": "[This is system dependent] This is the data path from the actor data object for the senses associated to the system",
+  "conditional-visibility.setting.pathAttributesSenses.name": "The data path to the attrbiutes senses of the actor",
+  "conditional-visibility.setting.pathAttributesSenses.hint": "[This is system dependent] This is the data path from the actor data object for the senses associated to the system, in D&D5e system, the attribute used is \"data.attributes.senses\" so you'd put that in this setting.",
 
   "conditional-visibility.setting.npcType.name": "NPC actor type",
   "conditional-visibility.setting.npcType.hint": "Here you can configure what the type of NPC actor of your system for the sight check. For example, in D&D5e system, the type is on the property \"actor.type\" an is value is 'npc', so you'd put \"npc\" in this setting.",

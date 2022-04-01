@@ -22,8 +22,6 @@ export class AtcvEffect {
   // Effect changes
   // statusSight: SenseData | undefined;
   visionLevelValue: number | undefined;
-  // visionLevelMinIndex: number;
-  // visionLevelMaxIndex: number;
   visionElevation: boolean;
   visionTargets: string[];
   visionSources: string[];
@@ -51,8 +49,6 @@ export class AtcvEffect {
     res.visionIcon = senseData.img;
 
     res.visionLevelValue = visionLevelValue ?? 0;
-    // res.visionLevelMinIndex = senseData.conditionLevelMinIndex;
-    // res.visionLevelMaxIndex = senseData.conditionLevelMaxIndex;
     res.visionElevation = senseData.conditionElevation;
     res.visionTargets = senseData.conditionTargets;
     res.visionSources = senseData.conditionSources;
@@ -88,12 +84,6 @@ export class AtcvEffect {
     }
     // if(!res.visionLevelValue){
     //   res.visionLevelValue = visionLevelValue;
-    // }
-    // if (!res.visionLevelMinIndex) {
-    //   res.visionLevelMinIndex = senseData.conditionLevelMinIndex;
-    // }
-    // if (!res.visionLevelMaxIndex) {
-    //   res.visionLevelMaxIndex = senseData.conditionLevelMaxIndex;
     // }
     if (!res.visionElevation) {
       res.visionElevation = senseData.conditionElevation;
@@ -334,8 +324,6 @@ export interface SenseData {
   name: string; // This is the unique name used for sync all the senses and conditions (here you cna put any dirty character you want)
   path: string; // This is the path to the property you want to associate with this sense e.g. data.skills.prc.passive
   img: string; // [OPTIONAL] Image to associate to this sense
-  // conditionLevelMinIndex: number; // [OPTIONAL] check a min index for filter a range of sense can see these conditions, or viceversa conditions can be seen only from this sense
-  // conditionLevelMaxIndex: number; // [OPTIONAL] check a max index for filter a range of sense can see these conditions, or viceversa conditions can be seen only from this sense
   conditionElevation: boolean; // [OPTIONAL] force to check the elevation between the source token and the target token, useful when using module like 'Levels'
   conditionTargets: string[]; // [OPTIONAL] force to apply the check only for these sources (you can set this but is used only from sense)
   conditionSources: string[]; // [OPTIONAL] force to apply the check only for these sources (you can set this but is used only from condition)
@@ -455,8 +443,6 @@ export class VisionCapabilities {
           let conditionSources: string[] = atcvEffectFlagData.visionSources || [];
           let conditionTargetImage = atcvEffectFlagData.visionTargetImage || '';
           let conditionType = atcvEffectFlagData.visionType || 'sense';
-          // let conditionLevelMinIndex = atcvEffectFlagData.visionLevelMinIndex || 0;
-          // let conditionLevelMaxIndex = atcvEffectFlagData.visionLevelMaxIndex || 10;
           let conditionIsDisabled = atcvEffectFlagData.visionIsDisabled || false;
 
           const statusEffect = <AtcvEffect>{
@@ -470,8 +456,6 @@ export class VisionCapabilities {
             visionTargetImage: conditionTargetImage ?? '',
             // statusSight: statusSight,
             visionType: conditionType,
-            // visionLevelMinIndex: conditionLevelMinIndex,
-            // visionLevelMaxIndex: conditionLevelMaxIndex,
             visionIsDisabled: conditionIsDisabled,
           };
           this.senses.set(statusSight.id, statusEffect);
@@ -505,8 +489,6 @@ export class VisionCapabilities {
           let conditionSources: string[] = atcvEffectFlagData.visionSources || [];
           let conditionTargetImage = atcvEffectFlagData.visionTargetImage || '';
           let conditionType = atcvEffectFlagData.visionType || 'condition';
-          // let conditionLevelMinIndex = atcvEffectFlagData.visionLevelMinIndex || 0;
-          // let conditionLevelMaxIndex = atcvEffectFlagData.visionLevelMaxIndex || 10;
           let conditionIsDisabled = atcvEffectFlagData.visionIsDisabled || false;
 
           const statusEffect = <AtcvEffect>{
@@ -520,8 +502,6 @@ export class VisionCapabilities {
             visionTargetImage: conditionTargetImage ?? '',
             // statusSight: statusSight,
             visionType: conditionType,
-            // visionLevelMinIndex: conditionLevelMinIndex,
-            // visionLevelMaxIndex: conditionLevelMaxIndex,
             visionIsDisabled: conditionIsDisabled,
           };
           this.conditions.set(statusSight.id, statusEffect);

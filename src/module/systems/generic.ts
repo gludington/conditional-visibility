@@ -19,8 +19,6 @@ export default {
       path: ``, //`data.skills.ste.passive`,
       img: `modules/${CONSTANTS.MODULE_NAME}/icons/newspaper.jpg`,
       conditionType: 'condition',
-      // conditionLevelMinIndex: 0,
-      // conditionLevelMaxIndex: 1,
       conditionSources: <string[]>[],
       conditionTargets: <string[]>[],
       conditionElevation: false,

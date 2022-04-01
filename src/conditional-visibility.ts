@@ -148,11 +148,8 @@ Hooks.once('libChangelogsReady', function () {
   libChangelogs.register(
     CONSTANTS.MODULE_NAME,
     `
-    - Solved starnge loop case by forcing a check during the update of the active effect ???
-    - Bug fix on unset flag and repair method
-    - Solved https://github.com/p4535992/conditional-visibility/issues/25
-    - Possibily solved https://github.com/p4535992/conditional-visibility/issues/24
-    - Possibly solved https://github.com/p4535992/conditional-visibility/issues/12#issuecomment-1083758580
+    - Add some debug info
+    - Clean up code
     `,
     'minor',
   );

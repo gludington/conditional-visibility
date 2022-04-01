@@ -143,7 +143,7 @@ export default class EffectInterface {
    * applied to
    * @returns {boolean} true if the effect is applied, false otherwise
    */
-  hasEffectApplied(effectName: string, uuid: string):boolean {
+  hasEffectApplied(effectName: string, uuid: string): boolean {
     if (isGMConnectedAndSocketLibEnable()) {
       return this._socket.executeAsGM('hasEffectApplied', effectName, uuid);
     } else {

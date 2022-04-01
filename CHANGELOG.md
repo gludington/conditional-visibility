@@ -1,3 +1,8 @@
+### 0.5.30
+
+- Add some debug info
+- Clean up code
+
 ### 0.5.29
 
 - Solved hidden door ???

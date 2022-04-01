@@ -74,7 +74,7 @@ export default class EffectHandler {
    * applied to
    * @returns {boolean} true if the effect is applied, false otherwise
    */
-  hasEffectApplied(effectName: string, uuid: string):boolean {
+  hasEffectApplied(effectName: string, uuid: string): boolean {
     const actor = this._foundryHelpers.getActorByUuid(uuid);
     const isApplied = actor?.data?.effects?.some(
       // (activeEffect) => <boolean>activeEffect?.data?.flags?.isConvenient && <string>activeEffect?.data?.label == effectName,
@@ -98,7 +98,7 @@ export default class EffectHandler {
    * applied to
    * @returns {boolean} true if the effect is applied, false otherwise
    */
-  hasEffectAppliedArr(...inAttributes: any[]):boolean {
+  hasEffectAppliedArr(...inAttributes: any[]): boolean {
     if (!Array.isArray(inAttributes)) {
       throw error('hasEffectAppliedArr | inAttributes must be of type array');
     }

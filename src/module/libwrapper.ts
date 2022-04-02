@@ -271,12 +271,14 @@ export function overrideVisibilityTestHandler(wrapped, ...args) {
 export function sightLayerPrototypeTestVisibilityHandler(wrapped, ...args) {
   // eslint-disable-next-line prefer-const
   let [point, { tolerance = 2, object = null } = {}] = args;
-  tolerance = Math.min(object.w, object.h) / 4;
-  const res = wrapped(point, { tolerance: tolerance, object: object });
+  // const res = wrapped(point, { tolerance: tolerance, object: object });
   // need a token object
-  if (!object) {
+  if (!object || !(object instanceof Token)) {
+    const res = wrapped(point, { tolerance: tolerance, object: object });
     return res;
   }
+  tolerance = Math.min(object.w, object.h) / 4; // this is the same of levels
+  const res = wrapped(point, { tolerance: tolerance, object: object });
   // Assume for the moment that the base function tests only infinite walls based on fov / los.
   // If so, then if a token is not seen, elevation will not change that.
   if (!res) {

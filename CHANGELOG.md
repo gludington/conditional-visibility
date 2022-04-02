@@ -1,3 +1,7 @@
+### 0.5.32
+
+- Solved hidden door bug 
+
 ### 0.5.31
 
 - Add some debug info

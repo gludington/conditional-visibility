@@ -1315,11 +1315,19 @@ export function getConditionsFromTokenFast(
   }
 }
 
-export function getSensesFromToken(tokenDocument: TokenDocument | null, filterValueNoZero = false, filterIsDisabled = false,): AtcvEffect[] {
+export function getSensesFromToken(
+  tokenDocument: TokenDocument | null,
+  filterValueNoZero = false,
+  filterIsDisabled = false,
+): AtcvEffect[] {
   return _getCVFromToken(tokenDocument, true, filterValueNoZero, filterIsDisabled);
 }
 
-export function getConditionsFromToken(tokenDocument: TokenDocument | null, filterValueNoZero = false, filterIsDisabled = false,): AtcvEffect[] {
+export function getConditionsFromToken(
+  tokenDocument: TokenDocument | null,
+  filterValueNoZero = false,
+  filterIsDisabled = false,
+): AtcvEffect[] {
   return _getCVFromToken(tokenDocument, false, filterValueNoZero, filterIsDisabled);
 }
 
@@ -1327,7 +1335,7 @@ function _getCVFromToken(
   tokenDocument: TokenDocument | null,
   isSense: boolean,
   filterValueNoZero = false,
-  filterIsDisabled = false
+  filterIsDisabled = false,
 ): AtcvEffect[] {
   const statusEffects: AtcvEffect[] = [];
 
@@ -2239,16 +2247,20 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
   let sourceVisionLevels =
     <AtcvEffect[]>sourceToken.document.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES) ??
     [];
-  if(sourceVisionLevels.length <= 0){
-    debug(`(3.4) no '${ConditionalVisibilityFlags.DATA_SENSES}' found on '${sourceToken.data.name}' you must refresh the senses/conditions on this token, try to modify some CV value`);
+  if (sourceVisionLevels.length <= 0) {
+    debug(
+      `(3.4) no '${ConditionalVisibilityFlags.DATA_SENSES}' found on '${sourceToken.data.name}' you must refresh the senses/conditions on this token, try to modify some CV value, for now we recalculate the value`,
+    );
     sourceVisionLevels = getSensesFromToken(sourceToken.document, true, true);
   }
   let targetVisionLevels =
     <AtcvEffect[]>(
       targetToken.document.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_CONDITIONS)
     ) ?? [];
-  if(targetVisionLevels.length <= 0){
-    debug(`(3.5) no '${ConditionalVisibilityFlags.DATA_CONDITIONS}' found on '${targetToken.data.name}' you must refresh the senses/conditions on this token, try to modify some CV value`);
+  if (targetVisionLevels.length <= 0) {
+    debug(
+      `(3.5) no '${ConditionalVisibilityFlags.DATA_CONDITIONS}' found on '${targetToken.data.name}' you must refresh the senses/conditions on this token, try to modify some CV value, for now we recalculate the value`,
+    );
     targetVisionLevels = getConditionsFromToken(targetToken.document, true, true);
   }
 

@@ -1,3 +1,7 @@
+### 0.5.33
+
+- Bug fix enable and disable CV active effect
+
 ### 0.5.32
 
 - Solved hidden door bug 

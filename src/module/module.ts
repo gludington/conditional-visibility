@@ -503,7 +503,8 @@ const module = {
       }
     }
   },
-  async updateActiveEffect(activeEffect: ActiveEffect, options: EffectChangeData, isRemoved: boolean) {
+  //async updateActiveEffect(activeEffect: ActiveEffect, options: EffectChangeData, isRemoved: boolean) {
+  async updateActiveEffect(activeEffect: ActiveEffect, options: any, isRemoved: boolean) {
     const actor = <Actor>activeEffect.parent;
     if (!actor) {
       return;
@@ -537,12 +538,8 @@ const module = {
     const sourceToken = tokenArray[0];
     */
     if (
-      //@ts-ignore
       options?.changes &&
-      //@ts-ignore
-      (options?.changes.length <= 0 ||
-        //@ts-ignore
-        !options.changes?.find((effect) => effect.key.includes('ATCV')))
+      (options?.changes.length <= 0 || !options.changes?.find((effect) => effect.key.includes('ATCV')))
     ) {
       if (isRemoved) {
         // for (const sourceToken of tokenArray) {
@@ -560,6 +557,7 @@ const module = {
         return;
       }
     } else {
+      // TODO make a better code
       const totalEffects = <ActiveEffect[]>actor?.effects.contents.filter((i) => !i.data.disabled);
       const atcvEffects = totalEffects.filter(
         (entity) => !!entity.data.changes.find((effect) => effect.key.includes('ATCV')),
@@ -567,7 +565,12 @@ const module = {
       if (activeEffect.data.disabled || isRemoved) {
         const atcvEffectsChanges = activeEffect.data.changes.filter((entity) => entity.key.includes('ATCV'));
         if (atcvEffectsChanges && atcvEffectsChanges.length > 0) {
-          atcvEffects.push(activeEffect);
+          const alreadyPresent = atcvEffects.find((ae) => {
+            return isStringEquals(<string>ae.id, <string>activeEffect.id);
+          });
+          if (!alreadyPresent) {
+            atcvEffects.push(activeEffect);
+          }
         }
       }
 
@@ -602,24 +605,46 @@ const module = {
               if (updateKey === statusSight.visionId) {
                 // TODO TO CHECK IF WE NEED TO FILTER THE TOKENS AGAIN MAYBE WITH A ADDITIONAL ATCV active change data effect ?
                 const currentAtcvEffectFlagData = <AtcvEffect>(
-                  (sourceToken?.actor?.getFlag(CONSTANTS.MODULE_NAME, updateKey) ??
-                    sourceToken?.document.getFlag(CONSTANTS.MODULE_NAME, updateKey))
+                  sourceToken?.actor?.getFlag(CONSTANTS.MODULE_NAME, updateKey)
                 );
-                const currentValue = String(<number>currentAtcvEffectFlagData?.visionLevelValue) ?? '0';
-                // const currentValue = String(<number>statusSight.visionLevelValue) ?? '0';
-                if (change.value != currentValue) {
-                  if (isRemoved || currentValue == '0') {
-                    await repairAndUnSetFlag(sourceToken, updateKey);
+
+                if (currentAtcvEffectFlagData?.visionId) {
+                  // const currentValue = String(<number>statusSight.visionLevelValue) ?? '0';
+                  const currentValue = String(<number>currentAtcvEffectFlagData?.visionLevelValue) ?? '0';
+                  if (change.value != currentValue) {
+                    if (isRemoved || change.value == '0') {
+                      await repairAndUnSetFlag(sourceToken, updateKey);
+                    } else {
+                      const atcvEffectFlagData = AtcvEffect.fromActiveEffect(sourceToken.document, atcvEffect);
+                      if (options.disabled) {
+                        atcvEffectFlagData.visionIsDisabled = options.disabled ?? false;
+                      }
+                      await repairAndSetFlag(sourceToken, updateKey, atcvEffectFlagData);
+                    }
                   } else {
-                    const atcvEffectFlagData = AtcvEffect.fromActiveEffect(sourceToken.document, atcvEffect);
-                    await repairAndSetFlag(sourceToken, updateKey, atcvEffectFlagData);
+                    // Strange bug fixing
+                    if (isRemoved && activeEffect.id === atcvEffect.id) {
+                      await repairAndUnSetFlag(sourceToken, updateKey);
+                    } else if (
+                      options.disabled != null &&
+                      options.disabled != undefined &&
+                      options.disabled &&
+                      activeEffect.id === atcvEffect.id
+                    ) {
+                      await repairAndUnSetFlag(sourceToken, updateKey);
+                    } else if (
+                      options.disabled != null &&
+                      options.disabled != undefined &&
+                      !options.disabled &&
+                      activeEffect.id === atcvEffect.id
+                    ) {
+                      const atcvEffectFlagData = AtcvEffect.fromActiveEffect(sourceToken.document, atcvEffect);
+                      await repairAndSetFlag(sourceToken, updateKey, atcvEffectFlagData);
+                    }
                   }
                 } else {
-                  // Strange bug fixing
-                  if (isRemoved && activeEffect.id === atcvEffect.id) {
-                    // await tokenToSet?.document.unsetFlag(CONSTANTS.MODULE_NAME, updateKey);
-                    await repairAndUnSetFlag(sourceToken, updateKey);
-                  }
+                  const atcvEffectFlagData = AtcvEffect.fromActiveEffect(sourceToken.document, atcvEffect);
+                  await repairAndSetFlag(sourceToken, updateKey, atcvEffectFlagData);
                 }
                 break;
               }

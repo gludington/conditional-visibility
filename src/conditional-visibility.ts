@@ -149,7 +149,7 @@ Hooks.once('libChangelogsReady', function () {
     CONSTANTS.MODULE_NAME,
     `
     - Add some debug info
-    - Clean up code
+    - Add retrocompatibility code (it will slow down the checker)
     `,
     'minor',
   );

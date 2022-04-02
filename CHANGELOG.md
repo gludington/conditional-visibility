@@ -1,3 +1,8 @@
+### 0.5.31
+
+- Add some debug info
+- Add retrocompatibility code (it will slow down the checker)
+
 ### 0.5.30
 
 - Add some debug info

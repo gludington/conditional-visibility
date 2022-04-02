@@ -1315,18 +1315,19 @@ export function getConditionsFromTokenFast(
   }
 }
 
-export function getSensesFromToken(tokenDocument: TokenDocument | null, filterValueNoZero = false): AtcvEffect[] {
-  return _getCVFromToken(tokenDocument, true, filterValueNoZero);
+export function getSensesFromToken(tokenDocument: TokenDocument | null, filterValueNoZero = false, filterIsDisabled = false,): AtcvEffect[] {
+  return _getCVFromToken(tokenDocument, true, filterValueNoZero, filterIsDisabled);
 }
 
-export function getConditionsFromToken(tokenDocument: TokenDocument | null, filterValueNoZero = false): AtcvEffect[] {
-  return _getCVFromToken(tokenDocument, false, filterValueNoZero);
+export function getConditionsFromToken(tokenDocument: TokenDocument | null, filterValueNoZero = false, filterIsDisabled = false,): AtcvEffect[] {
+  return _getCVFromToken(tokenDocument, false, filterValueNoZero, filterIsDisabled);
 }
 
 function _getCVFromToken(
   tokenDocument: TokenDocument | null,
   isSense: boolean,
   filterValueNoZero = false,
+  filterIsDisabled = false
 ): AtcvEffect[] {
   const statusEffects: AtcvEffect[] = [];
 
@@ -1347,14 +1348,21 @@ function _getCVFromToken(
       if (!alreadyPresent) {
         senseData.conditionType = isSense ? 'sense' : 'condition';
         const atcvEffect = AtcvEffect.fromSenseData(senseData, 0);
+        if (filterValueNoZero && atcvEffect.visionLevelValue == 0) {
+          continue;
+        }
+        if (filterIsDisabled && atcvEffect.visionIsDisabled) {
+          continue;
+        }
         statusEffects.push(atcvEffect);
       }
     }
-    if (filterValueNoZero) {
-      return statusEffects.filter((a) => a.visionLevelValue != 0);
-    } else {
-      return statusEffects;
-    }
+    return statusEffects;
+    // if (filterValueNoZero) {
+    //   return statusEffects.filter((a) => a.visionLevelValue != 0);
+    // } else {
+    //   return statusEffects;
+    // }
   }
 
   // A token is present
@@ -1386,6 +1394,12 @@ function _getCVFromToken(
       continue;
     }
 
+    if (filterValueNoZero && atcvEffectTmp.visionLevelValue == 0) {
+      continue;
+    }
+    if (filterIsDisabled && atcvEffectTmp.visionIsDisabled) {
+      continue;
+    }
     if (isSense && atcvEffectTmp.visionType === 'sense') {
       statusEffects.push(atcvEffectTmp);
     } else if (!isSense && atcvEffectTmp.visionType === 'condition') {
@@ -1415,6 +1429,12 @@ function _getCVFromToken(
           }
         }
       }
+      if (filterValueNoZero && atcvEffectTmp.visionLevelValue == 0) {
+        continue;
+      }
+      if (filterIsDisabled && atcvEffectTmp.visionIsDisabled) {
+        continue;
+      }
       statusEffects.push(atcvEffectTmp);
     }
   }
@@ -1433,17 +1453,30 @@ function _getCVFromToken(
     if (!alreadyPresent) {
       senseData.conditionType = isSense ? 'sense' : 'condition';
       const atcvEffect = AtcvEffect.fromSenseData(senseData, 0);
+      if (filterValueNoZero && atcvEffect.visionLevelValue == 0) {
+        continue;
+      }
+      if (filterIsDisabled && atcvEffect.visionIsDisabled) {
+        continue;
+      }
       statusEffectsFinal.push(atcvEffect);
     } else {
       const atcvEffect = AtcvEffect.mergeWithSensedataDefault(alreadyPresent);
+      if (filterValueNoZero && atcvEffect.visionLevelValue == 0) {
+        continue;
+      }
+      if (filterIsDisabled && atcvEffect.visionIsDisabled) {
+        continue;
+      }
       statusEffectsFinal.push(atcvEffect);
     }
   }
-  if (filterValueNoZero) {
-    return statusEffectsFinal.filter((a) => a.visionLevelValue != 0);
-  } else {
-    return statusEffectsFinal;
-  }
+  return statusEffectsFinal;
+  // if (filterValueNoZero) {
+  //   return statusEffectsFinal.filter((a) => a.visionLevelValue != 0);
+  // } else {
+  //   return statusEffectsFinal;
+  // }
 }
 
 export function retrieveAtcvEffectFromActiveEffect(
@@ -2203,16 +2236,24 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
   // const sourceVisionLevels:AtcvEffect[] = getSensesFromTokenFast(sourceToken.document, true, true) ?? [];
   // const targetVisionLevels:AtcvEffect[] = getConditionsFromTokenFast(targetToken.document, true, true) ?? [];
 
-  const sourceVisionLevels =
+  let sourceVisionLevels =
     <AtcvEffect[]>sourceToken.document.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES) ??
     [];
-  const targetVisionLevels =
+  if(sourceVisionLevels.length <= 0){
+    debug(`(3.4) no '${ConditionalVisibilityFlags.DATA_SENSES}' found on '${sourceToken.data.name}' you must refresh the senses/conditions on this token, try to modify some CV value`);
+    sourceVisionLevels = getSensesFromToken(sourceToken.document, true, true);
+  }
+  let targetVisionLevels =
     <AtcvEffect[]>(
       targetToken.document.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_CONDITIONS)
     ) ?? [];
+  if(targetVisionLevels.length <= 0){
+    debug(`(3.5) no '${ConditionalVisibilityFlags.DATA_CONDITIONS}' found on '${targetToken.data.name}' you must refresh the senses/conditions on this token, try to modify some CV value`);
+    targetVisionLevels = getConditionsFromToken(targetToken.document, true, true);
+  }
 
-  debug(`(3.5) '${sourceToken.data.name}' with sourceVisionLevels = ` + JSON.stringify(sourceVisionLevels, null, 4));
-  debug(`(3.6) '${targetToken.data.name}' with targetVisionLevels = ` + JSON.stringify(targetVisionLevels, null, 4));
+  debug(`(3.6) '${sourceToken.data.name}' with sourceVisionLevels = ` + JSON.stringify(sourceVisionLevels, null, 4));
+  debug(`(3.7) '${targetToken.data.name}' with targetVisionLevels = ` + JSON.stringify(targetVisionLevels, null, 4));
 
   const stealthedPassive = getProperty(<Actor>targetToken?.document?.actor, `data.${API.STEALTH_PASSIVE_SKILL}`) || 0;
   // 10 + Wisdom Score Modifier + Proficiency Bonus
@@ -2249,7 +2290,7 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
       sourceVisionLevels[i].visionLevelValue != 0
     ) {
       // Someone is blind
-      debug(`(6) Is false, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
+      debug(`(6) Is false, '${sourceToken.data.name}' can't see '${targetToken.data.name}'`);
       return false;
     }
   }
@@ -2262,7 +2303,7 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
         debug(`(7.1) Is true, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
         return true;
       } else {
-        debug(`(7.1) Is false, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
+        debug(`(7.1) Is false, '${sourceToken.data.name}' can't see '${targetToken.data.name}'`);
         return false;
       }
     }
@@ -2348,7 +2389,7 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
         // sourceVisionLevelsValid.set(sourceVisionLevel.visionId, false);
         // sourceVisionLevelsValid.delete(sourceVisionLevel.visionId);
         debug(
-          `[${sourceVisionLevel.visionId}][${targetVisionLevel.visionId}](9.1.1) Is false, '${sourceToken.data.name}' can see '${targetToken.data.name}'`,
+          `[${sourceVisionLevel.visionId}][${targetVisionLevel.visionId}](9.1.1) Is false, '${sourceToken.data.name}' can't see '${targetToken.data.name}'`,
         );
         continue;
       }
@@ -2358,7 +2399,7 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
       ) {
         // sourceVisionLevelsValid.set(sourceVisionLevel.visionId, false);
         debug(
-          `[${sourceVisionLevel.visionId}][${targetVisionLevel.visionId}](9.1.2) Is false, '${sourceToken.data.name}' can see '${targetToken.data.name}'`,
+          `[${sourceVisionLevel.visionId}][${targetVisionLevel.visionId}](9.1.2) Is false, '${sourceToken.data.name}' can't see '${targetToken.data.name}'`,
         );
         continue;
       }
@@ -2379,7 +2420,7 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
         // sourceVisionLevelsValid.set(sourceVisionLevel.visionId, false);
         // sourceVisionLevelsValid.delete(sourceVisionLevel.visionId);
         debug(
-          `[${sourceVisionLevel.visionId}][${targetVisionLevel.visionId}](9.2.1) Is false, '${sourceToken.data.name}' can see '${targetToken.data.name}'`,
+          `[${sourceVisionLevel.visionId}][${targetVisionLevel.visionId}](9.2.1) Is false, '${sourceToken.data.name}' can't see '${targetToken.data.name}'`,
         );
         continue;
       }
@@ -2392,7 +2433,7 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
         // sourceVisionLevelsValid.set(sourceVisionLevel.visionId, false);
         // sourceVisionLevelsValid.delete(sourceVisionLevel.visionId);
         debug(
-          `[${sourceVisionLevel.visionId}][${targetVisionLevel.visionId}](9.2.2) Is false, '${sourceToken.data.name}' can see '${targetToken.data.name}'`,
+          `[${sourceVisionLevel.visionId}][${targetVisionLevel.visionId}](9.2.2) Is false, '${sourceToken.data.name}' can't see '${targetToken.data.name}'`,
         );
         continue;
       }
@@ -2415,7 +2456,7 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
           // sourceVisionLevelsValid.set(sourceVisionLevel.visionId, false);
           // sourceVisionLevelsValid.delete(sourceVisionLevel.visionId);
           debug(
-            `[${sourceVisionLevel.visionId}][${targetVisionLevel.visionId}](9.3) Is false, '${sourceToken.data.name}' can see '${targetToken.data.name}'`,
+            `[${sourceVisionLevel.visionId}][${targetVisionLevel.visionId}](9.3) Is false, '${sourceToken.data.name}' can't see '${targetToken.data.name}'`,
           );
           // TODO particolar case is false but we put the value anyway
           sourceVisionLevelsValid.push(<number>targetVisionLevel.visionLevelValue);
@@ -2437,14 +2478,14 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
     // if the sense is set to `-1` this check is automatically skipped. If the condition and the sense are both set with value `-1` the condition won.
     if (sourceVisionLevelsValid.length == 0) {
       debug(
-        `[${sourceVisionLevel.visionId}](12.1) Is false, '${sourceToken.data.name}' can see '${targetToken.data.name}'`,
+        `[${sourceVisionLevel.visionId}](12.1) Is false, '${sourceToken.data.name}' can't see '${targetToken.data.name}'`,
       );
       continue;
     }
     // the "-1" case
     if (sourceVisionLevelsValid.includes(-1)) {
       debug(
-        `[${sourceVisionLevel.visionId}](12.2) Is false, '${sourceToken.data.name}' can see '${targetToken.data.name}'`,
+        `[${sourceVisionLevel.visionId}](12.2) Is false, '${sourceToken.data.name}' can't see '${targetToken.data.name}'`,
       );
       continue;
     }
@@ -2462,7 +2503,7 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
       break;
     }
   }
-  debug(`FINAL => '${sourceToken.data.name}' ${resultFinal ? 'can see' : "can't see"} '${targetToken.data.name}'`);
+  debug(`FINAL => '${sourceToken.data.name}' ${resultFinal ? `can see` : `can't see`} '${targetToken.data.name}'`);
   return resultFinal;
 }
 

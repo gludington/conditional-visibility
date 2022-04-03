@@ -63,6 +63,11 @@ export class ConditionalVisibilityEffectDefinitions {
       effects.push(truesight);
     }
     // CONDITIONS
+    const stealthed = ConditionalVisibilityEffectDefinitions.stealthed(visionLevel);
+    if (stealthed) {
+      stealthed.atcvChanges = AtcvEffect.mergeEffectWithSensedataDefault(stealthed);
+      effects.push(stealthed);
+    }
     const hidden = ConditionalVisibilityEffectDefinitions.hidden(visionLevel);
     if (hidden) {
       hidden.atcvChanges = AtcvEffect.mergeEffectWithSensedataDefault(hidden);
@@ -125,24 +130,6 @@ export class ConditionalVisibilityEffectDefinitions {
   // ===========================================
   // The source effect
   // =============================================
-
-  // static stealthpassive(number: number) {
-  //   return new Effect({
-  //     name: i18nFormat(`${CONSTANTS.MODULE_NAME}.effects.stealthpassive.name`, { number : number}),
-  //     description: i18nFormat(`${CONSTANTS.MODULE_NAME}.effects.stealthpassive.description`, { number : number}),
-  //     icon: '',
-  //     // seconds: Constants.SECONDS.IN_EIGHT_HOURS,
-  //     transfer: true,
-  //     changes: [
-  //       {
-  //         key: 'data.attributes.senses.stealthpassive',
-  //         mode: CONST.ACTIVE_EFFECT_MODES.UPGRADE,
-  //         value: number && number > 0 ? `${number}` : `@data.skills.ste.passive`,
-  //         priority: 5,
-  //       },
-  //     ],
-  //   });
-  // }
 
   static darkvision(number: number, visionLevel) {
     const effectSight = API.SENSES.find((a: SenseData) => {
@@ -640,6 +627,27 @@ export class ConditionalVisibilityEffectDefinitions {
       isTemporary: true,
     });
   }
+
+  // static stealthed(visionLevel: number) {
+  //   return new Effect({
+  //     customId: AtcvEffectConditionFlags.STEALTHED,
+  //     name: i18n(`${CONSTANTS.MODULE_NAME}.effects.stealthed.name`),
+  //     description: i18n(`${CONSTANTS.MODULE_NAME}.effects.stealthed.description`),
+  //     icon: `modules/${CONSTANTS.MODULE_NAME}/icons/blue_35.jpg`,
+  //     // seconds: Constants.SECONDS.IN_EIGHT_HOURS,
+  //     changes: [],
+  //     atlChanges: [],
+  //     atcvChanges: [
+  //       {
+  //         key: 'ATCV.' + AtcvEffectConditionFlags.STEALTHED,
+  //         mode: CONST.ACTIVE_EFFECT_MODES.UPGRADE,
+  //         value: visionLevel != 0 ? `${visionLevel}` : `data.skills.ste.passive`,
+  //         priority: 5,
+  //       },
+  //     ],
+  //     isTemporary: true,
+  //   });
+  // }
 
   // ===========================================
   // Utility Effect

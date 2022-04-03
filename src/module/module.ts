@@ -812,8 +812,18 @@ const module = {
 
     let isStealth = false;
     // This work with TAH, LMRTFY and character sheet
-    if (speakerInfo.message.roll) {
-      const rollChatTotal = JSON.parse(<string>speakerInfo.message.roll)?.total || '0';
+    if (speakerInfo.message.roll || message.data.flags['monks-tokenbar'] || message.data.flags['betterrolls5e']) {
+      let rollChatTotal:string = 
+        JSON.parse(<string>speakerInfo.message.roll)?.total
+        || $(message.data.content).find('.total').html()?.trim() // monk-token-bar
+        || $(message.data.content).find('.dice-total').html()?.trim() // better-roll
+        || '0';
+      if(rollChatTotal){
+        rollChatTotal = String(rollChatTotal);
+      }
+      if(rollChatTotal.includes('<span')){
+        rollChatTotal = rollChatTotal.split('<span')[0];
+      }
       const fullTextContent: string =
         <number>message.data.flavor?.length > message.data.content.length
           ? <string>message.data.flavor
@@ -827,10 +837,15 @@ const module = {
           if (text) {
             text = text.toLowerCase().trim();
             // TODO integration multisystem
+            // Better roll support
+            if(text.indexOf(`title="${i18n(API.STEALTH_ID_LANG_SKILL)?.toLowerCase()}"`) !== -1){
+              // is ok ??
+            }
             // Keywords to avoid for all the system ?
-            if (text.indexOf('check') !== -1 || text.indexOf('ability') !== -1 || text.indexOf('skill') !== -1) {
-              //
-            } else {
+            else if (text.indexOf('check') !== -1 || text.indexOf('ability') !== -1 || text.indexOf('skill') !== -1) {
+              // is ok ??
+            } 
+            else {
               continue;
             }
             text = text.replace(/\W/g, ' ');
@@ -917,6 +932,7 @@ const module = {
         // }
       }
     }
+    /*
     // This work with Monk TokenBar
     else if (message.data.flags['monks-tokenbar']) {
       const rollChatTotal = $(message.data.content).find('.total').html() || '0';
@@ -1020,5 +1036,6 @@ const module = {
         // }
       }
     }
+    */
   },
 };

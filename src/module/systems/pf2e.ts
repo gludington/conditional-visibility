@@ -83,6 +83,25 @@ export default {
   ],
   CONDITIONS: <SenseData[]>[
     {
+      id: AtcvEffectConditionFlags.NONE,
+      name: `${CONSTANTS.MODULE_NAME}.${AtcvEffectConditionFlags.NONE}`,
+      path: ``,
+      img: `modules/${CONSTANTS.MODULE_NAME}/icons/ae/light_01.jpg`,
+      conditionType: 'condition',
+      conditionSources: <string[]>[],
+      conditionTargets: <string[]>[],
+      conditionElevation: false,
+    },
+    // {
+    //   id: AtcvEffectConditionFlags.STEALTHED,
+    //   name: `${CONSTANTS.MODULE_NAME}.${AtcvEffectConditionFlags.STEALTHED}`,
+    //   path: ``, //`data.skills.ste.passive`,
+    //   img: `modules/${CONSTANTS.MODULE_NAME}/icons/blue_35.jpg`,
+    //   conditionSources: <string[]>[],
+    //   conditionTargets: <string[]>[],
+    //   conditionElevation: false,
+    // },
+    {
       id: AtcvEffectConditionFlags.HIDDEN,
       name: `${CONSTANTS.MODULE_NAME}.${AtcvEffectConditionFlags.HIDDEN}`,
       path: ``,

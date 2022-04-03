@@ -127,7 +127,9 @@
   "conditional-visibility.effects.indarkness.name": "In Darkness (CV)",
   "conditional-visibility.effects.indarkness.description": "This sense is used from the module 'Conditional Visibility'",
   "conditional-visibility.effects.hidden.name": "Hidden (CV)",
-  "conditional-visibility.effects.hidden.description": "This sense is used from the module 'Conditional Visibility'",
+  "conditional-visibility.effects.hidden.description": "This sense is used from the module 'Conditional Visibility', and represents the active stealth value for this system, retrieved from a roll",
+  "conditional-visibility.effects.stealthed.name": "Stealthed (CV)",
+  "conditional-visibility.effects.stealthed.description": "This sense is used from the module 'Conditional Visibility', and represents the passive stealth value for this system",
 
   "conditional-visibility.dialogs.title.warning": "Stop immediately! Thinking of doing a stealth roll right? Well you can't do it from here! this is a generic tool for applying active 'sense' and 'condition' effects on tokens. Stealth shooting can be done in many ways from the character sheet, with <a title='TAH' href='https://foundryvtt.com/packages/token-action-hud/' target='_blank' rel='noopener'>TAH</a>, with <a title='LMRTFY' href='https://foundryvtt.com/packages/lmrtfy' target='_blank' rel='noopener'>LMRTFY</a>, with <a title='MTB' href='https://foundryvtt.com/packages/monks-tokenbar' target='_blank' rel='noopener'>MTB</a>, with <a title='DAE' href='https://foundryvtt.com/packages/dae' target='_blank' rel='noopener'>DAE</a> + <a title='Item Macro' href='https://foundryvtt.com/packages/itemacro' target='_blank' rel='noopener'>Item Macro</a>, but not with this form. The form uses the stealth values as a basis for applying a value for the AE you select in the dropdown and does nothing else, stop thinking that what you shoot here is a 'stealth' roll.",
 

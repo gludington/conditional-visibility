@@ -131,6 +131,8 @@ export default {
     //   name: `${CONSTANTS.MODULE_NAME}.${AtcvEffectConditionFlags.STEALTHED}`,
     //   path: ``, //`data.skills.ste.passive`,
     //   img: `modules/${CONSTANTS.MODULE_NAME}/icons/blue_35.jpg`,
+    //   conditionSources: <string[]>[],
+    //   conditionTargets: <string[]>[],
     //   conditionElevation: false,
     // },
     {

@@ -365,6 +365,7 @@ export enum AtcvEffectConditionFlags {
   IN_DARKNESS = 'indarkness',
   HIDDEN = 'hidden',
   IN_MAGICAL_DARKNESS = 'inmagicaldarkness',
+  // STEALTHED = 'stealthed',
 }
 
 /**

@@ -32,14 +32,14 @@ export function registerLibwrappers() {
     { perf_mode: 'FAST' },
   );
 
-  //@ts-ignore
-  libWrapper.register(
-    CONSTANTS.MODULE_NAME,
-    'SightLayer.prototype.tokenVision',
-    sightLayerPrototypeTokenVisionHandlerNoLevels,
-    'MIXED',
-    { perf_mode: 'FAST' },
-  );
+  // //@ts-ignore
+  // libWrapper.register(
+  //   CONSTANTS.MODULE_NAME,
+  //   'SightLayer.prototype.tokenVision',
+  //   sightLayerPrototypeTokenVisionHandlerNoLevels,
+  //   'MIXED',
+  //   { perf_mode: 'FAST' },
+  // );
 
   if (game.modules.get('levels')?.active) {
     // ================
@@ -51,7 +51,7 @@ export function registerLibwrappers() {
     // libWrapper.register(
     //   CONSTANTS.MODULE_NAME,
     //   'SightLayer.prototype.testVisibility',
-    //   sightLayerPrototypeTestVisibilityHandler,
+    //   sightLayerPrototypeTestVisibilityHandlerWithLevels,
     //   'WRAPPER',
     // );
 
@@ -79,7 +79,7 @@ export function registerLibwrappers() {
     libWrapper.register(
       CONSTANTS.MODULE_NAME,
       'Levels.prototype.overrideVisibilityTest',
-      overrideVisibilityTestHandler,
+      overrideVisibilityTestHandlerWithLevels,
       'MIXED',
       { perf_mode: 'FAST' },
     );
@@ -88,7 +88,7 @@ export function registerLibwrappers() {
     // libWrapper.register(
     //   CONSTANTS.MODULE_NAME,
     //   'Levels.prototype.advancedLosTestInLos',
-    //   overrideVisibilityTestHandler,
+    //   overrideVisibilityTestHandlerWithLevels,
     //   'WRAPPER',
     //   { perf_mode: "FAST" }
     // );
@@ -97,7 +97,7 @@ export function registerLibwrappers() {
     // libWrapper.register(
     //   CONSTANTS.MODULE_NAME,
     //   'Levels.prototype.advancedLosTestInLos',
-    //   overrideVisibilityTestHandler,
+    //   overrideVisibilityTestHandlerWithLevels,
     //   'WRAPPER',
     // );
   }
@@ -151,6 +151,7 @@ export function registerLibwrappers() {
 //   return wrapped();
 // }
 
+/*
 export function sightLayerPrototypeTokenVisionHandlerNoLevels(wrapped, ...args) {
   // const sightLayer = <SightLayer>this;
   // if (game.user?.isGM) {
@@ -191,70 +192,15 @@ export function sightLayerPrototypeTokenVisionHandlerNoLevels(wrapped, ...args) 
   }
   return wrapped(...args);
 }
+*/
 
-// export function sightLayerPrototypeTokenVisionHandlerWithLevels(wrapped, ...args) {
-//   // const sightLayer = <SightLayer>this;
-//   // if (game.user?.isGM) {
-//   // 	return true;
-//   // }
-//   // return wrapped(args);
-//   // if(!sightLayer.tokenVision){
-//   //   return wrapped(args);
-//   // } else {
-//   //   return true;
-//   // }
+/*
+export function sightLayerPrototypeTokenVisionHandlerWithLevels(wrapped, ...args) {
 
-//   if (!game.settings.get(CONSTANTS.MODULE_NAME, 'enableSightCheckForGM')) {
-//     const gm = game.user?.isGM;
-//     if (gm) {
-//       return wrapped(...args);
-//     }
-//     let ownedTokens = <Token[]>canvas.tokens?.placeables.filter((token) => token.isOwner && (!token.data.hidden || gm));
-//     if (ownedTokens.length === 0 || !canvas.tokens?.controlled[0]) {
-//       ownedTokens = <Token[]>(
-//         canvas.tokens?.placeables.filter((token) => (token.observer || token.isOwner) && (!token.data.hidden || gm))
-//       );
-//     }
-//     for (const token of <Token[]>canvas.tokens?.placeables) {
-//       if (ownedTokens.includes(token)) {
-//         continue;
-//       }
-//       let tokenVisible = canvas.scene?.data.tokenVision ? false : gm || !token.data.hidden;
-//       for (const ownedToken of ownedTokens) {
-//         if (shouldIncludeVisionV2(ownedToken, token)) {
-//           tokenVisible = true;
-//         } else {
-//           tokenVisible = false;
-//         }
-//       }
-//       token.visible = tokenVisible;
-//     }
-//   } else {
-//     let ownedTokens = <Token[]>canvas.tokens?.placeables.filter((token) => token.isOwner && !token.data.hidden);
-//     if (ownedTokens.length === 0 || !canvas.tokens?.controlled[0]) {
-//       ownedTokens = <Token[]>(
-//         canvas.tokens?.placeables.filter((token) => (token.observer || token.isOwner) && !token.data.hidden)
-//       );
-//     }
-//     for (const token of <Token[]>canvas.tokens?.placeables) {
-//       if (!game.user?.isGM && ownedTokens.includes(token)) {
-//         continue;
-//       }
-//       let tokenVisible = canvas.scene?.data.tokenVision ? false : !token.data.hidden;
-//       for (const ownedToken of ownedTokens) {
-//         if (shouldIncludeVisionV2(ownedToken, token)) {
-//           tokenVisible = true;
-//         } else {
-//           tokenVisible = false;
-//         }
-//       }
-//       token.visible = tokenVisible;
-//     }
-//   }
-//   return wrapped(...args);
-// }
+}
+*/
 
-export function overrideVisibilityTestHandler(wrapped, ...args) {
+export function overrideVisibilityTestHandlerWithLevels(wrapped, ...args) {
   const [sourceToken, targetToken] = args;
   // const isPlayerOwned = <boolean>targetToken.isOwner;
   // if (!game.user?.isGM && (isPlayerOwned || targetToken.owner)) {

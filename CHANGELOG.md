@@ -1,3 +1,8 @@
+### 0.5.34
+
+- Integration autostealth with better rolls
+- Resolved winking by disable the `` wrapper
+
 ### 0.5.33
 
 - Bug fix enable and disable CV active effect

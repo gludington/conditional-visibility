@@ -2,6 +2,8 @@
 
 - Integration autostealth with better rolls
 - Resolved winking by disable the `` wrapper
+- Update the checker again
+- Added the flag `Use stealth passive` so everyione in Dnd5e is happy now ? 
 
 ### 0.5.33
 

@@ -53,6 +53,9 @@
   "conditional-visibility.token.config.dataforcevisible.title": "Force visible",
   "conditional-visibility.token.config.dataforcevisible.notes": "If checked (true value), this setting will let see this token without any control from CV and applied the standard behaviour of foundry. This is useful for case where you want to force a token to be visible, If you want to hidden the token just use the standard hidden toggle hud feature of foundry.",
 
+  "conditional-visibility.token.config.datausestealthpassive.title": "Use Stealth Passive",
+  "conditional-visibility.token.config.datausestealthpassive.notes": "If checked (true value), this setting will apply on this token the control from CV for the stealth passive check. It is the same setting applied by the \"Auto check with passive perception\" setting module, but here you can activate or deactivate it on the single token as needed",
+
   "conditional-visibility.invisible": "Invisible",
   "conditional-visibility.obscured": "Obscured",
   "conditional-visibility.indarkness": "In Darkness",

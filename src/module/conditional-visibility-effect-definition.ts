@@ -63,11 +63,11 @@ export class ConditionalVisibilityEffectDefinitions {
       effects.push(truesight);
     }
     // CONDITIONS
-    const stealthed = ConditionalVisibilityEffectDefinitions.stealthed(visionLevel);
-    if (stealthed) {
-      stealthed.atcvChanges = AtcvEffect.mergeEffectWithSensedataDefault(stealthed);
-      effects.push(stealthed);
-    }
+    // const stealthed = ConditionalVisibilityEffectDefinitions.stealthed(visionLevel);
+    // if (stealthed) {
+    //   stealthed.atcvChanges = AtcvEffect.mergeEffectWithSensedataDefault(stealthed);
+    //   effects.push(stealthed);
+    // }
     const hidden = ConditionalVisibilityEffectDefinitions.hidden(visionLevel);
     if (hidden) {
       hidden.atcvChanges = AtcvEffect.mergeEffectWithSensedataDefault(hidden);

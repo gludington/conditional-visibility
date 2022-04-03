@@ -2282,9 +2282,30 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
   // but only IF NO ACTIVE EFFECT CONDITION ARE PRESENT ON THE TARGET
   if (game.settings.get(CONSTANTS.MODULE_NAME, 'autoPassivePerception')) {
     if (targetVisionLevels.length == 0) {
-      if (perceptionPassive >= stealthedPassive) {
-        debug(`(4) Is true, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
-        return true;
+      if (
+        targetToken.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.USE_STEALTH_PASSIVE) != null &&
+        targetToken.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.USE_STEALTH_PASSIVE) != undefined
+      ) {
+        if (targetToken.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.USE_STEALTH_PASSIVE)) {
+          if (perceptionPassive >= stealthedPassive) {
+            debug(`(4.1) Is true, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
+            return true;
+          } else {
+            debug(`(4.2) Is false, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
+            return false;
+          }
+        } else {
+          debug(`(4.3) Is true, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
+          return true;
+        }
+      } else {
+        if (perceptionPassive >= stealthedPassive) {
+          debug(`(4.4) Is true, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
+          return true;
+        } else {
+          debug(`(4.5) Is false, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
+          return false;
+        }
       }
     }
   }
@@ -2314,54 +2335,49 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
   // 7) If not 'condition' are present on the target token return true (nothing to check).
   if (targetVisionLevels.length == 0) {
     if (game.settings.get(CONSTANTS.MODULE_NAME, 'autoPassivePerception')) {
-      // 7.1)
-      if (perceptionPassive >= stealthedPassive) {
-        debug(`(7.1) Is true, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
-        return true;
+      if (
+        targetToken.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.USE_STEALTH_PASSIVE) != null &&
+        targetToken.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.USE_STEALTH_PASSIVE) != undefined
+      ) {
+        if (targetToken.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.USE_STEALTH_PASSIVE)) {
+          // 7.1)
+          if (perceptionPassive >= stealthedPassive) {
+            debug(`(7.1) Is true, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
+            return true;
+          } else {
+            debug(`(7.2) Is false, '${sourceToken.data.name}' can't see '${targetToken.data.name}'`);
+            return false;
+          }
+        } else {
+          debug(`(7.3) Is true, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
+          return true;
+        }
       } else {
-        debug(`(7.1) Is false, '${sourceToken.data.name}' can't see '${targetToken.data.name}'`);
-        return false;
+        // 7.1)
+        if (perceptionPassive >= stealthedPassive) {
+          debug(`(7.4) Is true, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
+          return true;
+        } else {
+          debug(`(7.5) Is false, '${sourceToken.data.name}' can't see '${targetToken.data.name}'`);
+          return false;
+        }
       }
     }
+    debug(`(7.6) Is true, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
     return true;
   }
 
   // 8) Check again for _passive perception vs passive stealth_ like on point 4) this time we use the hidden active effect like the stealth passive on the target token...
   // THIS WILL BE CHECK ONLY IF ONE CONDITION IS PRESENT ON THE TARGET AND THE CONDITION TYPE IS 'HIDDEN'
-  if (game.settings.get(CONSTANTS.MODULE_NAME, 'autoPassivePerception') && targetVisionLevels.length == 1) {
-    if (targetVisionLevels[0].visionId == AtcvEffectConditionFlags.HIDDEN) {
-      if (perceptionPassive >= (<number>targetVisionLevels[0].visionLevelValue ?? 0)) {
-        debug(`(8) Is true, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
-        return true;
+  if (targetVisionLevels.length == 1) {
+    if (game.settings.get(CONSTANTS.MODULE_NAME, 'autoPassivePerception')) {
+      if (targetVisionLevels[0].visionId == AtcvEffectConditionFlags.HIDDEN) {
+        if (perceptionPassive >= (<number>targetVisionLevels[0].visionLevelValue ?? 0)) {
+          debug(`(8) Is true, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
+          return true;
+        }
       }
     }
-    /*
-    //if (sourceVisionLevels.length === 0) {
-    let isTheCaseWhenOnlyTheHiddenConditionIsPresentOnTarget = true;
-    let currentHiddenValue = 0;
-    // for (const targetVisionLevel of targetVisionLevels) {
-    for (let i = 0; i < targetVisionLevels.length; i++) {
-      if (targetVisionLevels[i].visionId != AtcvEffectConditionFlags.HIDDEN) {
-        isTheCaseWhenOnlyTheHiddenConditionIsPresentOnTarget = false;
-        break;
-      } else {
-        currentHiddenValue = <number>targetVisionLevels[i].visionLevelValue;
-        break;
-      }
-    }
-    if (!currentHiddenValue) {
-      currentHiddenValue = 0;
-    }
-    // if (currentHiddenValue < stealthedPassive && game.settings.get(CONSTANTS.MODULE_NAME, 'autoPassivePerception')) {
-    //   currentHiddenValue = stealthedPassive;
-    // }
-    if (isTheCaseWhenOnlyTheHiddenConditionIsPresentOnTarget) {
-      if (perceptionPassive >= currentHiddenValue) {
-        return true;
-      }
-    }
-    //}
-    */
   }
 
   // ========================================

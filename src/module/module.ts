@@ -212,6 +212,9 @@ const module = {
       conditions: conditionsTemplateData,
       dataforcevisible:
         tokenConfig.actor.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE) ?? false,
+      datausestealthpassive:
+        tokenConfig.actor.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.USE_STEALTH_PASSIVE) ??
+        (game.settings.get(CONSTANTS.MODULE_NAME, 'autoPassivePerception') ? true : false),
     }).then((extraSenses) => {
       visionTab.append(extraSenses);
     });
@@ -250,25 +253,29 @@ const module = {
       }
     } // Fine for
     // TODO to remove
+    /*
     if (
       change.flags &&
       change.flags[CONSTANTS.MODULE_NAME] &&
-      !getProperty(change, `flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`) &&
+      // !getProperty(change, `flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`) &&
       !getProperty(change, `flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_SENSES}`) &&
       !getProperty(change, `flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_CONDITIONS}`)
     ) {
       module.updateToken(sourceToken.document, change, options, userId);
-    } else if (
+    }
+    */
+    if (
       change.actor &&
       change.actor.data &&
       change.actor.data.flags[CONSTANTS.MODULE_NAME] &&
-      !getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`) &&
+      // !getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`) &&
       !getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_SENSES}`) &&
       !getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_CONDITIONS}`)
     ) {
       module.updateToken(sourceToken.document, change, options, userId);
     }
     // TODO to remove
+    /*
     if (
       change.flags &&
       change.flags[CONSTANTS.MODULE_NAME] &&
@@ -286,7 +293,9 @@ const module = {
       } else {
         await sourceToken.actor?.unsetFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE);
       }
-    } else if (
+    }
+    */
+    if (
       change.actor &&
       change.actor.data &&
       change.actor.data.flags[CONSTANTS.MODULE_NAME] &&
@@ -307,6 +316,35 @@ const module = {
         await sourceToken.actor?.unsetFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE);
       }
     }
+    if (
+      change.actor &&
+      change.actor.data &&
+      change.actor.data.flags[CONSTANTS.MODULE_NAME] &&
+      getProperty(
+        change,
+        `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.USE_STEALTH_PASSIVE}`,
+      ) != null &&
+      getProperty(
+        change,
+        `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.USE_STEALTH_PASSIVE}`,
+      ) != undefined &&
+      !getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_SENSES}`) &&
+      !getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_CONDITIONS}`)
+    ) {
+      const useStealthPassive = !!getProperty(
+        change,
+        `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.USE_STEALTH_PASSIVE}`,
+      );
+      if (useStealthPassive) {
+        await sourceToken.actor?.setFlag(
+          CONSTANTS.MODULE_NAME,
+          ConditionalVisibilityFlags.USE_STEALTH_PASSIVE,
+          useStealthPassive,
+        );
+      } else {
+        await sourceToken.actor?.unsetFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.USE_STEALTH_PASSIVE);
+      }
+    }
   },
   async updateToken(document: TokenDocument, change, options, userId) {
     const sourceToken = <Token>document.object;
@@ -320,6 +358,7 @@ const module = {
     let isEnabledForToken = false;
     let p;
     // TODO remove on 0.6.X
+    /*
     if (
       change.flags &&
       change.flags[CONSTANTS.MODULE_NAME] &&
@@ -330,6 +369,7 @@ const module = {
       isEnabledForToken = true;
       p = getProperty(change, `flags.${CONSTANTS.MODULE_NAME}`);
     }
+    */
     if (
       change.actor &&
       change.actor.data &&
@@ -500,6 +540,35 @@ const module = {
         await sourceToken.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE, forceVisible);
       } else {
         await sourceToken.actor?.unsetFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE);
+      }
+    }
+    if (
+      change.actor &&
+      change.actor.data &&
+      change.actor.data.flags[CONSTANTS.MODULE_NAME] &&
+      getProperty(
+        change,
+        `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.USE_STEALTH_PASSIVE}`,
+      ) != null &&
+      getProperty(
+        change,
+        `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.USE_STEALTH_PASSIVE}`,
+      ) != undefined &&
+      !getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_SENSES}`) &&
+      !getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_CONDITIONS}`)
+    ) {
+      const useStealthPassive = !!getProperty(
+        change,
+        `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.USE_STEALTH_PASSIVE}`,
+      );
+      if (useStealthPassive) {
+        await sourceToken.actor?.setFlag(
+          CONSTANTS.MODULE_NAME,
+          ConditionalVisibilityFlags.USE_STEALTH_PASSIVE,
+          useStealthPassive,
+        );
+      } else {
+        await sourceToken.actor?.unsetFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.USE_STEALTH_PASSIVE);
       }
     }
   },
@@ -813,15 +882,15 @@ const module = {
     let isStealth = false;
     // This work with TAH, LMRTFY and character sheet
     if (speakerInfo.message.roll || message.data.flags['monks-tokenbar'] || message.data.flags['betterrolls5e']) {
-      let rollChatTotal:string = 
-        JSON.parse(<string>speakerInfo.message.roll)?.total
-        || $(message.data.content).find('.total').html()?.trim() // monk-token-bar
-        || $(message.data.content).find('.dice-total').html()?.trim() // better-roll
-        || '0';
-      if(rollChatTotal){
+      let rollChatTotal: string =
+        JSON.parse(<string>speakerInfo.message.roll)?.total ||
+        $(message.data.content).find('.total').html()?.trim() || // monk-token-bar
+        $(message.data.content).find('.dice-total').html()?.trim() || // better-roll
+        '0';
+      if (rollChatTotal) {
         rollChatTotal = String(rollChatTotal);
       }
-      if(rollChatTotal.includes('<span')){
+      if (rollChatTotal.includes('<span')) {
         rollChatTotal = rollChatTotal.split('<span')[0];
       }
       const fullTextContent: string =
@@ -838,14 +907,13 @@ const module = {
             text = text.toLowerCase().trim();
             // TODO integration multisystem
             // Better roll support
-            if(text.indexOf(`title="${i18n(API.STEALTH_ID_LANG_SKILL)?.toLowerCase()}"`) !== -1){
+            if (text.indexOf(`title="${i18n(API.STEALTH_ID_LANG_SKILL)?.toLowerCase()}"`) !== -1) {
               // is ok ??
             }
             // Keywords to avoid for all the system ?
             else if (text.indexOf('check') !== -1 || text.indexOf('ability') !== -1 || text.indexOf('skill') !== -1) {
               // is ok ??
-            } 
-            else {
+            } else {
               continue;
             }
             text = text.replace(/\W/g, ' ');

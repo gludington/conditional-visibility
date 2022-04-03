@@ -24,6 +24,18 @@
         />
         <p class="notes">{{localize "conditional-visibility.token.config.dataforcevisible.notes"}}</p>
     </div>
+    <div class="form-group">
+        <label>{{localize "conditional-visibility.token.config.datausestealthpassive.title"}}</label>
+        <input
+            id="actor.data.flags.conditional-visibility.datausestealthpassive"
+            name="actor.data.flags.conditional-visibility.datausestealthpassive"
+            type="checkbox"
+            value="{{datausestealthpassive}}"
+            {{#if datausestealthpassive}} checked {{else}}  {{/if}}
+            onclick="$(this).attr('value', this.checked ? true : false)"
+        />
+        <p class="notes">{{localize "conditional-visibility.token.config.datausestealthpassive.notes"}}</p>
+    </div>
     <p class="notes">{{localize "conditional-visibility.token.config.extraConditionInstructions"}}</p>
     {{#each conditions as |condition|}}
         <div class="form-group">

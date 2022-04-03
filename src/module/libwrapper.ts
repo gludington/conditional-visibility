@@ -32,14 +32,14 @@ export function registerLibwrappers() {
     { perf_mode: 'FAST' },
   );
 
-  // //@ts-ignore
-  // libWrapper.register(
-  //   CONSTANTS.MODULE_NAME,
-  //   'SightLayer.prototype.tokenVision',
-  //   sightLayerPrototypeTokenVisionHandlerNoLevels,
-  //   'MIXED',
-  //   { perf_mode: 'FAST' },
-  // );
+  //@ts-ignore
+  libWrapper.register(
+    CONSTANTS.MODULE_NAME,
+    'SightLayer.prototype.tokenVision',
+    sightLayerPrototypeTokenVisionHandlerNoLevels,
+    'MIXED',
+    { perf_mode: 'FAST' },
+  );
 
   if (game.modules.get('levels')?.active) {
     // ================
@@ -151,7 +151,7 @@ export function registerLibwrappers() {
 //   return wrapped();
 // }
 
-/*
+
 export function sightLayerPrototypeTokenVisionHandlerNoLevels(wrapped, ...args) {
   // const sightLayer = <SightLayer>this;
   // if (game.user?.isGM) {
@@ -163,36 +163,40 @@ export function sightLayerPrototypeTokenVisionHandlerNoLevels(wrapped, ...args) 
   // } else {
   //   return true;
   // }
-  const gm = game.user?.isGM;
-  // if (gm) {
-  //   return wrapped(...args);
-  // }
 
+  // Check if the current scene has token vision enabled
+  // this was the cause of many bugs...
+  if(game.scenes?.current?.data.tokenVision){
+    return wrapped(args);
+  }
+
+  const gm = game.user?.isGM;
   const ownedTokens = getOwnedTokens(true);
   const someoneIsSelected = <number>canvas.tokens?.controlled?.length > 0;
   if (ownedTokens && ownedTokens.length > 0) {
     for (const token of <Token[]>canvas.tokens?.placeables) {
       if (ownedTokens.includes(token)) {
         if (gm && !someoneIsSelected) {
-          token.visible = true;
+          // token.visible = true;
           continue;
         }
       }
       // eslint-disable-next-line prefer-const
-      let tokenVisible = canvas.scene?.data.tokenVision ? false : gm || !token.data.hidden;
+      // let tokenVisible = canvas.scene?.data.tokenVision ? false : gm || !token.data.hidden;
       for (const ownedToken of ownedTokens) {
         if (shouldIncludeVisionV2(ownedToken, token)) {
-          tokenVisible = true;
+          // tokenVisible = true;
         } else {
-          tokenVisible = false;
+          // tokenVisible = false;
+          token.visible = false;
         }
       }
-      token.visible = tokenVisible;
+      // token.visible = tokenVisible;
     }
   }
   return wrapped(...args);
 }
-*/
+
 
 /*
 export function sightLayerPrototypeTokenVisionHandlerWithLevels(wrapped, ...args) {
@@ -297,9 +301,9 @@ export function sightLayerPrototypeTestVisibilityHandler(wrapped, ...args) {
       //return e.object.data.name;
     });
     debug(
-      `target ${tokenToCheckIfIsVisible.data.name} ${
+      `(20) Target '${tokenToCheckIfIsVisible.data.name}' ${
         is_visible ? 'is visible' : 'is not visible'
-      } to sources ${sourcesNames.join(',')}`,
+      } to at least one of the following sources [${sourcesNames.join(',')}]`,
     );
   }
 

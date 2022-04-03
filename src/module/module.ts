@@ -207,14 +207,21 @@ const module = {
         conditionsTemplateData.push(s2);
       }
     }
+    let forceVisible = false;
+    if(tokenConfig.actor.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE) != null &&
+      tokenConfig.actor.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE) != undefined){
+        forceVisible = String(tokenConfig.actor.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE)) == 'true' ? true : false;
+    }
+    let useStealthPassive = game.settings.get(CONSTANTS.MODULE_NAME, 'autoPassivePerception') ? true : false;
+    if(tokenConfig.actor.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.USE_STEALTH_PASSIVE) != null &&
+    tokenConfig.actor.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.USE_STEALTH_PASSIVE) != undefined){
+      useStealthPassive = String(tokenConfig.actor.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.USE_STEALTH_PASSIVE)) == 'true' ? true : false;
+    }
     renderTemplate(`modules/${CONSTANTS.MODULE_NAME}/templates/extra_senses.hbs`, {
       senses: sensesTemplateData,
       conditions: conditionsTemplateData,
-      dataforcevisible:
-        tokenConfig.actor.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE) ?? false,
-      datausestealthpassive:
-        tokenConfig.actor.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.USE_STEALTH_PASSIVE) ??
-        (game.settings.get(CONSTANTS.MODULE_NAME, 'autoPassivePerception') ? true : false),
+      dataforcevisible: forceVisible,
+      datausestealthpassive: useStealthPassive,
     }).then((extraSenses) => {
       visionTab.append(extraSenses);
     });
@@ -295,6 +302,7 @@ const module = {
       }
     }
     */
+    /*
     if (
       change.actor &&
       change.actor.data &&
@@ -345,6 +353,7 @@ const module = {
         await sourceToken.actor?.unsetFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.USE_STEALTH_PASSIVE);
       }
     }
+    */
   },
   async updateToken(document: TokenDocument, change, options, userId) {
     const sourceToken = <Token>document.object;
@@ -353,6 +362,9 @@ const module = {
     }
     const isPlayerOwned = <boolean>document.isOwner;
     if (!game.user?.isGM && !isPlayerOwned) {
+      return;
+    }
+    if(!change.actor?.data?.flags[CONSTANTS.MODULE_NAME]){
       return;
     }
     let isEnabledForToken = false;
@@ -536,10 +548,12 @@ const module = {
         change,
         `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`,
       );
-      if (forceVisible) {
-        await sourceToken.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE, forceVisible);
-      } else {
-        await sourceToken.actor?.unsetFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE);
+      if(forceVisible != sourceToken.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE)){
+        if (String(forceVisible) === 'true' || String(forceVisible) === 'false') {
+          await sourceToken.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE, forceVisible);
+        } else {
+          await sourceToken.actor?.unsetFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE);
+        }
       }
     }
     if (
@@ -561,14 +575,16 @@ const module = {
         change,
         `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.USE_STEALTH_PASSIVE}`,
       );
-      if (useStealthPassive) {
-        await sourceToken.actor?.setFlag(
-          CONSTANTS.MODULE_NAME,
-          ConditionalVisibilityFlags.USE_STEALTH_PASSIVE,
-          useStealthPassive,
-        );
-      } else {
-        await sourceToken.actor?.unsetFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.USE_STEALTH_PASSIVE);
+      if(useStealthPassive != sourceToken.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.USE_STEALTH_PASSIVE)){
+        if (String(useStealthPassive) === 'true' || String(useStealthPassive) === 'false') {
+          await sourceToken.actor?.setFlag(
+            CONSTANTS.MODULE_NAME,
+            ConditionalVisibilityFlags.USE_STEALTH_PASSIVE,
+            useStealthPassive,
+          );
+        } else {
+          await sourceToken.actor?.unsetFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.USE_STEALTH_PASSIVE);
+        }
       }
     }
   },

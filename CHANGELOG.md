@@ -1,9 +1,9 @@
 ### 0.5.34
 
 - Integration autostealth with better rolls
-- Resolved winking by disable the `` wrapper
+- Resolved winking by disable the `SightLayer.prototype.tokenVision` wrapper
 - Update the checker again
-- Added the flag `Use stealth passive` so everyione in Dnd5e is happy now ? 
+- Added the flag `Use stealth passive` to activated this tokne by token so everyone in Dnd5e is happy now ? 
 
 ### 0.5.33
 

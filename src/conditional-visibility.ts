@@ -148,8 +148,10 @@ Hooks.once('libChangelogsReady', function () {
   libChangelogs.register(
     CONSTANTS.MODULE_NAME,
     `
-    - Add some debug info
-    - Add retrocompatibility code (it will slow down the checker)
+    - Integration autostealth with better rolls
+    - Resolved winking by disable the 'SightLayer.prototype.tokenVision' wrapper
+    - Update the checker again
+    - Added the flag 'Use stealth passive' to activated this tokne by token so everyone in Dnd5e is happy now ? 
     `,
     'minor',
   );

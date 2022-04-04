@@ -26,6 +26,7 @@ export class AtcvEffect {
   visionTargets: string[];
   visionSources: string[];
   visionTargetImage: string;
+  visionSourceImage: string;
   visionDistanceValue: number | undefined;
   visionType: string;
   visionIsDisabled: boolean;
@@ -53,6 +54,7 @@ export class AtcvEffect {
     res.visionTargets = senseData.conditionTargets;
     res.visionSources = senseData.conditionSources;
     res.visionTargetImage = senseData.conditionTargetImage;
+    res.visionSourceImage = senseData.conditionSourceImage;
     res.visionDistanceValue = senseData.conditionDistance;
     res.visionType = senseData.conditionType ? senseData.conditionType : isSense ? 'sense' : 'condition';
     res.visionIsDisabled = String(isDisabled) === 'true' ? true : false;
@@ -94,9 +96,12 @@ export class AtcvEffect {
     if (!res.visionSources) {
       res.visionSources = senseData.conditionSources;
     }
-    // if(!res.visionTargetImage){
-    //   res.visionTargetImage = '';
-    // }
+    if(!res.visionTargetImage){
+      res.visionTargetImage = senseData.conditionTargetImage;
+    }
+    if(!res.visionSourceImage){
+      res.visionSourceImage = senseData.conditionSourceImage;
+    }
     if (!res.visionDistanceValue) {
       res.visionDistanceValue = senseData.conditionDistance;
     }
@@ -148,7 +153,7 @@ export class AtcvEffect {
         atcvChanges.push({
           key: 'ATCV.conditionTargets',
           mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
-          value: `${senseData.conditionTargets.join()}`,
+          value: `${senseData.conditionTargets.join(',')}`,
           priority: 5,
         });
       }
@@ -158,7 +163,7 @@ export class AtcvEffect {
         atcvChanges.push({
           key: 'ATCV.conditionSources',
           mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
-          value: `${senseData.conditionSources.join()}`,
+          value: `${senseData.conditionSources.join(',')}`,
           priority: 5,
         });
       }
@@ -169,6 +174,16 @@ export class AtcvEffect {
           key: 'ATCV.conditionTargetImage',
           mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
           value: `${senseData.conditionTargetImage}`,
+          priority: 5,
+        });
+      }
+    }
+    if (atcvChanges.filter((e) => isStringEquals(e.key, 'ATCV.conditionSourceImage')).length <= 0) {
+      if (senseData.conditionSourceImage) {
+        atcvChanges.push({
+          key: 'ATCV.conditionSourceImage',
+          mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+          value: `${senseData.conditionSourceImage}`,
           priority: 5,
         });
       }
@@ -246,6 +261,16 @@ export class AtcvEffect {
           key: 'ATCV.conditionTargetImage',
           mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
           value: `${senseData.conditionTargetImage}`,
+          priority: 5,
+        });
+      }
+    }
+    if (atcvChanges.filter((e) => isStringEquals(e.key, 'ATCV.conditionSourceImage')).length <= 0) {
+      if (senseData.conditionSourceImage) {
+        atcvChanges.push({
+          key: 'ATCV.conditionSourceImage',
+          mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+          value: `${senseData.conditionSourceImage}`,
           priority: 5,
         });
       }
@@ -328,6 +353,7 @@ export interface SenseData {
   conditionTargets: string[]; // [OPTIONAL] force to apply the check only for these sources (you can set this but is used only from sense)
   conditionSources: string[]; // [OPTIONAL] force to apply the check only for these sources (you can set this but is used only from condition)
   conditionTargetImage: string; // [OPTIONAL] string path to the image applied on target token and used from the source token (the one you click on) for replace only for that player with a special sight
+  conditionSourceImage: string;
   conditionDistance: number; // [OPTIONAL] set a maximum distance for check the sight with this effect
   conditionType: string; // indicate the type of CV usually they are or 'sense' or 'condition' not both, **THIS IS ESSENTIAL FOR USE SENSE AND CONDITION NOT REGISTERED ON THE MODULE IF NOT FOUNDED BY DEFAULT IS CONSIDERED A SENSE**, so now you can just modify the AE and you are not forced to call the registered macro of the module CV, this is very useful for integration with other modules.
 }
@@ -444,6 +470,7 @@ export class VisionCapabilities {
           let conditionTargets: string[] = atcvEffectFlagData.visionTargets || [];
           let conditionSources: string[] = atcvEffectFlagData.visionSources || [];
           let conditionTargetImage = atcvEffectFlagData.visionTargetImage || '';
+          let conditionSourceImage = atcvEffectFlagData.visionSourceImage || '';
           let conditionType = atcvEffectFlagData.visionType || 'sense';
           let conditionIsDisabled = atcvEffectFlagData.visionIsDisabled || false;
 
@@ -456,6 +483,7 @@ export class VisionCapabilities {
             visionLevelValue: visionLevelValue ?? 0,
             visionDistanceValue: visionDistanceValue ?? 0,
             visionTargetImage: conditionTargetImage ?? '',
+            visionSourceImage: conditionSourceImage ?? '',
             // statusSight: statusSight,
             visionType: conditionType,
             visionIsDisabled: conditionIsDisabled,
@@ -490,6 +518,7 @@ export class VisionCapabilities {
           let conditionTargets: string[] = atcvEffectFlagData.visionTargets || [];
           let conditionSources: string[] = atcvEffectFlagData.visionSources || [];
           let conditionTargetImage = atcvEffectFlagData.visionTargetImage || '';
+          let conditionSourceImage = atcvEffectFlagData.visionSourceImage || '';
           let conditionType = atcvEffectFlagData.visionType || 'condition';
           let conditionIsDisabled = atcvEffectFlagData.visionIsDisabled || false;
 
@@ -502,6 +531,7 @@ export class VisionCapabilities {
             visionLevelValue: visionLevelValue ?? 0,
             visionDistanceValue: visionDistanceValue ?? 0,
             visionTargetImage: conditionTargetImage ?? '',
+            visionSourceImage: conditionSourceImage ?? '',
             // statusSight: statusSight,
             visionType: conditionType,
             visionIsDisabled: conditionIsDisabled,

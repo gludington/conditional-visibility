@@ -126,6 +126,15 @@ export const registerSettings = function (): void {
     type: Boolean,
   });
 
+  game.settings.register(CONSTANTS.MODULE_NAME, 'enableDrawCVHandler', {
+    name: `${CONSTANTS.MODULE_NAME}.setting.enableDrawCVHandler.name`,
+    hint: `${CONSTANTS.MODULE_NAME}.setting.enableDrawCVHandler.hint`,
+    scope: 'world',
+    config: true,
+    default: false,
+    type: Boolean,
+  });
+
   game.settings.register(CONSTANTS.MODULE_NAME, 'doNotUseSocketLibFeature', {
     name: `${CONSTANTS.MODULE_NAME}.setting.doNotUseSocketLibFeature.name`,
     hint: `${CONSTANTS.MODULE_NAME}.setting.doNotUseSocketLibFeature.hint`,
@@ -438,6 +447,15 @@ function otherSettings(apply = false) {
       type: Boolean,
     },
 
+    enableDrawCVHandler: {
+      name: `${CONSTANTS.MODULE_NAME}.setting.enableDrawCVHandler.name`,
+      hint: `${CONSTANTS.MODULE_NAME}.setting.enableDrawCVHandler.hint`,
+      scope: 'world',
+      config: true,
+      type: Boolean,
+      default: false,
+    },
+
     doNotUseSocketLibFeature: {
       name: `${CONSTANTS.MODULE_NAME}.setting.doNotUseSocketLibFeature.name`,
       hint: `${CONSTANTS.MODULE_NAME}.setting.doNotUseSocketLibFeature.hint`,
@@ -446,6 +464,7 @@ function otherSettings(apply = false) {
       type: Boolean,
       default: true,
     },
+
   };
 }
 

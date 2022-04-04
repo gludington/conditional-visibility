@@ -1,6 +1,6 @@
 import { AtcvEffect, ConditionalVisibilityFlags } from './conditional-visibility-models';
 import CONSTANTS from './constants';
-import { debug, getOwnedTokens, getSensesFromTokenFast, shouldIncludeVisionV2, warn } from './lib/lib';
+import { debug, drawHandlerCVImage, getConditionsFromToken, getOwnedTokens, getSensesFromToken, getSensesFromTokenFast, shouldIncludeVisionV2, warn } from './lib/lib';
 import { canvas, game } from './settings';
 
 export function registerLibwrappers() {
@@ -186,6 +186,7 @@ export function sightLayerPrototypeTokenVisionHandlerNoLevels(wrapped, ...args) 
       for (const ownedToken of ownedTokens) {
         if (shouldIncludeVisionV2(ownedToken, token)) {
           // tokenVisible = true;
+          drawHandlerCVImage(ownedToken, token);
         } else {
           // tokenVisible = false;
           token.visible = false;
@@ -215,7 +216,13 @@ export function overrideVisibilityTestHandlerWithLevels(wrapped, ...args) {
   // eslint-disable-next-line prefer-const
   let isCVVisible = true;
   isCVVisible = shouldIncludeVisionV2(sourceToken, targetToken);
-  return isCVVisible ? wrapped(...args) : false;
+  if (isCVVisible) {
+    drawHandlerCVImage(sourceToken, targetToken);
+    return wrapped(...args)
+  } else {
+    return false;
+  }
+  // return isCVVisible ? wrapped(...args) : false;
 }
 
 export function sightLayerPrototypeTestVisibilityHandler(wrapped, ...args) {
@@ -291,6 +298,7 @@ export function sightLayerPrototypeTestVisibilityHandler(wrapped, ...args) {
     const controlledToken = mySources[i];
     is_visible = shouldIncludeVisionV2(controlledToken, tokenToCheckIfIsVisible);
     if (is_visible) {
+      drawHandlerCVImage(controlledToken, tokenToCheckIfIsVisible);
       break;
     }
   }
@@ -316,33 +324,41 @@ export function sightLayerPrototypeTestVisibilityHandler(wrapped, ...args) {
 //   return wrapped(...args);
 // };
 
+/*
 export const tokenPrototypeDrawHandler = function (wrapped, ...args) {
-  if (!game.user?.isGM) {
-    return;
-  }
   const tokenData: Token = this as Token;
-  const atcvEffects = getSensesFromTokenFast(tokenData.document);
-  let currentActvEffect: AtcvEffect | undefined = undefined;
-  // Get the one with major priority they already are sorted for priority so the first one is the right one
-  for (const atcvEffect of atcvEffects) {
-    if (atcvEffect.visionTargetImage) {
-      currentActvEffect = atcvEffect;
-      break;
-    }
+  const isPlayerOwned = <boolean>tokenData.document.isOwner;
+  if(!isPlayerOwned){
+    return wrapped(...args);
   }
-  if (currentActvEffect) {
-    //tokenData.data.img = currentActvEffect.visionTargetImage;
-    const targetTokens = <Token[]>canvas.tokens?.placeables;
-    for (const targetToken of targetTokens) {
-      if (targetToken.id != tokenData.id) {
-        targetToken.document.data.img = currentActvEffect.visionTargetImage;
-        targetToken.draw();
+  const atcvEffects =
+    <AtcvEffect[]>tokenData.document.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES) ?? [];
+
+  const targetTokens = <Token[]>canvas.tokens?.placeables;
+  // Get the one with major priority they already are sorted for priority so the first one is the right one
+  for (const targetToken of targetTokens) {
+    if (targetToken.document.actor?.id != tokenData.document.actor?.id) {
+      if(shouldIncludeVisionV2(tokenData,targetToken)){
+        for (const atcvEffect of atcvEffects.sort((a, b) => String(a.visionLevelValue).localeCompare(String(b.visionLevelValue)))) {
+          if (atcvEffect.visionTargetImage) {
+            //tokenData.data.img = currentActvEffect.visionTargetImage;
+            targetToken.document.data.img = atcvEffect.visionTargetImage;
+            // targetToken.clear();
+            targetToken.draw();
+            break;
+          }else if(atcvEffect.visionSourceImage){
+            targetToken.document.data.img = atcvEffect.visionSourceImage;
+            // targetToken.clear();
+            targetToken.draw();
+            break;
+          }
+        }
       }
     }
   }
   return wrapped(...args);
 };
-
+*/
 // ============= Eagle Eye  ==============================
 
 // /**

@@ -1039,38 +1039,43 @@ export async function prepareActiveEffectForConditionalVisibility(
         let thereISADifference = false;
         for (const aee of data?.changes) {
           if (aee.key.startsWith('ATCV.')) {
-            if (!aee.key.startsWith('ATCV.condition') && sense.visionLevelValue) {
-              if (aee.value != String(sense.visionLevelValue)) {
+            if (!aee.key.startsWith('ATCV.condition')) {
+              if (String(aee.value) != String(sense.visionLevelValue)) {
                 thereISADifference = true;
               }
               aee.value = String(sense.visionLevelValue);
-            } else if (aee.key.startsWith('ATCV.conditionElevation') && sense.visionElevation) {
-              if (aee.value != String(sense.visionElevation)) {
+            } else if (aee.key.startsWith('ATCV.conditionElevation')) {
+              if (String(aee.value) != String(sense.visionElevation)) {
                 thereISADifference = true;
               }
               aee.value = String(sense.visionElevation);
-            } else if (aee.key.startsWith('ATCV.conditionDistance') && sense.visionDistanceValue) {
-              if (aee.value != String(sense.visionDistanceValue)) {
+            } else if (aee.key.startsWith('ATCV.conditionDistance')) {
+              if (String(aee.value) != String(sense.visionDistanceValue)) {
                 thereISADifference = true;
               }
               aee.value = String(sense.visionDistanceValue);
-            } else if (aee.key.startsWith('ATCV.conditionTargets') && sense.visionTargets) {
-              if (aee.value != String(sense.visionTargets.join(','))) {
+            } else if (aee.key.startsWith('ATCV.conditionTargets')) {
+              if (String(aee.value) != String(sense.visionTargets.join(','))) {
                 thereISADifference = true;
               }
               aee.value = sense.visionTargets.join(',');
-            } else if (aee.key.startsWith('ATCV.conditionSources') && sense.visionSources) {
-              if (aee.value != String(sense.visionSources.join(','))) {
+            } else if (aee.key.startsWith('ATCV.conditionSources')) {
+              if (String(aee.value) != String(sense.visionSources.join(','))) {
                 thereISADifference = true;
               }
               aee.value = sense.visionSources.join(',');
-            } else if (aee.key.startsWith('ATCV.conditionTargetImage') && sense.visionTargetImage) {
-              if (aee.value != String(sense.visionTargetImage)) {
+            } else if (aee.key.startsWith('ATCV.conditionTargetImage')) {
+              if (String(aee.value) != String(sense.visionTargetImage)) {
                 thereISADifference = true;
               }
               aee.value = sense.visionTargetImage;
-            } else if (aee.key.startsWith('ATCV.conditionType') && sense.visionType) {
-              if (aee.value != String(sense.visionType)) {
+            } else if (aee.key.startsWith('ATCV.conditionSourceImage')) {
+              if (String(aee.value) != String(sense.visionSourceImage)) {
+                thereISADifference = true;
+              }
+              aee.value = sense.visionSourceImage; 
+            } else if (aee.key.startsWith('ATCV.conditionType')) {
+              if (String(aee.value) != String(sense.visionType)) {
                 thereISADifference = true;
               }
               aee.value = sense.visionType;
@@ -1135,38 +1140,43 @@ export async function prepareActiveEffectForConditionalVisibility(
         let thereISADifference = false;
         for (const aee of data?.changes) {
           if (aee.key.startsWith('ATCV.')) {
-            if (!aee.key.startsWith('ATCV.condition') && condition.visionLevelValue) {
-              if (aee.value != String(condition.visionLevelValue)) {
+            if (!aee.key.startsWith('ATCV.condition')) {
+              if (String(aee.value) != String(condition.visionLevelValue)) {
                 thereISADifference = true;
               }
               aee.value = String(condition.visionLevelValue);
-            } else if (aee.key.startsWith('ATCV.conditionElevation') && condition.visionElevation) {
-              if (aee.value != String(condition.visionElevation)) {
+            } else if (aee.key.startsWith('ATCV.conditionElevation')) {
+              if (String(aee.value) != String(condition.visionElevation)) {
                 thereISADifference = true;
               }
               aee.value = String(condition.visionElevation);
-            } else if (aee.key.startsWith('ATCV.conditionDistance') && condition.visionDistanceValue) {
-              if (aee.value != String(condition.visionDistanceValue)) {
+            } else if (aee.key.startsWith('ATCV.conditionDistance')) {
+              if (String(aee.value) != String(condition.visionDistanceValue)) {
                 thereISADifference = true;
               }
               aee.value = String(condition.visionDistanceValue);
-            } else if (aee.key.startsWith('ATCV.conditionTargets') && condition.visionTargets) {
-              if (aee.value != String(condition.visionTargets.join(','))) {
+            } else if (aee.key.startsWith('ATCV.conditionTargets')) {
+              if (String(aee.value) != String(condition.visionTargets.join(','))) {
                 thereISADifference = true;
               }
               aee.value = condition.visionTargets.join(',');
-            } else if (aee.key.startsWith('ATCV.conditionSources') && condition.visionSources) {
-              if (aee.value != String(condition.visionSources.join(','))) {
+            } else if (aee.key.startsWith('ATCV.conditionSources')) {
+              if (String(aee.value) != String(condition.visionSources.join(','))) {
                 thereISADifference = true;
               }
               aee.value = condition.visionSources.join(',');
-            } else if (aee.key.startsWith('ATCV.conditionTargetImage') && condition.visionTargetImage) {
-              if (aee.value != String(condition.visionTargetImage)) {
+            } else if (aee.key.startsWith('ATCV.conditionTargetImage')) {
+              if (String(aee.value) != String(condition.visionTargetImage)) {
                 thereISADifference = true;
               }
               aee.value = condition.visionTargetImage;
-            } else if (aee.key.startsWith('ATCV.conditionType') && condition.visionType) {
-              if (aee.value != String(condition.visionType)) {
+            } else if (aee.key.startsWith('ATCV.conditionSourceImage')) {
+              if (String(aee.value) != String(condition.visionSourceImage)) {
+                thereISADifference = true;
+              }
+              aee.value = condition.visionSourceImage;
+            } else if (aee.key.startsWith('ATCV.conditionType')) {
+              if (String(aee.value) != String(condition.visionType)) {
                 thereISADifference = true;
               }
               aee.value = condition.visionType;
@@ -1602,6 +1612,10 @@ export function retrieveAtcvEffectFromActiveEffect(
       if (atcvEffect.visionTargetImage === null || atcvEffect.visionTargetImage === undefined) {
         atcvEffect.visionTargetImage = String(change.value);
       }
+    } else if (isStringEquals(change.key, 'ATCV.conditionSourceImage') && change.value) {
+      if (atcvEffect.visionSourceImage === null || atcvEffect.visionSourceImage === undefined) {
+        atcvEffect.visionSourceImage = String(change.value);
+      }
     } else if (isStringEquals(change.key, 'ATCV.conditionType') && change.value) {
       if (atcvEffect.visionType === null || atcvEffect.visionType === undefined) {
         atcvEffect.visionType = String(change.value);
@@ -1983,6 +1997,10 @@ export async function repairAndSetFlag(token: Token, key: string, value: AtcvEff
             if (aee.value != String(value?.visionTargetImage)) {
               thereISADifference = true;
             }
+          } else if (aee.key.startsWith('ATCV.conditionSourceImage')) {
+            if (aee.value != String(value?.visionSourceImage)) {
+              thereISADifference = true;
+            }
           } else if (aee.key.startsWith('ATCV.conditionType')) {
             if (aee.value != String(value?.visionType)) {
               thereISADifference = true;
@@ -2009,6 +2027,8 @@ export async function repairAndSetFlag(token: Token, key: string, value: AtcvEff
           } else if (value.visionSources != currentAtcvEffectFlagData.visionSources) {
             thereISADifference = true;
           } else if (value.visionTargetImage != currentAtcvEffectFlagData.visionTargetImage) {
+            thereISADifference = true;
+          } else if (value.visionSourceImage != currentAtcvEffectFlagData.visionSourceImage) {
             thereISADifference = true;
           } else if (value.visionType != currentAtcvEffectFlagData.visionType) {
             thereISADifference = true;
@@ -2037,6 +2057,9 @@ export async function repairAndSetFlag(token: Token, key: string, value: AtcvEff
     }
     if (token.actor.getFlag(CONSTANTS.MODULE_NAME, 'conditionTargetImage')) {
       await token.actor.unsetFlag(CONSTANTS.MODULE_NAME, 'conditionTargetImage');
+    }
+    if (token.actor.getFlag(CONSTANTS.MODULE_NAME, 'conditionSourceImage')) {
+      await token.actor.unsetFlag(CONSTANTS.MODULE_NAME, 'conditionSourceImage');
     }
     if (token.actor.getFlag(CONSTANTS.MODULE_NAME, 'conditionType')) {
       await token.actor.unsetFlag(CONSTANTS.MODULE_NAME, 'conditionType');
@@ -2110,6 +2133,9 @@ export async function repairAndUnSetFlag(token: Token, key: string) {
     }
     if (token.actor.getFlag(CONSTANTS.MODULE_NAME, 'conditionTargetImage')) {
       await token.actor.unsetFlag(CONSTANTS.MODULE_NAME, 'conditionTargetImage');
+    }
+    if (token.actor.getFlag(CONSTANTS.MODULE_NAME, 'conditionSourceImage')) {
+      await token.actor.unsetFlag(CONSTANTS.MODULE_NAME, 'conditionSourceImage');
     }
     if (token.actor.getFlag(CONSTANTS.MODULE_NAME, 'conditionType')) {
       await token.actor.unsetFlag(CONSTANTS.MODULE_NAME, 'conditionType');
@@ -2604,4 +2630,38 @@ export async function _unregisterSenseData(
     return el.id != senseAlreadyExistsId.visionId;
   });
   return sensesDataList;
+}
+
+export function drawHandlerCVImage(controlledToken:Token, tokenToCheckIfIsVisible:Token){
+  if(game.settings.get(CONSTANTS.MODULE_NAME,'enableDrawCVHandler')){
+    // TODO this work, but is a perfomance nightmare
+    let sourceVisionLevels =
+      <AtcvEffect[]>controlledToken.document.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES) ??
+      [];
+    if (sourceVisionLevels.length <= 0) {
+      sourceVisionLevels = getSensesFromToken(controlledToken.document, true, true);
+    }
+    let targetVisionLevels =
+      <AtcvEffect[]>(
+        tokenToCheckIfIsVisible.document.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_CONDITIONS)
+      ) ?? [];
+    if (targetVisionLevels.length <= 0) {
+      targetVisionLevels = getConditionsFromToken(tokenToCheckIfIsVisible.document, true, true);
+    }
+    // TODO add priority value for set up the order
+    for (const atcvEffect of sourceVisionLevels.sort((a, b) => String(a.visionLevelValue).localeCompare(String(b.visionLevelValue)))) {
+      if (atcvEffect.visionTargetImage) {
+        //tokenData.data.img = currentActvEffect.visionTargetImage;
+        tokenToCheckIfIsVisible.document.data.img = atcvEffect.visionTargetImage;
+        // tokenToCheckIfIsVisible.clear();
+        tokenToCheckIfIsVisible.draw();
+        break;
+      }else if(atcvEffect.visionSourceImage){
+        tokenToCheckIfIsVisible.document.data.img = atcvEffect.visionSourceImage;
+        // tokenToCheckIfIsVisible.clear();
+        tokenToCheckIfIsVisible.draw();
+        break;
+      }
+    }
+  }
 }

@@ -206,6 +206,7 @@ This is the model used for register a custom sense or condition to the module
   conditionTargets: string[]; // [OPTIONAL] force to apply the check only for these sources (you can set this but is used only from sense)
   conditionSources: string[]; // [OPTIONAL] force to apply the check only for these sources (you can set this but is used only from condition)
   conditionTargetImage: string; // [OPTIONAL] string path to the image applied on target token and used from the source token (the one you click on) for replace only for that player with a special sight
+  conditionSourceImage: string;
   conditionDistance: number; // [OPTIONAL] set a maximum distance for check the sight with this effect
 }
 ```

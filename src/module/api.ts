@@ -1138,6 +1138,8 @@ const API = {
   canSee(sourceToken: Token, targetToken: Token): boolean {
     return <boolean>shouldIncludeVisionV2(sourceToken, targetToken);
   },
+
+  weakMap: new Map<String, boolean>(),
 };
 
 export default API;

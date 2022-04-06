@@ -135,6 +135,15 @@ export const registerSettings = function (): void {
     type: Boolean,
   });
 
+  game.settings.register(CONSTANTS.MODULE_NAME, 'enableFastModeCVHandler', {
+    name: `${CONSTANTS.MODULE_NAME}.setting.enableFastModeCVHandler.name`,
+    hint: `${CONSTANTS.MODULE_NAME}.setting.enableFastModeCVHandler.hint`,
+    scope: 'world',
+    config: true,
+    default: false,
+    type: Boolean,
+  });
+
   game.settings.register(CONSTANTS.MODULE_NAME, 'doNotUseSocketLibFeature', {
     name: `${CONSTANTS.MODULE_NAME}.setting.doNotUseSocketLibFeature.name`,
     hint: `${CONSTANTS.MODULE_NAME}.setting.doNotUseSocketLibFeature.hint`,
@@ -456,6 +465,15 @@ function otherSettings(apply = false) {
       default: false,
     },
 
+    enableFastModeCVHandler: {
+      name: `${CONSTANTS.MODULE_NAME}.setting.enableFastModeCVHandler.name`,
+      hint: `${CONSTANTS.MODULE_NAME}.setting.enableFastModeCVHandler.hint`,
+      scope: 'world',
+      config: true,
+      default: false,
+      type: Boolean,
+    },
+
     doNotUseSocketLibFeature: {
       name: `${CONSTANTS.MODULE_NAME}.setting.doNotUseSocketLibFeature.name`,
       hint: `${CONSTANTS.MODULE_NAME}.setting.doNotUseSocketLibFeature.hint`,
@@ -464,7 +482,6 @@ function otherSettings(apply = false) {
       type: Boolean,
       default: true,
     },
-
   };
 }
 

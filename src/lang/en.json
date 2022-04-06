@@ -29,6 +29,8 @@
   "conditional-visibility.setting.pathAttributesSenses.hint": "[This is system dependent] This is the data path from the actor data object for the senses associated to the system, in D&D5e system, the attribute used is \"data.attributes.senses\" so you'd put that in this setting.",
   "conditional-visibility.setting.enableDrawCVHandler.name": "[EXPERIMENTAL] Enable draw CV Handler",
   "conditional-visibility.setting.enableDrawCVHandler.hint": "Draw specific token base on the CV configuration of the token",
+  "conditional-visibility.setting.enableFastModeCVHandler.name": "[EXPERIMENTAL] Enable fast mode CV Handler",
+  "conditional-visibility.setting.enableFastModeCVHandler.hint": "This will apply a weakmap for cache the result of the CV for a fast interaction. The map will be cleared every time a CV flag is been modificed.",
 
   "conditional-visibility.setting.npcType.name": "NPC actor type",
   "conditional-visibility.setting.npcType.hint": "Here you can configure what the type of NPC actor of your system for the sight check. For example, in D&D5e system, the type is on the property \"actor.type\" an is value is 'npc', so you'd put \"npc\" in this setting.",

@@ -96,10 +96,10 @@ export class AtcvEffect {
     if (!res.visionSources) {
       res.visionSources = senseData.conditionSources;
     }
-    if(!res.visionTargetImage){
+    if (!res.visionTargetImage) {
       res.visionTargetImage = senseData.conditionTargetImage;
     }
-    if(!res.visionSourceImage){
+    if (!res.visionSourceImage) {
       res.visionSourceImage = senseData.conditionSourceImage;
     }
     if (!res.visionDistanceValue) {

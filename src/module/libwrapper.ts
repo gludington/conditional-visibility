@@ -1,6 +1,16 @@
+import API from './api';
 import { AtcvEffect, ConditionalVisibilityFlags } from './conditional-visibility-models';
 import CONSTANTS from './constants';
-import { debug, drawHandlerCVImage, getConditionsFromToken, getOwnedTokens, getSensesFromToken, getSensesFromTokenFast, shouldIncludeVisionV2, warn } from './lib/lib';
+import {
+  debug,
+  drawHandlerCVImage,
+  getConditionsFromToken,
+  getOwnedTokens,
+  getSensesFromToken,
+  getSensesFromTokenFast,
+  shouldIncludeVisionV2,
+  warn,
+} from './lib/lib';
 import { canvas, game } from './settings';
 
 export function registerLibwrappers() {
@@ -151,7 +161,6 @@ export function registerLibwrappers() {
 //   return wrapped();
 // }
 
-
 export function sightLayerPrototypeTokenVisionHandlerNoLevels(wrapped, ...args) {
   // const sightLayer = <SightLayer>this;
   // if (game.user?.isGM) {
@@ -166,7 +175,7 @@ export function sightLayerPrototypeTokenVisionHandlerNoLevels(wrapped, ...args) 
 
   // Check if the current scene has token vision enabled
   // this was the cause of many bugs...
-  if(game.scenes?.current?.data.tokenVision){
+  if (game.scenes?.current?.data.tokenVision) {
     return wrapped(args);
   }
 
@@ -184,11 +193,22 @@ export function sightLayerPrototypeTokenVisionHandlerNoLevels(wrapped, ...args) 
       // eslint-disable-next-line prefer-const
       // let tokenVisible = canvas.scene?.data.tokenVision ? false : gm || !token.data.hidden;
       for (const ownedToken of ownedTokens) {
-        if (shouldIncludeVisionV2(ownedToken, token)) {
-          // tokenVisible = true;
-          drawHandlerCVImage(ownedToken, token);
+        let isCVVisible = false;
+        if (game.settings.get(CONSTANTS.MODULE_NAME, 'enableFastModeCVHandler')) {
+          const key = game.user?.id + '_' + ownedToken.id + '_' + token.id;
+          if (API.weakMap.has(key)) {
+            isCVVisible = <boolean>API.weakMap.get(key);
+          } else {
+            isCVVisible = shouldIncludeVisionV2(ownedToken, token);
+            API.weakMap.set(key, isCVVisible);
+          }
         } else {
-          // tokenVisible = false;
+          isCVVisible = shouldIncludeVisionV2(ownedToken, token);
+        }
+        if (isCVVisible) {
+          drawHandlerCVImage(ownedToken, token);
+        }
+        if (!isCVVisible) {
           token.visible = false;
         }
       }
@@ -197,7 +217,6 @@ export function sightLayerPrototypeTokenVisionHandlerNoLevels(wrapped, ...args) 
   }
   return wrapped(...args);
 }
-
 
 /*
 export function sightLayerPrototypeTokenVisionHandlerWithLevels(wrapped, ...args) {
@@ -215,10 +234,20 @@ export function overrideVisibilityTestHandlerWithLevels(wrapped, ...args) {
   // }
   // eslint-disable-next-line prefer-const
   let isCVVisible = true;
-  isCVVisible = shouldIncludeVisionV2(sourceToken, targetToken);
+  if (game.settings.get(CONSTANTS.MODULE_NAME, 'enableFastModeCVHandler')) {
+    const key = game.user?.id + '_' + sourceToken.id + '_' + targetToken.id;
+    if (API.weakMap.has(key)) {
+      isCVVisible = <boolean>API.weakMap.get(key);
+    } else {
+      isCVVisible = shouldIncludeVisionV2(sourceToken, targetToken);
+      API.weakMap.set(key, isCVVisible);
+    }
+  } else {
+    isCVVisible = shouldIncludeVisionV2(sourceToken, targetToken);
+  }
   if (isCVVisible) {
     drawHandlerCVImage(sourceToken, targetToken);
-    return wrapped(...args)
+    return wrapped(...args);
   } else {
     return false;
   }
@@ -293,12 +322,24 @@ export function sightLayerPrototypeTestVisibilityHandler(wrapped, ...args) {
   }
   */
   // eslint-disable-next-line prefer-const
-  let is_visible = false;
+  let isCVVisibleFinal = false;
   for (let i = 0; i < mySources.length; i++) {
     const controlledToken = mySources[i];
-    is_visible = shouldIncludeVisionV2(controlledToken, tokenToCheckIfIsVisible);
-    if (is_visible) {
+    let isCVVisible = controlledToken.visible;
+    if (game.settings.get(CONSTANTS.MODULE_NAME, 'enableFastModeCVHandler')) {
+      const key = game.user?.id + '_' + controlledToken.id + '_' + tokenToCheckIfIsVisible.id;
+      if (API.weakMap.has(key)) {
+        isCVVisible = <boolean>API.weakMap.get(key);
+      } else {
+        isCVVisible = shouldIncludeVisionV2(controlledToken, tokenToCheckIfIsVisible);
+        API.weakMap.set(key, isCVVisible);
+      }
+    } else {
+      isCVVisible = shouldIncludeVisionV2(controlledToken, tokenToCheckIfIsVisible);
+    }
+    if (isCVVisible) {
       drawHandlerCVImage(controlledToken, tokenToCheckIfIsVisible);
+      isCVVisibleFinal = isCVVisible;
       break;
     }
   }
@@ -310,12 +351,12 @@ export function sightLayerPrototypeTestVisibilityHandler(wrapped, ...args) {
     });
     debug(
       `(20) Target '${tokenToCheckIfIsVisible.data.name}' ${
-        is_visible ? 'is visible' : 'is not visible'
+        isCVVisibleFinal ? 'is visible' : 'is not visible'
       } to at least one of the following sources [${sourcesNames.join(',')}]`,
     );
   }
 
-  return is_visible;
+  return isCVVisibleFinal;
 }
 
 // export const tokenPrototypeRefreshHandler = function (wrapped, ...args) {

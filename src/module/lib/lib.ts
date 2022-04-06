@@ -1073,7 +1073,7 @@ export async function prepareActiveEffectForConditionalVisibility(
               if (String(aee.value) != String(sense.visionSourceImage)) {
                 thereISADifference = true;
               }
-              aee.value = sense.visionSourceImage; 
+              aee.value = sense.visionSourceImage;
             } else if (aee.key.startsWith('ATCV.conditionType')) {
               if (String(aee.value) != String(sense.visionType)) {
                 thereISADifference = true;
@@ -2101,6 +2101,19 @@ export async function repairAndSetFlag(token: Token, key: string, value: AtcvEff
         await token.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_CONDITIONS, data);
       } else {
         // DO NOTHING
+        return;
+      }
+    }
+    if (game.settings.get(CONSTANTS.MODULE_NAME, 'enableFastModeCVHandler')) {
+      const keysToRemove = new Set<String>();
+      const prefix = <string>game.user?.id;
+      for (const key of API.weakMap.keys()) {
+        if (key.startsWith(prefix)) {
+          keysToRemove.add(key);
+        }
+      }
+      for (const s of keysToRemove) {
+        API.weakMap.delete(s);
       }
     }
     // canvas.perception.schedule({
@@ -2179,6 +2192,19 @@ export async function repairAndUnSetFlag(token: Token, key: string) {
       await token.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_CONDITIONS, data);
     } else {
       // DO NOTHING
+      return;
+    }
+    if (game.settings.get(CONSTANTS.MODULE_NAME, 'enableFastModeCVHandler')) {
+      const keysToRemove = new Set<String>();
+      const prefix = <string>game.user?.id;
+      for (const key of API.weakMap.keys()) {
+        if (key.startsWith(prefix)) {
+          keysToRemove.add(key);
+        }
+      }
+      for (const s of keysToRemove) {
+        API.weakMap.delete(s);
+      }
     }
     // canvas.perception.schedule({
     //   lighting: { refresh: true },
@@ -2632,31 +2658,37 @@ export async function _unregisterSenseData(
   return sensesDataList;
 }
 
-export function drawHandlerCVImage(controlledToken:Token, tokenToCheckIfIsVisible:Token){
-  if(game.settings.get(CONSTANTS.MODULE_NAME,'enableDrawCVHandler')){
+export function drawHandlerCVImage(controlledToken: Token, tokenToCheckIfIsVisible: Token) {
+  if (game.settings.get(CONSTANTS.MODULE_NAME, 'enableDrawCVHandler')) {
     // TODO this work, but is a perfomance nightmare
     let sourceVisionLevels =
-      <AtcvEffect[]>controlledToken.document.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES) ??
-      [];
+      <AtcvEffect[]>(
+        controlledToken.document.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES)
+      ) ?? [];
     if (sourceVisionLevels.length <= 0) {
       sourceVisionLevels = getSensesFromToken(controlledToken.document, true, true);
     }
     let targetVisionLevels =
       <AtcvEffect[]>(
-        tokenToCheckIfIsVisible.document.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_CONDITIONS)
+        tokenToCheckIfIsVisible.document.actor?.getFlag(
+          CONSTANTS.MODULE_NAME,
+          ConditionalVisibilityFlags.DATA_CONDITIONS,
+        )
       ) ?? [];
     if (targetVisionLevels.length <= 0) {
       targetVisionLevels = getConditionsFromToken(tokenToCheckIfIsVisible.document, true, true);
     }
     // TODO add priority value for set up the order
-    for (const atcvEffect of sourceVisionLevels.sort((a, b) => String(a.visionLevelValue).localeCompare(String(b.visionLevelValue)))) {
+    for (const atcvEffect of sourceVisionLevels.sort((a, b) =>
+      String(a.visionLevelValue).localeCompare(String(b.visionLevelValue)),
+    )) {
       if (atcvEffect.visionTargetImage) {
         //tokenData.data.img = currentActvEffect.visionTargetImage;
         tokenToCheckIfIsVisible.document.data.img = atcvEffect.visionTargetImage;
         // tokenToCheckIfIsVisible.clear();
         tokenToCheckIfIsVisible.draw();
         break;
-      }else if(atcvEffect.visionSourceImage){
+      } else if (atcvEffect.visionSourceImage) {
         tokenToCheckIfIsVisible.document.data.img = atcvEffect.visionSourceImage;
         // tokenToCheckIfIsVisible.clear();
         tokenToCheckIfIsVisible.draw();

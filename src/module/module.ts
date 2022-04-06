@@ -208,14 +208,25 @@ const module = {
       }
     }
     let forceVisible = false;
-    if(tokenConfig.actor.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE) != null &&
-      tokenConfig.actor.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE) != undefined){
-        forceVisible = String(tokenConfig.actor.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE)) == 'true' ? true : false;
+    if (
+      tokenConfig.actor.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE) != null &&
+      tokenConfig.actor.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE) != undefined
+    ) {
+      forceVisible =
+        String(tokenConfig.actor.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE)) == 'true'
+          ? true
+          : false;
     }
     let useStealthPassive = game.settings.get(CONSTANTS.MODULE_NAME, 'autoPassivePerception') ? true : false;
-    if(tokenConfig.actor.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.USE_STEALTH_PASSIVE) != null &&
-    tokenConfig.actor.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.USE_STEALTH_PASSIVE) != undefined){
-      useStealthPassive = String(tokenConfig.actor.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.USE_STEALTH_PASSIVE)) == 'true' ? true : false;
+    if (
+      tokenConfig.actor.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.USE_STEALTH_PASSIVE) != null &&
+      tokenConfig.actor.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.USE_STEALTH_PASSIVE) != undefined
+    ) {
+      useStealthPassive =
+        String(tokenConfig.actor.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.USE_STEALTH_PASSIVE)) ==
+        'true'
+          ? true
+          : false;
     }
     renderTemplate(`modules/${CONSTANTS.MODULE_NAME}/templates/extra_senses.hbs`, {
       senses: sensesTemplateData,
@@ -364,8 +375,24 @@ const module = {
     if (!game.user?.isGM && !isPlayerOwned) {
       return;
     }
-    if(!change.actor?.data?.flags[CONSTANTS.MODULE_NAME]){
-      return;
+    if (!change.actor?.data?.flags[CONSTANTS.MODULE_NAME]) {
+      if (change.actorData && change.actorData.flags && change.actorData.flags[CONSTANTS.MODULE_NAME]) {
+        if (!change.actor) {
+          change.actor = {};
+        }
+        if (!change.actor.data) {
+          change.actor.data = {};
+        }
+        if (!change.actor.data.flags) {
+          change.actor.data.flags = {};
+        }
+        if (!change.actor.data.flags[CONSTANTS.MODULE_NAME]) {
+          change.actor.data.flags[CONSTANTS.MODULE_NAME] = {};
+        }
+        change.actor.data.flags[CONSTANTS.MODULE_NAME] = change.actorData.flags[CONSTANTS.MODULE_NAME];
+      } else {
+        return;
+      }
     }
     let isEnabledForToken = false;
     let p;
@@ -548,9 +575,13 @@ const module = {
         change,
         `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`,
       );
-      if(forceVisible != sourceToken.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE)){
+      if (forceVisible != sourceToken.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE)) {
         if (String(forceVisible) === 'true' || String(forceVisible) === 'false') {
-          await sourceToken.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE, forceVisible);
+          await sourceToken.actor?.setFlag(
+            CONSTANTS.MODULE_NAME,
+            ConditionalVisibilityFlags.FORCE_VISIBLE,
+            forceVisible,
+          );
         } else {
           await sourceToken.actor?.unsetFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE);
         }
@@ -575,7 +606,10 @@ const module = {
         change,
         `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.USE_STEALTH_PASSIVE}`,
       );
-      if(useStealthPassive != sourceToken.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.USE_STEALTH_PASSIVE)){
+      if (
+        useStealthPassive !=
+        sourceToken.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.USE_STEALTH_PASSIVE)
+      ) {
         if (String(useStealthPassive) === 'true' || String(useStealthPassive) === 'false') {
           await sourceToken.actor?.setFlag(
             CONSTANTS.MODULE_NAME,
@@ -602,7 +636,7 @@ const module = {
       return;
     }
     let sourceToken = <Token>actor.token?.object;
-    if(!sourceToken){
+    if (!sourceToken) {
       sourceToken = <Token>canvas.tokens?.placeables.find((t) => {
         return <string>t.actor?.id === <string>actor.id;
       });
@@ -684,9 +718,7 @@ const module = {
           }
 
           // TODO TO CHECK IF WE NEED TO FILTER THE TOKENS AGAIN MAYBE WITH A ADDITIONAL ATCV active change data effect ?
-          const currentAtcvEffectFlagData = <AtcvEffect>(
-            sourceToken?.actor?.getFlag(CONSTANTS.MODULE_NAME, updateKey)
-          );
+          const currentAtcvEffectFlagData = <AtcvEffect>sourceToken?.actor?.getFlag(CONSTANTS.MODULE_NAME, updateKey);
           // let currentSenseData:AtcvEffect = new AtcvEffect();
           // const sensesData = await getAllDefaultSensesAndConditions(sourceToken);
           // for (const statusSight of sensesData) {
@@ -695,9 +727,9 @@ const module = {
           //   }
           // }
           let thereISADifference = false;
-          if(!currentAtcvEffectFlagData){
+          if (!currentAtcvEffectFlagData) {
             thereISADifference = true;
-          }else{
+          } else {
             for (const aee of changes) {
               if (aee.key.startsWith('ATCV.')) {
                 if (!aee.key.startsWith('ATCV.condition')) {
@@ -775,16 +807,32 @@ const module = {
             ) {
               const atcvEffectFlagData = AtcvEffect.fromActiveEffect(sourceToken.document, atcvEffect);
               await repairAndSetFlag(sourceToken, updateKey, atcvEffectFlagData);
-            } else if(activeEffect.id === atcvEffect.id){
+            } else if (activeEffect.id === atcvEffect.id) {
               const atcvEffectFlagData = AtcvEffect.fromActiveEffect(sourceToken.document, atcvEffect);
               await repairAndSetFlag(sourceToken, updateKey, atcvEffectFlagData);
             }
             //}
-          } else if(thereISADifference){
+          } else if (thereISADifference) {
             const atcvEffectFlagData = AtcvEffect.fromActiveEffect(sourceToken.document, atcvEffect);
             await repairAndSetFlag(sourceToken, updateKey, atcvEffectFlagData);
+          } else if(currentAtcvEffectFlagData.visionIsDisabled != atcvEffect.data.disabled) {
+            if (
+              options.disabled != null &&
+              options.disabled != undefined &&
+              options.disabled &&
+              activeEffect.id === atcvEffect.id
+            ) {
+              await repairAndUnSetFlag(sourceToken, updateKey);
+            } else if (
+              options.disabled != null &&
+              options.disabled != undefined &&
+              !options.disabled &&
+              activeEffect.id === atcvEffect.id
+            ) {
+              const atcvEffectFlagData = AtcvEffect.fromActiveEffect(sourceToken.document, atcvEffect);
+              await repairAndSetFlag(sourceToken, updateKey, atcvEffectFlagData);
+            }
           }
-          
         }
       }
     }

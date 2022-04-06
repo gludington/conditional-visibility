@@ -815,7 +815,7 @@ const module = {
           } else if (thereISADifference) {
             const atcvEffectFlagData = AtcvEffect.fromActiveEffect(sourceToken.document, atcvEffect);
             await repairAndSetFlag(sourceToken, updateKey, atcvEffectFlagData);
-          } else if(currentAtcvEffectFlagData.visionIsDisabled != atcvEffect.data.disabled) {
+          } else if (currentAtcvEffectFlagData.visionIsDisabled != atcvEffect.data.disabled) {
             if (
               options.disabled != null &&
               options.disabled != undefined &&

@@ -1,3 +1,9 @@
+
+### 0.5.36
+
+- Added "Fast Mode" module setting.
+- Some bugfix (actorData patch and disable active effect)
+
 ### 0.5.35
 
 -Some clean up

@@ -11,7 +11,6 @@ import {
   shouldIncludeVisionV2,
   warn,
 } from './lib/lib';
-import { canvas, game } from './settings';
 
 export function registerLibwrappers() {
   //@ts-ignore

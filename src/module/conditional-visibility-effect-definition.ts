@@ -3,7 +3,6 @@ import { AtcvEffectSenseFlags, AtcvEffectConditionFlags, SenseData, AtcvEffect }
 import CONSTANTS from './constants';
 import Effect from './effects/effect';
 import { debug, i18n, i18nFormat, isStringEquals, mergeByProperty, warn } from './lib/lib';
-import { canvas, game } from './settings';
 
 /**
  * Defines all of the effect definitions

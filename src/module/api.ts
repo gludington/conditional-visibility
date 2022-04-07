@@ -24,14 +24,10 @@ import {
   ConditionalVisibilityFlags,
   SenseData,
 } from './conditional-visibility-models';
-import { EnhancedConditions } from './cub/enhanced-conditions';
-import { canvas, game } from './settings';
 import Effect, { EffectSupport } from './effects/effect';
 import { ConditionalVisibilityEffectDefinitions } from './conditional-visibility-effect-definition';
-import {
-  ActiveEffectData,
-  ActorData,
-} from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/module.mjs';
+import type { EnhancedConditions } from './cub/enhanced-conditions';
+import type { ActiveEffectData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/module.mjs';
 
 const API = {
   effectInterface: EffectInterface,

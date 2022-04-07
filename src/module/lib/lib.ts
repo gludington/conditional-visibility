@@ -1,7 +1,5 @@
-import { EffectChangeData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/data.mjs/effectChangeData';
 import CONSTANTS from '../constants.js';
 import API from '../api.js';
-import { canvas, game } from '../settings';
 import {
   AtcvEffect,
   AtcvEffectSenseFlags,
@@ -10,14 +8,11 @@ import {
   SenseData,
   ConditionalVisibilityFlags,
 } from '../conditional-visibility-models.js';
-import EmbeddedCollection from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/abstract/embedded-collection.mjs';
-import {
-  ActiveEffectData,
-  ActorData,
-  TokenData,
-} from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/module.mjs';
-import Effect from '../effects/effect.js';
-import { ConditionalVisibilityEffectDefinitions } from '../conditional-visibility-effect-definition';
+import type { ActorData, TokenData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/module.mjs';
+import type EmbeddedCollection from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/abstract/embedded-collection.mjs';
+import type { EffectChangeData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/data.mjs/effectChangeData';
+import type Effect from '../effects/effect.js';
+import { ConditionalVisibilityEffectDefinitions } from '../conditional-visibility-effect-definition.js';
 
 // =============================
 // Module Generic function
@@ -261,7 +256,7 @@ export function getFirstPlayerTokenSelected(): Token | null {
     return null;
     //}
   }
-  return selectedTokens[0];
+  return <Token>selectedTokens[0];
 }
 
 /**
@@ -278,7 +273,7 @@ export function getFirstPlayerToken(): Token | null {
     return null;
   }
   // If exactly one token is selected, take that
-  token = controlled[0];
+  token = <Token>controlled[0];
   if (!token) {
     if (!controlled.length || controlled.length == 0) {
       // If no token is selected use the token of the users character
@@ -2375,8 +2370,8 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
   // for (const sourceStatusEffect of sourceVisionLevels) {
   for (let i = 0; i < sourceVisionLevels.length; i++) {
     if (
-      sourceVisionLevels[i].visionId === AtcvEffectSenseFlags.BLINDED &&
-      sourceVisionLevels[i].visionLevelValue != 0
+      sourceVisionLevels[i]?.visionId === AtcvEffectSenseFlags.BLINDED &&
+      sourceVisionLevels[i]?.visionLevelValue != 0
     ) {
       // Someone is blind
       debug(`(6) Is false, '${sourceToken.data.name}' can't see '${targetToken.data.name}'`);
@@ -2423,8 +2418,8 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
   // THIS WILL BE CHECK ONLY IF ONE CONDITION IS PRESENT ON THE TARGET AND THE CONDITION TYPE IS 'HIDDEN'
   if (targetVisionLevels.length == 1) {
     if (game.settings.get(CONSTANTS.MODULE_NAME, 'autoPassivePerception')) {
-      if (targetVisionLevels[0].visionId == AtcvEffectConditionFlags.HIDDEN) {
-        if (perceptionPassive >= (<number>targetVisionLevels[0].visionLevelValue ?? 0)) {
+      if (targetVisionLevels[0]?.visionId == AtcvEffectConditionFlags.HIDDEN) {
+        if (perceptionPassive >= (<number>targetVisionLevels[0]?.visionLevelValue ?? 0)) {
           debug(`(8) Is true, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
           return true;
         }
@@ -2447,9 +2442,9 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
   for (let i = 0; i < sourceVisionLevels.length; i++) {
     // const sourceVisionLevelsValid: Map<string, number> = new Map<string, number>();
     const sourceVisionLevelsValid: number[] = [];
-    const sourceVisionLevel = sourceVisionLevels[i];
+    const sourceVisionLevel = <AtcvEffect>sourceVisionLevels[i];
     for (let j = 0; j < targetVisionLevels.length; j++) {
-      const targetVisionLevel = targetVisionLevels[j];
+      const targetVisionLevel = <AtcvEffect>targetVisionLevels[j];
       // 9.0) If no `ATCV.<visionId>` is founded on the target token return true (this shouldn't never happened is just for avoid some unwanted behavior)
       if (
         !targetVisionLevel ||

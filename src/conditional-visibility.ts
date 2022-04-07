@@ -11,7 +11,6 @@
  */
 // Import TypeScript modules
 import { checkSystem, registerSettings } from './module/settings';
-import { canvas, game } from './module/settings';
 import { preloadTemplates } from './module/preloadTemplates';
 import { registerHotkeys } from './module/hotkeys';
 import CONSTANTS from './module/constants';
@@ -151,7 +150,7 @@ Hooks.once('libChangelogsReady', function () {
     - Integration autostealth with better rolls
     - Resolved winking by disable the 'SightLayer.prototype.tokenVision' wrapper
     - Update the checker again
-    - Added the flag 'Use stealth passive' to activated this tokne by token so everyone in Dnd5e is happy now ? 
+    - Added the flag 'Use stealth passive' to activated this tokne by token so everyone in Dnd5e is happy now ?
     `,
     'minor',
   );

@@ -2,13 +2,9 @@ import FoundryHelpers from './foundry-helpers';
 import { registerSocket } from '../socket';
 import Effect from './effect';
 import EffectHandler from './effect-handler';
-import { game } from '../settings';
 import { isGMConnectedAndSocketLibEnable } from '../lib/lib';
-import {
-  ActiveEffectData,
-  ActorData,
-} from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/module.mjs';
-import EmbeddedCollection from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/abstract/embedded-collection.mjs';
+import type { ActiveEffectData, ActorData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/module.mjs';
+import type EmbeddedCollection from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/abstract/embedded-collection.mjs';
 
 /**
  * Interface for working with effects and executing them as a GM via sockets

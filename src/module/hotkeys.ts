@@ -1,5 +1,4 @@
 import API from './api';
-import { canvas, game } from './settings';
 
 export function registerHotkeys() {
   // if (!game.user?.isGM) {

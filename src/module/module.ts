@@ -22,7 +22,6 @@ import {
 import API from './api';
 import EffectInterface from './effects/effect-interface';
 import { registerHotkeys } from './hotkeys';
-import { canvas, game } from './settings';
 import { checkSystem } from './settings';
 import {
   AtcvEffect,
@@ -32,12 +31,9 @@ import {
   SenseData,
   VisionCapabilities,
 } from './conditional-visibility-models';
-import { EffectChangeData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/data.mjs/effectChangeData';
 import Effect, { EffectSupport } from './effects/effect';
-import { setApi } from '../conditional-visibility';
-import { tokenToString } from 'typescript';
-import EmbeddedCollection from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/abstract/embedded-collection.mjs';
-import { ActorData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/module.mjs';
+import type EmbeddedCollection from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/abstract/embedded-collection.mjs';
+import type { ActorData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/module.mjs';
 
 export const initHooks = (): void => {
   // registerSettings();
@@ -953,7 +949,7 @@ const module = {
       }
       if (!tokenChatId) {
         if (actor.getActiveTokens()?.length > 0) {
-          tokenChatId = <string>actor.getActiveTokens()[0].id;
+          tokenChatId = <string>actor.getActiveTokens()[0]?.id;
         }
       }
       if (tokenChatId) {
@@ -1004,7 +1000,7 @@ const module = {
         rollChatTotal = String(rollChatTotal);
       }
       if (rollChatTotal.includes('<span')) {
-        rollChatTotal = rollChatTotal.split('<span')[0];
+        rollChatTotal = <string>rollChatTotal.split('<span')[0];
       }
       const fullTextContent: string =
         <number>message.data.flavor?.length > message.data.content.length

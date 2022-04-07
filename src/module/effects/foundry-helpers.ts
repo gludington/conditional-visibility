@@ -1,5 +1,3 @@
-import { canvas, game } from '../settings';
-
 /**
  * Simple helpers for querying aspects of foundry
  */

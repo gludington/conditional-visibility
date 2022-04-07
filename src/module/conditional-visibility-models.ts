@@ -1,6 +1,4 @@
-import { EffectChangeData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/data.mjs/effectChangeData';
-import { ActiveEffectData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/module.mjs';
-/* eslint-disable prefer-const */
+import type { EffectChangeData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/data.mjs/effectChangeData';
 import API from './api';
 import CONSTANTS from './constants';
 import Effect, { EffectSupport } from './effects/effect';
@@ -464,15 +462,15 @@ export class VisionCapabilities {
           <AtcvEffect>this.token?.actor?.getFlag(CONSTANTS.MODULE_NAME, statusSight.id) ??
           <AtcvEffect>this.token?.document?.getFlag(CONSTANTS.MODULE_NAME, statusSight.id);
         if (atcvEffectFlagData) {
-          let visionLevelValue = atcvEffectFlagData.visionLevelValue || 0;
-          let visionDistanceValue = atcvEffectFlagData.visionDistanceValue || 0;
-          let conditionElevation = atcvEffectFlagData.visionElevation || false;
-          let conditionTargets: string[] = atcvEffectFlagData.visionTargets || [];
-          let conditionSources: string[] = atcvEffectFlagData.visionSources || [];
-          let conditionTargetImage = atcvEffectFlagData.visionTargetImage || '';
-          let conditionSourceImage = atcvEffectFlagData.visionSourceImage || '';
-          let conditionType = atcvEffectFlagData.visionType || 'sense';
-          let conditionIsDisabled = atcvEffectFlagData.visionIsDisabled || false;
+          const visionLevelValue = atcvEffectFlagData.visionLevelValue || 0;
+          const visionDistanceValue = atcvEffectFlagData.visionDistanceValue || 0;
+          const conditionElevation = atcvEffectFlagData.visionElevation || false;
+          const conditionTargets: string[] = atcvEffectFlagData.visionTargets || [];
+          const conditionSources: string[] = atcvEffectFlagData.visionSources || [];
+          const conditionTargetImage = atcvEffectFlagData.visionTargetImage || '';
+          const conditionSourceImage = atcvEffectFlagData.visionSourceImage || '';
+          const conditionType = atcvEffectFlagData.visionType || 'sense';
+          const conditionIsDisabled = atcvEffectFlagData.visionIsDisabled || false;
 
           const statusEffect = <AtcvEffect>{
             visionId: statusSight.id,
@@ -512,15 +510,15 @@ export class VisionCapabilities {
           <AtcvEffect>this.token?.actor?.getFlag(CONSTANTS.MODULE_NAME, statusSight.id) ??
           <AtcvEffect>this.token.document?.getFlag(CONSTANTS.MODULE_NAME, statusSight.id);
         if (atcvEffectFlagData) {
-          let visionLevelValue = atcvEffectFlagData.visionLevelValue || 0;
-          let visionDistanceValue = atcvEffectFlagData.visionDistanceValue || 0;
-          let conditionElevation = atcvEffectFlagData.visionElevation || false;
-          let conditionTargets: string[] = atcvEffectFlagData.visionTargets || [];
-          let conditionSources: string[] = atcvEffectFlagData.visionSources || [];
-          let conditionTargetImage = atcvEffectFlagData.visionTargetImage || '';
-          let conditionSourceImage = atcvEffectFlagData.visionSourceImage || '';
-          let conditionType = atcvEffectFlagData.visionType || 'condition';
-          let conditionIsDisabled = atcvEffectFlagData.visionIsDisabled || false;
+          const visionLevelValue = atcvEffectFlagData.visionLevelValue || 0;
+          const visionDistanceValue = atcvEffectFlagData.visionDistanceValue || 0;
+          const conditionElevation = atcvEffectFlagData.visionElevation || false;
+          const conditionTargets: string[] = atcvEffectFlagData.visionTargets || [];
+          const conditionSources: string[] = atcvEffectFlagData.visionSources || [];
+          const conditionTargetImage = atcvEffectFlagData.visionTargetImage || '';
+          const conditionSourceImage = atcvEffectFlagData.visionSourceImage || '';
+          const conditionType = atcvEffectFlagData.visionType || 'condition';
+          const conditionIsDisabled = atcvEffectFlagData.visionIsDisabled || false;
 
           const statusEffect = <AtcvEffect>{
             visionId: statusSight.id,

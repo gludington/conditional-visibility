@@ -323,7 +323,7 @@ export function sightLayerPrototypeTestVisibilityHandler(wrapped, ...args) {
   // eslint-disable-next-line prefer-const
   let isCVVisibleFinal = false;
   for (let i = 0; i < mySources.length; i++) {
-    const controlledToken = mySources[i];
+    const controlledToken = <Token>mySources[i];
     let isCVVisible = controlledToken.visible;
     if (game.settings.get(CONSTANTS.MODULE_NAME, 'enableFastModeCVHandler')) {
       const key = game.user?.id + '_' + controlledToken.id + '_' + tokenToCheckIfIsVisible.id;

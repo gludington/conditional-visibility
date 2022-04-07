@@ -1,3 +1,4 @@
+
 /**
  * @function flatten
  * @description flattens an array of arrays into a single array.
@@ -202,7 +203,7 @@ const ArrayMatrix$2 = function ArrayMatrix() {
 
     for (let i = 0, l = keys.length; i < l; i++) {
       // eslint-disable-line no-plusplus
-      const key = keys[i];
+      const key = String(keys[i]);
       const mIndex = props.orders.indexOf(key);
 
       if (mIndex === -1) {

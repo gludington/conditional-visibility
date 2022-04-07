@@ -16,13 +16,7 @@ import { registerHotkeys } from './module/hotkeys';
 import CONSTANTS from './module/constants';
 import { dialogWarning, error, log } from './module/lib/lib';
 import { initHooks, readyHooks, setupHooks } from './module/module';
-import API from './module/api';
-
-// declare global {
-//   interface Window {
-//     Senses: ConditionalVisibility;
-//   }
-// }
+import type API from './module/api';
 
 /* ------------------------------------ */
 /* Initialize module					*/
@@ -150,7 +144,7 @@ Hooks.once('libChangelogsReady', function () {
     - Integration autostealth with better rolls
     - Resolved winking by disable the 'SightLayer.prototype.tokenVision' wrapper
     - Update the checker again
-    - Added the flag 'Use stealth passive' to activated this tokne by token so everyone in Dnd5e is happy now ?
+    - Added the flag 'Use stealth passive' to activated this token by token so everyone in Dnd5e is happy now ?
     `,
     'minor',
   );

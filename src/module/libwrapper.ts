@@ -125,13 +125,13 @@ export function registerLibwrappers() {
   // EXPERIMENTAL FEATURE
   // THIS IS https://github.com/trioderegion/eagle-eye/
   // ===================================================
-
+  /*
   if (game.settings.get(CONSTANTS.MODULE_NAME, 'useEagleEye')) {
     warn(
       `The experimental 'eagle eye' feature is currently disabled, please uncheck the checkbox on the module setting page`,
       true,
     );
-    /* TODO
+    TODO
     //@ts-ignore
     libWrapper.register(CONSTANTS.MODULE_NAME, 'Token.prototype.isVisible', isVisibleHandler, 'MIXED', {
       perf_mode: 'FAST',
@@ -151,9 +151,11 @@ export function registerLibwrappers() {
       'WRAPPER',
       { perf_mode: 'FAST' },
     );
-    */
+
   }
+  */
 }
+
 
 // export function templatePrototypeRefreshHandler(wrapped) {
 //   templateTokens(this);

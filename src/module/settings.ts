@@ -14,14 +14,14 @@ export const registerSettings = function (): void {
 
   // =====================================================================
 
-  game.settings.register(CONSTANTS.MODULE_NAME, 'useEagleEye', {
-    name: `${CONSTANTS.MODULE_NAME}.setting.useEagleEye.name`,
-    hint: `${CONSTANTS.MODULE_NAME}.setting.useEagleEye.hint`,
-    scope: 'world',
-    config: true,
-    default: false,
-    type: Boolean,
-  });
+  // game.settings.register(CONSTANTS.MODULE_NAME, 'useEagleEye', {
+  //   name: `${CONSTANTS.MODULE_NAME}.setting.useEagleEye.name`,
+  //   hint: `${CONSTANTS.MODULE_NAME}.setting.useEagleEye.hint`,
+  //   scope: 'world',
+  //   config: true,
+  //   default: false,
+  //   type: Boolean,
+  // });
 
   game.settings.register(CONSTANTS.MODULE_NAME, 'enableSightCheckForGM', {
     name: `${CONSTANTS.MODULE_NAME}.setting.enableSightCheckForGM.name`,
@@ -87,7 +87,7 @@ export const registerSettings = function (): void {
     hint: `${CONSTANTS.MODULE_NAME}.setting.autoPassivePerception.hint`,
     scope: 'world',
     config: true,
-    default: true,
+    default: false,
     type: Boolean,
   });
 
@@ -349,14 +349,14 @@ function otherSettings(apply = false) {
 
     // =======================================
 
-    useEagleEye: {
-      name: `${CONSTANTS.MODULE_NAME}.setting.useEagleEye.name`,
-      hint: `${CONSTANTS.MODULE_NAME}.setting.useEagleEye.hint`,
-      scope: 'world',
-      config: true,
-      default: false,
-      type: Boolean,
-    },
+    // useEagleEye: {
+    //   name: `${CONSTANTS.MODULE_NAME}.setting.useEagleEye.name`,
+    //   hint: `${CONSTANTS.MODULE_NAME}.setting.useEagleEye.hint`,
+    //   scope: 'world',
+    //   config: true,
+    //   default: false,
+    //   type: Boolean,
+    // },
 
     enableSightCheckForGM: {
       name: `${CONSTANTS.MODULE_NAME}.setting.enableSightCheckForGM.name`,
@@ -417,7 +417,7 @@ function otherSettings(apply = false) {
       hint: `${CONSTANTS.MODULE_NAME}.setting.autoPassivePerception.hint`,
       scope: 'world',
       config: true,
-      default: true,
+      default: false,
       type: Boolean,
     },
 

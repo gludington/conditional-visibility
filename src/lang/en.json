@@ -3,7 +3,7 @@
   "conditional-visibility.setting.autoStealth.hint": "[This is system dependent] On supported game systems, set the 'hidden' condition on a token's stealth roll. NOTE: Is impossible to make the auto stealth work with other modules like token action hud, LMRTFY or similar module in a multisystem environment without specific hooks, so now i just rendered the result roll on the chat message and hope everything is working like expected, so if no chat is been rendered on the client side no stealth effect is applied and you are force to use the token hud feature.",
 
   "conditional-visibility.setting.autoPassivePerception.name": "Auto check with passive perception",
-  "conditional-visibility.setting.autoPassivePerception.hint": "[This is system dependent] On supported game systems, if checked the passive perception attribute is used as a 'sense' active effect",
+  "conditional-visibility.setting.autoPassivePerception.hint": "[This is system dependent] On supported game systems, if checked it will apply the flag 'Use Stealth Passive by default on the token created. Is advisable to set to false'",
 
   "conditional-visibility.setting.useEagleEye.name": "[EXPERIMENTAL] Use eagle eye",
   "conditional-visibility.setting.useEagleEye.hint": "A embedded version of the module https://github.com/trioderegion/eagle-eye/, but is abandoned for now",
@@ -25,12 +25,12 @@
   "conditional-visibility.setting.idStealthSkill.hint": "[This is system dependent] Make sense only with 'Auto hide on stealth rolls' setting set to true. Here you can configure what attribute id is used from the system for tell is a stealth roll.For example, in D&D5e system, the attribute used is the id of the skill \"ste\" so you'd put that in this setting.",
   "conditional-visibility.setting.idLangStealthSkill.name": "The lang key of the attribute used from the system for the stealth skill",
   "conditional-visibility.setting.idLangStealthSkill.hint": "[This is system dependent] Make sense only with 'Auto hide on stealth rolls' setting set to true. Here you can configure what attribute id is used from the system for tell is a stealth roll.For example, in D&D5e system, the attribute used is the lang key of the skill \"DND5E.SkillSte\" so you'd put that in this setting.",
-  "conditional-visibility.setting.pathAttributesSenses.name": "The data path to the attrbiutes senses of the actor",
+  "conditional-visibility.setting.pathAttributesSenses.name": "The data path to the attributes senses of the actor",
   "conditional-visibility.setting.pathAttributesSenses.hint": "[This is system dependent] This is the data path from the actor data object for the senses associated to the system, in D&D5e system, the attribute used is \"data.attributes.senses\" so you'd put that in this setting.",
   "conditional-visibility.setting.enableDrawCVHandler.name": "[EXPERIMENTAL] Enable draw CV Handler",
   "conditional-visibility.setting.enableDrawCVHandler.hint": "Draw specific token base on the CV configuration of the token",
   "conditional-visibility.setting.enableFastModeCVHandler.name": "[EXPERIMENTAL] Enable fast mode CV Handler",
-  "conditional-visibility.setting.enableFastModeCVHandler.hint": "This will apply a weakmap for cache the result of the CV for a fast interaction. The map will be cleared every time a CV flag is been modificed. ATTENTION: When the 'Fast Mode' is enabed no debug information in generated with the 'Enable debugging' module setting.",
+  "conditional-visibility.setting.enableFastModeCVHandler.hint": "This will apply a map for cache the result of the CV for a fast interaction. The map will be cleared every time a CV flag is been modified. ATTENTION: When the 'Fast Mode' is enabled no debug information in generated with the 'Enable debugging' module setting.",
 
   "conditional-visibility.setting.npcType.name": "NPC actor type",
   "conditional-visibility.setting.npcType.hint": "Here you can configure what the type of NPC actor of your system for the sight check. For example, in D&D5e system, the type is on the property \"actor.type\" an is value is 'npc', so you'd put \"npc\" in this setting.",
@@ -55,15 +55,16 @@
   "conditional-visibility.token.config.extraSenseInstructions": "Additional senses that may enhance vision, for unlimited range use <= -1, for disable/remove use 0",
   "conditional-visibility.token.config.extraConditionInstructions": "Additional conditions that may enhance vision, for unlimited range use <= -1, for disable/remove use 0",
   "conditional-visibility.token.config.dataforcevisible.title": "Force visible",
-  "conditional-visibility.token.config.dataforcevisible.notes": "If checked (true value), this setting will let see this token without any control from CV and applied the standard behaviour of foundry. This is useful for case where you want to force a token to be visible, If you want to hidden the token just use the standard hidden toggle hud feature of foundry.",
+  "conditional-visibility.token.config.dataforcevisible.notes": "If checked (true value), this setting will let see this token without any control from CV and applied the standard behavior of foundry. This is useful for case where you want to force a token to be visible, If you want to hidden the token just use the standard hidden toggle hud feature of foundry.",
 
   "conditional-visibility.token.config.datausestealthpassive.title": "Use Stealth Passive",
-  "conditional-visibility.token.config.datausestealthpassive.notes": "If checked (true value), this setting will apply on this token the control from CV for the stealth passive check. It is the same setting applied by the \"Auto check with passive perception\" setting module, but here you can activate or deactivate it on the single token as needed",
+  "conditional-visibility.token.config.datausestealthpassive.notes": "[This is system dependent] If checked (true value), this setting will automatic generate a new CV condition effect where the value is retrieve from the property set on module settings 'Passive stealth skill'. If both 'Stealthed' and 'Hidden' conditions are present on the same time 'Hidden' condition is used and the 'Stealthed' is ignored. NOTE: if the checkbox is check, but no AE with name 'Stealthed' is applied on the actor uncheck and recheck this checkbox for refresh the actor.",
 
   "conditional-visibility.invisible": "Invisible",
   "conditional-visibility.obscured": "Obscured",
   "conditional-visibility.indarkness": "In Darkness",
   "conditional-visibility.hidden": "Hidden",
+  "conditional-visibility.stealthed": "Stealthed",
 
   "conditional-visibility.default": "No vision Level",
   "conditional-visibility.none": "None",

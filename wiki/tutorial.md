@@ -46,7 +46,10 @@ The calculation for the vision checks is split in many phase forall the use case
 
   - 3.2) A npc Hostile can see other Hostile npc
 
-4) If module setting `autoPassivePerception` is enabled, check by default if _Perception Passive of the system_ is `>` of the _Stealth Passive of the System_, but only IF NO ACTIVE EFFECT CONDITION ARE PRESENT ON THE TARGET
+~~4) If module setting `autoPassivePerception` is enabled, check by default if _Perception Passive of the system_ is `>` of the _Stealth Passive of the System_, but only IF NO ACTIVE EFFECT CONDITION ARE PRESENT ON THE TARGET~~
+
+4) If the flag `Use Stealth Passive` is enabled on the token configuration, check by default if _Perception Passive of the system_ is `>` of the _Stealth Passive of the System_, but only IF NO ACTIVE EFFECT CONDITION ARE PRESENT ON THE TARGET
+
 5) Check if the source token has at least a active effect marked with key `ATCV.<sense or condition id>` 
    
   - 5.1) If at least a condition is present on target it should be false else with no 'sense' on source e no ' condition' on target is true
@@ -54,11 +57,15 @@ The calculation for the vision checks is split in many phase forall the use case
 6) Check if the source token has the active effect `blinded` active, if is true, you cannot see anything and return false.
 7) If not 'condition' are present on the target token return true (nothing to check).
 
-   - 7.1) Auto passive perception check if module setting `autoPassivePerception` is enabled
+   ~~- 7.1) Auto passive perception check if module setting `autoPassivePerception` is enabled~~
+
+   - 7.1) Auto passive perception check if the flag `Use Stealth Passive` is enabled
 
 8) Check again for _passive perception vs passive stealth_ like on point 4) this time we use the hidden active effect like the stealth passive on the target token...THIS WILL BE CHECK ONLY IF ONE CONDITION IS PRESENT ON THE TARGET AND THE CONDITION TYPE IS 'HIDDEN', **REMEMBER THE HIDDEN VALUE OVERRIDE THE STEALTH PASSIVE VALUE IN THIS CASE, so is like you downgrade the stealth passive of the target token with this trick**
 
-  - ~~8.1) Remember if the _Stealth passive value_ is > then the current hidden value and module setting `autoPassivePerception` is enabled, we use the stelath passive value instead the hidden value~~
+  - ~~8.1) Remember if the _Stealth passive value_ is > then the current hidden value and module setting `autoPassivePerception` is enabled, we use the stealth passive value instead the hidden value~~
+
+  - 8.1) Remember if the _Stealth passive value_ is > then the current hidden value and the flag `Use Stealth Passive` is enabled, we use the stealth passive value instead the hidden value
 
   - 8.2) Check if the current perception passive value is >= of the _Hidden Perception passive value_:
 
@@ -66,7 +73,7 @@ The calculation for the vision checks is split in many phase forall the use case
 
   - 9.0) If no `ATCV.visionId` is founded return true (this shouldn't never happened is just for avoid some unwanted behavior)
 
-  - 9.1) Check for implict and explicit `ATCV.conditionTargets` and `ATCV.conditionSources`, this control make avoid the following 9.X check, like explained on the [tables](./tables.md)
+  - 9.1) Check for implicit and explicit `ATCV.conditionTargets` and `ATCV.conditionSources`, this control make avoid the following 9.X check, like explained on the [tables](./tables.md)
 
   - 9.2) If the 'condition' on the target token is `NONE` return true
 

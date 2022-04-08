@@ -62,11 +62,11 @@ export class ConditionalVisibilityEffectDefinitions {
       effects.push(truesight);
     }
     // CONDITIONS
-    // const stealthed = ConditionalVisibilityEffectDefinitions.stealthed(visionLevel);
-    // if (stealthed) {
-    //   stealthed.atcvChanges = AtcvEffect.mergeEffectWithSensedataDefault(stealthed);
-    //   effects.push(stealthed);
-    // }
+    const stealthed = ConditionalVisibilityEffectDefinitions.stealthed(visionLevel);
+    if (stealthed) {
+      stealthed.atcvChanges = AtcvEffect.mergeEffectWithSensedataDefault(stealthed);
+      effects.push(stealthed);
+    }
     const hidden = ConditionalVisibilityEffectDefinitions.hidden(visionLevel);
     if (hidden) {
       hidden.atcvChanges = AtcvEffect.mergeEffectWithSensedataDefault(hidden);
@@ -627,26 +627,26 @@ export class ConditionalVisibilityEffectDefinitions {
     });
   }
 
-  // static stealthed(visionLevel: number) {
-  //   return new Effect({
-  //     customId: AtcvEffectConditionFlags.STEALTHED,
-  //     name: i18n(`${CONSTANTS.MODULE_NAME}.effects.stealthed.name`),
-  //     description: i18n(`${CONSTANTS.MODULE_NAME}.effects.stealthed.description`),
-  //     icon: `modules/${CONSTANTS.MODULE_NAME}/icons/blue_35.jpg`,
-  //     // seconds: Constants.SECONDS.IN_EIGHT_HOURS,
-  //     changes: [],
-  //     atlChanges: [],
-  //     atcvChanges: [
-  //       {
-  //         key: 'ATCV.' + AtcvEffectConditionFlags.STEALTHED,
-  //         mode: CONST.ACTIVE_EFFECT_MODES.UPGRADE,
-  //         value: visionLevel != 0 ? `${visionLevel}` : `data.skills.ste.passive`,
-  //         priority: 5,
-  //       },
-  //     ],
-  //     isTemporary: true,
-  //   });
-  // }
+  static stealthed(visionLevel: number) {
+    return new Effect({
+      customId: AtcvEffectConditionFlags.STEALTHED,
+      name: i18n(`${CONSTANTS.MODULE_NAME}.effects.stealthed.name`),
+      description: i18n(`${CONSTANTS.MODULE_NAME}.effects.stealthed.description`),
+      icon: `modules/${CONSTANTS.MODULE_NAME}/icons/blue_35.jpg`,
+      // seconds: Constants.SECONDS.IN_EIGHT_HOURS,
+      changes: [],
+      atlChanges: [],
+      atcvChanges: [
+        {
+          key: 'ATCV.' + AtcvEffectConditionFlags.STEALTHED,
+          mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+          value: visionLevel != 0 ? `${visionLevel}` : API.STEALTH_PASSIVE_SKILL, //`data.skills.ste.passive`,
+          priority: 5,
+        },
+      ],
+      isTemporary: true,
+    });
+  }
 
   // ===========================================
   // Utility Effect

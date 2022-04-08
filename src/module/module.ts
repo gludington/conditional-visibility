@@ -165,44 +165,6 @@ const module = {
       a.visionName.localeCompare(b.visionName),
     );
 
-    const sensesTemplateData: any[] = [];
-    for (const s of senses) {
-      if (s.visionId != AtcvEffectSenseFlags.NONE && s.visionId != AtcvEffectSenseFlags.NORMAL) {
-        const s2: any = duplicateExtended(s);
-        // const currentAtcvEffectFlagData = <AtcvEffect>tokenConfig.object.getFlag(CONSTANTS.MODULE_NAME, s.visionId);
-        const currentAtcvEffectFlagData =
-          <AtcvEffect>tokenConfig.actor.getFlag(CONSTANTS.MODULE_NAME, s.visionId) ??
-          <AtcvEffect>tokenConfig.object.getFlag(CONSTANTS.MODULE_NAME, s.visionId);
-        if (currentAtcvEffectFlagData) {
-          s2.value = currentAtcvEffectFlagData.visionLevelValue ?? 0;
-        } else {
-          s2.value = 0;
-        }
-        sensesTemplateData.push(s2);
-      }
-    }
-
-    const conditionsTemplateData: any[] = [];
-    for (const s of conditions) {
-      if (s.visionId != AtcvEffectConditionFlags.NONE) {
-        const s2: AtcvEffect = <AtcvEffect>duplicateExtended(s);
-        // const currentAtcvEffectFlagData = <AtcvEffect>tokenConfig.object.getFlag(CONSTANTS.MODULE_NAME, s.visionId);
-        /*
-        const currentAtcvEffectFlagData =
-          <AtcvEffect>tokenConfig.actor.getFlag(CONSTANTS.MODULE_NAME, s.visionId) ??
-          <AtcvEffect>tokenConfig.object.getFlag(CONSTANTS.MODULE_NAME, s.visionId);
-        if (currentAtcvEffectFlagData) {
-          s2.value = currentAtcvEffectFlagData.visionLevelValue ?? 0;
-        } else {
-          s2.value = 0;
-        }
-        */
-        if (!i18n(s2.visionName).endsWith('(CV)')) {
-          s2.visionName = i18n(s2.visionName) + ' (CV)';
-        }
-        conditionsTemplateData.push(s2);
-      }
-    }
     let forceVisible = false;
     if (
       tokenConfig.actor.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE) != null &&
@@ -224,6 +186,42 @@ const module = {
           ? true
           : false;
     }
+
+    const sensesTemplateData: any[] = [];
+    for (const s of senses) {
+      if (s.visionId != AtcvEffectSenseFlags.NONE && s.visionId != AtcvEffectSenseFlags.NORMAL) {
+        const s2: any = duplicateExtended(s);
+        // const currentAtcvEffectFlagData = <AtcvEffect>tokenConfig.object.getFlag(CONSTANTS.MODULE_NAME, s.visionId);
+        const currentAtcvEffectFlagData =
+          <AtcvEffect>tokenConfig.actor.getFlag(CONSTANTS.MODULE_NAME, s.visionId) ??
+          <AtcvEffect>tokenConfig.object.getFlag(CONSTANTS.MODULE_NAME, s.visionId);
+        if (currentAtcvEffectFlagData) {
+          s2.value = currentAtcvEffectFlagData.visionLevelValue ?? 0;
+        } else {
+          s2.value = 0;
+        }
+        sensesTemplateData.push(s2);
+      }
+    }
+
+    const conditionsTemplateData: any[] = [];
+    for (const s of conditions) {
+      if (s.visionId != AtcvEffectConditionFlags.NONE) {
+        const s2: any = <AtcvEffect>duplicateExtended(s);
+        if (!i18n(s2.visionName).endsWith('(CV)')) {
+          s2.visionName = i18n(s2.visionName) + ' (CV)';
+        }
+        if(s.visionId === AtcvEffectConditionFlags.STEALTHED){
+          if(useStealthPassive){
+            s2.isReadOnly = true;
+          }else{
+            continue;
+          }
+        }
+        conditionsTemplateData.push(s2);
+      }
+    }
+
     renderTemplate(`modules/${CONSTANTS.MODULE_NAME}/templates/extra_senses.hbs`, {
       senses: sensesTemplateData,
       conditions: conditionsTemplateData,
@@ -444,9 +442,7 @@ const module = {
           senseOrConditionValue.visionLevelValue === null
         ) {
           const currentValueOfFlag = Number(
-            // (<AtcvEffect>document.getFlag(CONSTANTS.MODULE_NAME, senseOrConditionIdKey))?.visionLevelValue || 0,
             (<AtcvEffect>document.actor?.getFlag(CONSTANTS.MODULE_NAME, senseOrConditionIdKey))?.visionLevelValue ??
-              (<AtcvEffect>document.getFlag(CONSTANTS.MODULE_NAME, senseOrConditionIdKey))?.visionLevelValue ??
               0,
           );
           if (senseOrConditionValue.visionLevelValue != currentValueOfFlag) {
@@ -606,14 +602,40 @@ const module = {
         useStealthPassive !=
         sourceToken.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.USE_STEALTH_PASSIVE)
       ) {
+        let atcvEffectStealthed:AtcvEffect|null = null;
+        // Make sure to remove anything with value 0
+        for (const senseData of await getAllDefaultSensesAndConditions(sourceToken)) {
+          if (senseData.visionId === AtcvEffectConditionFlags.STEALTHED) {
+            atcvEffectStealthed = <AtcvEffect>senseData;
+            break;
+          }
+        }
         if (String(useStealthPassive) === 'true' || String(useStealthPassive) === 'false') {
           await sourceToken.actor?.setFlag(
             CONSTANTS.MODULE_NAME,
             ConditionalVisibilityFlags.USE_STEALTH_PASSIVE,
             useStealthPassive,
           );
+          if(atcvEffectStealthed){
+            if(String(useStealthPassive) === 'true'){
+              await API.addOrUpdateEffectConditionalVisibilityOnToken(sourceToken.id, atcvEffectStealthed, false);
+            }else{
+              const effectNameToCheckOnActor = i18n(<string>atcvEffectStealthed?.visionName);
+              const activeEffectToRemove = <ActiveEffect>(
+                await API.findEffectByNameOnToken(<string>sourceToken.id, effectNameToCheckOnActor)
+              );
+              await API.removeEffectFromIdOnToken(<string>sourceToken.id, <string>activeEffectToRemove.id);
+            }
+          }
         } else {
           await sourceToken.actor?.unsetFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.USE_STEALTH_PASSIVE);
+          if(atcvEffectStealthed){
+            const effectNameToCheckOnActor = i18n(<string>atcvEffectStealthed?.visionName);
+            const activeEffectToRemove = <ActiveEffect>(
+              await API.findEffectByNameOnToken(<string>sourceToken.id, effectNameToCheckOnActor)
+            );
+            await API.removeEffectFromIdOnToken(<string>sourceToken.id, <string>activeEffectToRemove.id);
+          }
         }
       }
     }
@@ -841,6 +863,10 @@ const module = {
         const effects = ConditionalVisibilityEffectDefinitions.all(0, 1);
         const activeEffectsData: any[] = [];
         for (const effect of effects) {
+          // Ignore the stealthed effect
+          if(effect.customId === AtcvEffectConditionFlags.STEALTHED){
+            continue;
+          }
           // I also added this for specifically checking for custom effects.
           // It will return undefined if it doesn't exist:
           let effectToFoundByName = i18n(effect.name);
@@ -911,11 +937,7 @@ const module = {
         return;
       }
       const buttonPos = game.settings.get(CONSTANTS.MODULE_NAME, 'hudPos');
-      const atcvEffectFlagData = <AtcvEffect>(
-        // app.object.document.getFlag(CONSTANTS.MODULE_NAME, AtcvEffectConditionFlags.HIDDEN)
-        (app.object.actor.getFlag(CONSTANTS.MODULE_NAME, AtcvEffectConditionFlags.HIDDEN) ??
-          app.object.document.getFlag(CONSTANTS.MODULE_NAME, AtcvEffectConditionFlags.HIDDEN))
-      );
+      const atcvEffectFlagData = <AtcvEffect>app.object.actor.getFlag(CONSTANTS.MODULE_NAME, AtcvEffectConditionFlags.HIDDEN);
       const hiddenValue = atcvEffectFlagData?.visionLevelValue ?? 0;
       const borderButton = `<div class="control-icon toggleStealth ${
         hiddenValue && hiddenValue != 0 ? 'active' : ''

@@ -812,7 +812,7 @@ const API = {
     }
   },
 
-  async addEffectConditionalVisibilityOnToken(
+  async addOrUpdateEffectConditionalVisibilityOnToken(
     tokenNameOrId: string,
     senseDataEffect: AtcvEffect,
     disabled: boolean,
@@ -1031,8 +1031,21 @@ const API = {
         effectToFoundByName = effectToFoundByName + ' (CV)';
       }
       const nameToUse = effectToFoundByName ? effectToFoundByName : effect?.name;
-      await (<EffectInterface>this.effectInterface).addEffectOnToken(nameToUse, <string>token.id, effect);
-      //await token?.document?.setFlag(CONSTANTS.MODULE_NAME, (<Effect>effect).customId, visionLevel);
+      const activeEffectFounded = <ActiveEffect>(
+        await API.findEffectByNameOnToken(<string>token.id, nameToUse)
+      );
+      if(activeEffectFounded){
+        await (<EffectInterface>this.effectInterface).updateEffectFromIdOnToken(
+          <string>token.id,
+          <string>activeEffectFounded.id,
+          undefined,
+          undefined,
+          effect,
+        );
+      }else{
+        await (<EffectInterface>this.effectInterface).addEffectOnToken(nameToUse, <string>token.id, effect);
+      }
+      // await (<EffectInterface>this.effectInterface).addEffectOnToken(nameToUse, <string>token.id, effect);
       effect.atcvChanges = AtcvEffect.mergeEffectWithSensedataDefault(effect);
       const atcvEffectFlagData = AtcvEffect.fromEffect(token.document, effect);
       const result = atcvEffectFlagData;

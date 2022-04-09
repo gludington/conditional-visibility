@@ -82,14 +82,14 @@ export const registerSettings = function (): void {
     type: Boolean,
   });
 
-  game.settings.register(CONSTANTS.MODULE_NAME, 'autoPassivePerception', {
-    name: `${CONSTANTS.MODULE_NAME}.setting.autoPassivePerception.name`,
-    hint: `${CONSTANTS.MODULE_NAME}.setting.autoPassivePerception.hint`,
-    scope: 'world',
-    config: true,
-    default: false,
-    type: Boolean,
-  });
+  // game.settings.register(CONSTANTS.MODULE_NAME, 'autoPassivePerception', {
+  //   name: `${CONSTANTS.MODULE_NAME}.setting.autoPassivePerception.name`,
+  //   hint: `${CONSTANTS.MODULE_NAME}.setting.autoPassivePerception.hint`,
+  //   scope: 'world',
+  //   config: true,
+  //   default: false,
+  //   type: Boolean,
+  // });
 
   game.settings.register(CONSTANTS.MODULE_NAME, 'enableDrawCVHandler', {
     name: `${CONSTANTS.MODULE_NAME}.setting.enableDrawCVHandler.name`,
@@ -412,14 +412,14 @@ function otherSettings(apply = false) {
       type: Boolean,
     },
 
-    autoPassivePerception: {
-      name: `${CONSTANTS.MODULE_NAME}.setting.autoPassivePerception.name`,
-      hint: `${CONSTANTS.MODULE_NAME}.setting.autoPassivePerception.hint`,
-      scope: 'world',
-      config: true,
-      default: false,
-      type: Boolean,
-    },
+    // autoPassivePerception: {
+    //   name: `${CONSTANTS.MODULE_NAME}.setting.autoPassivePerception.name`,
+    //   hint: `${CONSTANTS.MODULE_NAME}.setting.autoPassivePerception.hint`,
+    //   scope: 'world',
+    //   config: true,
+    //   default: false,
+    //   type: Boolean,
+    // },
 
     enableDrawCVHandler: {
       name: `${CONSTANTS.MODULE_NAME}.setting.enableDrawCVHandler.name`,

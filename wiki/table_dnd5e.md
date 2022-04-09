@@ -30,3 +30,4 @@ Check is the array of id condtions on the sense `ATCV.condtionTargets` contain t
 |<img src="https://raw.githubusercontent.com/p4535992/conditional-visibility/master/src/icons/invisible.jpg" alt="" style="height: 50px; width:50px;"></img> | Invisible | invisible | false |
 |<img src="https://raw.githubusercontent.com/p4535992/conditional-visibility/master/src/icons/obscured.jpg" alt="" style="height: 50px; width:50px;"></img> | Obscured | obscured | false |
 |<img src="https://raw.githubusercontent.com/p4535992/conditional-visibility/master/src/icons/indarkness.jpg" alt="" style="height: 50px; width:50px;"></img> | In darkness | indarkness | false |
+|<img src="https://raw.githubusercontent.com/p4535992/conditional-visibility/master/src/icons/ae/blue_35.jpg" alt="" style="height: 50px; width:50px;"></img> | Hidden | hidden | false |

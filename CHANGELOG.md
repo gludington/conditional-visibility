@@ -1,3 +1,8 @@
+### 0.5.37
+
+- Give up on understand how the community want to manage the passive stealth on Dnd5e, because of this i create a new active effect 'Stealthed' so everyone can apply is own custom solution. Hope i will not touch this anymore.
+- Update compatibility with new 'Levels' losHeight function
+- Buf fix for 'Auto Stealth'
 
 ### 0.5.36
 

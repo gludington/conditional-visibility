@@ -16,7 +16,6 @@ import type EmbeddedCollection from '@league-of-foundry-developers/foundry-vtt-t
 import type { EffectChangeData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/data.mjs/effectChangeData';
 import type Effect from '../effects/effect.js';
 import { ConditionalVisibilityEffectDefinitions } from '../conditional-visibility-effect-definition.js';
-import { setUncaughtExceptionCaptureCallback } from 'process';
 
 // =============================
 // Module Generic function
@@ -32,9 +31,20 @@ export function getOwnedTokens(priorityToControlledIfGM: boolean): Token[] {
   const gm = game.user?.isGM;
   if (gm) {
     if (priorityToControlledIfGM) {
-      return <Token[]>canvas.tokens?.controlled;
+      const arr = <Token[]>canvas.tokens?.controlled;
+      if(arr && arr.length > 0){
+        return arr;
+      }else{
+        return <Token[]>canvas.tokens?.placeables;
+      }
     } else {
       return <Token[]>canvas.tokens?.placeables;
+    }
+  }
+  if (priorityToControlledIfGM) {
+    const arr = <Token[]>canvas.tokens?.controlled;
+    if(arr && arr.length > 0){
+      return arr;
     }
   }
   let ownedTokens = <Token[]>canvas.tokens?.placeables.filter((token) => token.isOwner && (!token.data.hidden || gm));
@@ -1334,8 +1344,10 @@ export function getUnitTokenDist(token1: Token, token2: Token) {
  **/
 
 function getTokenLOSheight(token) {
-  let losDiff;
   if (game.modules.get('levels')?.active) {
+    return token.losHeight;
+    /*
+    let losDiff;
     const defaultTokenHeight = game.settings.get('levels', 'defaultLosHeight') || 6;
     const autoLOSHeight = game.settings.get('levels', 'autoLOSHeight') || false;
     const divideBy = token.data.flags.levelsautocover?.ducking ? 3 : 1;
@@ -1348,6 +1360,7 @@ function getTokenLOSheight(token) {
       losDiff = token.data.flags.levels?.tokenHeight || defaultTokenHeight;
     }
     return token.data.elevation + losDiff / divideBy;
+    */
   } else {
     return getElevationToken(token) || token.data.elevation;
   }

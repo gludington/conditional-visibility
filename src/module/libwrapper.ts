@@ -19,19 +19,6 @@ export function registerLibwrappers() {
   //@ts-ignore
   // libWrapper.register(CONSTANTS.MODULE_NAME, 'Token.prototype.draw', tokenPrototypeDrawHandler, 'MIXED');
 
-  // ================
-  // WITH NO LEVELS
-  // ================
-
-  // SADLY IS WORK ONLY WITH DND5E
-  // //@ts-ignore
-  // libWrapper.register(
-  //   CONSTANTS.MODULE_NAME,
-  //   'CONFIG.Actor.documentClass.prototype.rollSkill',
-  //   rollSkillHandler,
-  //   'MIXED',
-  // );
-
   //@ts-ignore
   libWrapper.register(
     CONSTANTS.MODULE_NAME,
@@ -41,14 +28,20 @@ export function registerLibwrappers() {
     { perf_mode: 'FAST' },
   );
 
-  //@ts-ignore
-  libWrapper.register(
-    CONSTANTS.MODULE_NAME,
-    'SightLayer.prototype.tokenVision',
-    sightLayerPrototypeTokenVisionHandlerNoLevels,
-    'MIXED',
-    { perf_mode: 'FAST' },
-  );
+  if (!game.modules.get('levels')?.active) {
+    // ================
+    // WITH NO LEVELS
+    // ================
+
+    //@ts-ignore
+    libWrapper.register(
+      CONSTANTS.MODULE_NAME,
+      'SightLayer.prototype.tokenVision',
+      sightLayerPrototypeTokenVisionHandlerNoLevels,
+      'MIXED',
+      { perf_mode: 'FAST' },
+    );
+  }
 
   if (game.modules.get('levels')?.active) {
     // ================
@@ -218,21 +211,13 @@ export function sightLayerPrototypeTokenVisionHandlerNoLevels(wrapped, ...args) 
   return wrapped(...args);
 }
 
-/*
-export function sightLayerPrototypeTokenVisionHandlerWithLevels(wrapped, ...args) {
-
-}
-*/
-
 export function overrideVisibilityTestHandlerWithLevels(wrapped, ...args) {
   const [sourceToken, targetToken] = args;
-  // const isPlayerOwned = <boolean>targetToken.isOwner;
-  // if (!game.user?.isGM && (isPlayerOwned || targetToken.owner)) {
+
   if (targetToken.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE)) {
     return wrapped(...args);
   }
-  // }
-  // eslint-disable-next-line prefer-const
+
   let isCVVisible = true;
   if (game.settings.get(CONSTANTS.MODULE_NAME, 'enableFastModeCVHandler')) {
     const key = game.user?.id + '_' + sourceToken.id + '_' + targetToken.id;
@@ -277,10 +262,11 @@ export function sightLayerPrototypeTestVisibilityHandler(wrapped, ...args) {
 
   // const isPlayerOwned = <boolean>tokenToCheckIfIsVisible.isOwner;
   // if (!game.user?.isGM && (isPlayerOwned || tokenToCheckIfIsVisible.owner)) {
+    // return res;
+  // }
   if (tokenToCheckIfIsVisible.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE)) {
     return res;
   }
-  // }
 
   // this.sources is a map of selected tokens (may be size 0) all tokens
   // contribute to the vision so iterate through the tokens
@@ -289,7 +275,8 @@ export function sightLayerPrototypeTestVisibilityHandler(wrapped, ...args) {
   let mySources: Token[] = [];
   if (!this.sources || this.sources.size === 0) {
     // return res;
-    mySources = <Token[]>canvas.tokens?.controlled;
+    // mySources = <Token[]>canvas.tokens?.controlled;
+    mySources = getOwnedTokens(true);
   } else {
     const uniqueIds = new Set();
     for (const element of this.sources) {

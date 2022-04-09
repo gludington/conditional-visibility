@@ -632,7 +632,7 @@ export class ConditionalVisibilityEffectDefinitions {
       customId: AtcvEffectConditionFlags.STEALTHED,
       name: i18n(`${CONSTANTS.MODULE_NAME}.effects.stealthed.name`),
       description: i18n(`${CONSTANTS.MODULE_NAME}.effects.stealthed.description`),
-      icon: `modules/${CONSTANTS.MODULE_NAME}/icons/blue_35.jpg`,
+      icon: `modules/${CONSTANTS.MODULE_NAME}/icons/ae/blue_35.jpg`,
       // seconds: Constants.SECONDS.IN_EIGHT_HOURS,
       changes: [],
       atlChanges: [],

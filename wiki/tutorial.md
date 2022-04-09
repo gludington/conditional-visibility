@@ -35,11 +35,13 @@ export function cleanUpString(stringToCleanUp: string) {
 The calculation for the vision checks is split in many phase forall the use case i encountered:
 
 0) ~~Check if source token has the vision enabled, if disabled is like the module is not active for that token.~~ 
+
 1) Check if target token is hidden with standard hud feature of foundry and only GM can see
 
   - 1.1) Check if target token is with the 'Force Visible' flag for Midi Qol integration
 
 2) Check if the target is owned from the player if true you can see the token.
+
 3) Check for the token disposition:
 
   - 3.1) by default the check is applied to all token disposition Friendly, Neutral, Hostile, You can disable the check for all non hostile NPC with the module settings 'Disable for non hostile npc'
@@ -55,13 +57,14 @@ The calculation for the vision checks is split in many phase forall the use case
   - 5.1) If at least a condition is present on target it should be false else with no 'sense' on source e no ' condition' on target is true
 
 6) Check if the source token has the active effect `blinded` active, if is true, you cannot see anything and return false.
+
 7) If not 'condition' are present on the target token return true (nothing to check).
 
    ~~- 7.1) Auto passive perception check if module setting `autoPassivePerception` is enabled~~
 
-   - 7.1) Auto passive perception check if the flag `Use Stealth Passive` is enabled
+   - 7.1) Auto passive perception check if the flag `Use Stealth Passive` is enabled. **If the 'Hidden' condition the 'Stealthed' condition is ignored**
 
-8) Check again for _passive perception vs passive stealth_ like on point 4) this time we use the hidden active effect like the stealth passive on the target token...THIS WILL BE CHECK ONLY IF ONE CONDITION IS PRESENT ON THE TARGET AND THE CONDITION TYPE IS 'HIDDEN', **REMEMBER THE HIDDEN VALUE OVERRIDE THE STEALTH PASSIVE VALUE IN THIS CASE, so is like you downgrade the stealth passive of the target token with this trick**
+8) Check again for _passive perception vs passive stealth_ like on point 4) this time we use the hidden active effect like the stealth passive on the target token...THIS WILL BE CHECK ONLY IF ONE CONDITION IS PRESENT ON THE TARGET AND THE CONDITION TYPE IS 'HIDDEN', **REMEMBER THE 'HIDDEN' VALUE OVERRIDE THE 'STEALTHED' IN THIS CASE, so is like you downgrade the stealth passive of the target token with this trick**
 
   - ~~8.1) Remember if the _Stealth passive value_ is > then the current hidden value and module setting `autoPassivePerception` is enabled, we use the stealth passive value instead the hidden value~~
 
@@ -86,7 +89,9 @@ The calculation for the vision checks is split in many phase forall the use case
   - ~~9.4)  The range of 'condition' level [`conditionLevelMinIndex,conditionLevelMaxIndex`], must be between the 'sense' range level [`conditionLevelMinIndex,conditionLevelMaxIndex`] like explained on the [tables](./tables.md)~~.
 
 10) ~~Check if `ATCV.conditionElevation` is != 0, will check if the source token and target token are at the same level.~~
+
 11) ~~Check if `ATCV.conditionDistance` is valorized if is set to a numeric value, will check if the tokens are near enough to remain hidden (remember -1 is infinity distance).~~
+
 12) Check if the vision level value of the filtered  'sense' on the source token is a number `>=` of the vision level value of the filtered 'condition' on the target token, if the sense is set to `-1` this check is automatically skipped. If the condition and the sense are both set with value `-1` the condition won.
 
 ## What active effect data changes are used from this module ?

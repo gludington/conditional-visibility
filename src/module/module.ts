@@ -34,6 +34,7 @@ import {
 import Effect, { EffectSupport } from './effects/effect';
 import type EmbeddedCollection from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/abstract/embedded-collection.mjs';
 import type { ActorData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/module.mjs';
+import { setApi } from '../conditional-visibility';
 
 export const initHooks = (): void => {
   // registerSettings();
@@ -175,7 +176,7 @@ const module = {
           ? true
           : false;
     }
-    let useStealthPassive = game.settings.get(CONSTANTS.MODULE_NAME, 'autoPassivePerception') ? true : false;
+    let useStealthPassive = false; // game.settings.get(CONSTANTS.MODULE_NAME, 'autoPassivePerception') ? true : false;
     if (
       tokenConfig.actor.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.USE_STEALTH_PASSIVE) != null &&
       tokenConfig.actor.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.USE_STEALTH_PASSIVE) != undefined
@@ -264,6 +265,42 @@ const module = {
         }
       }
     } // Fine for
+
+    if (!change.actor?.data?.flags[CONSTANTS.MODULE_NAME]) {
+      if (change.flags && change.flags[CONSTANTS.MODULE_NAME]) {
+        if (!change.actor) {
+          change.actor = {};
+        }
+        if (!change.actor.data) {
+          change.actor.data = {};
+        }
+        if (!change.actor.data.flags) {
+          change.actor.data.flags = {};
+        }
+        if (!change.actor.data.flags[CONSTANTS.MODULE_NAME]) {
+          change.actor.data.flags[CONSTANTS.MODULE_NAME] = {};
+        }
+        change.actor.data.flags[CONSTANTS.MODULE_NAME] = change.flags[CONSTANTS.MODULE_NAME];
+      } else {
+        if (change.actorData && change.actorData.flags && change.actorData.flags[CONSTANTS.MODULE_NAME]) {
+          if (!change.actor) {
+            change.actor = {};
+          }
+          if (!change.actor.data) {
+            change.actor.data = {};
+          }
+          if (!change.actor.data.flags) {
+            change.actor.data.flags = {};
+          }
+          if (!change.actor.data.flags[CONSTANTS.MODULE_NAME]) {
+            change.actor.data.flags[CONSTANTS.MODULE_NAME] = {};
+          }
+          change.actor.data.flags[CONSTANTS.MODULE_NAME] = change.actorData.flags[CONSTANTS.MODULE_NAME];
+        } else {
+          return;
+        }
+      }
+    }
     // TODO to remove
     /*
     if (
@@ -454,17 +491,6 @@ const module = {
           senseOrConditionValue?.visionLevelValue != 0
           //senseOrConditionValue?.visionLevelValue != currentValueOfFlag //not neeed this
         ) {
-          // const isSense = <SenseData>API.SENSES.find((sense: SenseData) => {
-          //   return (
-          //     isStringEquals(sense.id, senseOrConditionId) || isStringEquals(i18n(sense.name), i18n(senseOrConditionId))
-          //   );
-          // });
-          // const isCondition = <SenseData>API.CONDITIONS.find((sense: SenseData) => {
-          //   return (
-          //     isStringEquals(sense.id, senseOrConditionId) || isStringEquals(i18n(sense.name), i18n(senseOrConditionId))
-          //   );
-          // });
-
           const senseAtcvEffect = <AtcvEffect>getSensesFromToken(sourceToken.document).find((sense: AtcvEffect) => {
             return (
               isStringEquals(<string>sense.visionId, senseOrConditionId) ||
@@ -517,11 +543,6 @@ const module = {
           }
           if (sourceVisionCapabilities.hasSenses() || sourceVisionCapabilities.hasConditions()) {
             await prepareActiveEffectForConditionalVisibility(sourceToken, sourceVisionCapabilities);
-            // TODO CHECK IF We don't need the modification of the effect start this anyway
-            // const mapFlagsToUpdated = <Map<string,AtcvEffect>>await prepareActiveEffectForConditionalVisibility(token, sourceVisionCapabilities);
-            // for (const [atcvEffectKey, atcvEffectValue] of mapFlagsToUpdated) {
-            //   await repairAndSetFlag(token, atcvEffectKey, atcvEffectValue);
-            // }
           }
         } else if (
           senseOrConditionValue.visionLevelValue === 0 ||
@@ -603,7 +624,7 @@ const module = {
       ) {
         let atcvEffectStealthed: AtcvEffect | null = null;
         // Make sure to remove anything with value 0
-        for (const senseData of await getAllDefaultSensesAndConditions(sourceToken)) {
+        for (const senseData of await getAllDefaultSensesAndConditions(null)) {
           if (senseData.visionId === AtcvEffectConditionFlags.STEALTHED) {
             atcvEffectStealthed = <AtcvEffect>senseData;
             break;
@@ -623,7 +644,13 @@ const module = {
               const activeEffectToRemove = <ActiveEffect>(
                 await API.findEffectByNameOnToken(<string>sourceToken.id, effectNameToCheckOnActor)
               );
-              await API.removeEffectFromIdOnToken(<string>sourceToken.id, <string>activeEffectToRemove.id);
+              if (activeEffectToRemove) {
+                // const actve = atcvEffectStealthed.visionLevelValue ?? 0;
+                // if (actve === 0 || actve === null || actve === undefined || !actve) {
+                  await API.removeEffectFromIdOnToken(<string>sourceToken.id, <string>activeEffectToRemove.id);
+                // }
+              }
+              
             }
           }
         } else {
@@ -633,7 +660,12 @@ const module = {
             const activeEffectToRemove = <ActiveEffect>(
               await API.findEffectByNameOnToken(<string>sourceToken.id, effectNameToCheckOnActor)
             );
-            await API.removeEffectFromIdOnToken(<string>sourceToken.id, <string>activeEffectToRemove.id);
+            if (activeEffectToRemove) {
+              // const actve = atcvEffectStealthed.visionLevelValue ?? 0;
+              // if (actve === 0 || actve === null || actve === undefined || !actve) {
+                await API.removeEffectFromIdOnToken(<string>sourceToken.id, <string>activeEffectToRemove.id);
+              // }
+            }
           }
         }
       }

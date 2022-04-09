@@ -142,9 +142,14 @@ Hooks.once('libChangelogsReady', function () {
     CONSTANTS.MODULE_NAME,
     `
     - Integration autostealth with better rolls
-    - Resolved winking by disable the 'SightLayer.prototype.tokenVision' wrapper
+    - Resolved winking by disable the 'SightLayer.prototype.tokenVision' wrapper (maybe ???)
     - Update the checker again
-    - Added the flag 'Use stealth passive' to activated this token by token so everyone in Dnd5e is happy now ?
+    - Give up on understand how the community want to manage the passive stealth on Dnd5e, because of this i create a new active effect 'Stealthed' so everyone can apply is own custom solution. So now you can apply any combination of 'Hidden' vs 'Stealthed' and simply disable or remove the active effect if you don't want to check the visibility. For moredetails check out the token configuration panel.
+    - Update compatibility with new 'Levels' losHeight function
+    - Buf fix for 'Auto Stealth' and update token vs update actor
+    - Add a clean up macro on the module for remove the old flag per midi integration
+    - [BREAKING CHANGES] You must reset the module settings with the dedicate button on the module settings panel for apply the new active effect stealthed
+    - Added  a new experimental module setting "Fast Mode" module setting, for anyone have some latency problem ? With this the only the time used for the check is the time used for find a value on a map javascript with a key (so it should be faster).
     `,
     'minor',
   );

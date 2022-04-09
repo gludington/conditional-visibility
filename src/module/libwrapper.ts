@@ -262,7 +262,7 @@ export function sightLayerPrototypeTestVisibilityHandler(wrapped, ...args) {
 
   // const isPlayerOwned = <boolean>tokenToCheckIfIsVisible.isOwner;
   // if (!game.user?.isGM && (isPlayerOwned || tokenToCheckIfIsVisible.owner)) {
-    // return res;
+  // return res;
   // }
   if (tokenToCheckIfIsVisible.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE)) {
     return res;

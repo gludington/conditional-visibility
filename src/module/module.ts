@@ -232,7 +232,8 @@ const module = {
       visionTab.append(extraSenses);
     });
   },
-  async updateActor(document: TokenDocument, change, options, userId) {
+  async updateActor(document: TokenDocument, changeOri, options, userId) {
+    const change = duplicateExtended(changeOri);
     const sourceToken = <Token>document.object;
     if (!sourceToken) {
       return;
@@ -397,7 +398,8 @@ const module = {
     }
     */
   },
-  async updateToken(document: TokenDocument, change, options, userId) {
+  async updateToken(document: TokenDocument, changeOri, options, userId) {
+    const change = duplicateExtended(changeOri);
     const sourceToken = <Token>document.object;
     if (!sourceToken) {
       return;
@@ -647,10 +649,9 @@ const module = {
               if (activeEffectToRemove) {
                 // const actve = atcvEffectStealthed.visionLevelValue ?? 0;
                 // if (actve === 0 || actve === null || actve === undefined || !actve) {
-                  await API.removeEffectFromIdOnToken(<string>sourceToken.id, <string>activeEffectToRemove.id);
+                await API.removeEffectFromIdOnToken(<string>sourceToken.id, <string>activeEffectToRemove.id);
                 // }
               }
-              
             }
           }
         } else {
@@ -663,7 +664,7 @@ const module = {
             if (activeEffectToRemove) {
               // const actve = atcvEffectStealthed.visionLevelValue ?? 0;
               // if (actve === 0 || actve === null || actve === undefined || !actve) {
-                await API.removeEffectFromIdOnToken(<string>sourceToken.id, <string>activeEffectToRemove.id);
+              await API.removeEffectFromIdOnToken(<string>sourceToken.id, <string>activeEffectToRemove.id);
               // }
             }
           }

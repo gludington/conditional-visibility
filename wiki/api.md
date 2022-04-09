@@ -19,7 +19,7 @@ Work in progress...
 
 ## Conditional Visibility Functions
 
-### ConditionalVisibility.API.setCondition(tokenNameOrId: string, effectId: string, distance: number) ⇒ <code>Promise.&lt;void&gt;</code>
+### game.modules.get('conditional-visibility').api.setCondition(tokenNameOrId: string, effectId: string, distance: number) ⇒ <code>Promise.&lt;void&gt;</code>
 
 Add a active effect for work with the module, the `effectId` parameter must be present on the [table](./tables.md) associated to the system.
 
@@ -34,17 +34,17 @@ Add a active effect for work with the module, the `effectId` parameter must be p
 | visionLevelValue | <code>number</code> | OPTIONAL: explicit distance in units not grid to add to the Active Effects | <code>0</code> |
 
 **Example**:
-`ConditionalVisibility.API.setCondition('Zruggig Widebrain','darkvision', false, 60, 4)`
+`game.modules.get('conditional-visibility').api.setCondition('Zruggig Widebrain','darkvision', false, 60, 4)`
 
-`game.conditional-visibility.API.setCondition('Zruggig Widebrain','darkvision' false, 60, 4)`
+`game.modules.get('conditional-visibility').api.setCondition('Zruggig Widebrain','darkvision' false, 60, 4)`
 
-`ConditionalVisibility.API.setCondition('Zruggig Widebrain','darkvision', false,)`
+`game.modules.get('conditional-visibility').api.setCondition('Zruggig Widebrain','darkvision', false,)`
 
-`game.conditional-visibility.API.setCondition('Zruggig Widebrain','darkvision' false)`
+`game.modules.get('conditional-visibility').api.setCondition('Zruggig Widebrain','darkvision' false)`
 
-### ConditionalVisibility.API.addEffectConditionalVisibilityOnToken(tokenNameOrId: string, effectId: string, distance: number) ⇒ <code>Promise.&lt;void&gt;</code>
+### game.modules.get('conditional-visibility').api.addEffectConditionalVisibilityOnToken(tokenNameOrId: string, effectId: string, distance: number) ⇒ <code>Promise.&lt;void&gt;</code>
 
-**NOTE:** is the same of the _ConditionalVisibility.API.setCondition_
+**NOTE:** is the same of the _game.modules.get('conditional-visibility').api.setCondition_
 
 Add a active effect for work with the module, the `effectId` parameter must be present on the [table](./tables.md) associated to the system.
 
@@ -59,16 +59,16 @@ Add a active effect for work with the module, the `effectId` parameter must be p
 | visionLevelValue | <code>number</code> | OPTIONAL: explicit distance in units not grid to add to the Active Effects | <code>0</code> |
 
 **Example**:
-`ConditionalVisibility.API.addEffectConditionalVisibilityOnToken('Zruggig Widebrain','darkvision', false, 60, 4)`
+`game.modules.get('conditional-visibility').api.addEffectConditionalVisibilityOnToken('Zruggig Widebrain','darkvision', false, 60, 4)`
 
-`game.conditional-visibility.API.addEffectConditionalVisibilityOnToken('Zruggig Widebrain','darkvision' false, 60, 4)`
+`game.modules.get('conditional-visibility').api.addEffectConditionalVisibilityOnToken('Zruggig Widebrain','darkvision' false, 60, 4)`
 
-`ConditionalVisibility.API.addEffectConditionalVisibilityOnToken('Zruggig Widebrain','darkvision', false,)`
+`game.modules.get('conditional-visibility').api.addEffectConditionalVisibilityOnToken('Zruggig Widebrain','darkvision', false,)`
 
-`game.conditional-visibility.API.addEffectConditionalVisibilityOnToken('Zruggig Widebrain','darkvision' false)`
+`game.modules.get('conditional-visibility').api.addEffectConditionalVisibilityOnToken('Zruggig Widebrain','darkvision' false)`
 
 
-### ConditionalVisibility.API.getAllDefaultSensesAndConditions(token:Token) ⇒ <code>Promise.&lt;SenseData[]&gt;</code>
+### game.modules.get('conditional-visibility').api.getAllDefaultSensesAndConditions(token:Token) ⇒ <code>Promise.&lt;SenseData[]&gt;</code>
 
 Return all senses and conditions register form the module by default hte ones present on the [table](./tables.md) associated to the system.
 
@@ -79,12 +79,12 @@ Return all senses and conditions register form the module by default hte ones pr
 | token | <code>Token</code> | The token object | <code>undefined</code> |
 
 **Example**:
-`ConditionalVisibility.API.getAllDefaultSensesAndConditions()`
+`game.modules.get('conditional-visibility').api.getAllDefaultSensesAndConditions()`
 
-`game.conditional-visibility.API.getAllDefaultSensesAndConditions()`
+`game.modules.get('conditional-visibility').api.getAllDefaultSensesAndConditions()`
 
 
-### ConditionalVisibility.API.registerSense(senseData: SenseData) ⇒ <code>Promise.&lt;void&gt;</code>
+### game.modules.get('conditional-visibility').api.registerSense(senseData: SenseData) ⇒ <code>Promise.&lt;void&gt;</code>
 
 A method to register a customize sense to add to the world
 
@@ -97,7 +97,7 @@ A method to register a customize sense to add to the world
 
 **Example**:
 ```
-ConditionalVisibility.API.registerSense({
+game.modules.get('conditional-visibility').api.registerSense({
   id: 'bloodsight',
   name: 'Bloodsight',
   path: '',
@@ -109,7 +109,7 @@ ConditionalVisibility.API.registerSense({
 ```
 
 ```
-game.conditional-visibility.API.registerSense({
+game.modules.get('conditional-visibility').api.registerSense({
   id: 'bloodsight',
   name: 'Bloodsight',
   path: '',
@@ -120,7 +120,7 @@ game.conditional-visibility.API.registerSense({
 })
 ```
 
-### ConditionalVisibility.API.registerCondition(senseData: SenseData) ⇒ <code>Promise.&lt;void&gt;</code>
+### game.modules.get('conditional-visibility').api.registerCondition(senseData: SenseData) ⇒ <code>Promise.&lt;void&gt;</code>
 
 A method to register a customize condition to add to the world. **Remember for make this work you need to add the active effect with the same name with the custom handler from [Dfred convenient effects](https://github.com/DFreds/dfreds-convenient-effects/) is a forced thing i know, but that a module alreay have all the import/export and ui stuff... if no active effect is founded a deafult one is build with minimal data**
 
@@ -131,7 +131,7 @@ A method to register a customize condition to add to the world. **Remember for m
 | senseData | <code>SenseData</code> | The sense data object | <code>undefined</code> |
 
 ```
-ConditionalVisibility.API.registerCondition({
+game.modules.get('conditional-visibility').api.registerCondition({
   id: 'bloodsight',
   name: 'Bloodsight',
   path: '',
@@ -143,7 +143,7 @@ ConditionalVisibility.API.registerCondition({
 ```
 
 ```
-game.conditional-visibility.API.registerCondition({
+game.modules.get('conditional-visibility').api.registerCondition({
   id: 'bloodsight',
   name: 'Bloodsight',
   path: '',
@@ -154,7 +154,7 @@ game.conditional-visibility.API.registerCondition({
 })
 ```
 
-### ConditionalVisibility.API.unRegisterSense(senseDataIdOrName: string) ⇒ <code>Promise.&lt;void&gt;</code>
+### game.modules.get('conditional-visibility').api.unRegisterSense(senseDataIdOrName: string) ⇒ <code>Promise.&lt;void&gt;</code>
 
 A method to un-register a customize sense from the world.
 
@@ -167,11 +167,11 @@ A method to un-register a customize sense from the world.
 
 **Example**:
 
-`ConditionalVisibility.API.unRegisterSense('bloodsight')`
+`game.modules.get('conditional-visibility').api.unRegisterSense('bloodsight')`
 
-`game.conditional-visibility.API.unRegisterSense('bloodsight')`
+`game.modules.get('conditional-visibility').api.unRegisterSense('bloodsight')`
 
-### ConditionalVisibility.API.unRegisterCondition(senseDataIdOrName: string) ⇒ <code>Promise.&lt;void&gt;</code>
+### game.modules.get('conditional-visibility').api.unRegisterCondition(senseDataIdOrName: string) ⇒ <code>Promise.&lt;void&gt;</code>
 
 A method to un-register a customize condition from the world
 
@@ -184,9 +184,9 @@ A method to un-register a customize condition from the world
 
 **Example**:
 
-`ConditionalVisibility.API.unRegisterCondition('bloodsight')`
+`game.modules.get('conditional-visibility').api.unRegisterCondition('bloodsight')`
 
-`game.conditional-visibility.API.unRegisterCondition('bloodsight')`
+`game.modules.get('conditional-visibility').api.unRegisterCondition('bloodsight')`
 
 ## Work in progress for add the others function, not sure if i'll find the time for this, but you can read directly the API class if you want [API](../src/module/api.ts)...
 

@@ -8,6 +8,10 @@ The checking is base on the active effect change `ATCV.condtionSources` and `ATC
 
 Check is the array of id condtions on the sense `ATCV.condtionTargets` contain the id condtion , or check is the array of id senses on the contion `ATCV.condtionSources` contain the id sense.
 
+NOTE: If the checkbox is check, but no AE with name 'Stealthed' is applied on the actor uncheck and recheck this checkbox for refresh the actor.
+
+NOTE: If the 'Hidden' condition is applied on this token the condition 'Stealthed' is ignored for the concept "active stealth" is used instead "passive stealth".
+
 ### Senses
 
 | Image | Effect\Vision Level  | effectId used on the module | Check Elevation | Condition |

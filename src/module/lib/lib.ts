@@ -32,9 +32,9 @@ export function getOwnedTokens(priorityToControlledIfGM: boolean): Token[] {
   if (gm) {
     if (priorityToControlledIfGM) {
       const arr = <Token[]>canvas.tokens?.controlled;
-      if(arr && arr.length > 0){
+      if (arr && arr.length > 0) {
         return arr;
-      }else{
+      } else {
         return <Token[]>canvas.tokens?.placeables;
       }
     } else {
@@ -43,7 +43,7 @@ export function getOwnedTokens(priorityToControlledIfGM: boolean): Token[] {
   }
   if (priorityToControlledIfGM) {
     const arr = <Token[]>canvas.tokens?.controlled;
-    if(arr && arr.length > 0){
+    if (arr && arr.length > 0) {
       return arr;
     }
   }

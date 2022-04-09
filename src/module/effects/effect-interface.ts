@@ -3,7 +3,10 @@ import { registerSocket } from '../socket';
 import Effect from './effect';
 import EffectHandler from './effect-handler';
 import { isGMConnectedAndSocketLibEnable } from '../lib/lib';
-import type { ActiveEffectData, ActorData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/module.mjs';
+import type {
+  ActiveEffectData,
+  ActorData,
+} from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/module.mjs';
 import type EmbeddedCollection from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/abstract/embedded-collection.mjs';
 
 /**

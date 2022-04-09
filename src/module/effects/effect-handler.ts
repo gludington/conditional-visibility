@@ -2,7 +2,10 @@ import { error, i18n, isStringEquals, log } from '../lib/lib';
 import FoundryHelpers from './foundry-helpers';
 import Effect, { EffectSupport } from './effect';
 import type EmbeddedCollection from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/abstract/embedded-collection.mjs';
-import type { ActiveEffectData, ActorData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/module.mjs';
+import type {
+  ActiveEffectData,
+  ActorData,
+} from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/module.mjs';
 
 export default class EffectHandler {
   _customEffects: Effect[];

@@ -1,4 +1,3 @@
-
 /**
  * @function flatten
  * @description flattens an array of arrays into a single array.

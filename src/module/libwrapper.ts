@@ -156,7 +156,6 @@ export function registerLibwrappers() {
   */
 }
 
-
 // export function templatePrototypeRefreshHandler(wrapped) {
 //   templateTokens(this);
 //   return wrapped();

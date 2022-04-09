@@ -1031,10 +1031,8 @@ const API = {
         effectToFoundByName = effectToFoundByName + ' (CV)';
       }
       const nameToUse = effectToFoundByName ? effectToFoundByName : effect?.name;
-      const activeEffectFounded = <ActiveEffect>(
-        await API.findEffectByNameOnToken(<string>token.id, nameToUse)
-      );
-      if(activeEffectFounded){
+      const activeEffectFounded = <ActiveEffect>await API.findEffectByNameOnToken(<string>token.id, nameToUse);
+      if (activeEffectFounded) {
         await (<EffectInterface>this.effectInterface).updateEffectFromIdOnToken(
           <string>token.id,
           <string>activeEffectFounded.id,
@@ -1042,7 +1040,7 @@ const API = {
           undefined,
           effect,
         );
-      }else{
+      } else {
         await (<EffectInterface>this.effectInterface).addEffectOnToken(nameToUse, <string>token.id, effect);
       }
       // await (<EffectInterface>this.effectInterface).addEffectOnToken(nameToUse, <string>token.id, effect);

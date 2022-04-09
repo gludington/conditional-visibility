@@ -211,10 +211,10 @@ const module = {
         if (!i18n(s2.visionName).endsWith('(CV)')) {
           s2.visionName = i18n(s2.visionName) + ' (CV)';
         }
-        if(s.visionId === AtcvEffectConditionFlags.STEALTHED){
-          if(useStealthPassive){
+        if (s.visionId === AtcvEffectConditionFlags.STEALTHED) {
+          if (useStealthPassive) {
             s2.isReadOnly = true;
-          }else{
+          } else {
             continue;
           }
         }
@@ -442,8 +442,7 @@ const module = {
           senseOrConditionValue.visionLevelValue === null
         ) {
           const currentValueOfFlag = Number(
-            (<AtcvEffect>document.actor?.getFlag(CONSTANTS.MODULE_NAME, senseOrConditionIdKey))?.visionLevelValue ??
-              0,
+            (<AtcvEffect>document.actor?.getFlag(CONSTANTS.MODULE_NAME, senseOrConditionIdKey))?.visionLevelValue ?? 0,
           );
           if (senseOrConditionValue.visionLevelValue != currentValueOfFlag) {
             senseOrConditionValue.visionLevelValue = currentValueOfFlag;
@@ -602,7 +601,7 @@ const module = {
         useStealthPassive !=
         sourceToken.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.USE_STEALTH_PASSIVE)
       ) {
-        let atcvEffectStealthed:AtcvEffect|null = null;
+        let atcvEffectStealthed: AtcvEffect | null = null;
         // Make sure to remove anything with value 0
         for (const senseData of await getAllDefaultSensesAndConditions(sourceToken)) {
           if (senseData.visionId === AtcvEffectConditionFlags.STEALTHED) {
@@ -616,10 +615,10 @@ const module = {
             ConditionalVisibilityFlags.USE_STEALTH_PASSIVE,
             useStealthPassive,
           );
-          if(atcvEffectStealthed){
-            if(String(useStealthPassive) === 'true'){
+          if (atcvEffectStealthed) {
+            if (String(useStealthPassive) === 'true') {
               await API.addOrUpdateEffectConditionalVisibilityOnToken(sourceToken.id, atcvEffectStealthed, false);
-            }else{
+            } else {
               const effectNameToCheckOnActor = i18n(<string>atcvEffectStealthed?.visionName);
               const activeEffectToRemove = <ActiveEffect>(
                 await API.findEffectByNameOnToken(<string>sourceToken.id, effectNameToCheckOnActor)
@@ -629,7 +628,7 @@ const module = {
           }
         } else {
           await sourceToken.actor?.unsetFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.USE_STEALTH_PASSIVE);
-          if(atcvEffectStealthed){
+          if (atcvEffectStealthed) {
             const effectNameToCheckOnActor = i18n(<string>atcvEffectStealthed?.visionName);
             const activeEffectToRemove = <ActiveEffect>(
               await API.findEffectByNameOnToken(<string>sourceToken.id, effectNameToCheckOnActor)
@@ -864,7 +863,7 @@ const module = {
         const activeEffectsData: any[] = [];
         for (const effect of effects) {
           // Ignore the stealthed effect
-          if(effect.customId === AtcvEffectConditionFlags.STEALTHED){
+          if (effect.customId === AtcvEffectConditionFlags.STEALTHED) {
             continue;
           }
           // I also added this for specifically checking for custom effects.
@@ -937,7 +936,9 @@ const module = {
         return;
       }
       const buttonPos = game.settings.get(CONSTANTS.MODULE_NAME, 'hudPos');
-      const atcvEffectFlagData = <AtcvEffect>app.object.actor.getFlag(CONSTANTS.MODULE_NAME, AtcvEffectConditionFlags.HIDDEN);
+      const atcvEffectFlagData = <AtcvEffect>(
+        app.object.actor.getFlag(CONSTANTS.MODULE_NAME, AtcvEffectConditionFlags.HIDDEN)
+      );
       const hiddenValue = atcvEffectFlagData?.visionLevelValue ?? 0;
       const borderButton = `<div class="control-icon toggleStealth ${
         hiddenValue && hiddenValue != 0 ? 'active' : ''

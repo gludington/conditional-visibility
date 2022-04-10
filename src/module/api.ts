@@ -1184,6 +1184,46 @@ const API = {
         warn(`No token found on the canvas for id '${token.id}'`, true);
       }
     }
+    for (const token of tokens) {
+      if (token && token.actor) {
+        if (getProperty(token.actor, `data.flags.${CONSTANTS.MODULE_NAME}`)) {
+          const p = getProperty(token.actor, `data.flags.${CONSTANTS.MODULE_NAME}`);
+          for (const key in p) {
+            const senseOrConditionIdKey = key;
+            const senseOrConditionValue = <AtcvEffect>p[key];
+            await token.actor.unsetFlag(CONSTANTS.MODULE_NAME, senseOrConditionIdKey);
+            info(`Cleaned up actor '${token.name}'`, true);
+          }
+        }
+      } else {
+        warn(`No token found on the canvas for id '${token.id}'`, true);
+      }
+    }
+  },
+
+  async cleanUpTokenSelectedOnlyCVData() {
+    const tokens = <Token[]>canvas.tokens?.controlled;
+    if (!tokens || tokens.length === 0) {
+      warn(`No tokens are selected`, true);
+      return;
+    }
+    for (const token of tokens) {
+      if (token && token.actor) {
+        if (getProperty(token.actor, `data.flags.${CONSTANTS.MODULE_NAME}`)) {
+          const p = getProperty(token.actor, `data.flags.${CONSTANTS.MODULE_NAME}`);
+          for (const key in p) {
+            const senseOrConditionIdKey = key;
+            if (key.startsWith('data')) {
+              const senseOrConditionValue = <AtcvEffect>p[key];
+              await token.actor.unsetFlag(CONSTANTS.MODULE_NAME, senseOrConditionIdKey);
+              info(`Cleaned up actor '${token.name}'`, true);
+            }
+          }
+        }
+      } else {
+        warn(`No token found on the canvas for id '${token.id}'`, true);
+      }
+    }
   },
 
   weakMap: new Map<String, boolean>(),

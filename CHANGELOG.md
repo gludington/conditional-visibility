@@ -1,3 +1,8 @@
+### 0.5.38
+
+- Bug fix [[BUG] Stuck flags](https://github.com/p4535992/conditional-visibility/issues/30)
+- Add macro `cleanUpTokenSelectedOnlyCVData` for clean up `data` flags if the solution doen's work 
+
 ### 0.5.37
 
 - Integration autostealth with better rolls

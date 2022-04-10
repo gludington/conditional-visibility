@@ -711,20 +711,36 @@ const module = {
     }
     const sourceToken = tokenArray[0];
     */
+    if (!options?.changes) {
+      if (isRemoved) {
+        const senseOrCondition = (await getAllDefaultSensesAndConditions(sourceToken)).find((sense) => {
+          return (
+            isStringEquals(sense.visionName, <string>activeEffect.name) ||
+            isStringEquals(sense.visionName, activeEffect.data.label)
+          );
+        });
+        if (senseOrCondition?.visionId) {
+          await repairAndUnSetFlag(sourceToken, senseOrCondition?.visionId);
+        }
+        return;
+      } else {
+        return;
+      }
+    }
     if (
       options?.changes &&
       (options?.changes.length <= 0 || !options.changes?.find((effect) => effect.key.includes('ATCV')))
     ) {
       if (isRemoved) {
         // for (const sourceToken of tokenArray) {
-        const sense = (await getAllDefaultSensesAndConditions(sourceToken)).find((sense: AtcvEffect) => {
+        const senseOrCondition = (await getAllDefaultSensesAndConditions(sourceToken)).find((sense: AtcvEffect) => {
           return (
             isStringEquals(sense.visionName, <string>activeEffect.name) ||
             isStringEquals(sense.visionName, activeEffect.data.label)
           );
         });
-        if (sense?.visionId) {
-          await repairAndUnSetFlag(sourceToken, sense?.visionId);
+        if (senseOrCondition?.visionId) {
+          await repairAndUnSetFlag(sourceToken, senseOrCondition?.visionId);
         }
         // }
       } else {

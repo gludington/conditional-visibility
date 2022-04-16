@@ -323,7 +323,7 @@ function getElevationPlaceableObject(placeableObject: any): number {
     _levels?.advancedLOS &&
     (placeableObject instanceof Token || placeableObject instanceof TokenDocument)
       ? //@ts-ignore
-        _levels.getTokenLOSheight(token)
+        _levels.getTokenLOSheight(placeableObject)
       : base.elevation ??
         base.flags['levels']?.elevation ??
         base.flags['levels']?.rangeBottom ??
@@ -1537,22 +1537,24 @@ export async function repairAndSetFlag(token: Token, key: string, value: AtcvEff
         return;
       }
     }
-    if (game.settings.get(CONSTANTS.MODULE_NAME, 'enableFastModeCVHandler')) {
-      const keysToRemove = new Set<String>();
-      const prefix = <string>game.user?.id;
-      for (const key of API.weakMap.keys()) {
-        if (key.startsWith(prefix)) {
-          keysToRemove.add(key);
-        }
-      }
-      for (const s of keysToRemove) {
-        API.weakMap.delete(s);
-      }
+    // if (game.settings.get(CONSTANTS.MODULE_NAME, 'enableFastModeCVHandler')) {
+    //   const keysToRemove = new Set<String>();
+    //   const prefix = <string>game.user?.id;
+    //   for (const key of API.weakMap.keys()) {
+    //     if (key.startsWith(prefix)) {
+    //       keysToRemove.add(key);
+    //     }
+    //   }
+    //   for (const s of keysToRemove) {
+    //     API.weakMap.delete(s);
+    //   }
+    // }
+    if (game.settings.get(CONSTANTS.MODULE_NAME, 'enableRefreshSightCVHandler')) {
+      canvas.perception.schedule({
+        lighting: { refresh: true },
+        sight: { refresh: true },
+      });
     }
-    // canvas.perception.schedule({
-    //   lighting: { refresh: true },
-    //   sight: { refresh: true },
-    // });
   }
 }
 
@@ -1627,22 +1629,24 @@ export async function repairAndUnSetFlag(token: Token, key: string) {
       // DO NOTHING
       return;
     }
-    if (game.settings.get(CONSTANTS.MODULE_NAME, 'enableFastModeCVHandler')) {
-      const keysToRemove = new Set<String>();
-      const prefix = <string>game.user?.id;
-      for (const key of API.weakMap.keys()) {
-        if (key.startsWith(prefix)) {
-          keysToRemove.add(key);
-        }
-      }
-      for (const s of keysToRemove) {
-        API.weakMap.delete(s);
-      }
+    // if (game.settings.get(CONSTANTS.MODULE_NAME, 'enableFastModeCVHandler')) {
+    //   const keysToRemove = new Set<String>();
+    //   const prefix = <string>game.user?.id;
+    //   for (const key of API.weakMap.keys()) {
+    //     if (key.startsWith(prefix)) {
+    //       keysToRemove.add(key);
+    //     }
+    //   }
+    //   for (const s of keysToRemove) {
+    //     API.weakMap.delete(s);
+    //   }
+    // }
+    if (game.settings.get(CONSTANTS.MODULE_NAME, 'enableRefreshSightCVHandler')) {
+      canvas.perception.schedule({
+        lighting: { refresh: true },
+        sight: { refresh: true },
+      });
     }
-    // canvas.perception.schedule({
-    //   lighting: { refresh: true },
-    //   sight: { refresh: true },
-    // });
   }
 }
 

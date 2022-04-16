@@ -31,6 +31,8 @@
   "conditional-visibility.setting.enableDrawCVHandler.hint": "Draw specific token base on the CV configuration of the token",
   "conditional-visibility.setting.enableFastModeCVHandler.name": "[EXPERIMENTAL] Enable fast mode CV Handler",
   "conditional-visibility.setting.enableFastModeCVHandler.hint": "This will apply a map for cache the result of the CV for a fast interaction. The map will be cleared every time a CV flag is been modified. ATTENTION: When the 'Fast Mode' is enabled no debug information in generated with the 'Enable debugging' module setting.",
+  "conditional-visibility.setting.enableRefreshSightCVHandler.name": "Enable refresh sight CV Handler",
+  "conditional-visibility.setting.enableRefreshSightCVHandler.hint": "Every time there is a change on the CV data of the token we made a refresh of the sight layer, so you can avoid the unselect+select again event",
 
   "conditional-visibility.setting.npcType.name": "NPC actor type",
   "conditional-visibility.setting.npcType.hint": "Here you can configure what the type of NPC actor of your system for the sight check. For example, in D&D5e system, the type is on the property \"actor.type\" an is value is 'npc', so you'd put \"npc\" in this setting.",

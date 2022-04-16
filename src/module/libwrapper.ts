@@ -187,17 +187,17 @@ export function sightLayerPrototypeTokenVisionHandlerNoLevels(wrapped, ...args) 
       // let tokenVisible = canvas.scene?.data.tokenVision ? false : gm || !token.data.hidden;
       for (const ownedToken of ownedTokens) {
         let isCVVisible = false;
-        if (game.settings.get(CONSTANTS.MODULE_NAME, 'enableFastModeCVHandler')) {
-          const key = game.user?.id + '_' + ownedToken.id + '_' + token.id;
-          if (API.weakMap.has(key)) {
-            isCVVisible = <boolean>API.weakMap.get(key);
-          } else {
-            isCVVisible = shouldIncludeVisionV2(ownedToken, token);
-            API.weakMap.set(key, isCVVisible);
-          }
-        } else {
-          isCVVisible = shouldIncludeVisionV2(ownedToken, token);
-        }
+        // if (game.settings.get(CONSTANTS.MODULE_NAME, 'enableFastModeCVHandler')) {
+        //   const key = game.user?.id + '_' + ownedToken.id + '_' + token.id;
+        //   if (API.weakMap.has(key)) {
+        //     isCVVisible = <boolean>API.weakMap.get(key);
+        //   } else {
+        //     isCVVisible = shouldIncludeVisionV2(ownedToken, token);
+        //     API.weakMap.set(key, isCVVisible);
+        //   }
+        // } else {
+        isCVVisible = shouldIncludeVisionV2(ownedToken, token);
+        // }
         if (isCVVisible) {
           drawHandlerCVImage(ownedToken, token);
         }
@@ -219,17 +219,17 @@ export function overrideVisibilityTestHandlerWithLevels(wrapped, ...args) {
   }
 
   let isCVVisible = true;
-  if (game.settings.get(CONSTANTS.MODULE_NAME, 'enableFastModeCVHandler')) {
-    const key = game.user?.id + '_' + sourceToken.id + '_' + targetToken.id;
-    if (API.weakMap.has(key)) {
-      isCVVisible = <boolean>API.weakMap.get(key);
-    } else {
-      isCVVisible = shouldIncludeVisionV2(sourceToken, targetToken);
-      API.weakMap.set(key, isCVVisible);
-    }
-  } else {
-    isCVVisible = shouldIncludeVisionV2(sourceToken, targetToken);
-  }
+  // if (game.settings.get(CONSTANTS.MODULE_NAME, 'enableFastModeCVHandler')) {
+  //   const key = game.user?.id + '_' + sourceToken.id + '_' + targetToken.id;
+  //   if (API.weakMap.has(key)) {
+  //     isCVVisible = <boolean>API.weakMap.get(key);
+  //   } else {
+  //     isCVVisible = shouldIncludeVisionV2(sourceToken, targetToken);
+  //     API.weakMap.set(key, isCVVisible);
+  //   }
+  // } else {
+  isCVVisible = shouldIncludeVisionV2(sourceToken, targetToken);
+  // }
   if (isCVVisible) {
     drawHandlerCVImage(sourceToken, targetToken);
     return wrapped(...args);
@@ -313,17 +313,17 @@ export function sightLayerPrototypeTestVisibilityHandler(wrapped, ...args) {
   for (let i = 0; i < mySources.length; i++) {
     const controlledToken = <Token>mySources[i];
     let isCVVisible = controlledToken.visible;
-    if (game.settings.get(CONSTANTS.MODULE_NAME, 'enableFastModeCVHandler')) {
-      const key = game.user?.id + '_' + controlledToken.id + '_' + tokenToCheckIfIsVisible.id;
-      if (API.weakMap.has(key)) {
-        isCVVisible = <boolean>API.weakMap.get(key);
-      } else {
-        isCVVisible = shouldIncludeVisionV2(controlledToken, tokenToCheckIfIsVisible);
-        API.weakMap.set(key, isCVVisible);
-      }
-    } else {
-      isCVVisible = shouldIncludeVisionV2(controlledToken, tokenToCheckIfIsVisible);
-    }
+    // if (game.settings.get(CONSTANTS.MODULE_NAME, 'enableFastModeCVHandler')) {
+    //   const key = game.user?.id + '_' + controlledToken.id + '_' + tokenToCheckIfIsVisible.id;
+    //   if (API.weakMap.has(key)) {
+    //     isCVVisible = <boolean>API.weakMap.get(key);
+    //   } else {
+    //     isCVVisible = shouldIncludeVisionV2(controlledToken, tokenToCheckIfIsVisible);
+    //     API.weakMap.set(key, isCVVisible);
+    //   }
+    // } else {
+    isCVVisible = shouldIncludeVisionV2(controlledToken, tokenToCheckIfIsVisible);
+    // }
     if (isCVVisible) {
       drawHandlerCVImage(controlledToken, tokenToCheckIfIsVisible);
       isCVVisibleFinal = isCVVisible;

@@ -1,3 +1,9 @@
+### 0.5.39
+
+- Bug fix on the elevation method utility
+- Remove module settigns 'enableFastModeCVHandler' we can't avoid the checker
+- Add module settings 'enableRefreshSightCVHandler'
+
 ### 0.5.38
 
 - Bug fix [[BUG] Stuck flags](https://github.com/p4535992/conditional-visibility/issues/30)

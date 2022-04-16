@@ -100,9 +100,18 @@ export const registerSettings = function (): void {
     type: Boolean,
   });
 
-  game.settings.register(CONSTANTS.MODULE_NAME, 'enableFastModeCVHandler', {
-    name: `${CONSTANTS.MODULE_NAME}.setting.enableFastModeCVHandler.name`,
-    hint: `${CONSTANTS.MODULE_NAME}.setting.enableFastModeCVHandler.hint`,
+  // game.settings.register(CONSTANTS.MODULE_NAME, 'enableFastModeCVHandler', {
+  //   name: `${CONSTANTS.MODULE_NAME}.setting.enableFastModeCVHandler.name`,
+  //   hint: `${CONSTANTS.MODULE_NAME}.setting.enableFastModeCVHandler.hint`,
+  //   scope: 'world',
+  //   config: true,
+  //   default: false,
+  //   type: Boolean,
+  // });
+
+  game.settings.register(CONSTANTS.MODULE_NAME, 'enableRefreshSightCVHandler', {
+    name: `${CONSTANTS.MODULE_NAME}.setting.enableRefreshSightCVHandler.name`,
+    hint: `${CONSTANTS.MODULE_NAME}.setting.enableRefreshSightCVHandler.hint`,
     scope: 'world',
     config: true,
     default: false,
@@ -430,9 +439,18 @@ function otherSettings(apply = false) {
       default: false,
     },
 
-    enableFastModeCVHandler: {
-      name: `${CONSTANTS.MODULE_NAME}.setting.enableFastModeCVHandler.name`,
-      hint: `${CONSTANTS.MODULE_NAME}.setting.enableFastModeCVHandler.hint`,
+    // enableFastModeCVHandler: {
+    //   name: `${CONSTANTS.MODULE_NAME}.setting.enableFastModeCVHandler.name`,
+    //   hint: `${CONSTANTS.MODULE_NAME}.setting.enableFastModeCVHandler.hint`,
+    //   scope: 'world',
+    //   config: true,
+    //   default: false,
+    //   type: Boolean,
+    // },
+
+    enableRefreshSightCVHandler: {
+      name: `${CONSTANTS.MODULE_NAME}.setting.enableRefreshSightCVHandler.name`,
+      hint: `${CONSTANTS.MODULE_NAME}.setting.enableRefreshSightCVHandler.hint`,
       scope: 'world',
       config: true,
       default: false,

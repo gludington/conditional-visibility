@@ -22,6 +22,8 @@ export default {
       conditionSources: <string[]>[],
       conditionTargets: <string[]>[],
       conditionElevation: false,
+      conditionBlinded: false,
+      conditionBlindedOverride: false,
     },
   ],
 };

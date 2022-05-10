@@ -29,6 +29,9 @@ export class AtcvEffect {
   visionType: string;
   visionIsDisabled: boolean;
 
+  visionBlinded: boolean;
+  visionBlindedOverride: boolean;
+
   static fromSenseData(senseData: SenseData, visionLevelValue: number, isDisabled = false) {
     let isSense = false;
     if (senseData.conditionType === 'sense') {
@@ -56,6 +59,8 @@ export class AtcvEffect {
     res.visionDistanceValue = senseData.conditionDistance;
     res.visionType = senseData.conditionType ? senseData.conditionType : isSense ? 'sense' : 'condition';
     res.visionIsDisabled = String(isDisabled) === 'true' ? true : false;
+    res.visionBlinded = String(senseData.conditionBlinded) === 'true' ? true : false;
+    res.visionBlindedOverride = String(senseData.conditionBlindedOverride) === 'true' ? true : false;
     return res;
   }
 
@@ -109,6 +114,12 @@ export class AtcvEffect {
     // if(!res.visionIsDisabled){
     //   res.visionIsDisabled = Stirng(IsDisabled) === 'true' ? true : false;
     // }
+    if (!res.visionBlinded) {
+      res.visionBlinded = senseData.conditionBlinded;
+    }
+    if (!res.visionBlindedOverride) {
+      res.visionBlindedOverride = senseData.conditionBlindedOverride;
+    }
     return res;
   }
 
@@ -192,6 +203,26 @@ export class AtcvEffect {
           key: 'ATCV.conditionType',
           mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
           value: `${senseData.conditionType}`,
+          priority: 5,
+        });
+      }
+    }
+    if (atcvChanges.filter((e) => isStringEquals(e.key, 'ATCV.conditionBlinded')).length <= 0) {
+      if (senseData.conditionBlinded) {
+        atcvChanges.push({
+          key: 'ATCV.conditionBlinded',
+          mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+          value: `${senseData.conditionBlinded}`,
+          priority: 5,
+        });
+      }
+    }
+    if (atcvChanges.filter((e) => isStringEquals(e.key, 'ATCV.conditionBlindedOverride')).length <= 0) {
+      if (senseData.conditionBlindedOverride) {
+        atcvChanges.push({
+          key: 'ATCV.conditionBlindedOverride',
+          mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+          value: `${senseData.conditionBlindedOverride}`,
           priority: 5,
         });
       }
@@ -283,7 +314,26 @@ export class AtcvEffect {
         });
       }
     }
-
+    if (atcvChanges.filter((e) => isStringEquals(e.key, 'ATCV.conditionBlinded')).length <= 0) {
+      if (senseData.conditionBlinded) {
+        atcvChanges.push({
+          key: 'ATCV.conditionBlinded',
+          mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+          value: `${senseData.conditionBlinded}`,
+          priority: 5,
+        });
+      }
+    }
+    if (atcvChanges.filter((e) => isStringEquals(e.key, 'ATCV.conditionBlindedOverride')).length <= 0) {
+      if (senseData.conditionBlindedOverride) {
+        atcvChanges.push({
+          key: 'ATCV.conditionBlindedOverride',
+          mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+          value: `${senseData.conditionBlindedOverride}`,
+          priority: 5,
+        });
+      }
+    }
     return atcvChanges;
   }
 
@@ -354,6 +404,8 @@ export interface SenseData {
   conditionSourceImage: string;
   conditionDistance: number; // [OPTIONAL] set a maximum distance for check the sight with this effect
   conditionType: string; // indicate the type of CV usually they are or 'sense' or 'condition' not both, **THIS IS ESSENTIAL FOR USE SENSE AND CONDITION NOT REGISTERED ON THE MODULE IF NOT FOUNDED BY DEFAULT IS CONSIDERED A SENSE**, so now you can just modify the AE and you are not forced to call the registered macro of the module CV, this is very useful for integration with other modules.
+  conditionBlinded: boolean; // [OPTIONAL] If true this effect / condition is applied on the token / actor it will be evaluated for the blinded check and only another effect with `ATCV.conditionBlindedOverride = true` will be able to avoid this check.
+  conditionBlindedOverride: boolean; // [OPTIONAL] If true it indicates that this effect is able to work even with the "Blinded" condition applied to the token
 }
 
 export enum ConditionalVisibilityFlags {
@@ -471,6 +523,8 @@ export class VisionCapabilities {
           const conditionSourceImage = atcvEffectFlagData.visionSourceImage || '';
           const conditionType = atcvEffectFlagData.visionType || 'sense';
           const conditionIsDisabled = atcvEffectFlagData.visionIsDisabled || false;
+          const conditionBlinded = atcvEffectFlagData.visionBlinded || false;
+          const conditionBlindedOverride = atcvEffectFlagData.visionBlindedOverride || false;
 
           const statusEffect = <AtcvEffect>{
             visionId: statusSight.id,
@@ -485,6 +539,8 @@ export class VisionCapabilities {
             // statusSight: statusSight,
             visionType: conditionType,
             visionIsDisabled: conditionIsDisabled,
+            visionBlinded: conditionBlinded,
+            visionBlindedOverride: conditionBlindedOverride,
           };
           this.senses.set(statusSight.id, statusEffect);
         }
@@ -519,6 +575,8 @@ export class VisionCapabilities {
           const conditionSourceImage = atcvEffectFlagData.visionSourceImage || '';
           const conditionType = atcvEffectFlagData.visionType || 'condition';
           const conditionIsDisabled = atcvEffectFlagData.visionIsDisabled || false;
+          const conditionBlinded = atcvEffectFlagData.visionBlinded || false;
+          const conditionBlindedOverride = atcvEffectFlagData.visionBlindedOverride || false;
 
           const statusEffect = <AtcvEffect>{
             visionId: statusSight.id,
@@ -533,6 +591,8 @@ export class VisionCapabilities {
             // statusSight: statusSight,
             visionType: conditionType,
             visionIsDisabled: conditionIsDisabled,
+            visionBlinded: conditionBlinded,
+            visionBlindedOverride: conditionBlindedOverride,
           };
           this.conditions.set(statusSight.id, statusEffect);
         }

@@ -507,6 +507,16 @@ export async function prepareActiveEffectForConditionalVisibility(
                 thereISADifference = true;
               }
               aee.value = sense.visionType;
+            } else if (aee.key.startsWith('ATCV.conditionBlinded')) {
+              if (String(aee.value) != String(sense.visionBlinded)) {
+                thereISADifference = true;
+              }
+              aee.value = sense.visionBlinded;
+            } else if (aee.key.startsWith('ATCV.conditionBlindedOverride')) {
+              if (String(aee.value) != String(sense.visionBlindedOverride)) {
+                thereISADifference = true;
+              }
+              aee.value = sense.visionBlindedOverride;
             }
           }
         }
@@ -612,6 +622,16 @@ export async function prepareActiveEffectForConditionalVisibility(
                 thereISADifference = true;
               }
               aee.value = condition.visionType;
+            } else if (aee.key.startsWith('ATCV.conditionBlinded')) {
+              if (String(aee.value) != String(condition.visionBlinded)) {
+                thereISADifference = true;
+              }
+              aee.value = condition.visionBlinded;
+            } else if (aee.key.startsWith('ATCV.conditionBlindedOverride')) {
+              if (String(aee.value) != String(condition.visionBlindedOverride)) {
+                thereISADifference = true;
+              }
+              aee.value = condition.visionBlindedOverride;
             }
           }
         }
@@ -1000,7 +1020,7 @@ export function retrieveAtcvEffectFromActiveEffect(
       }
     } else if (isStringEquals(change.key, 'ATCV.conditionElevation') && change.value) {
       if (atcvEffect.visionElevation === null || atcvEffect.visionElevation === undefined) {
-        atcvEffect.visionElevation = change.value === 'true';
+        atcvEffect.visionElevation = change.value === 'true' ? true : false;
       }
     } else if (isStringEquals(change.key, 'ATCV.conditionDistance') && change.value) {
       if (atcvEffect.visionDistanceValue === null || atcvEffect.visionDistanceValue === undefined) {
@@ -1051,6 +1071,14 @@ export function retrieveAtcvEffectFromActiveEffect(
     } else if (isStringEquals(change.key, 'ATCV.conditionType') && change.value) {
       if (atcvEffect.visionType === null || atcvEffect.visionType === undefined) {
         atcvEffect.visionType = String(change.value);
+      }
+    } else if (isStringEquals(change.key, 'ATCV.conditionBlinded') && change.value) {
+      if (atcvEffect.visionBlinded === null || atcvEffect.visionBlinded === undefined) {
+        atcvEffect.visionBlinded = change.value === 'true' ? true : false;
+      }
+    } else if (isStringEquals(change.key, 'ATCV.conditionBlindedOverride') && change.value) {
+      if (atcvEffect.visionBlindedOverride === null || atcvEffect.visionBlindedOverride === undefined) {
+        atcvEffect.visionBlindedOverride = change.value === 'true' ? true : false;
       }
     }
   }
@@ -1407,35 +1435,43 @@ export async function repairAndSetFlag(token: Token, key: string, value: AtcvEff
           let updateKey = '';
           if (!aee.key.startsWith('ATCV.condition')) {
             updateKey = aee.key.slice(5);
-            if (aee.value != String(value?.visionLevelValue)) {
+            if (String(aee.value) != String(value?.visionLevelValue)) {
               thereISADifference = true;
             }
           } else if (aee.key.startsWith('ATCV.conditionElevation')) {
-            if (aee.value != String(value?.visionElevation)) {
+            if (String(aee.value) != String(value?.visionElevation)) {
               thereISADifference = true;
             }
           } else if (aee.key.startsWith('ATCV.conditionDistance')) {
-            if (aee.value != String(value?.visionDistanceValue)) {
+            if (String(aee.value) != String(value?.visionDistanceValue)) {
               thereISADifference = true;
             }
           } else if (aee.key.startsWith('ATCV.conditionTargets')) {
-            if (aee.value != String(value?.visionTargets)) {
+            if (String(aee.value) != String(value?.visionTargets)) {
               thereISADifference = true;
             }
           } else if (aee.key.startsWith('ATCV.conditionSources')) {
-            if (aee.value != String(value?.visionSources)) {
+            if (String(aee.value) != String(value?.visionSources)) {
               thereISADifference = true;
             }
           } else if (aee.key.startsWith('ATCV.conditionTargetImage')) {
-            if (aee.value != String(value?.visionTargetImage)) {
+            if (String(aee.value) != String(value?.visionTargetImage)) {
               thereISADifference = true;
             }
           } else if (aee.key.startsWith('ATCV.conditionSourceImage')) {
-            if (aee.value != String(value?.visionSourceImage)) {
+            if (String(aee.value) != String(value?.visionSourceImage)) {
               thereISADifference = true;
             }
           } else if (aee.key.startsWith('ATCV.conditionType')) {
-            if (aee.value != String(value?.visionType)) {
+            if (String(aee.value) != String(value?.visionType)) {
+              thereISADifference = true;
+            }
+          } else if (aee.key.startsWith('ATCV.conditionBlinded')) {
+            if (String(aee.value) != String(value?.visionBlinded)) {
+              thereISADifference = true;
+            }
+          } else if (aee.key.startsWith('ATCV.conditionBlindedOverride')) {
+            if (String(aee.value) != String(value?.visionBlindedOverride)) {
               thereISADifference = true;
             }
           }
@@ -1465,6 +1501,10 @@ export async function repairAndSetFlag(token: Token, key: string, value: AtcvEff
             thereISADifference = true;
           } else if (value.visionType != currentAtcvEffectFlagData.visionType) {
             thereISADifference = true;
+          } else if (value.visionBlinded != currentAtcvEffectFlagData.visionBlinded) {
+            thereISADifference = true;
+          } else if (value.visionBlindedOverride != currentAtcvEffectFlagData.visionBlindedOverride) {
+            thereISADifference = true;
           }
         } else {
           thereISADifference = true;
@@ -1473,6 +1513,8 @@ export async function repairAndSetFlag(token: Token, key: string, value: AtcvEff
     } else {
       thereISADifference = true;
     }
+
+    // TODO START TO REMOVE
     if (token.document.getFlag(CONSTANTS.MODULE_NAME, key)) {
       await token.document.unsetFlag(CONSTANTS.MODULE_NAME, key);
     }
@@ -1497,6 +1539,13 @@ export async function repairAndSetFlag(token: Token, key: string, value: AtcvEff
     if (token.actor.getFlag(CONSTANTS.MODULE_NAME, 'conditionType')) {
       await token.actor.unsetFlag(CONSTANTS.MODULE_NAME, 'conditionType');
     }
+    if (token.actor.getFlag(CONSTANTS.MODULE_NAME, 'conditionBlinded')) {
+      await token.actor.unsetFlag(CONSTANTS.MODULE_NAME, 'conditionBlinded');
+    }
+    if (token.actor.getFlag(CONSTANTS.MODULE_NAME, 'conditionBlindedOverride')) {
+      await token.actor.unsetFlag(CONSTANTS.MODULE_NAME, 'conditionBlindedOverride');
+    }
+    // TODO END TO REMOVE
 
     if (thereISADifference) {
       await token.actor?.setFlag(CONSTANTS.MODULE_NAME, key, value);
@@ -1564,6 +1613,8 @@ export async function repairAndUnSetFlag(token: Token, key: string) {
     return;
   }
   if (token.actor) {
+
+    // TODO START TO REMOVE
     if (token.document.getFlag(CONSTANTS.MODULE_NAME, key)) {
       await token.document.unsetFlag(CONSTANTS.MODULE_NAME, key);
     }
@@ -1588,6 +1639,14 @@ export async function repairAndUnSetFlag(token: Token, key: string) {
     if (token.actor.getFlag(CONSTANTS.MODULE_NAME, 'conditionType')) {
       await token.actor.unsetFlag(CONSTANTS.MODULE_NAME, 'conditionType');
     }
+    if (token.actor.getFlag(CONSTANTS.MODULE_NAME, 'conditionBlinded')) {
+      await token.actor.unsetFlag(CONSTANTS.MODULE_NAME, 'conditionBlinded');
+    }
+    if (token.actor.getFlag(CONSTANTS.MODULE_NAME, 'conditionBlindedOverride')) {
+      await token.actor.unsetFlag(CONSTANTS.MODULE_NAME, 'conditionBlindedOverride');
+    }
+    // TODO END TO REMOVE
+
     await token.actor?.unsetFlag(CONSTANTS.MODULE_NAME, key);
 
     const isSense = !!API.SENSES.find((sense: SenseData) => {

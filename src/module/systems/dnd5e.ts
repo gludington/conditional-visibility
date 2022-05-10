@@ -33,6 +33,8 @@ export default {
       conditionSources: <string[]>[],
       conditionTargets: <string[]>[],
       conditionElevation: false,
+      conditionBlinded: false,
+      conditionBlindedOverride: false,
     },
     {
       id: AtcvEffectSenseFlags.NORMAL,
@@ -43,6 +45,8 @@ export default {
       conditionSources: <string[]>[],
       conditionTargets: <string[]>[],
       conditionElevation: false,
+      conditionBlinded: false,
+      conditionBlindedOverride: false,
     },
     {
       id: AtcvEffectSenseFlags.BLINDED,
@@ -53,6 +57,8 @@ export default {
       conditionSources: <string[]>[],
       conditionTargets: <string[]>[],
       conditionElevation: false,
+      conditionBlinded: true,
+      conditionBlindedOverride: false,
     },
     {
       id: AtcvEffectSenseFlags.DARKVISION,
@@ -62,7 +68,8 @@ export default {
       conditionType: 'sense',
       conditionSources: <string[]>[],
       conditionTargets: <string[]>[],
-      conditionElevation: false,
+      conditionBlinded: false,
+      conditionBlindedOverride: false,
     },
     {
       id: AtcvEffectSenseFlags.TREMOR_SENSE,
@@ -73,6 +80,8 @@ export default {
       conditionSources: <string[]>[],
       conditionTargets: <string[]>[],
       conditionElevation: true,
+      conditionBlinded: false,
+      conditionBlindedOverride: true,
     },
     {
       id: AtcvEffectSenseFlags.SEE_INVISIBLE,
@@ -83,6 +92,8 @@ export default {
       conditionSources: <string[]>[],
       conditionTargets: <string[]>[],
       conditionElevation: false,
+      conditionBlinded: false,
+      conditionBlindedOverride: false,
     },
     {
       id: AtcvEffectSenseFlags.BLIND_SIGHT,
@@ -93,6 +104,8 @@ export default {
       conditionSources: <string[]>[],
       conditionTargets: <string[]>[],
       conditionElevation: false,
+      conditionBlinded: false,
+      conditionBlindedOverride: true,
     },
     {
       id: AtcvEffectSenseFlags.TRUE_SIGHT,
@@ -103,6 +116,8 @@ export default {
       conditionSources: <string[]>[],
       conditionTargets: <string[]>[],
       conditionElevation: false,
+      conditionBlinded: false,
+      conditionBlindedOverride: false,
     },
     {
       id: AtcvEffectSenseFlags.DEVILS_SIGHT,
@@ -113,6 +128,8 @@ export default {
       conditionSources: <string[]>[],
       conditionTargets: <string[]>[],
       conditionElevation: false,
+      conditionBlinded: false,
+      conditionBlindedOverride: false,
     },
   ],
   CONDITIONS: <SenseData[]>[
@@ -125,6 +142,8 @@ export default {
       conditionSources: <string[]>[],
       conditionTargets: <string[]>[],
       conditionElevation: false,
+      conditionBlinded: false,
+      conditionBlindedOverride: false,
     },
     {
       id: AtcvEffectConditionFlags.STEALTHED,
@@ -134,6 +153,8 @@ export default {
       conditionSources: <string[]>[],
       conditionTargets: <string[]>[],
       conditionElevation: false,
+      conditionBlinded: false,
+      conditionBlindedOverride: false,
     },
     {
       id: AtcvEffectConditionFlags.HIDDEN,
@@ -144,6 +165,8 @@ export default {
       conditionSources: <string[]>[],
       conditionTargets: <string[]>[],
       conditionElevation: false,
+      conditionBlinded: false,
+      conditionBlindedOverride: false,
     },
     {
       id: AtcvEffectConditionFlags.INVISIBLE,
@@ -159,6 +182,8 @@ export default {
       ],
       conditionTargets: <string[]>[],
       conditionElevation: false,
+      conditionBlinded: false,
+      conditionBlindedOverride: false,
     },
     {
       id: AtcvEffectConditionFlags.OBSCURED,
@@ -169,6 +194,8 @@ export default {
       conditionSources: <string[]>[AtcvEffectSenseFlags.BLIND_SIGHT, AtcvEffectSenseFlags.TREMOR_SENSE],
       conditionTargets: <string[]>[],
       conditionElevation: false,
+      conditionBlinded: false,
+      conditionBlindedOverride: false,
     },
     {
       id: AtcvEffectConditionFlags.IN_DARKNESS,
@@ -184,6 +211,8 @@ export default {
       ],
       conditionTargets: <string[]>[],
       conditionElevation: false,
+      conditionBlinded: false,
+      conditionBlindedOverride: false,
     },
   ],
 };

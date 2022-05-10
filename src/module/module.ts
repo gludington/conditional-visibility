@@ -302,18 +302,6 @@ const module = {
         }
       }
     }
-    // TODO to remove
-    /*
-    if (
-      change.flags &&
-      change.flags[CONSTANTS.MODULE_NAME] &&
-      // !getProperty(change, `flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`) &&
-      !getProperty(change, `flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_SENSES}`) &&
-      !getProperty(change, `flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_CONDITIONS}`)
-    ) {
-      module.updateToken(sourceToken.document, change, options, userId);
-    }
-    */
     if (
       change.actor &&
       change.actor.data &&
@@ -324,79 +312,6 @@ const module = {
     ) {
       module.updateToken(sourceToken.document, change, options, userId);
     }
-    // TODO to remove
-    /*
-    if (
-      change.flags &&
-      change.flags[CONSTANTS.MODULE_NAME] &&
-      getProperty(change, `flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`) != null &&
-      getProperty(change, `flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`) != undefined &&
-      !getProperty(change, `flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_SENSES}`) &&
-      !getProperty(change, `flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_CONDITIONS}`)
-    ) {
-      const forceVisible = !!getProperty(
-        change,
-        `flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`,
-      );
-      if (forceVisible) {
-        await sourceToken.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE, forceVisible);
-      } else {
-        await sourceToken.actor?.unsetFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE);
-      }
-    }
-    */
-    /*
-    if (
-      change.actor &&
-      change.actor.data &&
-      change.actor.data.flags[CONSTANTS.MODULE_NAME] &&
-      getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`) !=
-        null &&
-      getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`) !=
-        undefined &&
-      !getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_SENSES}`) &&
-      !getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_CONDITIONS}`)
-    ) {
-      const forceVisible = !!getProperty(
-        change,
-        `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`,
-      );
-      if (forceVisible) {
-        await sourceToken.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE, forceVisible);
-      } else {
-        await sourceToken.actor?.unsetFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE);
-      }
-    }
-    if (
-      change.actor &&
-      change.actor.data &&
-      change.actor.data.flags[CONSTANTS.MODULE_NAME] &&
-      getProperty(
-        change,
-        `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.USE_STEALTH_PASSIVE}`,
-      ) != null &&
-      getProperty(
-        change,
-        `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.USE_STEALTH_PASSIVE}`,
-      ) != undefined &&
-      !getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_SENSES}`) &&
-      !getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_CONDITIONS}`)
-    ) {
-      const useStealthPassive = !!getProperty(
-        change,
-        `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.USE_STEALTH_PASSIVE}`,
-      );
-      if (useStealthPassive) {
-        await sourceToken.actor?.setFlag(
-          CONSTANTS.MODULE_NAME,
-          ConditionalVisibilityFlags.USE_STEALTH_PASSIVE,
-          useStealthPassive,
-        );
-      } else {
-        await sourceToken.actor?.unsetFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.USE_STEALTH_PASSIVE);
-      }
-    }
-    */
   },
   async updateToken(document: TokenDocument, changeOri, options, userId) {
     const change = duplicateExtended(changeOri);
@@ -429,24 +344,10 @@ const module = {
     }
     let isEnabledForToken = false;
     let p;
-    // TODO remove on 0.6.X
-    /*
-    if (
-      change.flags &&
-      change.flags[CONSTANTS.MODULE_NAME] &&
-      // !getProperty(change, `flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`) &&
-      !getProperty(change, `flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_SENSES}`) &&
-      !getProperty(change, `flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_CONDITIONS}`)
-    ) {
-      isEnabledForToken = true;
-      p = getProperty(change, `flags.${CONSTANTS.MODULE_NAME}`);
-    }
-    */
     if (
       change.actor &&
       change.actor.data &&
       change.actor.data.flags[CONSTANTS.MODULE_NAME] &&
-      // !getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`) &&
       !getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_SENSES}`) &&
       !getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_CONDITIONS}`)
     ) {
@@ -835,6 +736,16 @@ const module = {
                   }
                 } else if (aee.key.startsWith('ATCV.conditionType')) {
                   if (String(aee.value) != String(currentAtcvEffectFlagData.visionType)) {
+                    thereISADifference = true;
+                    break;
+                  }
+                } else if (aee.key.startsWith('ATCV.conditionBlinded')) {
+                  if (String(aee.value) != String(currentAtcvEffectFlagData.visionBlinded)) {
+                    thereISADifference = true;
+                    break;
+                  }
+                } else if (aee.key.startsWith('ATCV.conditionBlindedOverride')) {
+                  if (String(aee.value) != String(currentAtcvEffectFlagData.visionBlindedOverride)) {
                     thereISADifference = true;
                     break;
                   }

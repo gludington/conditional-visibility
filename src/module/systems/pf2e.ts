@@ -29,6 +29,8 @@ export default {
       conditionSources: <string[]>[],
       conditionTargets: <string[]>[],
       conditionElevation: false,
+      conditionBlinded: false,
+      conditionBlindedOverride: false,
     },
     {
       id: AtcvEffectSenseFlags.NORMAL,
@@ -39,6 +41,8 @@ export default {
       conditionSources: <string[]>[],
       conditionTargets: <string[]>[],
       conditionElevation: false,
+      conditionBlinded: false,
+      conditionBlindedOverride: false,
     },
     {
       id: AtcvEffectSenseFlags.BLINDED,
@@ -49,6 +53,8 @@ export default {
       conditionSources: <string[]>[],
       conditionTargets: <string[]>[],
       conditionElevation: false,
+      conditionBlinded: true,
+      conditionBlindedOverride: false,
     },
     {
       id: AtcvEffectSenseFlags.LOW_LIGHT_VISION,
@@ -59,6 +65,8 @@ export default {
       conditionSources: <string[]>[],
       conditionTargets: <string[]>[],
       conditionElevation: false,
+      conditionBlinded: false,
+      conditionBlindedOverride: false,
     },
     {
       id: AtcvEffectSenseFlags.DARKVISION,
@@ -69,6 +77,8 @@ export default {
       conditionSources: <string[]>[],
       conditionTargets: <string[]>[],
       conditionElevation: false,
+      conditionBlinded: false,
+      conditionBlindedOverride: false,
     },
     {
       id: AtcvEffectSenseFlags.GREATER_DARKVISION,
@@ -79,6 +89,8 @@ export default {
       conditionSources: <string[]>[],
       conditionTargets: <string[]>[],
       conditionElevation: false,
+      conditionBlinded: false,
+      conditionBlindedOverride: false,
     },
   ],
   CONDITIONS: <SenseData[]>[
@@ -91,6 +103,8 @@ export default {
       conditionSources: <string[]>[],
       conditionTargets: <string[]>[],
       conditionElevation: false,
+      conditionBlinded: false,
+      conditionBlindedOverride: false,
     },
     {
       id: AtcvEffectConditionFlags.STEALTHED,
@@ -100,6 +114,8 @@ export default {
       conditionSources: <string[]>[],
       conditionTargets: <string[]>[],
       conditionElevation: false,
+      conditionBlinded: false,
+      conditionBlindedOverride: false,
     },
     {
       id: AtcvEffectConditionFlags.HIDDEN,
@@ -110,6 +126,8 @@ export default {
       conditionSources: <string[]>[],
       conditionTargets: <string[]>[],
       conditionElevation: false,
+      conditionBlinded: false,
+      conditionBlindedOverride: false,
     },
     {
       id: AtcvEffectConditionFlags.INVISIBLE,
@@ -120,6 +138,8 @@ export default {
       conditionSources: <string[]>[],
       conditionTargets: <string[]>[],
       conditionElevation: false,
+      conditionBlinded: false,
+      conditionBlindedOverride: false,
     },
     {
       id: AtcvEffectConditionFlags.OBSCURED,
@@ -130,6 +150,8 @@ export default {
       conditionSources: <string[]>[],
       conditionTargets: <string[]>[],
       conditionElevation: false,
+      conditionBlinded: false,
+      conditionBlindedOverride: false,
     },
     {
       id: AtcvEffectConditionFlags.IN_DARKNESS,
@@ -140,6 +162,8 @@ export default {
       conditionSources: <string[]>[],
       conditionTargets: <string[]>[],
       conditionElevation: false,
+      conditionBlinded: false,
+      conditionBlindedOverride: false,
     },
   ],
 };

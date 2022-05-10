@@ -1152,26 +1152,26 @@ export function retrieveAtcvVisionLevelValueFromActiveEffect(token: Token, effec
   return atcvValue;
 }
 
-export async function toggleStealth(event) {
+export async function toggleStealth(event, app) {
   const atcvEffectFlagData = <AtcvEffect>(
-    this.object.actor.getFlag(CONSTANTS.MODULE_NAME, AtcvEffectConditionFlags.HIDDEN)
+    app.object.actor.getFlag(CONSTANTS.MODULE_NAME, AtcvEffectConditionFlags.HIDDEN)
   );
   let stealthedWithHiddenCondition = atcvEffectFlagData?.visionLevelValue ?? 0;
   let stealthedPassive = 0;
   if (
     stealthedWithHiddenCondition == 0 &&
-    getProperty(this.object.document.actor, `data.${API.STEALTH_PASSIVE_SKILL}`)
+    getProperty(app.object.document.actor, `data.${API.STEALTH_PASSIVE_SKILL}`)
   ) {
     stealthedWithHiddenCondition =
-      <number>getProperty(this.object.document.actor, `data.${API.STEALTH_PASSIVE_SKILL}`) || 0;
-    stealthedPassive = getProperty(this.object.document.actor, `data.${API.STEALTH_PASSIVE_SKILL}`) || 0;
+      <number>getProperty(app.object.document.actor, `data.${API.STEALTH_PASSIVE_SKILL}`) || 0;
+    stealthedPassive = getProperty(app.object.document.actor, `data.${API.STEALTH_PASSIVE_SKILL}`) || 0;
   }
 
   // TODO TO CHECK IF I CAN ADD MY CUSTOMIZED ONES WITHOUT THE NEED OF REGISTERED
   //const sensesOrderByName = <SenseData[]>API.SENSES; //.sort((a, b) => a.name.localeCompare(b.name));
   //const conditionsOrderByName = <SenseData[]>API.CONDITIONS; //.sort((a, b) => a.name.localeCompare(b.name));
-  const sensesOrderByName = getSensesFromToken(this.object).sort((a, b) => a.visionName.localeCompare(b.visionName));
-  const conditionsOrderByName = getConditionsFromToken(this.object).sort((a, b) =>
+  const sensesOrderByName = getSensesFromToken(app.object).sort((a, b) => a.visionName.localeCompare(b.visionName));
+  const conditionsOrderByName = getConditionsFromToken(app.object).sort((a, b) =>
     a.visionName.localeCompare(b.visionName),
   );
   for (const [i, item] of sensesOrderByName.entries()) {
@@ -1191,7 +1191,7 @@ export async function toggleStealth(event) {
     }
   }
 
-  const stealthedActive = await API.rollStealth(this.object);
+  const stealthedActive = await API.rollStealth(app.object);
   const content = await renderTemplate(`modules/${CONSTANTS.MODULE_NAME}/templates/stealth_hud.html`, {
     passivestealth: stealthedPassive,
     currentstealth: stealthedWithHiddenCondition,
@@ -1228,8 +1228,8 @@ export async function toggleStealth(event) {
           }
           /*
           let selectedTokens = <Token[]>[];
-          if (this.object) {
-            selectedTokens = [this.object];
+          if (app.object) {
+            selectedTokens = [app.object];
           }
           if (!selectedTokens || selectedTokens.length == 0) {
             selectedTokens = [<Token[]>canvas.tokens?.controlled][0];
@@ -1254,7 +1254,7 @@ export async function toggleStealth(event) {
                   }
                   await repairAndUnSetFlag(selectedToken, senseId);
                 } else {
-                  const atcvEffectFlagData = AtcvEffect.fromEffect(this.object.document, effect);
+                  const atcvEffectFlagData = AtcvEffect.fromEffect(app.object.document, effect);
                   atcvEffectFlagData.visionLevelValue = valStealthRoll;
                   await repairAndSetFlag(selectedToken, senseId, atcvEffectFlagData);
                 }
@@ -1277,7 +1277,7 @@ export async function toggleStealth(event) {
                   }
                   await repairAndUnSetFlag(selectedToken, conditionId);
                 } else {
-                  const atcvEffectFlagData = AtcvEffect.fromEffect(this.object.document, effect);
+                  const atcvEffectFlagData = AtcvEffect.fromEffect(app.object.document, effect);
                   atcvEffectFlagData.visionLevelValue = valStealthRoll;
                   await repairAndSetFlag(selectedToken, conditionId, atcvEffectFlagData);
                 }
@@ -1867,14 +1867,37 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
 
   // 6) Check if the source token has the active effect `blinded` active, if is true, you cannot see anything and return false.
   // for (const sourceStatusEffect of sourceVisionLevels) {
+  let someoneIsBlinded = 0;
   for (let i = 0; i < sourceVisionLevels.length; i++) {
     if (
-      sourceVisionLevels[i]?.visionId === AtcvEffectSenseFlags.BLINDED &&
+      //sourceVisionLevels[i]?.visionId === AtcvEffectSenseFlags.BLINDED &&
+      sourceVisionLevels[i]?.visionBlinded &&
       sourceVisionLevels[i]?.visionLevelValue != 0
     ) {
+      if(<number>sourceVisionLevels[i]?.visionLevelValue > someoneIsBlinded){
+        someoneIsBlinded = <number>sourceVisionLevels[i]?.visionLevelValue;
+      }
+    }
+  }
+
+  if(someoneIsBlinded > 0){
+    // 6.1) Check for blinded override effect avoid the blinded condition. 
+    const sourceVisionLevelsBlindedOverride: AtcvEffect[] = [];
+    for (let i = 0; i < sourceVisionLevels.length; i++) {
+      if (
+        sourceVisionLevels[i]?.visionBlindedOverride &&
+        <number>sourceVisionLevels[i]?.visionLevelValue > someoneIsBlinded 
+      ) {
+        sourceVisionLevelsBlindedOverride.push(<AtcvEffect>sourceVisionLevels[i])
+      }
+    }
+    if(sourceVisionLevelsBlindedOverride.length == 0){
       // Someone is blind
       debug(`(6) Is false, '${sourceToken.data.name}' can't see '${targetToken.data.name}'`);
       return false;
+    }else{
+      debug(`(6.1) Is true, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
+      sourceVisionLevels = sourceVisionLevelsBlindedOverride;
     }
   }
 
@@ -2206,4 +2229,45 @@ export function drawHandlerCVImage(controlledToken: Token, tokenToCheckIfIsVisib
       }
     }
   }
+}
+
+export function buildButton(html, tooltip, atcvEffectFlagData) {
+  /*
+  //const buttonPos = game.settings.get(CONSTANTS.MODULE_NAME, 'hudPos');
+  const hiddenValue = atcvEffectFlagData?.visionLevelValue ?? 0;
+  const borderButton = `<div class="control-icon toggleStealth ${
+    hiddenValue && hiddenValue != 0 ? 'active' : ''
+  }" ${
+    hiddenValue && hiddenValue != 0
+      ? `style="background: blue; opacity:0.85;"`
+      : `style="background: blueviolet; opacity:0.85;"`
+  } title="Toggle Stealth"> <i class="fas fa-eye"></i></div>`;
+  const Pos = html.find(buttonPos);
+  Pos.append(borderButton);
+  html.find('.toggleStealth').click(toggleStealth.bind(app));
+  */
+  const hiddenValue = atcvEffectFlagData?.visionLevelValue ?? 0;
+
+  const iconClass = 'fas fa-eye'; // TODO customize icon ???
+  const button = $(
+    `<div class="control-icon toggleStealth ${
+      hiddenValue && hiddenValue != 0 ? 'active' : ''
+    }" ${
+      hiddenValue && hiddenValue != 0
+        ? `style="background: blue; opacity:0.85;"`
+        : `style="background: blueviolet; opacity:0.85;"`
+    } title="${tooltip}"> <i class="${iconClass}"></i></div>`
+  );
+  const settingHudColClass = <string>game.settings.get(CONSTANTS.MODULE_NAME, 'hudColumn') ?? 'left';
+  const settingHudTopBottomClass = <string>game.settings.get(CONSTANTS.MODULE_NAME, 'hudTopBottom') ?? 'top';
+
+  const buttonPos = '.' + settingHudColClass.toLowerCase();
+
+  const col = html.find(buttonPos);
+  if (settingHudTopBottomClass.toLowerCase() === 'top') {
+    col.prepend(button);
+  } else {
+    col.append(button);
+  }
+  return button;
 }

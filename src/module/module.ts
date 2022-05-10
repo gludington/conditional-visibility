@@ -5,6 +5,7 @@ import { registerSocket, conditionalVisibilitySocket } from './socket';
 import CONSTANTS from './constants';
 import HOOKS from './hooks';
 import {
+  buildButton,
   debug,
   duplicateExtended,
   getAllDefaultSensesAndConditions,
@@ -156,7 +157,12 @@ export const readyHooks = (): void => {
 };
 
 const module = {
-  onRenderTokenConfig(tokenConfig: TokenConfig, jQuery: JQuery, data: object): void {
+  onRenderTokenConfig(tokenConfig: TokenConfig, html: JQuery<HTMLElement>, data: object): void {
+    // Avoid the duplicate token configuration panel
+    if(html.find('.conditional-visibility-senses').length > 0){
+      return;
+    }
+
     const visionTab = $('div.tab[data-tab="vision"]');
     // TODO TO CHECK IF I CAN ADD MY CUSTOMIZED ONES WITHOUT THE NEED OF REGISTERED
     // const senses = API.SENSES ?? [];
@@ -895,21 +901,19 @@ const module = {
       if (!app?.object?.document) {
         return;
       }
-      const buttonPos = game.settings.get(CONSTANTS.MODULE_NAME, 'hudPos');
+      const actor = <Actor>app.object.actor;
+      if (!actor) {
+        warn(`No actor founded on canvas with token '${app.object.id}'`, true);
+        return;
+      }
+      
       const atcvEffectFlagData = <AtcvEffect>(
         app.object.actor.getFlag(CONSTANTS.MODULE_NAME, AtcvEffectConditionFlags.HIDDEN)
       );
-      const hiddenValue = atcvEffectFlagData?.visionLevelValue ?? 0;
-      const borderButton = `<div class="control-icon toggleStealth ${
-        hiddenValue && hiddenValue != 0 ? 'active' : ''
-      }" ${
-        hiddenValue && hiddenValue != 0
-          ? `style="background: blue; opacity:0.85;"`
-          : `style="background: blueviolet; opacity:0.85;"`
-      } title="Toggle Stealth"> <i class="fas fa-eye"></i></div>`;
-      const Pos = html.find(buttonPos);
-      Pos.append(borderButton);
-      html.find('.toggleStealth').click(toggleStealth.bind(app));
+      const button = buildButton(html, `Prepare CV ${app.object.name}`, atcvEffectFlagData);
+      button.find('i').on('click', async (ev) => {
+        toggleStealth(ev, app);
+      });
     }
   },
   async renderChatMessage(...args) {
@@ -998,20 +1002,24 @@ const module = {
           if (text) {
             text = text.toLowerCase().trim();
             // TODO integration multisystem
+            const check = i18n(`${CONSTANTS.MODULE_NAME}.labels.check`);
+            const ability = i18n(`${CONSTANTS.MODULE_NAME}.labels.ability`);
+            const skill = i18n(`${CONSTANTS.MODULE_NAME}.labels.skill`);
+
             // Better roll support
             if (text.indexOf(`title="${i18n(API.STEALTH_ID_LANG_SKILL)?.toLowerCase()}"`) !== -1) {
               // is ok ??
             }
             // Keywords to avoid for all the system ?
-            else if (text.indexOf('check') !== -1 || text.indexOf('ability') !== -1 || text.indexOf('skill') !== -1) {
+            else if (text.indexOf(check) !== -1 || text.indexOf(ability) !== -1 || text.indexOf(skill) !== -1) {
               // is ok ??
             } else {
               continue;
             }
             text = text.replace(/\W/g, ' ');
-            text = text.replace('skill', '');
-            text = text.replace('check', '');
-            text = text.replace('ability', '');
+            text = text.replace(skill, '');
+            text = text.replace(check, '');
+            text = text.replace(ability, '');
             text = text.replace(/[0-9]/g, '');
             if (text.trim().indexOf(i18n(API.STEALTH_ID_LANG_SKILL).toLowerCase()) !== -1) {
               isStealth = true;

@@ -58,6 +58,8 @@ The calculation for the vision checks is split in many phase forall the use case
 
 6) Check if the source token has the active effect `blinded` active, if is true, you cannot see anything and return false.
 
+  - 6.1) Check for blinded override effect avoid the blinded condition.
+
 7) If not 'condition' are present on the target token return true (nothing to check).
 
    ~~- 7.1) Auto passive perception check if module setting `autoPassivePerception` is enabled~~

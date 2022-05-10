@@ -1,3 +1,12 @@
+### 0.5.40
+
+- Add `ATCV.conditionBlinded` and `ATCV.conditionBlindedOverride` condtions for [https://github.com/p4535992/conditional-visibility/issues/32](https://github.com/p4535992/conditional-visibility/issues/32)
+- Clean up comments
+- Add module settins for hud position [Option for changing CV's HUD button position](https://github.com/p4535992/conditional-visibility/issues/34)
+- Bug fix: [[BUG] Duplicate token configuration panel and some sight issue bug](https://github.com/p4535992/conditional-visibility/issues/29)
+- Add class field to extra_sense template
+- Update renderChat for autostealth for mutliligual (the community need to pr me a language file)
+
 ### 0.5.39
 
 - Bug fix on the elevation method utility

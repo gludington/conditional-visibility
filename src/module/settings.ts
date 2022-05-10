@@ -1,6 +1,6 @@
 import API from './api';
 import CONSTANTS from './constants';
-import { dialogWarning, warn } from './lib/lib';
+import { dialogWarning, i18n, warn } from './lib/lib';
 import { SYSTEMS } from './systems';
 
 export const registerSettings = function (): void {
@@ -41,18 +41,32 @@ export const registerSettings = function (): void {
     type: Boolean,
   });
 
-  game.settings.register(CONSTANTS.MODULE_NAME, 'hudPos', {
-    name: `${CONSTANTS.MODULE_NAME}.setting.hudPos.name`,
-    hint: `${CONSTANTS.MODULE_NAME}.setting.hudPos.hint`,
+  /** Which column should the button be placed on */
+  game.settings.register(CONSTANTS.MODULE_NAME, 'hudColumn', {
+    name: i18n(`${CONSTANTS.MODULE_NAME}.settings.hudColumn.title`),
+    hint: i18n(`${CONSTANTS.MODULE_NAME}.settings.hudColumn.hint`),
     scope: 'world',
-    config: false,
-    default: '.left',
+    config: true,
     type: String,
-    // TODO is not assignable to type 'undefined'.
-    // choices: {
-    //   '.right': 'Right',
-    //   '.left': 'Left',
-    // },
+    default: 'Left',
+    choices: <any>{
+      Left: 'Left',
+      Right: 'Right',
+    },
+  });
+
+  /** Whether the button should be placed on the top or bottom of the column */
+  game.settings.register(CONSTANTS.MODULE_NAME, 'hudTopBottom', {
+    name: i18n(`${CONSTANTS.MODULE_NAME}.settings.hudTopBottom.title`),
+    hint: i18n(`${CONSTANTS.MODULE_NAME}.settings.hudTopBottom.hint`),
+    scope: 'world',
+    config: true,
+    type: String,
+    default: 'Top',
+    choices: <any>{
+      Top: 'Top',
+      Bottom: 'Bottom',
+    },
   });
 
   game.settings.register(CONSTANTS.MODULE_NAME, 'disableForNonHostileNpc', {
@@ -385,13 +399,32 @@ function otherSettings(apply = false) {
       type: Boolean,
     },
 
-    hudPos: {
-      name: `${CONSTANTS.MODULE_NAME}.setting.hudPos.name`,
-      hint: `${CONSTANTS.MODULE_NAME}.setting.hudPos.hint`,
+    /** Which column should the button be placed on */
+    hudColumn: {
+      name: i18n(`${CONSTANTS.MODULE_NAME}.settings.hudColumn.title`),
+      hint: i18n(`${CONSTANTS.MODULE_NAME}.settings.hudColumn.hint`),
       scope: 'world',
       config: true,
-      default: '.left',
       type: String,
+      default: 'Left',
+      choices: <any>{
+        Left: 'Left',
+        Right: 'Right',
+      },
+    },
+
+    /** Whether the button should be placed on the top or bottom of the column */
+    hudTopBottom: {
+      name: i18n(`${CONSTANTS.MODULE_NAME}.settings.hudTopBottom.title`),
+      hint: i18n(`${CONSTANTS.MODULE_NAME}.settings.hudTopBottom.hint`),
+      scope: 'world',
+      config: true,
+      type: String,
+      default: 'Top',
+      choices: <any>{
+        Top: 'Top',
+        Bottom: 'Bottom',
+      },
     },
 
     disableForNonHostileNpc: {

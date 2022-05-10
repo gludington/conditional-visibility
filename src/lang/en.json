@@ -41,8 +41,11 @@
 
   "conditional-visibility.setting.enableHud.name": "CV HUD element",
   "conditional-visibility.setting.enableHud.hint": "If checked it will enable the hud button for apply sense and condition",
-  "conditional-visibility.setting.hudPos.name": "CV Control HUD Position",
-  "conditional-visibility.setting.hudPos.hint": "HUD position of the hidden button on the token",
+  "conditional-visibility.setting.hudColumn.title": "HUD Column",
+  "conditional-visibility.setting.hudColumn.hint": "Which HUD column to place the button in",
+  "conditional-visibility.setting.hudTopBottom.title": "HUD Top/Bottom",
+  "conditional-visibility.setting.hudTopBottom.hint": "Where to place the button in the column",
+
   "conditional-visibility.setting.disableForNonHostileNpc.name": "Disable for non hostile npc",
   "conditional-visibility.setting.disableForNonHostileNpc.hint": "This will avoid the sight check for all the token with disposition FRIENDLY or NEUTRAL",
   "conditional-visibility.setting.disableDCEAutomaticImport.name": "Disable automatic import on module 'DFreds Convenient Effects'",
@@ -170,5 +173,9 @@
   "conditional-visibility.dialogs.nosystemfound.content": "This system is not currently fully supported. This means that the module does not know how to best handle this system's items, but can still operate in a limited fashion.<br><br>You can configure the module's settings yourself, but it requires a bit of technical know-how.<br><br>If you have any questions, ping <strong>Wasp#2005</strong> on the Foundry discord.",
   "conditional-visibility.dialogs.systemfound.title": "System Recognized",
   "conditional-visibility.dialogs.systemfound.content": "This system was previously not supported, but in an recent update it was added as a supported system!<br><br>Do you want to load this system's default Item Pile settings?",
-  "conditional-visibility.dialogs.systemfound.confirm": "Apply System Defaults"
+  "conditional-visibility.dialogs.systemfound.confirm": "Apply System Defaults",
+
+  "conditional-visibility.labels.check": "check",
+  "conditional-visibility.labels.ability": "ability",
+  "conditional-visibility.labels.skill": "skill"
 }

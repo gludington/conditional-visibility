@@ -1,7 +1,8 @@
 import type { EffectChangeData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/data.mjs/effectChangeData';
 import API from './api';
 import CONSTANTS from './constants';
-import Effect, { EffectSupport } from './effects/effect';
+import type Effect from './effects/effect';
+import { EffectSupport } from './effects/effect-support';
 import {
   error,
   getSensesFromToken,

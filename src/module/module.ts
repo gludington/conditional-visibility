@@ -7,6 +7,8 @@ import HOOKS from './hooks';
 import {
   buildButton,
   debug,
+  drawHandlerCVImage,
+  drawHandlerCVImageAll,
   duplicateExtended,
   getAllDefaultSensesAndConditions,
   getConditionsFromToken,
@@ -32,10 +34,11 @@ import {
   SenseData,
   VisionCapabilities,
 } from './conditional-visibility-models';
-import Effect, { EffectSupport } from './effects/effect';
+import type Effect from './effects/effect';
 import type EmbeddedCollection from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/abstract/embedded-collection.mjs';
 import type { ActorData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/module.mjs';
 import { setApi } from '../conditional-visibility';
+import { EffectSupport } from './effects/effect-support';
 
 export const initHooks = (): void => {
   // registerSettings();
@@ -578,6 +581,7 @@ const module = {
         }
       }
     }
+    drawHandlerCVImageAll(sourceToken);
   },
   //async updateActiveEffect(activeEffect: ActiveEffect, options: EffectChangeData, isRemoved: boolean) {
   async updateActiveEffect(activeEffect: ActiveEffect, options: any, isRemoved: boolean) {

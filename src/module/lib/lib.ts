@@ -2191,8 +2191,20 @@ export async function _unregisterSenseData(
   return sensesDataList;
 }
 
+export function drawHandlerCVImageAll(controlledToken: Token) {
+  if(<number>(<Token[]>canvas.tokens?.controlled.filter((t)=> t.id==controlledToken.id))?.length <= 0){
+    return;
+  }
+  for(const token of <Token[]>canvas.tokens?.placeables){
+    drawHandlerCVImage(controlledToken,token);
+  }
+}
+
 export function drawHandlerCVImage(controlledToken: Token, tokenToCheckIfIsVisible: Token) {
-  if (game.settings.get(CONSTANTS.MODULE_NAME, 'enableDrawCVHandler')) {
+  if (game?.ready && game.settings.get(CONSTANTS.MODULE_NAME, 'enableDrawCVHandler')) {
+    if(<number>(<Token[]>canvas.tokens?.controlled.filter((t)=> t.id==controlledToken.id))?.length <= 0){
+      return;
+    }
     // TODO this work, but is a perfomance nightmare
     let sourceVisionLevels =
       <AtcvEffect[]>(
@@ -2201,16 +2213,17 @@ export function drawHandlerCVImage(controlledToken: Token, tokenToCheckIfIsVisib
     if (sourceVisionLevels.length <= 0) {
       sourceVisionLevels = getSensesFromToken(controlledToken.document, true, true);
     }
-    let targetVisionLevels =
-      <AtcvEffect[]>(
-        tokenToCheckIfIsVisible.document.actor?.getFlag(
-          CONSTANTS.MODULE_NAME,
-          ConditionalVisibilityFlags.DATA_CONDITIONS,
-        )
-      ) ?? [];
-    if (targetVisionLevels.length <= 0) {
-      targetVisionLevels = getConditionsFromToken(tokenToCheckIfIsVisible.document, true, true);
-    }
+    // TODO we need this
+    // let targetVisionLevels =
+    //   <AtcvEffect[]>(
+    //     tokenToCheckIfIsVisible.document.actor?.getFlag(
+    //       CONSTANTS.MODULE_NAME,
+    //       ConditionalVisibilityFlags.DATA_CONDITIONS,
+    //     )
+    //   ) ?? [];
+    // if (targetVisionLevels.length <= 0) {
+    //   targetVisionLevels = getConditionsFromToken(tokenToCheckIfIsVisible.document, true, true);
+    // }
     // TODO add priority value for set up the order
     for (const atcvEffect of sourceVisionLevels.sort((a, b) =>
       String(a.visionLevelValue).localeCompare(String(b.visionLevelValue)),
@@ -2226,6 +2239,8 @@ export function drawHandlerCVImage(controlledToken: Token, tokenToCheckIfIsVisib
         // tokenToCheckIfIsVisible.clear();
         tokenToCheckIfIsVisible.draw();
         break;
+      } else {
+        tokenToCheckIfIsVisible.clear();
       }
     }
   }

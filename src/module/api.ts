@@ -1035,8 +1035,8 @@ const API = {
       const activeEffectFounded = <ActiveEffect>await API.findEffectByNameOnToken(<string>token.id, nameToUse);
       if (activeEffectFounded) {
         await (<EffectInterface>this.effectInterface).updateEffectFromIdOnToken(
-          <string>token.id,
           <string>activeEffectFounded.id,
+          <string>token.id,
           undefined,
           undefined,
           effect,
@@ -1053,7 +1053,7 @@ const API = {
   },
 
   async registerSense(senseData: SenseData): Promise<void> {
-    const sensesData = <SenseData[]>game.settings.get(CONSTANTS.MODULE_NAME, 'senses');
+    const sensesData = <SenseData[]>API.SENSES;
     const newSenseData = await _registerSenseData(senseData, sensesData, 'sense');
     if (newSenseData && newSenseData.length > 0) {
       await game.settings.set(CONSTANTS.MODULE_NAME, 'senses', newSenseData);
@@ -1062,7 +1062,7 @@ const API = {
   },
 
   async registerCondition(senseData: SenseData): Promise<void> {
-    const conditionsData = <SenseData[]>game.settings.get(CONSTANTS.MODULE_NAME, 'conditions');
+    const conditionsData = <SenseData[]>API.CONDITIONS;
     const newConditionData = await _registerSenseData(senseData, conditionsData, 'condition');
     if (newConditionData && newConditionData.length > 0) {
       await game.settings.set(CONSTANTS.MODULE_NAME, 'conditions', newConditionData);
@@ -1071,7 +1071,7 @@ const API = {
   },
 
   async unRegisterSense(senseDataIdOrName: string): Promise<void> {
-    const sensesData = <SenseData[]>game.settings.get(CONSTANTS.MODULE_NAME, 'senses');
+    const sensesData = <SenseData[]>API.SENSES;
     const newSenseData = await _unregisterSenseData(senseDataIdOrName, sensesData, 'sense');
     if (newSenseData && newSenseData.length > 0) {
       await game.settings.set(CONSTANTS.MODULE_NAME, 'senses', newSenseData);
@@ -1080,7 +1080,7 @@ const API = {
   },
 
   async unRegisterCondition(senseDataIdOrName: string): Promise<void> {
-    const conditionsData = <SenseData[]>game.settings.get(CONSTANTS.MODULE_NAME, 'conditions');
+    const conditionsData = <SenseData[]>API.CONDITIONS;
     const newConditionsData = await _unregisterSenseData(senseDataIdOrName, conditionsData, 'condition');
     if (newConditionsData && newConditionsData.length > 0) {
       await game.settings.set(CONSTANTS.MODULE_NAME, 'conditions', newConditionsData);

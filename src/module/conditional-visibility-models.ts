@@ -1,7 +1,7 @@
 import type { EffectChangeData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/data.mjs/effectChangeData';
 import API from './api';
 import CONSTANTS from './constants';
-import type Effect from './effects/effect';
+import Effect from './effects/effect';
 import { EffectSupport } from './effects/effect-support';
 import {
   error,
@@ -36,6 +36,10 @@ export class AtcvEffect {
   visionBlindedOverride: boolean;
 
   static fromSenseData(senseData: SenseData, visionLevelValue: number, isDisabled = false) {
+    const res = new AtcvEffect();
+    res.visionId = senseData.id;
+    res.visionName = i18n(senseData.name);
+
     let isSense = false;
     if (senseData.conditionType === 'sense') {
       isSense = true;
@@ -47,9 +51,6 @@ export class AtcvEffect {
       });
     }
 
-    const res = new AtcvEffect();
-    res.visionId = senseData.id;
-    res.visionName = i18n(senseData.name);
     res.visionPath = senseData.path;
     res.visionIcon = senseData.img;
 
@@ -404,9 +405,6 @@ export class AtcvEffect {
     const overlay = false;
     const disabled = false;
 
-
-    const dfredEffect = <any>{};
-    dfredEffect.atcvChanges = [];
     const changesTmp:any[] = [];
     let foundedFlagVisionValue = false;
     if (distance && distance > 0) {
@@ -450,7 +448,30 @@ export class AtcvEffect {
       value: `${isSense ? 'sense' : 'condition'}`,
       priority: 5,
     });
-    const effect = <Effect>duplicateExtended(dfredEffect);
+
+
+    const effect = new Effect({
+      customId: res.visionId,
+      name: res.visionName,
+      description: '',
+      icon: res.visionIcon,
+      tint: '',
+      seconds: NaN,
+      rounds: NaN,
+      turns: NaN,
+      isDynamic: false,
+      isViewable: true,
+      isDisabled: res.visionIsDisabled,
+      isTemporary: isSense ? false : true,
+      isSuppressed:false,
+      flags: {},
+      changes: [],
+      atlChanges: [],
+      tokenMagicChanges: [],
+      nestedEffects: [],
+      transfer: true,
+      atcvChanges: changesTmp
+    });
     if (!effect.name.endsWith('(CV)')) {
       effect.name = effect.name + ' (CV)';
     }

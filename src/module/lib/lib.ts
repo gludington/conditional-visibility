@@ -188,7 +188,7 @@ export function cleanUpString(stringToCleanUp: string) {
   }
 }
 
-export function isStringEquals(stringToCheck1: string, stringToCheck2: string, startsWith = true): boolean {
+export function isStringEquals(stringToCheck1: string, stringToCheck2: string, startsWith = false): boolean {
   if (stringToCheck1 && stringToCheck2) {
     const s1 = cleanUpString(stringToCheck1) ?? '';
     const s2 = cleanUpString(stringToCheck2) ?? '';
@@ -2166,6 +2166,7 @@ export async function _registerSenseData(
   // Register new effect
   const atcvEffcetX = AtcvEffect.fromSenseData(senseData, 0, false);
   const effectExternal = AtcvEffect.toEffect(atcvEffcetX);
+  const newEffectsData:Effect[] = API.EFFECTS || [];
   const effectFounded = <Effect>API.EFFECTS.find((effect: Effect) => {
     return (
       isStringEquals(effect.name,effectExternal.name) ||
@@ -2173,8 +2174,10 @@ export async function _registerSenseData(
     );
   });
   if (!effectFounded && effectExternal) {
-    const newEffectsData = game.settings.get(CONSTANTS.MODULE_NAME, 'effects') || [];
+    newEffectsData.push(effectExternal);
     await game.settings.set(CONSTANTS.MODULE_NAME, 'effects', newEffectsData);
+  }else{
+    warn(`Cannot register the default active effect for the ${conditionType} with name '${senseData.name}' because already exists`, true);
   }
   // End register new effect
   sensesDataList.push(senseData);
@@ -2302,7 +2305,9 @@ export function buildButton(html, tooltip, atcvEffectFlagData) {
   return button;
 }
 
-export async function renderDialogResgisterSenseData(isSense:boolean, senses:any[], conditions:any[]): Promise<Dialog> {
+export async function renderDialogRegisterSenseData(isSense:boolean, senses:AtcvEffect[], conditions:AtcvEffect[]): Promise<Dialog> {
+  const filteredSenses = senses.filter(function(el) { return el.visionId != AtcvEffectConditionFlags.NONE }); 
+  const filteredConditions = conditions.filter(function(el) { return el.visionId != AtcvEffectConditionFlags.NONE }); 
   const data = {
     // Sense data
     id: '',
@@ -2320,16 +2325,27 @@ export async function renderDialogResgisterSenseData(isSense:boolean, senses:any
     conditionSourceImage: '',
     // End sense data
     isSense: isSense,
-    senses: senses,
-    conditions: conditions
+    senses: filteredSenses,
+    conditions: filteredConditions
   }
-  const myContent = await renderTemplate(`templates/${CONSTANTS.MODULE_NAME}/add_new_sensedata.hbs`, data);
+  const myContent = await renderTemplate(`modules/${CONSTANTS.MODULE_NAME}/templates/add_new_sensedata.hbs`, data);
 
   return new Dialog({
     title: isSense 
       ? i18n(`${CONSTANTS.MODULE_NAME}.windows.dialogs.addsense.title`)
       : i18n(`${CONSTANTS.MODULE_NAME}.windows.dialogs.addcondition.title`),
     content: myContent,
+    render: (html) => {
+      //@ts-ignore
+      $($(html[0]).find('.conditionSources')[0]).SumoSelect({
+        placeholder: 'Select sense sources...',
+      });
+
+      //@ts-ignore
+      $($(html[0]).find('.conditionTargets')[0]).SumoSelect({
+        placeholder: 'Select condition targets...',
+      });
+    },
     buttons: {
       yes: {
         icon: '<i class="fas fa-check"></i>',
@@ -2337,21 +2353,32 @@ export async function renderDialogResgisterSenseData(isSense:boolean, senses:any
         callback: async (html) => {
           const senseData = <SenseData>new Object();
 
-          senseData.id = <string>$('[name=id]').val();
-          senseData.name = <string>$('[name=name]').val();
-          senseData.path = <string>$('[name=path]').val();
-          senseData.img = <string>$('[name=img]').val();
-          senseData.conditionElevation = Boolean($('[name=conditionElevation]').val());
-          senseData.conditionTargets = <string[]>$('[name=conditionTargets]').val();
-          senseData.conditionSources = <string[]>$('[name=conditionSources]').val();
-          senseData.conditionDistance = <number>$('[name=conditionDistance]').val();
-          senseData.conditionType = <string>$('[name=conditionType]').val();
+          senseData.id = <string>$(`[name="conditional-visibility-id"]`).val();
+          senseData.name = <string>$(`[name="conditional-visibility-name"]`).val();
+          senseData.path = <string>$(`[name="conditional-visibility-path"]`).val();
+          senseData.img = <string>$(`[name="conditional-visibility-img"]`).val();
+          senseData.conditionElevation = Boolean($(`[name="conditional-visibility-conditionElevation"]`).val());
+          senseData.conditionTargets = <string[]>$(`[name="conditional-visibility-conditionTargets"]`).val();
+          senseData.conditionSources = <string[]>$(`[name="conditional-visibility-conditionSources"]`).val();
+          senseData.conditionDistance = <number>$(`[name="conditional-visibility-conditionDistance"]`).val();
+          senseData.conditionType = <string>$(`[name="conditional-visibility-conditionType"]`).val();
           
-          senseData.conditionBlinded = Boolean($('[name=conditionBlinded]').val());
-          senseData.conditionBlindedOverride = Boolean($('[name=conditionBlindedOverride]').val());
+          senseData.conditionBlinded = Boolean($(`[name="conditional-visibility-conditionBlinded"]`).val());
+          senseData.conditionBlindedOverride = Boolean($(`[name="conditional-visibility-conditionBlindedOverride"]`).val());
         
-          senseData.conditionTargetImage = <string>$('[name=conditionTargetImage]').val();
-          senseData.conditionSourceImage = <string>$('[name=conditionSourceImage]').val();
+          senseData.conditionTargetImage = <string>$(`[name="conditional-visibility-conditionTargetImage"]`).val();
+          senseData.conditionSourceImage = <string>$(`[name="conditional-visibility-conditionSourceImage"]`).val();
+
+          if(!senseData.id || !senseData.name){
+            warn(`You must set at least the 'id' and the 'name'`, true);
+            return
+          }
+          
+          if(isSense){
+            API.registerSense(senseData);
+          }else{
+            API.registerCondition(senseData);
+          }
         },
       },
       no: {

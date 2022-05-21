@@ -59,9 +59,9 @@
       "path": "lang/ko.json"
     }
   ],
-  "scripts": ["module/lib/dd.min.js"],
+  "scripts": ["module/lib/dd.min.js", "module/lib/jquery.sumoselect.min.js"],
   "esmodules": ["conditional-visibility.js"],
-  "styles": ["styles/conditional-visibility.css", "styles/dd.css"],
+  "styles": ["styles/conditional-visibility.css", "styles/dd.css", "styles/sumoselect.css"],
   "packs": [
     {
       "name": "Conditional Visibility",

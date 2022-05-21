@@ -17,7 +17,7 @@ import {
   isStringEquals,
   is_real_number,
   prepareActiveEffectForConditionalVisibility,
-  renderDialogResgisterSenseData,
+  renderDialogRegisterSenseData,
   repairAndSetFlag,
   repairAndUnSetFlag,
   toggleStealth,
@@ -163,7 +163,7 @@ export const readyHooks = (): void => {
 };
 
 const module = {
-  onRenderTokenConfig(tokenConfig: TokenConfig, html: JQuery<HTMLElement>, data: object): void {
+  async onRenderTokenConfig(tokenConfig: TokenConfig, html: JQuery<HTMLElement>, data: object): Promise<void> {
     // Avoid the duplicate token configuration panel
     if(html.find('.conditional-visibility-senses').length > 0){
       return;
@@ -235,26 +235,28 @@ const module = {
       }
     }
 
-    renderTemplate(`modules/${CONSTANTS.MODULE_NAME}/templates/extra_senses.hbs`, {
+    await renderTemplate(`modules/${CONSTANTS.MODULE_NAME}/templates/extra_senses.hbs`, {
       senses: sensesTemplateData,
       conditions: conditionsTemplateData,
       dataforcevisible: forceVisible,
       datausestealthpassive: useStealthPassive,
     }).then((extraSenses) => {
       visionTab.append(extraSenses);
-      // ADD listener for buttons
-      $(extraSenses).find('.conditional-visibility-add-new-sense')[0]?.addEventListener('click', async function (event) {
-        event.preventDefault();
-        event.stopPropagation();
-        const buttonClick = event.button; // 0 left click
-        (await renderDialogResgisterSenseData(true, senses, conditions)).render(true);
-      });
-      $(extraSenses).find('.conditional-visibility-add-new-condition')[0]?.addEventListener('click', async function (event) {
-        event.preventDefault();
-        event.stopPropagation();
-        const buttonClick = event.button; // 0 left click
-        (await renderDialogResgisterSenseData(false, senses, conditions)).render(true);
-      });
+    });
+
+    // ADD listener for buttons
+    $(html).find('.conditional-visibility-add-new-sense')[0]?.addEventListener('click', async function (event) {
+      event.preventDefault();
+      event.stopPropagation();
+      const buttonClick = event.button; // 0 left click
+      (await renderDialogRegisterSenseData(true, senses, conditions)).render(true);
+    });
+
+    $(html).find('.conditional-visibility-add-new-condition')[0]?.addEventListener('click', async function (event) {
+      event.preventDefault();
+      event.stopPropagation();
+      const buttonClick = event.button; // 0 left click
+      (await renderDialogRegisterSenseData(false, senses, conditions)).render(true);
     });
   },
   async updateActor(document: TokenDocument, changeOri, options, userId) {

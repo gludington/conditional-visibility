@@ -256,14 +256,14 @@ function defaultSettings(apply = false) {
       default: apply && SYSTEMS.DATA ? SYSTEMS.DATA.CONDITIONS : [],
       type: Array,
     },
-    // effects: {
-    //   name: `${CONSTANTS.MODULE_NAME}.setting.effects.name`,
-    //   hint: `${CONSTANTS.MODULE_NAME}.setting.effects.hint`,
-    //   scope: 'world',
-    //   config: false,
-    //   default: apply && SYSTEMS.DATA ? SYSTEMS.DATA.EFFECTS : [],
-    //   type: Array,
-    // },
+    effects: {
+      name: `${CONSTANTS.MODULE_NAME}.setting.effects.name`,
+      hint: `${CONSTANTS.MODULE_NAME}.setting.effects.hint`,
+      scope: 'world',
+      config: false,
+      default: apply && SYSTEMS.DATA ? SYSTEMS.DATA.EFFECTS : [],
+      type: Array,
+    },
     npcType: {
       name: `${CONSTANTS.MODULE_NAME}.setting.npcType.name`,
       hint: `${CONSTANTS.MODULE_NAME}.setting.npcType.hint`,

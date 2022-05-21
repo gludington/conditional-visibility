@@ -17,6 +17,7 @@ import {
   isStringEquals,
   is_real_number,
   prepareActiveEffectForConditionalVisibility,
+  renderDialogResgisterSenseData,
   repairAndSetFlag,
   repairAndUnSetFlag,
   toggleStealth,
@@ -39,10 +40,12 @@ import type EmbeddedCollection from '@league-of-foundry-developers/foundry-vtt-t
 import type { ActorData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/module.mjs';
 import { setApi } from '../conditional-visibility';
 import { EffectSupport } from './effects/effect-support';
+import HandlebarHelpers from './apps/conditional-visibility-handlebar-helper';
 
 export const initHooks = (): void => {
   // registerSettings();
   registerLibwrappers();
+  new HandlebarHelpers().registerHelpers();
 
   Hooks.once('socketlib.ready', registerSocket);
 
@@ -239,6 +242,19 @@ const module = {
       datausestealthpassive: useStealthPassive,
     }).then((extraSenses) => {
       visionTab.append(extraSenses);
+      // ADD listener for buttons
+      $(extraSenses).find('.conditional-visibility-add-new-sense')[0]?.addEventListener('click', async function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        const buttonClick = event.button; // 0 left click
+        (await renderDialogResgisterSenseData(true, senses, conditions)).render(true);
+      });
+      $(extraSenses).find('.conditional-visibility-add-new-condition')[0]?.addEventListener('click', async function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        const buttonClick = event.button; // 0 left click
+        (await renderDialogResgisterSenseData(false, senses, conditions)).render(true);
+      });
     });
   },
   async updateActor(document: TokenDocument, changeOri, options, userId) {

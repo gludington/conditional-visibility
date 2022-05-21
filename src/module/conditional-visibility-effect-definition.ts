@@ -2,7 +2,8 @@ import API from './api';
 import { AtcvEffectSenseFlags, AtcvEffectConditionFlags, SenseData, AtcvEffect } from './conditional-visibility-models';
 import CONSTANTS from './constants';
 import Effect from './effects/effect';
-import { debug, i18n, i18nFormat, isStringEquals, mergeByProperty, warn } from './lib/lib';
+import { EffectSupport } from './effects/effect-support';
+import { debug, duplicateExtended, i18n, i18nFormat, isStringEquals, mergeByProperty, warn } from './lib/lib';
 
 /**
  * Defines all of the effect definitions
@@ -88,17 +89,17 @@ export class ConditionalVisibilityEffectDefinitions {
       effects.push(indarkness);
     }
 
-    // for (const effectExternal of API.EFFECTS) {
-    //   const effectFounded = <Effect>effects.find((effect: Effect) => {
-    //     return (
-    //       effect.name.toLowerCase() === effectExternal.name.toLowerCase() ||
-    //       effect.customId.toLowerCase() === effectExternal.customId.toLowerCase()
-    //     );
-    //   });
-    //   if (!effectFounded && effectExternal) {
-    //     effects.push(effectExternal);
-    //   }
-    // }
+    for (const effectExternal of API.EFFECTS) {
+      const effectFounded = <Effect>effects.find((effect: Effect) => {
+        return (
+          isStringEquals(effect.name,effectExternal.name) ||
+          isStringEquals(effect.customId,effectExternal.customId)
+        );
+      });
+      if (!effectFounded && effectExternal) {
+        effects.push(effectExternal);
+      }
+    }
     return effects;
   }
 
@@ -106,6 +107,91 @@ export class ConditionalVisibilityEffectDefinitions {
     const effect = <Effect>ConditionalVisibilityEffectDefinitions.all(distance, visionLevel).find((effect: Effect) => {
       return isStringEquals(effect.name, nameOrCustomId) || isStringEquals(effect.customId, nameOrCustomId);
     });
+    // TODO no need this ??
+    /*
+    if (!effect) {
+      // Before launch error check dfred effects
+      // Check for dfred convenient effect and retrieve the effect with the specific name
+      // https://github.com/DFreds/dfreds-convenient-effects/issues/110
+      //@ts-ignore
+      if (game.modules.get('dfreds-convenient-effects')?.active && game.dfreds && game.dfreds.effectInterface) {
+        let changesTmp: any[] = [];
+        let effectToFoundByName = i18n(nameOrCustomId);
+        if (!effectToFoundByName.endsWith('(CV)')) {
+          effectToFoundByName = effectToFoundByName + ' (CV)';
+        }
+        //@ts-ignore
+        const dfredEffect = <Effect>await game.dfreds.effectInterface.findCustomEffectByName(effectToFoundByName);
+        if (dfredEffect) {
+          let foundedFlagVisionValue = false;
+          if (!dfredEffect.atcvChanges) {
+            dfredEffect.atcvChanges = [];
+          }
+          changesTmp = EffectSupport._handleIntegrations(dfredEffect);
+          changesTmp = changesTmp.filter((c) => !c.key.startsWith(`data.`));
+          if (distance && distance > 0) {
+            changesTmp.push({
+              key: 'ATCV.conditionDistance',
+              mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+              value: `${distance}`,
+              priority: 5,
+            });
+          }
+          for (const obj of changesTmp) {
+            if (obj.key === 'ATCV.' + nameOrCustomId && obj.value != String(visionLevel)) {
+              obj.value = String(visionLevel);
+              foundedFlagVisionValue = true;
+              break;
+            }
+          }
+          if (!foundedFlagVisionValue) {
+            for (const obj of changesTmp) {
+              if (
+                obj.key === 'ATCV.' + nameOrCustomId &&
+                obj.value != String(visionLevel)
+              ) {
+                obj.value = String(visionLevel);
+                foundedFlagVisionValue = true;
+                break;
+              }
+            }
+          }
+          if (!foundedFlagVisionValue) {
+            changesTmp.push(<any>{
+              key: 'ATCV.' + nameOrCustomId,
+              mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+              value: String(visionLevel),
+              priority: 5,
+            });
+          }
+          let foundedFlagVisionType = false;
+          for (const obj of changesTmp) {
+            if (obj.key === 'ATCV.conditionType' && obj.value) {
+              foundedFlagVisionType = true;
+              break;
+            }
+          }
+          if(!foundedFlagVisionType){
+            changesTmp.push({
+              key: 'ATCV.conditionType',
+              mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+              value: 'sense',
+              priority: 5,
+            });
+          }
+          effect = <Effect>duplicateExtended(dfredEffect);
+          if (!effect.name.endsWith('(CV)')) {
+            effect.name = effect.name + ' (CV)';
+          }
+          if (effect) {
+            effect.changes = duplicateExtended(changesTmp);
+          } else {
+            warn(`Found dfred active effect  ${effectToFoundByName} but can't clone...`);
+          }
+        }
+      }
+    }
+    */
     if (!effect) {
       warn(`Not founded effect with name ${nameOrCustomId}`, true);
       return undefined;

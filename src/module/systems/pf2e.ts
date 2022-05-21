@@ -1,6 +1,7 @@
 import { ConditionalVisibilityEffectDefinitions } from '../conditional-visibility-effect-definition';
 import { AtcvEffectSenseFlags, AtcvEffectConditionFlags, SenseData } from '../conditional-visibility-models';
 import CONSTANTS from '../constants';
+import type Effect from '../effects/effect';
 
 /*
 HP: data.hp.value
@@ -166,4 +167,5 @@ export default {
       conditionBlindedOverride: false,
     },
   ],
+  EFFECTS: <Effect[]>[]
 };

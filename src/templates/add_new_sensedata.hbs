@@ -1,0 +1,126 @@
+
+
+<form class="editable flexcol" autocomplete="off">
+    <fieldset>
+        <legend>ADD NEW {{#if isSense}} SENSE {{else}} CONDITION {{/if}} </legend>
+        <hr>
+
+        <div class="form-group">
+            <label>{{localize "conditional-visibility.token.config.conditionType"}}</label>
+            <div class="form-fields">
+                <input readonly type="text" id="conditional-visibility.conditionType" name="conditionType" 
+                    required value="{{#if isSense}} sense {{else}} condition {{/if}}"/>
+            </div>
+            <p class="notes">{{localize ""}}</p>
+        </div>
+
+        <div class="form-group">
+            <label>{{localize "conditional-visibility.token.config.id"}}</label>
+            <div class="form-fields">
+                <input type="text" name="id" 
+                    required value="" placeholder="put some id"/>
+            </div>
+            <p class="notes">{{localize ""}}</p>
+        </div>
+
+        <div class="form-group">
+            <label>{{localize "conditional-visibility.token.config.name"}}</label>
+            <div class="form-fields">
+                <input type="text" id="conditional-visibility.name" name="name" 
+                    required value="" placeholder="put some name"/>
+            </div>
+            <p class="notes">{{localize ""}}</p>
+        </div>
+
+        <div class="form-group">
+            <label>{{localize "conditional-visibility.token.config.path"}}</label>
+            <div class="form-fields">
+                <input type="text" id="conditional-visibility.path" name="path" 
+                    placeholder="e.g. data.skills.prc.passive" value=""/>
+            </div>
+            <p class="notes">{{localize ""}}</p>
+        </div>
+
+        <div class="form-group">
+            <label>{{localize "conditional-visibility.token.config.img"}}</label>
+            <div class="form-fields">
+                {{filePicker target="img" type="image"}}
+                <input class="image" type="text" id="conditional-visibility.img" name="img" 
+                    placeholder="path/image.png" value=""/>
+            </div>
+            <p class="notes">{{localize ""}}</p>
+        </div>
+
+        <div class="form-group">
+            <label>{{localize "conditional-visibility.token.config.conditionElevation"}}</label>
+            <div class="form-fields">
+                <input type="checkbox" id="conditional-visibility.conditionElevation" name="conditionElevation"
+                    value="false" />
+            </div>
+            <p class="notes">{{localize ""}}</p>
+        </div>
+
+        <div class="form-group">
+            <label>{{localize "conditional-visibility.token.config.senses.conditionSources"}}</label>
+            <div class="form-fields">
+                <select multiple id="conditional-visibility.conditionSources" name="conditionSources" data-dtype="String" is="ms-dropdown-cv">
+                    {{#each senses as |sense|}}
+                    <option data-image="{{sense.visionIcon}}" 
+                        value="{{sense.visionId}}">{{localize sense.visionName}}</option>
+                    {{/each}}
+                </select>
+            </div>
+            <p class="notes">{{localize ""}}</p>
+        </div>
+
+        <div class="form-group">
+            <label>{{localize "conditional-visibility.token.config.conditions.conditionTargets"}}</label>
+            <div class="form-fields">
+                <select multiple id="conditional-visibility.conditionTargets" name="conditionTargets" data-dtype="String" is="ms-dropdown-cv">
+                    {{#each conditions as |condition|}}
+                        <option data-image="{{condition.visionIcon}}" 
+                            value="{{condition.visionId}}">{{localize condition.visionName}}
+                        </option>
+                    {{/each}}
+                </select>
+            </div>
+            <p class="notes">{{localize ""}}</p>
+        </div>
+
+        <div class="form-group">
+            <label>{{localize "conditional-visibility.token.config.conditionDistance"}}</label>
+            <div class="form-fields">
+                <input type="number" id="conditional-visibility.conditionDistance" name="conditionDistance" 
+                    value=""/>
+            </div>
+            <p class="notes">{{localize ""}}</p>
+        </div>
+
+        <div class="form-group">
+            <label>{{localize "conditional-visibility.token.config.path"}}</label>
+            <div class="form-fields">
+                <input type="text" id="conditional-visibility.path" name="path" 
+                    value=""/>
+            </div>
+            <p class="notes">{{localize ""}}</p>
+        </div>
+
+        <div class="form-group">
+            <label>{{localize "conditional-visibility.token.config.conditionBlinded"}}</label>
+            <div class="form-fields">
+                <input type="checkbox" id="conditional-visibility.conditionBlinded" name="conditionBlinded"
+                    value="false" />
+            </div>
+            <p class="notes">{{localize ""}}</p>
+        </div>
+
+        <div class="form-group">
+            <label>{{localize "conditional-visibility.token.config.conditionBlindedOverride"}}</label>
+            <div class="form-fields">
+                <input type="checkbox" id="conditional-visibility.conditionBlindedOverride" name="conditionBlindedOverride"
+                    value="false" />
+            </div>
+            <p class="notes">{{localize ""}}</p>
+        </div>
+    </fieldset>
+</form>

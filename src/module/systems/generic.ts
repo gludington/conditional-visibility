@@ -1,6 +1,7 @@
 import { ConditionalVisibilityEffectDefinitions } from '../conditional-visibility-effect-definition';
 import { AtcvEffectConditionFlags, SenseData } from '../conditional-visibility-models';
 import CONSTANTS from '../constants';
+import type Effect from '../effects/effect';
 
 export default {
   VISION_LEVEL: {},
@@ -26,4 +27,5 @@ export default {
       conditionBlindedOverride: false,
     },
   ],
+  EFFECTS: <Effect[]>[]
 };

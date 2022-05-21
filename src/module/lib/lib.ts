@@ -2162,6 +2162,21 @@ export async function _registerSenseData(
     warn(`Cannot register the ${conditionType} with name '${senseData.name}' because already exists`, true);
     return;
   }
+
+  // Register new effect
+  const atcvEffcetX = AtcvEffect.fromSenseData(senseData, 0, false);
+  const effectExternal = AtcvEffect.toEffect(atcvEffcetX);
+  const effectFounded = <Effect>API.EFFECTS.find((effect: Effect) => {
+    return (
+      isStringEquals(effect.name,effectExternal.name) ||
+      isStringEquals(effect.customId,effectExternal.customId)
+    );
+  });
+  if (!effectFounded && effectExternal) {
+    const newEffectsData = game.settings.get(CONSTANTS.MODULE_NAME, 'effects') || [];
+    await game.settings.set(CONSTANTS.MODULE_NAME, 'effects', newEffectsData);
+  }
+  // End register new effect
   sensesDataList.push(senseData);
   return sensesDataList;
 }
@@ -2285,4 +2300,68 @@ export function buildButton(html, tooltip, atcvEffectFlagData) {
     col.append(button);
   }
   return button;
+}
+
+export async function renderDialogResgisterSenseData(isSense:boolean, senses:any[], conditions:any[]): Promise<Dialog> {
+  const data = {
+    // Sense data
+    id: '',
+    name: '',
+    path: '',
+    img: '',
+    conditionElevation: false,
+    conditionTargets: [],
+    conditionSources: [],
+    conditionDistance: 0,
+    conditionType: isSense ? 'sense' : 'condition',
+    conditionBlinded: false,
+    conditionBlindedOverride: false,
+    conditionTargetImage: '',
+    conditionSourceImage: '',
+    // End sense data
+    isSense: isSense,
+    senses: senses,
+    conditions: conditions
+  }
+  const myContent = await renderTemplate(`templates/${CONSTANTS.MODULE_NAME}/add_new_sensedata.hbs`, data);
+
+  return new Dialog({
+    title: isSense 
+      ? i18n(`${CONSTANTS.MODULE_NAME}.windows.dialogs.addsense.title`)
+      : i18n(`${CONSTANTS.MODULE_NAME}.windows.dialogs.addcondition.title`),
+    content: myContent,
+    buttons: {
+      yes: {
+        icon: '<i class="fas fa-check"></i>',
+        label: i18n(`${CONSTANTS.MODULE_NAME}.windows.dialogs.confirm.apply.choice.yes`),
+        callback: async (html) => {
+          const senseData = <SenseData>new Object();
+
+          senseData.id = <string>$('[name=id]').val();
+          senseData.name = <string>$('[name=name]').val();
+          senseData.path = <string>$('[name=path]').val();
+          senseData.img = <string>$('[name=img]').val();
+          senseData.conditionElevation = Boolean($('[name=conditionElevation]').val());
+          senseData.conditionTargets = <string[]>$('[name=conditionTargets]').val();
+          senseData.conditionSources = <string[]>$('[name=conditionSources]').val();
+          senseData.conditionDistance = <number>$('[name=conditionDistance]').val();
+          senseData.conditionType = <string>$('[name=conditionType]').val();
+          
+          senseData.conditionBlinded = Boolean($('[name=conditionBlinded]').val());
+          senseData.conditionBlindedOverride = Boolean($('[name=conditionBlindedOverride]').val());
+        
+          senseData.conditionTargetImage = <string>$('[name=conditionTargetImage]').val();
+          senseData.conditionSourceImage = <string>$('[name=conditionSourceImage]').val();
+        },
+      },
+      no: {
+        icon: '<i class="fas fa-times"></i>',
+        label: i18n(`${CONSTANTS.MODULE_NAME}.windows.dialogs.confirm.apply.choice.no`),
+        callback: (html) => {
+          // Do nothing
+        },
+      },
+    },
+    default: 'no',
+  });
 }

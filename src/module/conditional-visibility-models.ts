@@ -10,6 +10,8 @@ import {
   i18n,
   retrieveAtcvEffectFromActiveEffect,
   isStringEquals,
+  duplicateExtended,
+  warn,
 } from './lib/lib';
 export class AtcvEffect {
   // Effect Base
@@ -391,22 +393,111 @@ export class AtcvEffect {
     res = AtcvEffect.mergeWithSensedataDefault(res);
     return res;
   }
+
+  static toEffect(res:AtcvEffect):Effect {
+    const distance = res.visionDistanceValue;
+    const visionLevel = res.visionLevelValue;
+    const nameOrCustomId = res.visionId;
+    const isSense = res.visionType && res.visionType === 'sense' ? true : false;
+
+    const origin = undefined;
+    const overlay = false;
+    const disabled = false;
+
+
+    const dfredEffect = <any>{};
+    dfredEffect.atcvChanges = [];
+    const changesTmp:any[] = [];
+    let foundedFlagVisionValue = false;
+    if (distance && distance > 0) {
+      changesTmp.push({
+        key: 'ATCV.conditionDistance',
+        mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+        value: `${distance}`,
+        priority: 5,
+      });
+    }
+    for (const obj of changesTmp) {
+      if (obj.key === 'ATCV.' + nameOrCustomId && obj.value != String(visionLevel)) {
+        obj.value = String(visionLevel);
+        foundedFlagVisionValue = true;
+        break;
+      }
+    }
+    if (!foundedFlagVisionValue) {
+      for (const obj of changesTmp) {
+        if (
+          obj.key === 'ATCV.' + nameOrCustomId &&
+          obj.value != String(visionLevel)
+        ) {
+          obj.value = String(visionLevel);
+          foundedFlagVisionValue = true;
+          break;
+        }
+      }
+    }
+    if (!foundedFlagVisionValue) {
+      changesTmp.push(<any>{
+        key: 'ATCV.' + nameOrCustomId,
+        mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+        value: String(visionLevel),
+        priority: 5,
+      });
+    }
+    changesTmp.push({
+      key: 'ATCV.conditionType',
+      mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+      value: `${isSense ? 'sense' : 'condition'}`,
+      priority: 5,
+    });
+    const effect = <Effect>duplicateExtended(dfredEffect);
+    if (!effect.name.endsWith('(CV)')) {
+      effect.name = effect.name + ' (CV)';
+    }
+    effect.changes = duplicateExtended(changesTmp);
+
+    // Add some feature if is a sense or a condition
+    // Force check for make condition temporary and sense passive
+    if (isSense) {
+      effect.isTemporary = false; // passive ae
+    } else {
+      effect.isTemporary = true;
+      if (!effect.flags?.core?.statusId) {
+        // Just make sure the effect is built it right
+        if (!effect.flags) {
+          effect.flags = {};
+        }
+        if (!effect.flags.core) {
+          effect.flags.core = {};
+        }
+        effect.flags.core.statusId = effect._id;
+      }
+    }
+    effect.transfer = !disabled;
+    if (!i18n(effect.name).endsWith('(CV)')) {
+      effect.name = i18n(effect.name) + ' (CV)';
+    }
+    effect.overlay = overlay;
+    return effect;
+  }
 }
 
 export interface SenseData {
   id: string; // This is the unique id used for sync all the senses and conditions (please no strange character, no whitespace and all in lowercase...)
   name: string; // This is the unique name used for sync all the senses and conditions (here you cna put any dirty character you want)
-  path: string; // This is the path to the property you want to associate with this sense e.g. data.skills.prc.passive
+  path: string; // [OPTIONAL] This is the path to the property you want to associate with this sense e.g. data.skills.prc.passive
   img: string; // [OPTIONAL] Image to associate to this sense
   conditionElevation: boolean; // [OPTIONAL] force to check the elevation between the source token and the target token, useful when using module like 'Levels'
-  conditionTargets: string[]; // [OPTIONAL] force to apply the check only for these sources (you can set this but is used only from sense)
-  conditionSources: string[]; // [OPTIONAL] force to apply the check only for these sources (you can set this but is used only from condition)
-  conditionTargetImage: string; // [OPTIONAL] string path to the image applied on target token and used from the source token (the one you click on) for replace only for that player with a special sight
-  conditionSourceImage: string;
+  conditionTargets: string[]; // [OPTIONAL] This is used for explicitly tell to the checker what AE Condition can be see from this AE Sense based on the custom id used from this module (you can set this but is used only from a sense effect)
+  conditionSources: string[]; // [OPTIONAL] This is used for explicitly tell to the checker what AE Sense can be see from this AE Condition based on the custom id used from this module (you can set this but is used only from a condition effect)
   conditionDistance: number; // [OPTIONAL] set a maximum distance for check the sight with this effect
   conditionType: string; // indicate the type of CV usually they are or 'sense' or 'condition' not both, **THIS IS ESSENTIAL FOR USE SENSE AND CONDITION NOT REGISTERED ON THE MODULE IF NOT FOUNDED BY DEFAULT IS CONSIDERED A SENSE**, so now you can just modify the AE and you are not forced to call the registered macro of the module CV, this is very useful for integration with other modules.
+  
   conditionBlinded: boolean; // [OPTIONAL] If true this effect / condition is applied on the token / actor it will be evaluated for the blinded check and only another effect with `ATCV.conditionBlindedOverride = true` will be able to avoid this check.
   conditionBlindedOverride: boolean; // [OPTIONAL] If true it indicates that this effect is able to work even with the "Blinded" condition applied to the token
+
+  conditionTargetImage: string; // [OPTIONAL] string path to the image applied on target token and used from the source token (the one you click on) for replace the image token only for that player with a special sight
+  conditionSourceImage: string; // [OPTIONAL] string path to the image applied on target token and used from the target token (the one you try to see) for replace the image token only for that player with a special sight
 }
 
 export enum ConditionalVisibilityFlags {

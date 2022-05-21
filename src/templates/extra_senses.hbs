@@ -9,6 +9,10 @@
 
         </div>
     {{/each}}
+    
+    <div class="form-group">
+        <button type="button" class="conditional-visibility-add-new-sense">{{localize "conditional-visibility.token.config.addnewsense"}}</button>
+    </div>
 </fieldset>
 <hr/>
 <fieldset class="conditional-visibility-conditions">
@@ -46,5 +50,9 @@
             <input type="number" min=-1 step=1 {{#if condition.isReadOnly}} readonly {{/if}} {{#if condition.visionLevelValue}} value="{{condition.visionLevelValue}}" {{else}} value="0" {{/if}} name="actor.data.flags.conditional-visibility.{{condition.visionId}}.visionLevelValue"/>
         </div>
     {{/each}}
+
+    <div class="form-group">
+        <button type="button" class="conditional-visibility-add-new-condition">{{localize "conditional-visibility.token.config.addnewcondition"}}</button>
+    </div>
 </fieldset>
 <hr/>

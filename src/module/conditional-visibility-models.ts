@@ -12,6 +12,7 @@ import {
   isStringEquals,
   duplicateExtended,
   warn,
+  retrieveAtcvVisionLevelKeyFromChanges,
 } from './lib/lib';
 export class AtcvEffect {
   // Effect Base
@@ -47,7 +48,8 @@ export class AtcvEffect {
       isSense = false;
     } else {
       isSense = !!API.SENSES.find((senseData) => {
-        return isStringEquals(senseData.id, res.visionId) || isStringEquals(senseData.name, res.visionName);
+        return isStringEquals(senseData.id, res.visionId) 
+          || isStringEquals(senseData.name, res.visionName);
       });
     }
 
@@ -68,12 +70,13 @@ export class AtcvEffect {
     return res;
   }
 
-  static mergeWithSensedataDefault(res: AtcvEffect) {
+  static mergeWithSensedataDefault(res: AtcvEffect): AtcvEffect {
     const allSensesAndConditionsData: SenseData[] = [];
     allSensesAndConditionsData.push(...API.SENSES);
     allSensesAndConditionsData.push(...API.CONDITIONS);
     const senseData = allSensesAndConditionsData.find((senseData) => {
-      return isStringEquals(senseData.id, res.visionId) || isStringEquals(senseData.name, res.visionName);
+      return isStringEquals(senseData.id, res.visionId) 
+        || isStringEquals(senseData.name, res.visionName);
     });
     if (!senseData) {
       return res;
@@ -127,12 +130,14 @@ export class AtcvEffect {
     return res;
   }
 
-  static mergeEffectWithSensedataDefault(res: Effect): EffectChangeData[] {
+  static retrieveAtcvChangesFromEffect(res: Effect): EffectChangeData[] {
     const allSensesAndConditionsData: SenseData[] = [];
     allSensesAndConditionsData.push(...API.SENSES);
     allSensesAndConditionsData.push(...API.CONDITIONS);
     const senseData = allSensesAndConditionsData.find((senseData) => {
-      return isStringEquals(senseData.id, res.customId) || isStringEquals(senseData.name, res.name);
+      return isStringEquals(senseData.id, retrieveAtcvVisionLevelKeyFromChanges(res.changes))
+        || isStringEquals(senseData.id, res.customId) 
+        || isStringEquals(senseData.name, res.name);
     });
     if (!senseData) {
       return res.atcvChanges;
@@ -234,12 +239,14 @@ export class AtcvEffect {
     return atcvChanges;
   }
 
-  private static mergeActiveEffectWithSensedataDefault(res: ActiveEffect): EffectChangeData[] {
+  private static retrieveAtcvChangesFromActiveEffect(res: ActiveEffect): EffectChangeData[] {
     const allSensesAndConditionsData: SenseData[] = [];
     allSensesAndConditionsData.push(...API.SENSES);
     allSensesAndConditionsData.push(...API.CONDITIONS);
     const senseData = allSensesAndConditionsData.find((senseData) => {
-      return isStringEquals(senseData.id, <string>res.id) || isStringEquals(senseData.name, res.data.label);
+      return isStringEquals(senseData.id, retrieveAtcvVisionLevelKeyFromChanges(res.data.changes))
+        || isStringEquals(senseData.id, <string>res.id) 
+        || isStringEquals(senseData.name, res.data.label);
     });
     if (!senseData) {
       return res.data.changes;
@@ -342,7 +349,7 @@ export class AtcvEffect {
   }
 
   static fromEffect(tokenDocument: TokenDocument, effect: Effect) {
-    effect.atcvChanges = AtcvEffect.mergeEffectWithSensedataDefault(effect);
+    effect.atcvChanges = AtcvEffect.retrieveAtcvChangesFromEffect(effect);
 
     const effectChanges: EffectChangeData[] = EffectSupport._handleIntegrations(effect) || [];
 
@@ -371,7 +378,7 @@ export class AtcvEffect {
 
   static fromActiveEffect(tokenDocument: TokenDocument, activeEffect: ActiveEffect) {
     //const effectChanges = activeEffect.data.changes;
-    const effectChanges = AtcvEffect.mergeActiveEffectWithSensedataDefault(activeEffect);
+    const effectChanges = AtcvEffect.retrieveAtcvChangesFromActiveEffect(activeEffect);
     let res = retrieveAtcvEffectFromActiveEffect(
       tokenDocument,
       effectChanges,
@@ -396,7 +403,7 @@ export class AtcvEffect {
   }
 
   static toEffect(res:AtcvEffect):Effect {
-    const distance = res.visionDistanceValue;
+
     const visionLevel = res.visionLevelValue;
     const nameOrCustomId = res.visionId;
     const isSense = res.visionType && res.visionType === 'sense' ? true : false;
@@ -406,49 +413,82 @@ export class AtcvEffect {
     const disabled = false;
 
     const changesTmp:any[] = [];
-    let foundedFlagVisionValue = false;
-    if (distance && distance > 0) {
-      changesTmp.push({
-        key: 'ATCV.conditionDistance',
-        mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
-        value: `${distance}`,
-        priority: 5,
-      });
-    }
-    for (const obj of changesTmp) {
-      if (obj.key === 'ATCV.' + nameOrCustomId && obj.value != String(visionLevel)) {
-        obj.value = String(visionLevel);
-        foundedFlagVisionValue = true;
-        break;
-      }
-    }
-    if (!foundedFlagVisionValue) {
-      for (const obj of changesTmp) {
-        if (
-          obj.key === 'ATCV.' + nameOrCustomId &&
-          obj.value != String(visionLevel)
-        ) {
-          obj.value = String(visionLevel);
-          foundedFlagVisionValue = true;
-          break;
-        }
-      }
-    }
-    if (!foundedFlagVisionValue) {
-      changesTmp.push(<any>{
-        key: 'ATCV.' + nameOrCustomId,
-        mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
-        value: String(visionLevel),
-        priority: 5,
-      });
-    }
+    changesTmp.push(<any>{
+      key: 'ATCV.' + nameOrCustomId,
+      mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+      value: 0,
+      priority: 5,
+    });
     changesTmp.push({
       key: 'ATCV.conditionType',
       mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
       value: `${isSense ? 'sense' : 'condition'}`,
       priority: 5,
     });
-
+    if (res.visionElevation) {
+      changesTmp.push({
+        key: 'ATCV.conditionElevation',
+        mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+        value: `${res.visionElevation}`,
+        priority: 5,
+      });
+    }
+    if (res.visionDistanceValue && res.visionDistanceValue > 0) {
+      changesTmp.push({
+        key: 'ATCV.conditionDistance',
+        mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+        value: `${res.visionDistanceValue}`,
+        priority: 5,
+      });
+    }
+    if (res.visionTargets && res.visionTargets.length > 0) {
+      changesTmp.push({
+        key: 'ATCV.conditionTargets',
+        mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+        value: `${res.visionTargets.join(',')}`,
+        priority: 5,
+      });
+    }
+    if (res.visionSources && res.visionSources.length > 0) {
+      changesTmp.push({
+        key: 'ATCV.conditionSources',
+        mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+        value: `${res.visionSources.join(',')}`,
+        priority: 5,
+      });
+    }
+    if (res.visionTargetImage && res.visionTargetImage.length > 0) {
+      changesTmp.push({
+        key: 'ATCV.conditionTargetImage',
+        mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+        value: `${res.visionTargetImage}`,
+        priority: 5,
+      });
+    }
+    if (res.visionSourceImage && res.visionSourceImage.length > 0) {
+      changesTmp.push({
+        key: 'ATCV.conditionSourceImage',
+        mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+        value: `${res.visionSourceImage}`,
+        priority: 5,
+      });
+    }
+    if (res.visionBlinded) {
+      changesTmp.push({
+        key: 'ATCV.conditionBlinded',
+        mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+        value: `${res.visionBlinded}`,
+        priority: 5,
+      });
+    }
+    if (res.visionBlindedOverride) {
+      changesTmp.push({
+        key: 'ATCV.conditionBlindedOverride',
+        mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+        value: `${res.visionBlindedOverride}`,
+        priority: 5,
+      });
+    }
 
     const effect = new Effect({
       customId: res.visionId,

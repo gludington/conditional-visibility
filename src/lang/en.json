@@ -70,11 +70,17 @@
 
   "conditional-visibility.windows.dialogs.addsense.title": "Add new sense",
   "conditional-visibility.windows.dialogs.addcondition.title": "Add new condition",
-  "conditional-visibility.windows.dialogs.confirm.apply.choice.yes": "Add",
-  "conditional-visibility.windows.dialogs.confirm.apply.choice.no": "Do nothing",
+  "conditional-visibility.windows.dialogs.confirm.apply.choice.add": "Add",
+  "conditional-visibility.windows.dialogs.confirm.apply.choice.donothing": "Do nothing",
+  "conditional-visibility.windows.dialogs.confirm.apply.choice.delete": "Delete",
+  "conditional-visibility.windows.dialogs.deletesense.title": "Delete sense",
+  "conditional-visibility.windows.dialogs.deletecondition.title": "Delete condition",
 
   "conditional-visibility.token.config.addnewcondition": "Add new condition",
   "conditional-visibility.token.config.addnewsense": "Add new sense",
+  "conditional-visibility.token.config.deletecondition": "Delete condition",
+  "conditional-visibility.token.config.deletesense": "Delete sense",
+
   "conditional-visibility.token.config.conditionValue": "The numeric value assoicated to the id of the current sense/condition used on the checker",
   "conditional-visibility.token.config.id": "This is the unique id used for sync all the senses and conditions (please no strange character, no whitespace and all in lowercase...)",
   "conditional-visibility.token.config.name": "This is the unique name used for sync all the senses and conditions (here you cna put any dirty character you want)",

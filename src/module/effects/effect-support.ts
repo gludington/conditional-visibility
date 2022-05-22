@@ -45,13 +45,23 @@ export class EffectSupport {
     });
   }
 
+  static isDuplicateEffectChange(aeKey:string, arrChanges:EffectChangeData[]){
+    const valueArr = arrChanges.map(function(item){ return item.key === aeKey });
+    const isDuplicate = valueArr.some(function(item, idx){ 
+        return valueArr.indexOf(item) != idx 
+    });
+    return isDuplicate;
+  }
+
   static _handleIntegrations(effect: Effect): EffectChangeData[] {
-    const arrChanges: EffectChangeData[] = effect?.changes || [];
+    const arrChanges = effect?.changes || [];
 
     if (effect.atlChanges.length > 0) {
       for (const atlChange of effect.atlChanges) {
         if (arrChanges.filter((e) => e.key === atlChange.key).length <= 0) {
-          arrChanges.push(atlChange);
+          if(!effect.isDuplicateEffectChange(atlChange.key,arrChanges)){
+            arrChanges.push(atlChange);
+          }
         }
       }
     }
@@ -59,7 +69,9 @@ export class EffectSupport {
     if (effect.tokenMagicChanges.length > 0) {
       for (const tokenMagicChange of effect.tokenMagicChanges) {
         if (arrChanges.filter((e) => e.key === tokenMagicChange.key).length <= 0) {
-          arrChanges.push(tokenMagicChange);
+          if(!effect.isDuplicateEffectChange(tokenMagicChange.key,arrChanges)){
+            arrChanges.push(tokenMagicChange);
+          }
         }
       }
     }
@@ -67,23 +79,24 @@ export class EffectSupport {
     if (effect.atcvChanges.length > 0) {
       for (const atcvChange of effect.atcvChanges) {
         if (arrChanges.filter((e) => e.key === atcvChange.key).length <= 0) {
-          arrChanges.push(atcvChange);
+          if(!effect.isDuplicateEffectChange(atcvChange.key,arrChanges)){
+            arrChanges.push(atcvChange);
+          }
         }
       }
     }
     /*
-    if (effect.atlChanges && effect.atlChanges.length > 0) {
-      arrChanges.push(...effect.atlChanges);
+    if (this.atlChanges.length > 0) {
+      arrChanges.push(...this.atlChanges);
     }
 
-    if (effect.tokenMagicChanges && effect.tokenMagicChanges.length > 0) {
-      arrChanges.push(...effect.tokenMagicChanges);
+    if (this.tokenMagicChanges.length > 0) {
+      arrChanges.push(...this.tokenMagicChanges);
     }
 
-    if (effect.atcvChanges && effect.atcvChanges.length > 0) {
-      arrChanges.push(...effect.atcvChanges);
+    if (this.atcvChanges.length > 0) {
+      arrChanges.push(...this.atcvChanges);
     }
-    // arrChanges = EffectSupport.retrieveChangesOrderedByPriority(arrChanges);
     */
     return arrChanges;
   }

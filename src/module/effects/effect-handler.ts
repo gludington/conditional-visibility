@@ -7,6 +7,7 @@ import type {
   ActorData,
 } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/module.mjs';
 import { EffectSupport } from './effect-support';
+import type { EffectChangeData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/data.mjs/effectChangeData';
 
 export default class EffectHandler {
   _customEffects: Effect[];
@@ -232,22 +233,8 @@ export default class EffectHandler {
     return this.addEffect(params);
   }
 
-  _handleIntegrations(effect) {
-    if (effect.atlChanges.length > 0) {
-      this._addAtlChangesToEffect(effect);
-    }
-
-    if (effect.tokenMagicChanges.length > 0) {
-      this._addTokenMagicChangesToEffect(effect);
-    }
-  }
-
-  _addAtlChangesToEffect(effect: Effect) {
-    effect.changes.push(...effect.atlChanges);
-  }
-
-  _addTokenMagicChangesToEffect(effect: Effect) {
-    effect.changes.push(...effect.tokenMagicChanges);
+  _handleIntegrations(effect: Effect): EffectChangeData[] {
+    return EffectSupport._handleIntegrations(effect);
   }
 
   // ============================================================

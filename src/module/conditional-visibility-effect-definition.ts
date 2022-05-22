@@ -24,68 +24,68 @@ export class ConditionalVisibilityEffectDefinitions {
     // SENSES
     const blinded = ConditionalVisibilityEffectDefinitions.blinded(distance, visionLevel);
     if (blinded) {
-      blinded.atcvChanges = AtcvEffect.mergeEffectWithSensedataDefault(blinded);
+      blinded.atcvChanges = AtcvEffect.retrieveAtcvChangesFromEffect(blinded);
       effects.push(blinded);
     }
     const blindsight = ConditionalVisibilityEffectDefinitions.blindsight(distance, visionLevel);
     if (blindsight) {
-      blindsight.atcvChanges = AtcvEffect.mergeEffectWithSensedataDefault(blindsight);
+      blindsight.atcvChanges = AtcvEffect.retrieveAtcvChangesFromEffect(blindsight);
       effects.push(blindsight);
     }
     const darkvision = ConditionalVisibilityEffectDefinitions.darkvision(distance, visionLevel);
     if (darkvision) {
-      darkvision.atcvChanges = AtcvEffect.mergeEffectWithSensedataDefault(darkvision);
+      darkvision.atcvChanges = AtcvEffect.retrieveAtcvChangesFromEffect(darkvision);
       effects.push(darkvision);
     }
     const devilssight = ConditionalVisibilityEffectDefinitions.devilssight(distance, visionLevel);
     if (devilssight) {
-      devilssight.atcvChanges = AtcvEffect.mergeEffectWithSensedataDefault(devilssight);
+      devilssight.atcvChanges = AtcvEffect.retrieveAtcvChangesFromEffect(devilssight);
       effects.push(devilssight);
     }
     const lowlightvision = ConditionalVisibilityEffectDefinitions.lowlightvision(distance, visionLevel);
     if (lowlightvision) {
-      lowlightvision.atcvChanges = AtcvEffect.mergeEffectWithSensedataDefault(lowlightvision);
+      lowlightvision.atcvChanges = AtcvEffect.retrieveAtcvChangesFromEffect(lowlightvision);
       effects.push(lowlightvision);
     }
     const seeinvisible = ConditionalVisibilityEffectDefinitions.seeinvisible(distance, visionLevel);
     if (seeinvisible) {
-      seeinvisible.atcvChanges = AtcvEffect.mergeEffectWithSensedataDefault(seeinvisible);
+      seeinvisible.atcvChanges = AtcvEffect.retrieveAtcvChangesFromEffect(seeinvisible);
       effects.push(seeinvisible);
     }
     const tremorsense = ConditionalVisibilityEffectDefinitions.tremorsense(distance, visionLevel);
     if (tremorsense) {
-      tremorsense.atcvChanges = AtcvEffect.mergeEffectWithSensedataDefault(tremorsense);
+      tremorsense.atcvChanges = AtcvEffect.retrieveAtcvChangesFromEffect(tremorsense);
       effects.push(tremorsense);
     }
     const truesight = ConditionalVisibilityEffectDefinitions.truesight(distance, visionLevel);
     if (truesight) {
-      truesight.atcvChanges = AtcvEffect.mergeEffectWithSensedataDefault(truesight);
+      truesight.atcvChanges = AtcvEffect.retrieveAtcvChangesFromEffect(truesight);
       effects.push(truesight);
     }
     // CONDITIONS
     const stealthed = ConditionalVisibilityEffectDefinitions.stealthed(visionLevel);
     if (stealthed) {
-      stealthed.atcvChanges = AtcvEffect.mergeEffectWithSensedataDefault(stealthed);
+      stealthed.atcvChanges = AtcvEffect.retrieveAtcvChangesFromEffect(stealthed);
       effects.push(stealthed);
     }
     const hidden = ConditionalVisibilityEffectDefinitions.hidden(visionLevel);
     if (hidden) {
-      hidden.atcvChanges = AtcvEffect.mergeEffectWithSensedataDefault(hidden);
+      hidden.atcvChanges = AtcvEffect.retrieveAtcvChangesFromEffect(hidden);
       effects.push(hidden);
     }
     const invisible = ConditionalVisibilityEffectDefinitions.invisible(visionLevel);
     if (invisible) {
-      invisible.atcvChanges = AtcvEffect.mergeEffectWithSensedataDefault(invisible);
+      invisible.atcvChanges = AtcvEffect.retrieveAtcvChangesFromEffect(invisible);
       effects.push(invisible);
     }
     const obscured = ConditionalVisibilityEffectDefinitions.obscured(visionLevel);
     if (obscured) {
-      obscured.atcvChanges = AtcvEffect.mergeEffectWithSensedataDefault(obscured);
+      obscured.atcvChanges = AtcvEffect.retrieveAtcvChangesFromEffect(obscured);
       effects.push(obscured);
     }
     const indarkness = ConditionalVisibilityEffectDefinitions.indarkness(visionLevel);
     if (indarkness) {
-      indarkness.atcvChanges = AtcvEffect.mergeEffectWithSensedataDefault(indarkness);
+      indarkness.atcvChanges = AtcvEffect.retrieveAtcvChangesFromEffect(indarkness);
       effects.push(indarkness);
     }
 

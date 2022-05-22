@@ -1,0 +1,33 @@
+
+
+<form class="editable flexcol" autocomplete="off">
+    {{!-- <fieldset>
+        <legend>ADD NEW {{#if isSense}} SENSE {{else}} CONDITION {{/if}} </legend>
+        <hr> --}}
+
+        {{#if isSense}}
+            <div class="form-group">
+                <label>{{localize "conditional-visibility.token.config.senses.title"}}</label>
+                <select id="conditional-visibility.senses" name="conditional-visibility-senses" data-dtype="String" is="ms-dropdown-cv">
+                    {{#each senses as |sense|}}
+                    <option data-image="{{sense.visionIcon}}" value="{{sense.visionId}}">{{localize sense.visionName}}</option>
+                    {{/each}}
+                </select>
+                <p class="notes">{{localize ""}}</p>
+            </div>
+        {{else}}
+            <div class="form-group">
+                <label>{{localize "conditional-visibility.token.config.conditions.title"}}</label>
+                <select id="conditional-visibility.conditions" name="conditional-visibility-conditions" data-dtype="String" is="ms-dropdown-cv">
+                    {{#each conditions as |condition|}}
+                    <option data-image="{{condition.visionIcon}}" value="{{condition.visionId}}">
+                    {{localize condition.visionName}}
+                    </option>
+                    {{/each}}
+                </select>
+                <p class="notes">{{localize ""}}</p>
+            </div>
+        {{/if}}
+        
+    {{!-- </fieldset> --}}
+</form>

@@ -18,6 +18,7 @@ import {
   is_real_number,
   prepareActiveEffectForConditionalVisibility,
   renderDialogRegisterSenseData,
+  renderDialogUnRegisterSenseData,
   repairAndSetFlag,
   repairAndUnSetFlag,
   toggleStealth,
@@ -258,6 +259,21 @@ const module = {
       const buttonClick = event.button; // 0 left click
       (await renderDialogRegisterSenseData(false, senses, conditions)).render(true);
     });
+
+    $(html).find('.conditional-visibility-delete-sense')[0]?.addEventListener('click', async function (event) {
+      event.preventDefault();
+      event.stopPropagation();
+      const buttonClick = event.button; // 0 left click
+      (await renderDialogUnRegisterSenseData(true, senses, conditions)).render(true);
+    });
+
+    $(html).find('.conditional-visibility-delete-condition')[0]?.addEventListener('click', async function (event) {
+      event.preventDefault();
+      event.stopPropagation();
+      const buttonClick = event.button; // 0 left click
+      (await renderDialogUnRegisterSenseData(false, senses, conditions)).render(true);
+    });
+
   },
   async updateActor(document: TokenDocument, changeOri, options, userId) {
     const change = duplicateExtended(changeOri);

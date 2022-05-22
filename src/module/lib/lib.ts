@@ -1152,6 +1152,24 @@ export function retrieveAtcvVisionLevelValueFromActiveEffect(token: Token, effec
   return atcvValue;
 }
 
+export function retrieveAtcvVisionLevelKeyFromChanges(effectChanges: EffectChangeData[]): string {
+  const effectEntityChanges = effectChanges.sort((a, b) => <number>a.priority - <number>b.priority);
+  const atcvValueChange = <EffectChangeData>effectEntityChanges.find((aee) => {
+    if (aee.key.startsWith('ATCV.') && !aee.key.startsWith('ATCV.condition') && aee.value) {
+      return aee;
+    }
+  });
+  if(!atcvValueChange){
+    return '';
+  }
+  const atcvKey = atcvValueChange.key;
+  const key = atcvKey.replace('ATCV.','');
+  if(!key){
+    return '';
+  }
+  return key;
+}
+
 export async function toggleStealth(event, app) {
   const atcvEffectFlagData = <AtcvEffect>(
     app.object.actor.getFlag(CONSTANTS.MODULE_NAME, AtcvEffectConditionFlags.HIDDEN)
@@ -2151,6 +2169,9 @@ export async function _registerSenseData(
     warn(`Cannot register the ${conditionType} with name empty or null`, true);
     return;
   }
+
+  senseData.id = senseData.id.trim();
+
   const sensesAndConditionDataList = <AtcvEffect[]>await getAllDefaultSensesAndConditions(null);
   const senseAlreadyExistsId = sensesAndConditionDataList.find((a: AtcvEffect) => a.visionId == senseData.id);
   const senseAlreadyExistsName = sensesAndConditionDataList.find((a: AtcvEffect) => a.visionName == senseData.name);
@@ -2166,13 +2187,19 @@ export async function _registerSenseData(
   // Register new effect
   const atcvEffcetX = AtcvEffect.fromSenseData(senseData, 0, false);
   const effectExternal = AtcvEffect.toEffect(atcvEffcetX);
-  const newEffectsData:Effect[] = API.EFFECTS || [];
-  const effectFounded = <Effect>API.EFFECTS.find((effect: Effect) => {
+  let newEffectsData:Effect[] = API.EFFECTS || [];
+  let effectFounded = !!API.EFFECTS.find((effect: Effect) => {
     return (
       isStringEquals(effect.name,effectExternal.name) ||
       isStringEquals(effect.customId,effectExternal.customId)
     );
   });
+  // Update current effect
+  if(effectFounded){
+    newEffectsData = newEffectsData.filter(function(el) { return el.customId == senseData.id });
+    info(`Update register the default active effect for the ${conditionType} with name '${senseData.name}' because already exists`, true);
+    effectFounded = false;
+  }
   if (!effectFounded && effectExternal) {
     newEffectsData.push(effectExternal);
     await game.settings.set(CONSTANTS.MODULE_NAME, 'effects', newEffectsData);
@@ -2203,6 +2230,22 @@ export async function _unregisterSenseData(
     warn(`Cannot unregister the ${valueComment} with id '${senseDataIdOrName}' because is not exists exists`, true);
     return;
   }
+  // UnRegister new effect
+  let newEffectsData:Effect[] = API.EFFECTS || [];
+  const effectFounded = !!API.EFFECTS.find((effect: Effect) => {
+    return (
+      isStringEquals(effect.name,senseDataIdOrName) ||
+      isStringEquals(effect.customId,senseDataIdOrName)
+    );
+  });
+  // Update current effect
+  if(effectFounded){
+    newEffectsData = newEffectsData.filter(function(el) { return el.customId == senseDataIdOrName });
+    await game.settings.set(CONSTANTS.MODULE_NAME, 'effects', newEffectsData);
+  } else{
+    warn(`Cannot unregister the default active effect ${valueComment} with id '${senseDataIdOrName}' because is not exists exists`, true);
+  }
+  // End UnRegister new effect
   sensesDataList = sensesDataList.filter(function (el) {
     return el.id != senseAlreadyExistsId.visionId;
   });
@@ -2335,7 +2378,7 @@ export async function renderDialogRegisterSenseData(isSense:boolean, senses:Atcv
       ? i18n(`${CONSTANTS.MODULE_NAME}.windows.dialogs.addsense.title`)
       : i18n(`${CONSTANTS.MODULE_NAME}.windows.dialogs.addcondition.title`),
     content: myContent,
-    render: (html) => {
+    render: (html:JQuery<HTMLElement>) => {
       //@ts-ignore
       $($(html[0]).find('.conditionSources')[0]).SumoSelect({
         placeholder: 'Select sense sources...',
@@ -2345,11 +2388,34 @@ export async function renderDialogRegisterSenseData(isSense:boolean, senses:Atcv
       $($(html[0]).find('.conditionTargets')[0]).SumoSelect({
         placeholder: 'Select condition targets...',
       });
+
+      // for ( const fp of html.find('button.file-picker') ) {
+      //   fp?.addEventListener('click', async function (event) {
+      //     event.preventDefault();
+      //     event.stopPropagation();
+      //     const buttonClick = event.button; // 0 left click
+      //     const button = event.currentTarget;
+      //     //@ts-ignore
+      //     const target = button.dataset.target;
+      //     //@ts-ignore
+      //     const field = button.form[target] || null;
+      //     const options = {
+      //       //@ts-ignore
+      //       field: field,
+      //       type: button.dataset.type,
+      //       current: field?.value ?? "",
+      //       button: button,
+      //       callback: this._onSelectFile.bind(this)
+      //     }
+      //     const fp = new FilePicker(options);
+      //     return fp.browse();
+      //   });
+      // }
     },
     buttons: {
-      yes: {
+      add: {
         icon: '<i class="fas fa-check"></i>',
-        label: i18n(`${CONSTANTS.MODULE_NAME}.windows.dialogs.confirm.apply.choice.yes`),
+        label: i18n(`${CONSTANTS.MODULE_NAME}.windows.dialogs.confirm.apply.choice.add`),
         callback: async (html) => {
           const senseData = <SenseData>new Object();
 
@@ -2357,14 +2423,14 @@ export async function renderDialogRegisterSenseData(isSense:boolean, senses:Atcv
           senseData.name = <string>$(`[name="conditional-visibility-name"]`).val();
           senseData.path = <string>$(`[name="conditional-visibility-path"]`).val();
           senseData.img = <string>$(`[name="conditional-visibility-img"]`).val();
-          senseData.conditionElevation = Boolean($(`[name="conditional-visibility-conditionElevation"]`).val());
+          senseData.conditionElevation = $(`[name="conditional-visibility-conditionElevation"]`).val() === 'true' ? true : false;
           senseData.conditionTargets = <string[]>$(`[name="conditional-visibility-conditionTargets"]`).val();
           senseData.conditionSources = <string[]>$(`[name="conditional-visibility-conditionSources"]`).val();
           senseData.conditionDistance = <number>$(`[name="conditional-visibility-conditionDistance"]`).val();
           senseData.conditionType = <string>$(`[name="conditional-visibility-conditionType"]`).val();
           
-          senseData.conditionBlinded = Boolean($(`[name="conditional-visibility-conditionBlinded"]`).val());
-          senseData.conditionBlindedOverride = Boolean($(`[name="conditional-visibility-conditionBlindedOverride"]`).val());
+          senseData.conditionBlinded = $(`[name="conditional-visibility-conditionBlinded"]`).val() === 'true' ? true : false;
+          senseData.conditionBlindedOverride = $(`[name="conditional-visibility-conditionBlindedOverride"]`).val() === 'true' ? true : false;
         
           senseData.conditionTargetImage = <string>$(`[name="conditional-visibility-conditionTargetImage"]`).val();
           senseData.conditionSourceImage = <string>$(`[name="conditional-visibility-conditionSourceImage"]`).val();
@@ -2381,14 +2447,71 @@ export async function renderDialogRegisterSenseData(isSense:boolean, senses:Atcv
           }
         },
       },
-      no: {
+      donothing: {
         icon: '<i class="fas fa-times"></i>',
-        label: i18n(`${CONSTANTS.MODULE_NAME}.windows.dialogs.confirm.apply.choice.no`),
+        label: i18n(`${CONSTANTS.MODULE_NAME}.windows.dialogs.confirm.apply.choice.donothing`),
         callback: (html) => {
           // Do nothing
         },
       },
     },
-    default: 'no',
+    default: 'donothing',
   });
+}
+
+export async function renderDialogUnRegisterSenseData(isSense:boolean, senses:AtcvEffect[], conditions:AtcvEffect[]): Promise<Dialog> {
+  const filteredSenses = senses.filter(function(el) { return el.visionId != AtcvEffectConditionFlags.NONE }); 
+  const filteredConditions = conditions.filter(function(el) { return el.visionId != AtcvEffectConditionFlags.NONE });
+  const data = {
+    isSense: isSense,
+    senses: senses,
+    conditions: conditions
+  }; // default value
+  const myContent = await renderTemplate(`modules/${CONSTANTS.MODULE_NAME}/templates/delete_sensedata.hbs`, data);
+
+  const dialog = new Dialog({
+    title: isSense 
+      ? i18n(`${CONSTANTS.MODULE_NAME}.windows.dialogs.deletesense.title`)
+      : i18n(`${CONSTANTS.MODULE_NAME}.windows.dialogs.deletecondition.title`),
+    content: myContent,
+    render: (html:JQuery<HTMLElement>) => {
+      // do nothing
+    },
+    buttons: {
+      delete: {
+        icon: '<i class="fas fa-check"></i>',
+        label: i18n(`${CONSTANTS.MODULE_NAME}.windows.dialogs.confirm.apply.choice.delete`),
+        callback: async (html) => {
+          const sense = <string>$(`[name="conditional-visibility-senses"]`).val();
+          const condition = <string>$(`[name="conditional-visibility-conditions"]`).val();
+          if(!isSense && !condition){
+            warn(`You must set at least a 'condition'`, true);
+            return
+          }
+          if(isSense && !sense){
+            warn(`You must set at least a 'sense'`, true);
+            return
+          }
+          
+          if(isSense){
+            API.unRegisterSense(sense);
+          }else{
+            API.unRegisterCondition(condition);
+          }
+        },
+      },
+      donothing: {
+        icon: '<i class="fas fa-times"></i>',
+        label: i18n(`${CONSTANTS.MODULE_NAME}.windows.dialogs.confirm.apply.choice.donothing`),
+        callback: (html) => {
+          // Do nothing
+        },
+      },
+    },
+    default: 'donothing',
+  });
+  //dialog.options.classes.push('dialogcv');
+  dialog.options.height = 150;
+  dialog.position.height = 150;
+  return dialog;
 }

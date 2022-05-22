@@ -1001,6 +1001,14 @@ const API = {
         );
       }
     }
+    // ADDED 2022-05-22
+    else if(changesTmp.length == 0){
+      const effectTmp = AtcvEffect.toEffect(senseDataEffect);
+      effect.changes = effectTmp.changes;
+      effect.tokenMagicChanges = effectTmp.tokenMagicChanges;
+      effect.atlChanges = effectTmp.atlChanges;
+      effect.atcvChanges = effectTmp.atcvChanges;
+    }
     // Add some feature if is a sense or a condition
     if (!effect) {
       warn(
@@ -1045,7 +1053,7 @@ const API = {
         await (<EffectInterface>this.effectInterface).addEffectOnToken(nameToUse, <string>token.id, effect);
       }
       // await (<EffectInterface>this.effectInterface).addEffectOnToken(nameToUse, <string>token.id, effect);
-      effect.atcvChanges = AtcvEffect.mergeEffectWithSensedataDefault(effect);
+      effect.atcvChanges = AtcvEffect.retrieveAtcvChangesFromEffect(effect);
       const atcvEffectFlagData = AtcvEffect.fromEffect(token.document, effect);
       const result = atcvEffectFlagData;
       return result;

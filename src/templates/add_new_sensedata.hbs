@@ -9,7 +9,7 @@
             <label>{{localize "conditional-visibility.token.config.conditionType"}}*</label>
             <div class="form-fields">
                 <input readonly type="text" id="conditional-visibility.conditionType" name="conditional-visibility-conditionType" 
-                    required value="{{#if isSense}} sense {{else}} condition {{/if}}"/>
+                    required value="{{#if isSense}}sense{{else}}condition{{/if}}"/>
             </div>
             <p class="notes">{{localize ""}}</p>
         </div>
@@ -45,9 +45,11 @@
             <label>{{localize "conditional-visibility.token.config.img"}}</label>
             <div class="form-fields">
                 {{!-- {{filePicker target="conditional-visibility-img" type="image"}} --}}
+                {{!-- 
                 <button type="button" name="file-picker" class="file-picker" data-type="image" data-target="conditional-visibility-img" title="Select a file" tabindex="-1">
                     <i class="fas fa-file-import fa-fw"></i>
                 </button>
+                --}}
                 <input class="image" type="text" id="conditional-visibility.img" name="conditional-visibility-img" 
                     placeholder="path/image.png" value=""/>
             </div>
@@ -58,7 +60,8 @@
             <label>{{localize "conditional-visibility.token.config.conditionElevation"}}</label>
             <div class="form-fields">
                 <input type="checkbox" id="conditional-visibility.conditionElevation" name="conditional-visibility-conditionElevation"
-                    value="false" />
+                    value="false" 
+                    onclick="$(this).attr('value', this.checked ? true : false)" />
             </div>
             <p class="notes">{{localize ""}}</p>
         </div>
@@ -112,7 +115,8 @@
             <label>{{localize "conditional-visibility.token.config.conditionBlinded"}}</label>
             <div class="form-fields">
                 <input type="checkbox" id="conditional-visibility.conditionBlinded" name="conditional-visibility-conditionBlinded"
-                    value="false" />
+                    value="false" 
+                    onclick="$(this).attr('value', this.checked ? true : false)" />
             </div>
             <p class="notes">{{localize ""}}</p>
         </div>
@@ -121,7 +125,8 @@
             <label>{{localize "conditional-visibility.token.config.conditionBlindedOverride"}}</label>
             <div class="form-fields">
                 <input type="checkbox" id="conditional-visibility.conditionBlindedOverride" name="conditional-visibility-conditionBlindedOverride"
-                    value="false" />
+                    value="false" 
+                    onclick="$(this).attr('value', this.checked ? true : false)" />
             </div>
             <p class="notes">{{localize ""}}</p>
         </div>

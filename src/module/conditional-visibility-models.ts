@@ -48,7 +48,7 @@ export class AtcvEffect {
       isSense = false;
     } else {
       isSense = !!API.SENSES.find((senseData) => {
-        return isStringEquals(senseData.id, res.visionId) 
+        return isStringEquals(senseData.id, res.visionId)
           || isStringEquals(senseData.name, res.visionName);
       });
     }
@@ -75,7 +75,7 @@ export class AtcvEffect {
     allSensesAndConditionsData.push(...API.SENSES);
     allSensesAndConditionsData.push(...API.CONDITIONS);
     const senseData = allSensesAndConditionsData.find((senseData) => {
-      return isStringEquals(senseData.id, res.visionId) 
+      return isStringEquals(senseData.id, res.visionId)
         || isStringEquals(senseData.name, res.visionName);
     });
     if (!senseData) {
@@ -136,7 +136,7 @@ export class AtcvEffect {
     allSensesAndConditionsData.push(...API.CONDITIONS);
     const senseData = allSensesAndConditionsData.find((senseData) => {
       return isStringEquals(senseData.id, retrieveAtcvVisionLevelKeyFromChanges(res.changes))
-        || isStringEquals(senseData.id, res.customId) 
+        || isStringEquals(senseData.id, res.customId)
         || isStringEquals(senseData.name, res.name);
     });
     if (!senseData) {
@@ -245,7 +245,7 @@ export class AtcvEffect {
     allSensesAndConditionsData.push(...API.CONDITIONS);
     const senseData = allSensesAndConditionsData.find((senseData) => {
       return isStringEquals(senseData.id, retrieveAtcvVisionLevelKeyFromChanges(res.data.changes))
-        || isStringEquals(senseData.id, <string>res.id) 
+        || isStringEquals(senseData.id, <string>res.id)
         || isStringEquals(senseData.name, res.data.label);
     });
     if (!senseData) {
@@ -553,7 +553,7 @@ export interface SenseData {
   conditionSources: string[]; // [OPTIONAL] This is used for explicitly tell to the checker what AE Sense can be see from this AE Condition based on the custom id used from this module (you can set this but is used only from a condition effect)
   conditionDistance: number; // [OPTIONAL] set a maximum distance for check the sight with this effect
   conditionType: string; // indicate the type of CV usually they are or 'sense' or 'condition' not both, **THIS IS ESSENTIAL FOR USE SENSE AND CONDITION NOT REGISTERED ON THE MODULE IF NOT FOUNDED BY DEFAULT IS CONSIDERED A SENSE**, so now you can just modify the AE and you are not forced to call the registered macro of the module CV, this is very useful for integration with other modules.
-  
+
   conditionBlinded: boolean; // [OPTIONAL] If true this effect / condition is applied on the token / actor it will be evaluated for the blinded check and only another effect with `ATCV.conditionBlindedOverride = true` will be able to avoid this check.
   conditionBlindedOverride: boolean; // [OPTIONAL] If true it indicates that this effect is able to work even with the "Blinded" condition applied to the token
 
@@ -567,6 +567,7 @@ export enum ConditionalVisibilityFlags {
   DATA_CONDITIONS = 'dataconditions',
   // MAX_SIGHT_DISTANCE = 'maxsightdistance'
   USE_STEALTH_PASSIVE = 'datausestealthpassive',
+  ORIGINAL_IMAGE = 'originalimage'
 }
 
 export enum AtcvEffectSenseFlags {
@@ -665,7 +666,7 @@ export class VisionCapabilities {
         // const atcvEffectFlagData = <AtcvEffect>this.token?.document?.getFlag(CONSTANTS.MODULE_NAME, statusSight.id);
         const atcvEffectFlagData =
           <AtcvEffect>this.token?.actor?.getFlag(CONSTANTS.MODULE_NAME, statusSight.id) ??
-          <AtcvEffect>this.token?.document?.getFlag(CONSTANTS.MODULE_NAME, statusSight.id);
+          <AtcvEffect>this.token?.document?.getFlag(CONSTANTS.MODULE_NAME, statusSight.id); // TODO TO REMOVE
         if (atcvEffectFlagData) {
           const visionLevelValue = atcvEffectFlagData.visionLevelValue || 0;
           const visionDistanceValue = atcvEffectFlagData.visionDistanceValue || 0;
@@ -717,7 +718,7 @@ export class VisionCapabilities {
         // const atcvEffectFlagData = <AtcvEffect>this.token.document?.getFlag(CONSTANTS.MODULE_NAME, statusSight.id);
         const atcvEffectFlagData =
           <AtcvEffect>this.token?.actor?.getFlag(CONSTANTS.MODULE_NAME, statusSight.id) ??
-          <AtcvEffect>this.token.document?.getFlag(CONSTANTS.MODULE_NAME, statusSight.id);
+          <AtcvEffect>this.token.document?.getFlag(CONSTANTS.MODULE_NAME, statusSight.id); // TODO TO REMOVE
         if (atcvEffectFlagData) {
           const visionLevelValue = atcvEffectFlagData.visionLevelValue || 0;
           const visionDistanceValue = atcvEffectFlagData.visionDistanceValue || 0;

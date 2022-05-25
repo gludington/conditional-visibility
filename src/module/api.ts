@@ -1,5 +1,7 @@
+import { conditionalVisibilitySocket } from './socket';
 import CONSTANTS from './constants';
 import {
+  checkAndDisplayUserSpecificImage,
   duplicateExtended,
   error,
   getAllDefaultSensesAndConditions,
@@ -1001,14 +1003,15 @@ const API = {
         );
       }
     }
-    // ADDED 2022-05-22
-    else if(changesTmp.length == 0){
-      const effectTmp = AtcvEffect.toEffect(senseDataEffect);
-      effect.changes = effectTmp.changes;
-      effect.tokenMagicChanges = effectTmp.tokenMagicChanges;
-      effect.atlChanges = effectTmp.atlChanges;
-      effect.atcvChanges = effectTmp.atcvChanges;
-    }
+    // TODO check if we need this ??? ADDED 2022-05-22
+    // else if(changesTmp.length == 0){
+    //   const effectTmp = AtcvEffect.toEffect(senseDataEffect);
+    //   effect.changes = effectTmp.changes;
+    //   effect.tokenMagicChanges = effectTmp.tokenMagicChanges;
+    //   effect.atlChanges = effectTmp.atlChanges;
+    //   effect.atcvChanges = effectTmp.atcvChanges;
+    // }
+
     // Add some feature if is a sense or a condition
     if (!effect) {
       warn(
@@ -1140,6 +1143,7 @@ const API = {
       Hooks.callAll('sightRefresh', t);
     }
   },
+
   sightRefreshCVArr(...inAttributes) {
     if (!Array.isArray(inAttributes)) {
       throw error('sightRefreshCVArr | inAttributes must be of type array');
@@ -1149,6 +1153,14 @@ const API = {
     for (const t of <Token[]>canvas.tokens?.placeables) {
       Hooks.callAll('sightRefresh', t);
     }
+  },
+
+  drawImageByUserArr(...inAttributes) {
+    if (!Array.isArray(inAttributes)) {
+      throw error('drawImageByUserArr | inAttributes must be of type array');
+    }
+    const [sourceToken, image] = inAttributes;
+    checkAndDisplayUserSpecificImage(image, sourceToken, true, 40);
   },
 
   canSee(sourceToken: Token, targetToken: Token): boolean {

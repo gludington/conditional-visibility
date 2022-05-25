@@ -8,7 +8,6 @@ import {
   buildButton,
   debug,
   drawHandlerCVImage,
-  drawHandlerCVImageAll,
   duplicateExtended,
   getAllDefaultSensesAndConditions,
   getConditionsFromToken,
@@ -615,7 +614,7 @@ const module = {
         }
       }
     }
-    drawHandlerCVImageAll(sourceToken);
+    // drawHandlerCVImageAll(sourceToken);
   },
   //async updateActiveEffect(activeEffect: ActiveEffect, options: EffectChangeData, isRemoved: boolean) {
   async updateActiveEffect(activeEffect: ActiveEffect, options: any, isRemoved: boolean) {
@@ -944,7 +943,7 @@ const module = {
         warn(`No actor founded on canvas with token '${app.object.id}'`, true);
         return;
       }
-      
+
       const atcvEffectFlagData = <AtcvEffect>(
         app.object.actor.getFlag(CONSTANTS.MODULE_NAME, AtcvEffectConditionFlags.HIDDEN)
       );

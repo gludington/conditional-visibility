@@ -90,14 +90,98 @@ export class ConditionalVisibilityEffectDefinitions {
     }
 
     for (const effectExternal of API.EFFECTS) {
-      const effectFounded = <Effect>effects.find((effect: Effect) => {
+      let effectFounded = <Effect>effects.find((effect: Effect) => {
         return (
           isStringEquals(effect.name,effectExternal.name) ||
           isStringEquals(effect.customId,effectExternal.customId)
         );
       });
       if (!effectFounded && effectExternal) {
-        effects.push(effectExternal);
+        // Before launch error check dfred effects
+        // Check for dfred convenient effect and retrieve the effect with the specific name
+        // https://github.com/DFreds/dfreds-convenient-effects/issues/110
+        //@ts-ignore
+        if (game.modules.get('dfreds-convenient-effects')?.active && game.dfreds && game.dfreds.effectInterface) {
+          let changesTmp: any[] = [];
+          let effectToFoundByName = i18n(effectExternal.name);
+          if (!effectToFoundByName.endsWith('(CV)')) {
+            effectToFoundByName = effectToFoundByName + ' (CV)';
+          }
+          //@ts-ignore
+          const dfredEffect = <Effect>await game.dfreds.effectInterface.findCustomEffectByName(effectToFoundByName);
+          if (dfredEffect) {
+            let foundedFlagVisionValue = false;
+            if (!dfredEffect.atcvChanges) {
+              dfredEffect.atcvChanges = [];
+            }
+            changesTmp = EffectSupport._handleIntegrations(dfredEffect);
+            changesTmp = changesTmp.filter((c) => !c.key.startsWith(`data.`));
+            if (distance && distance > 0) {
+              changesTmp.push({
+                key: 'ATCV.conditionDistance',
+                mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+                value: `${distance}`,
+                priority: 5,
+              });
+            }
+            for (const obj of changesTmp) {
+              if (obj.key === 'ATCV.' + effectExternal.customId && obj.value != String(visionLevel)) {
+                obj.value = String(visionLevel);
+                foundedFlagVisionValue = true;
+                break;
+              }
+            }
+            if (!foundedFlagVisionValue) {
+              for (const obj of changesTmp) {
+                if (
+                  obj.key === 'ATCV.' + effectExternal.customId &&
+                  obj.value != String(visionLevel)
+                ) {
+                  obj.value = String(visionLevel);
+                  foundedFlagVisionValue = true;
+                  break;
+                }
+              }
+            }
+            if (!foundedFlagVisionValue) {
+              changesTmp.push(<any>{
+                key: 'ATCV.' + effectExternal.customId,
+                mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+                value: String(visionLevel),
+                priority: 5,
+              });
+            }
+            let foundedFlagVisionType = false;
+            for (const obj of changesTmp) {
+              if (obj.key === 'ATCV.conditionType' && obj.value) {
+                foundedFlagVisionType = true;
+                break;
+              }
+            }
+            if(!foundedFlagVisionType){
+              changesTmp.push({
+                key: 'ATCV.conditionType',
+                mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+                value: 'sense',
+                priority: 5,
+              });
+            }
+            effectFounded = <Effect>duplicateExtended(dfredEffect);
+            if (!effectFounded.name.endsWith('(CV)')) {
+              effectFounded.name = effectFounded.name + ' (CV)';
+            }
+            if (effectFounded) {
+              effectFounded.changes = duplicateExtended(changesTmp);
+            } else {
+              warn(`Found dfred active effect  ${effectToFoundByName} but can't clone...`);
+            }
+          }
+        }
+        if(effectFounded){
+          effects.push(effectFounded);
+        }else{
+          effects.push(effectExternal);
+        }
       }
     }
     return effects;

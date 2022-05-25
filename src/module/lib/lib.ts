@@ -1,3 +1,4 @@
+import { conditionalVisibilitySocket } from './../socket';
 import CONSTANTS from '../constants.js';
 import API from '../api.js';
 import {
@@ -1532,7 +1533,7 @@ export async function repairAndSetFlag(token: Token, key: string, value: AtcvEff
       thereISADifference = true;
     }
 
-    // TODO START TO REMOVE
+    // TODO START TO REMOVE THIS IS FOR A RETROCOMPATIBILITY ISSUE
     if (token.document.getFlag(CONSTANTS.MODULE_NAME, key)) {
       await token.document.unsetFlag(CONSTANTS.MODULE_NAME, key);
     }
@@ -1563,7 +1564,7 @@ export async function repairAndSetFlag(token: Token, key: string, value: AtcvEff
     if (token.actor.getFlag(CONSTANTS.MODULE_NAME, 'conditionBlindedOverride')) {
       await token.actor.unsetFlag(CONSTANTS.MODULE_NAME, 'conditionBlindedOverride');
     }
-    // TODO END TO REMOVE
+    // TODO END TO REMOVE THIS IS FOR A RETROCOMPATIBILITY ISSUE
 
     if (thereISADifference) {
       await token.actor?.setFlag(CONSTANTS.MODULE_NAME, key, value);
@@ -1812,8 +1813,9 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
   // const targetVisionLevels:AtcvEffect[] = getConditionsFromTokenFast(targetToken.document, true, true) ?? [];
 
   let sourceVisionLevels =
-    <AtcvEffect[]>sourceToken.document.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES) ??
-    [];
+    <AtcvEffect[]>sourceToken.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES) ??
+    <AtcvEffect[]>sourceToken.document.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES)  // TODO TO REMOVE
+    ?? [];
   if (sourceVisionLevels.length <= 0) {
     debug(
       `(3.4) no '${ConditionalVisibilityFlags.DATA_SENSES}' found on '${sourceToken.data.name}' you must refresh the senses/conditions on this token, try to modify some CV value, for now we recalculate the value`,
@@ -1821,9 +1823,9 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
     sourceVisionLevels = getSensesFromToken(sourceToken.document, true, true);
   }
   let targetVisionLevels =
-    <AtcvEffect[]>(
-      targetToken.document.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_CONDITIONS)
-    ) ?? [];
+    <AtcvEffect[]>targetToken.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_CONDITIONS) ??
+    <AtcvEffect[]>targetToken.document.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_CONDITIONS)  // TODO TO REMOVE
+    ?? [];
   if (targetVisionLevels.length <= 0) {
     debug(
       `(3.5) no '${ConditionalVisibilityFlags.DATA_CONDITIONS}' found on '${targetToken.data.name}' you must refresh the senses/conditions on this token, try to modify some CV value, for now we recalculate the value`,
@@ -1899,12 +1901,12 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
   }
 
   if(someoneIsBlinded > 0){
-    // 6.1) Check for blinded override effect avoid the blinded condition. 
+    // 6.1) Check for blinded override effect avoid the blinded condition.
     const sourceVisionLevelsBlindedOverride: AtcvEffect[] = [];
     for (let i = 0; i < sourceVisionLevels.length; i++) {
       if (
         sourceVisionLevels[i]?.visionBlindedOverride &&
-        <number>sourceVisionLevels[i]?.visionLevelValue > someoneIsBlinded 
+        <number>sourceVisionLevels[i]?.visionLevelValue > someoneIsBlinded
       ) {
         sourceVisionLevelsBlindedOverride.push(<AtcvEffect>sourceVisionLevels[i])
       }
@@ -2252,56 +2254,91 @@ export async function _unregisterSenseData(
   return sensesDataList;
 }
 
-export function drawHandlerCVImageAll(controlledToken: Token) {
-  if(<number>(<Token[]>canvas.tokens?.controlled.filter((t)=> t.id==controlledToken.id))?.length <= 0){
-    return;
-  }
-  for(const token of <Token[]>canvas.tokens?.placeables){
-    drawHandlerCVImage(controlledToken,token);
-  }
-}
+// export function drawHandlerCVImageAll(controlledToken: Token) {
+//   if(<number>(<Token[]>canvas.tokens?.controlled.filter((t)=> t.id==controlledToken.id))?.length <= 0){
+//     return;
+//   }
+//   for(const token of <Token[]>canvas.tokens?.placeables){
+//     drawHandlerCVImage(controlledToken,token);
+//   }
+// }
 
-export function drawHandlerCVImage(controlledToken: Token, tokenToCheckIfIsVisible: Token) {
+export async function drawHandlerCVImage(controlledToken: Token, tokenToCheckIfIsVisible: Token) {
   if (game?.ready && game.settings.get(CONSTANTS.MODULE_NAME, 'enableDrawCVHandler')) {
     if(<number>(<Token[]>canvas.tokens?.controlled.filter((t)=> t.id==controlledToken.id))?.length <= 0){
       return;
     }
-    // TODO this work, but is a perfomance nightmare
+
     let sourceVisionLevels =
-      <AtcvEffect[]>(
-        controlledToken.document.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES)
-      ) ?? [];
+      <AtcvEffect[]>controlledToken.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES) ??
+      <AtcvEffect[]>controlledToken.document.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES) // TODO to remove
+      ?? [];
     if (sourceVisionLevels.length <= 0) {
       sourceVisionLevels = getSensesFromToken(controlledToken.document, true, true);
     }
     // TODO we need this
-    // let targetVisionLevels =
-    //   <AtcvEffect[]>(
-    //     tokenToCheckIfIsVisible.document.actor?.getFlag(
-    //       CONSTANTS.MODULE_NAME,
-    //       ConditionalVisibilityFlags.DATA_CONDITIONS,
-    //     )
-    //   ) ?? [];
-    // if (targetVisionLevels.length <= 0) {
-    //   targetVisionLevels = getConditionsFromToken(tokenToCheckIfIsVisible.document, true, true);
-    // }
+    let targetVisionLevels =
+      <AtcvEffect[]>tokenToCheckIfIsVisible.actor?.getFlag(CONSTANTS.MODULE_NAME,ConditionalVisibilityFlags.DATA_CONDITIONS) ??
+      <AtcvEffect[]>tokenToCheckIfIsVisible.document.actor?.getFlag(CONSTANTS.MODULE_NAME,ConditionalVisibilityFlags.DATA_CONDITIONS)  // TODO to remove
+      ?? [];
+    if (targetVisionLevels.length <= 0) {
+      targetVisionLevels = getConditionsFromToken(tokenToCheckIfIsVisible.document, true, true);
+    }
+    let foundedImageToUpdated = false;
     // TODO add priority value for set up the order
-    for (const atcvEffect of sourceVisionLevels.sort((a, b) =>
-      String(a.visionLevelValue).localeCompare(String(b.visionLevelValue)),
-    )) {
-      if (atcvEffect.visionTargetImage) {
-        //tokenData.data.img = currentActvEffect.visionTargetImage;
-        tokenToCheckIfIsVisible.document.data.img = atcvEffect.visionTargetImage;
+    const atcvEffectsSource = sourceVisionLevels.sort((a, b) => String(a.visionLevelValue).localeCompare(String(b.visionLevelValue)));
+    const atcvEffectsTarget = targetVisionLevels.sort((a, b) => String(a.visionLevelValue).localeCompare(String(b.visionLevelValue)));
+
+    for (const atcvEffectSource of atcvEffectsSource) {
+      if (atcvEffectSource.visionTargetImage) {
+        if(atcvEffectSource.visionTargetImage != tokenToCheckIfIsVisible.data.img){
+          await tokenToCheckIfIsVisible.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.ORIGINAL_IMAGE, tokenToCheckIfIsVisible.data.img)
+          await conditionalVisibilitySocket.executeAsUser('drawImageByUserCV', atcvEffectSource.visionTargetImage, tokenToCheckIfIsVisible);
+          foundedImageToUpdated = true;
+          break;
+        }
+      }
+      // else if (atcvEffectSource.visionSourceImage) {
+      //   if (atcvEffectSource.visionSourceImage != tokenToCheckIfIsVisible.data.img){
+      //     await tokenToCheckIfIsVisible.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.ORIGINAL_IMAGE, tokenToCheckIfIsVisible.data.img)
+      //     await conditionalVisibilitySocket.executeAsUser('drawImageByUserCV', atcvEffectSource.visionSourceImage, tokenToCheckIfIsVisible);
+      //     foundedImageToUpdated = true;
+      //     break;
+      //   }
+      // }
+      else {
+        // Do noting
         // tokenToCheckIfIsVisible.clear();
-        tokenToCheckIfIsVisible.draw();
-        break;
-      } else if (atcvEffect.visionSourceImage) {
-        tokenToCheckIfIsVisible.document.data.img = atcvEffect.visionSourceImage;
-        // tokenToCheckIfIsVisible.clear();
-        tokenToCheckIfIsVisible.draw();
-        break;
-      } else {
-        tokenToCheckIfIsVisible.clear();
+      }
+    }
+    if(!foundedImageToUpdated){
+      for (const atcvEffectTarget of atcvEffectsTarget) {
+        // if (atcvEffectTarget.visionTargetImage) {
+        //   if(atcvEffectTarget.visionTargetImage != tokenToCheckIfIsVisible.data.img){
+        //     await tokenToCheckIfIsVisible.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.ORIGINAL_IMAGE, tokenToCheckIfIsVisible.data.img)
+        //     await conditionalVisibilitySocket.executeAsUser('drawImageByUserCV', atcvEffectTarget.visionTargetImage, tokenToCheckIfIsVisible);
+        //     foundedImageToUpdated = true;
+        //     break;
+        //   }
+        // }
+        if (atcvEffectTarget.visionSourceImage) {
+          if (atcvEffectTarget.visionSourceImage != tokenToCheckIfIsVisible.data.img){
+            await tokenToCheckIfIsVisible.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.ORIGINAL_IMAGE, tokenToCheckIfIsVisible.data.img)
+            await conditionalVisibilitySocket.executeAsUser('drawImageByUserCV', atcvEffectTarget.visionSourceImage, tokenToCheckIfIsVisible);
+            foundedImageToUpdated = true;
+            break;
+          }
+        }
+        else {
+          // Do noting
+          // tokenToCheckIfIsVisible.clear();
+        }
+      }
+    }
+    if(!foundedImageToUpdated && tokenToCheckIfIsVisible.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.ORIGINAL_IMAGE)){
+      if (tokenToCheckIfIsVisible.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.ORIGINAL_IMAGE) != tokenToCheckIfIsVisible.data.img){
+        await conditionalVisibilitySocket.executeAsUser('drawImageByUserCV',tokenToCheckIfIsVisible.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.ORIGINAL_IMAGE), tokenToCheckIfIsVisible);
+        await tokenToCheckIfIsVisible.actor?.unsetFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.ORIGINAL_IMAGE);
       }
     }
   }
@@ -2349,8 +2386,8 @@ export function buildButton(html, tooltip, atcvEffectFlagData) {
 }
 
 export async function renderDialogRegisterSenseData(isSense:boolean, senses:AtcvEffect[], conditions:AtcvEffect[]): Promise<Dialog> {
-  const filteredSenses = senses.filter(function(el) { return el.visionId != AtcvEffectConditionFlags.NONE }); 
-  const filteredConditions = conditions.filter(function(el) { return el.visionId != AtcvEffectConditionFlags.NONE }); 
+  const filteredSenses = senses.filter(function(el) { return el.visionId != AtcvEffectConditionFlags.NONE });
+  const filteredConditions = conditions.filter(function(el) { return el.visionId != AtcvEffectConditionFlags.NONE });
   const data = {
     // Sense data
     id: '',
@@ -2374,7 +2411,7 @@ export async function renderDialogRegisterSenseData(isSense:boolean, senses:Atcv
   const myContent = await renderTemplate(`modules/${CONSTANTS.MODULE_NAME}/templates/add_new_sensedata.hbs`, data);
 
   return new Dialog({
-    title: isSense 
+    title: isSense
       ? i18n(`${CONSTANTS.MODULE_NAME}.windows.dialogs.addsense.title`)
       : i18n(`${CONSTANTS.MODULE_NAME}.windows.dialogs.addcondition.title`),
     content: myContent,
@@ -2428,10 +2465,10 @@ export async function renderDialogRegisterSenseData(isSense:boolean, senses:Atcv
           senseData.conditionSources = <string[]>$(`[name="conditional-visibility-conditionSources"]`).val();
           senseData.conditionDistance = <number>$(`[name="conditional-visibility-conditionDistance"]`).val();
           senseData.conditionType = <string>$(`[name="conditional-visibility-conditionType"]`).val();
-          
+
           senseData.conditionBlinded = $(`[name="conditional-visibility-conditionBlinded"]`).val() === 'true' ? true : false;
           senseData.conditionBlindedOverride = $(`[name="conditional-visibility-conditionBlindedOverride"]`).val() === 'true' ? true : false;
-        
+
           senseData.conditionTargetImage = <string>$(`[name="conditional-visibility-conditionTargetImage"]`).val();
           senseData.conditionSourceImage = <string>$(`[name="conditional-visibility-conditionSourceImage"]`).val();
 
@@ -2439,7 +2476,7 @@ export async function renderDialogRegisterSenseData(isSense:boolean, senses:Atcv
             warn(`You must set at least the 'id' and the 'name'`, true);
             return
           }
-          
+
           if(isSense){
             API.registerSense(senseData);
           }else{
@@ -2460,7 +2497,7 @@ export async function renderDialogRegisterSenseData(isSense:boolean, senses:Atcv
 }
 
 export async function renderDialogUnRegisterSenseData(isSense:boolean, senses:AtcvEffect[], conditions:AtcvEffect[]): Promise<Dialog> {
-  const filteredSenses = senses.filter(function(el) { return el.visionId != AtcvEffectConditionFlags.NONE }); 
+  const filteredSenses = senses.filter(function(el) { return el.visionId != AtcvEffectConditionFlags.NONE });
   const filteredConditions = conditions.filter(function(el) { return el.visionId != AtcvEffectConditionFlags.NONE });
   const data = {
     isSense: isSense,
@@ -2470,7 +2507,7 @@ export async function renderDialogUnRegisterSenseData(isSense:boolean, senses:At
   const myContent = await renderTemplate(`modules/${CONSTANTS.MODULE_NAME}/templates/delete_sensedata.hbs`, data);
 
   const dialog = new Dialog({
-    title: isSense 
+    title: isSense
       ? i18n(`${CONSTANTS.MODULE_NAME}.windows.dialogs.deletesense.title`)
       : i18n(`${CONSTANTS.MODULE_NAME}.windows.dialogs.deletecondition.title`),
     content: myContent,
@@ -2492,7 +2529,7 @@ export async function renderDialogUnRegisterSenseData(isSense:boolean, senses:At
             warn(`You must set at least a 'sense'`, true);
             return
           }
-          
+
           if(isSense){
             API.unRegisterSense(sense);
           }else{
@@ -2514,4 +2551,50 @@ export async function renderDialogUnRegisterSenseData(isSense:boolean, senses:At
   dialog.options.height = 150;
   dialog.position.height = 150;
   return dialog;
+}
+
+/**
+ * Overwrite Token image on the client side if 'userMappings' flag has been set.
+ * @param {*} token Token to overwrite the image for
+ * @param {*} checks Number of checks/recursive calls to wait for the previous draw() operation to end
+ * @returns
+ */
+ export async function checkAndDisplayUserSpecificImage(image:string, token, forceDraw = false, checks = 40) {
+  if (!token.document) {
+    token = canvas.tokens?.get(token.id);
+  }
+
+  const img = image; // mappings[<string>game.userId];
+  if (img && img !== token.data.img) {
+    // This function may be called while the Token is in the middle of loading it's textures.
+    // Attempting to perform a draw() call then would result in multiple overlapped images.
+    // We should wait for the texture to be loaded and change the image after. As a failsafe
+    // give up after a certain number of checks.
+    if (!token.icon.texture) {
+      checks--;
+      if (checks > 1)
+        new Promise((resolve) => setTimeout(resolve, 1)).then(() =>
+          checkAndDisplayUserSpecificImage(image, token, forceDraw, checks)
+        );
+      return;
+    }
+
+    // Change the image on the client side, without actually updating the token
+    token.data.img = img;
+    token.document.data.img = img;
+
+    const visible = token.visible;
+    const hadActiveHud = token.hasActiveHUD;
+
+    await token.draw();
+    token.visible = visible;
+    if (hadActiveHud) canvas.tokens?.hud.bind(token);
+  } else if (forceDraw && token.icon.texture) {
+    const visible = token.visible;
+    const hadActiveHud = token.hasActiveHUD;
+
+    await token.draw();
+    token.visible = visible;
+    if (hadActiveHud) canvas.tokens?.hud.bind(token);
+  }
 }

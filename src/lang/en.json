@@ -100,7 +100,6 @@
   "conditional-visibility.token.config.conditionTargetImage": "String path to the image applied on target token and used from the source token (the one you click on) for replace the image token only for that player with a special sight, only if the CV check is true",
   "conditional-visibility.token.config.conditionSourceImage": "String path to the image applied on target token and used from the target token (the one you try to see) for replace the image token only for that player with a special sight, only if the CV check is true",
 
-
   "conditional-visibility.invisible": "Invisible",
   "conditional-visibility.obscured": "Obscured",
   "conditional-visibility.indarkness": "In Darkness",

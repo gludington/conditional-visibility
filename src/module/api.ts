@@ -915,7 +915,7 @@ const API = {
         if (!foundedFlagVisionValue) {
           // 2022-05-26 check for duplicate
           const valueKey = retrieveAtcvVisionLevelKeyFromChanges(changesTmp);
-          if(!valueKey){
+          if (!valueKey) {
             changesTmp.push(<any>{
               key: 'ATCV.' + senseDataEffect.visionId,
               mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
@@ -1010,8 +1010,8 @@ const API = {
       }
     }
     // TODO check if we need this ??? ADDED 2022-05-22
-    else if(changesTmp.length == 0){
-      info(`The use case 'changesTmp.length==0' should not be happening`)
+    else if (changesTmp.length == 0) {
+      info(`The use case 'changesTmp.length==0' should not be happening`);
       const effectTmp = AtcvEffect.toEffect(senseDataEffect);
       effect.changes = effectTmp.changes;
       effect.tokenMagicChanges = effectTmp.tokenMagicChanges;

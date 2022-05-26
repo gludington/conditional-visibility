@@ -92,8 +92,7 @@ export class ConditionalVisibilityEffectDefinitions {
     for (const effectExternal of API.EFFECTS) {
       let effectFounded = <Effect>effects.find((effect: Effect) => {
         return (
-          isStringEquals(effect.name,effectExternal.name) ||
-          isStringEquals(effect.customId,effectExternal.customId)
+          isStringEquals(effect.name, effectExternal.name) || isStringEquals(effect.customId, effectExternal.customId)
         );
       });
       if (!effectFounded && effectExternal) {
@@ -133,10 +132,7 @@ export class ConditionalVisibilityEffectDefinitions {
             }
             if (!foundedFlagVisionValue) {
               for (const obj of changesTmp) {
-                if (
-                  obj.key === 'ATCV.' + effectExternal.customId &&
-                  obj.value != String(visionLevel)
-                ) {
+                if (obj.key === 'ATCV.' + effectExternal.customId && obj.value != String(visionLevel)) {
                   obj.value = String(visionLevel);
                   foundedFlagVisionValue = true;
                   break;
@@ -158,7 +154,7 @@ export class ConditionalVisibilityEffectDefinitions {
                 break;
               }
             }
-            if(!foundedFlagVisionType){
+            if (!foundedFlagVisionType) {
               changesTmp.push({
                 key: 'ATCV.conditionType',
                 mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
@@ -177,9 +173,9 @@ export class ConditionalVisibilityEffectDefinitions {
             }
           }
         }
-        if(effectFounded){
+        if (effectFounded) {
           effects.push(effectFounded);
-        }else{
+        } else {
           effects.push(effectExternal);
         }
       }

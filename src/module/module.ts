@@ -165,7 +165,7 @@ export const readyHooks = (): void => {
 const module = {
   async onRenderTokenConfig(tokenConfig: TokenConfig, html: JQuery<HTMLElement>, data: object): Promise<void> {
     // Avoid the duplicate token configuration panel
-    if(html.find('.conditional-visibility-senses').length > 0){
+    if (html.find('.conditional-visibility-senses').length > 0) {
       return;
     }
 
@@ -245,34 +245,41 @@ const module = {
     });
 
     // ADD listener for buttons
-    $(html).find('.conditional-visibility-add-new-sense')[0]?.addEventListener('click', async function (event) {
-      event.preventDefault();
-      event.stopPropagation();
-      const buttonClick = event.button; // 0 left click
-      (await renderDialogRegisterSenseData(true, senses, conditions)).render(true);
-    });
+    $(html)
+      .find('.conditional-visibility-add-new-sense')[0]
+      ?.addEventListener('click', async function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        const buttonClick = event.button; // 0 left click
+        (await renderDialogRegisterSenseData(true, senses, conditions)).render(true);
+      });
 
-    $(html).find('.conditional-visibility-add-new-condition')[0]?.addEventListener('click', async function (event) {
-      event.preventDefault();
-      event.stopPropagation();
-      const buttonClick = event.button; // 0 left click
-      (await renderDialogRegisterSenseData(false, senses, conditions)).render(true);
-    });
+    $(html)
+      .find('.conditional-visibility-add-new-condition')[0]
+      ?.addEventListener('click', async function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        const buttonClick = event.button; // 0 left click
+        (await renderDialogRegisterSenseData(false, senses, conditions)).render(true);
+      });
 
-    $(html).find('.conditional-visibility-delete-sense')[0]?.addEventListener('click', async function (event) {
-      event.preventDefault();
-      event.stopPropagation();
-      const buttonClick = event.button; // 0 left click
-      (await renderDialogUnRegisterSenseData(true, senses, conditions)).render(true);
-    });
+    $(html)
+      .find('.conditional-visibility-delete-sense')[0]
+      ?.addEventListener('click', async function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        const buttonClick = event.button; // 0 left click
+        (await renderDialogUnRegisterSenseData(true, senses, conditions)).render(true);
+      });
 
-    $(html).find('.conditional-visibility-delete-condition')[0]?.addEventListener('click', async function (event) {
-      event.preventDefault();
-      event.stopPropagation();
-      const buttonClick = event.button; // 0 left click
-      (await renderDialogUnRegisterSenseData(false, senses, conditions)).render(true);
-    });
-
+    $(html)
+      .find('.conditional-visibility-delete-condition')[0]
+      ?.addEventListener('click', async function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        const buttonClick = event.button; // 0 left click
+        (await renderDialogUnRegisterSenseData(false, senses, conditions)).render(true);
+      });
   },
   async updateActor(document: TokenDocument, changeOri, options, userId) {
     const change = duplicateExtended(changeOri);

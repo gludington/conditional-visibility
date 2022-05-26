@@ -194,10 +194,12 @@ export default class Effect {
 
   // =============================================
 
-  isDuplicateEffectChange(aeKey:string, arrChanges:EffectChangeData[]){
-    const valueArr = arrChanges.map(function(item){ return item.key === aeKey });
-    const isDuplicate = valueArr.some(function(item, idx){ 
-        return valueArr.indexOf(item) != idx 
+  isDuplicateEffectChange(aeKey: string, arrChanges: EffectChangeData[]) {
+    const valueArr = arrChanges.map(function (item) {
+      return item.key === aeKey;
+    });
+    const isDuplicate = valueArr.some(function (item, idx) {
+      return valueArr.indexOf(item) != idx;
     });
     return isDuplicate;
   }
@@ -208,7 +210,7 @@ export default class Effect {
     if (this.atlChanges.length > 0) {
       for (const atlChange of this.atlChanges) {
         if (arrChanges.filter((e) => e.key === atlChange.key).length <= 0) {
-          if(!this.isDuplicateEffectChange(atlChange.key,arrChanges)){
+          if (!this.isDuplicateEffectChange(atlChange.key, arrChanges)) {
             arrChanges.push(atlChange);
           }
         }
@@ -218,7 +220,7 @@ export default class Effect {
     if (this.tokenMagicChanges.length > 0) {
       for (const tokenMagicChange of this.tokenMagicChanges) {
         if (arrChanges.filter((e) => e.key === tokenMagicChange.key).length <= 0) {
-          if(!this.isDuplicateEffectChange(tokenMagicChange.key,arrChanges)){
+          if (!this.isDuplicateEffectChange(tokenMagicChange.key, arrChanges)) {
             arrChanges.push(tokenMagicChange);
           }
         }
@@ -228,7 +230,7 @@ export default class Effect {
     if (this.atcvChanges.length > 0) {
       for (const atcvChange of this.atcvChanges) {
         if (arrChanges.filter((e) => e.key === atcvChange.key).length <= 0) {
-          if(!this.isDuplicateEffectChange(atcvChange.key,arrChanges)){
+          if (!this.isDuplicateEffectChange(atcvChange.key, arrChanges)) {
             arrChanges.push(atcvChange);
           }
         }

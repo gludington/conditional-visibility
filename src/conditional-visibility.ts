@@ -119,5 +119,3 @@ export function getSocket() {
   const data = game.modules.get(CONSTANTS.MODULE_NAME) as unknown as ConditionalVisibilityModuleData;
   return data.socket;
 }
-
-

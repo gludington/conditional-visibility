@@ -1160,12 +1160,12 @@ export function retrieveAtcvVisionLevelKeyFromChanges(effectChanges: EffectChang
       return aee;
     }
   });
-  if(!atcvValueChange){
+  if (!atcvValueChange) {
     return '';
   }
   const atcvKey = atcvValueChange.key;
-  const key = atcvKey.replace('ATCV.','');
-  if(!key){
+  const key = atcvKey.replace('ATCV.', '');
+  if (!key) {
     return '';
   }
   return key;
@@ -1632,7 +1632,6 @@ export async function repairAndUnSetFlag(token: Token, key: string) {
     return;
   }
   if (token.actor) {
-
     // TODO START TO REMOVE
     if (token.document.getFlag(CONSTANTS.MODULE_NAME, key)) {
       await token.document.unsetFlag(CONSTANTS.MODULE_NAME, key);
@@ -1814,8 +1813,8 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
 
   let sourceVisionLevels =
     <AtcvEffect[]>sourceToken.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES) ??
-    <AtcvEffect[]>sourceToken.document.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES)  // TODO TO REMOVE
-    ?? [];
+    <AtcvEffect[]>sourceToken.document.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES) ?? // TODO TO REMOVE
+    [];
   if (sourceVisionLevels.length <= 0) {
     debug(
       `(3.4) no '${ConditionalVisibilityFlags.DATA_SENSES}' found on '${sourceToken.data.name}' you must refresh the senses/conditions on this token, try to modify some CV value, for now we recalculate the value`,
@@ -1824,8 +1823,10 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
   }
   let targetVisionLevels =
     <AtcvEffect[]>targetToken.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_CONDITIONS) ??
-    <AtcvEffect[]>targetToken.document.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_CONDITIONS)  // TODO TO REMOVE
-    ?? [];
+    <AtcvEffect[]>(
+      targetToken.document.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_CONDITIONS)
+    ) ?? // TODO TO REMOVE
+    [];
   if (targetVisionLevels.length <= 0) {
     debug(
       `(3.5) no '${ConditionalVisibilityFlags.DATA_CONDITIONS}' found on '${targetToken.data.name}' you must refresh the senses/conditions on this token, try to modify some CV value, for now we recalculate the value`,
@@ -1894,13 +1895,13 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
       sourceVisionLevels[i]?.visionBlinded &&
       sourceVisionLevels[i]?.visionLevelValue != 0
     ) {
-      if(<number>sourceVisionLevels[i]?.visionLevelValue > someoneIsBlinded){
+      if (<number>sourceVisionLevels[i]?.visionLevelValue > someoneIsBlinded) {
         someoneIsBlinded = <number>sourceVisionLevels[i]?.visionLevelValue;
       }
     }
   }
 
-  if(someoneIsBlinded > 0){
+  if (someoneIsBlinded > 0) {
     // 6.1) Check for blinded override effect avoid the blinded condition.
     const sourceVisionLevelsBlindedOverride: AtcvEffect[] = [];
     for (let i = 0; i < sourceVisionLevels.length; i++) {
@@ -1908,14 +1909,14 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
         sourceVisionLevels[i]?.visionBlindedOverride &&
         <number>sourceVisionLevels[i]?.visionLevelValue > someoneIsBlinded
       ) {
-        sourceVisionLevelsBlindedOverride.push(<AtcvEffect>sourceVisionLevels[i])
+        sourceVisionLevelsBlindedOverride.push(<AtcvEffect>sourceVisionLevels[i]);
       }
     }
-    if(sourceVisionLevelsBlindedOverride.length == 0){
+    if (sourceVisionLevelsBlindedOverride.length == 0) {
       // Someone is blind
       debug(`(6) Is false, '${sourceToken.data.name}' can't see '${targetToken.data.name}'`);
       return false;
-    }else{
+    } else {
       debug(`(6.1) Is true, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
       sourceVisionLevels = sourceVisionLevelsBlindedOverride;
     }
@@ -2189,24 +2190,29 @@ export async function _registerSenseData(
   // Register new effect
   const atcvEffcetX = AtcvEffect.fromSenseData(senseData, 0, false);
   const effectExternal = AtcvEffect.toEffect(atcvEffcetX);
-  let newEffectsData:Effect[] = API.EFFECTS || [];
+  let newEffectsData: Effect[] = API.EFFECTS || [];
   let effectFounded = !!API.EFFECTS.find((effect: Effect) => {
-    return (
-      isStringEquals(effect.name,effectExternal.name) ||
-      isStringEquals(effect.customId,effectExternal.customId)
-    );
+    return isStringEquals(effect.name, effectExternal.name) || isStringEquals(effect.customId, effectExternal.customId);
   });
   // Update current effect
-  if(effectFounded){
-    newEffectsData = newEffectsData.filter(function(el) { return el.customId == senseData.id });
-    info(`Update register the default active effect for the ${conditionType} with name '${senseData.name}' because already exists`, true);
+  if (effectFounded) {
+    newEffectsData = newEffectsData.filter(function (el) {
+      return el.customId == senseData.id;
+    });
+    info(
+      `Update register the default active effect for the ${conditionType} with name '${senseData.name}' because already exists`,
+      true,
+    );
     effectFounded = false;
   }
   if (!effectFounded && effectExternal) {
     newEffectsData.push(effectExternal);
     await game.settings.set(CONSTANTS.MODULE_NAME, 'effects', newEffectsData);
-  }else{
-    warn(`Cannot register the default active effect for the ${conditionType} with name '${senseData.name}' because already exists`, true);
+  } else {
+    warn(
+      `Cannot register the default active effect for the ${conditionType} with name '${senseData.name}' because already exists`,
+      true,
+    );
   }
   // End register new effect
   sensesDataList.push(senseData);
@@ -2233,19 +2239,21 @@ export async function _unregisterSenseData(
     return;
   }
   // UnRegister new effect
-  let newEffectsData:Effect[] = API.EFFECTS || [];
+  let newEffectsData: Effect[] = API.EFFECTS || [];
   const effectFounded = !!API.EFFECTS.find((effect: Effect) => {
-    return (
-      isStringEquals(effect.name,senseDataIdOrName) ||
-      isStringEquals(effect.customId,senseDataIdOrName)
-    );
+    return isStringEquals(effect.name, senseDataIdOrName) || isStringEquals(effect.customId, senseDataIdOrName);
   });
   // Update current effect
-  if(effectFounded){
-    newEffectsData = newEffectsData.filter(function(el) { return el.customId == senseDataIdOrName });
+  if (effectFounded) {
+    newEffectsData = newEffectsData.filter(function (el) {
+      return el.customId == senseDataIdOrName;
+    });
     await game.settings.set(CONSTANTS.MODULE_NAME, 'effects', newEffectsData);
-  } else{
-    warn(`Cannot unregister the default active effect ${valueComment} with id '${senseDataIdOrName}' because is not exists exists`, true);
+  } else {
+    warn(
+      `Cannot unregister the default active effect ${valueComment} with id '${senseDataIdOrName}' because is not exists exists`,
+      true,
+    );
   }
   // End UnRegister new effect
   sensesDataList = sensesDataList.filter(function (el) {
@@ -2265,35 +2273,56 @@ export async function _unregisterSenseData(
 
 export async function drawHandlerCVImage(controlledToken: Token, tokenToCheckIfIsVisible: Token) {
   if (game?.ready && game.settings.get(CONSTANTS.MODULE_NAME, 'enableDrawCVHandler')) {
-    if(<number>(<Token[]>canvas.tokens?.controlled.filter((t)=> t.id==controlledToken.id))?.length <= 0){
+    if (<number>(<Token[]>canvas.tokens?.controlled.filter((t) => t.id == controlledToken.id))?.length <= 0) {
       return;
     }
 
     let sourceVisionLevels =
       <AtcvEffect[]>controlledToken.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES) ??
-      <AtcvEffect[]>controlledToken.document.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES) // TODO to remove
-      ?? [];
+      <AtcvEffect[]>(
+        controlledToken.document.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES)
+      ) ?? // TODO to remove
+      [];
     if (sourceVisionLevels.length <= 0) {
       sourceVisionLevels = getSensesFromToken(controlledToken.document, true, true);
     }
     // TODO we need this
     let targetVisionLevels =
-      <AtcvEffect[]>tokenToCheckIfIsVisible.actor?.getFlag(CONSTANTS.MODULE_NAME,ConditionalVisibilityFlags.DATA_CONDITIONS) ??
-      <AtcvEffect[]>tokenToCheckIfIsVisible.document.actor?.getFlag(CONSTANTS.MODULE_NAME,ConditionalVisibilityFlags.DATA_CONDITIONS)  // TODO to remove
-      ?? [];
+      <AtcvEffect[]>(
+        tokenToCheckIfIsVisible.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_CONDITIONS)
+      ) ??
+      <AtcvEffect[]>(
+        tokenToCheckIfIsVisible.document.actor?.getFlag(
+          CONSTANTS.MODULE_NAME,
+          ConditionalVisibilityFlags.DATA_CONDITIONS,
+        )
+      ) ?? // TODO to remove
+      [];
     if (targetVisionLevels.length <= 0) {
       targetVisionLevels = getConditionsFromToken(tokenToCheckIfIsVisible.document, true, true);
     }
     let foundedImageToUpdated = false;
     // TODO add priority value for set up the order
-    const atcvEffectsSource = sourceVisionLevels.sort((a, b) => String(a.visionLevelValue).localeCompare(String(b.visionLevelValue)));
-    const atcvEffectsTarget = targetVisionLevels.sort((a, b) => String(a.visionLevelValue).localeCompare(String(b.visionLevelValue)));
+    const atcvEffectsSource = sourceVisionLevels.sort((a, b) =>
+      String(a.visionLevelValue).localeCompare(String(b.visionLevelValue)),
+    );
+    const atcvEffectsTarget = targetVisionLevels.sort((a, b) =>
+      String(a.visionLevelValue).localeCompare(String(b.visionLevelValue)),
+    );
 
     for (const atcvEffectSource of atcvEffectsSource) {
       if (atcvEffectSource.visionTargetImage) {
-        if(atcvEffectSource.visionTargetImage != tokenToCheckIfIsVisible.data.img){
-          await tokenToCheckIfIsVisible.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.ORIGINAL_IMAGE, tokenToCheckIfIsVisible.data.img)
-          await conditionalVisibilitySocket.executeAsUser('drawImageByUserCV', atcvEffectSource.visionTargetImage, tokenToCheckIfIsVisible);
+        if (atcvEffectSource.visionTargetImage != tokenToCheckIfIsVisible.data.img) {
+          await tokenToCheckIfIsVisible.actor?.setFlag(
+            CONSTANTS.MODULE_NAME,
+            ConditionalVisibilityFlags.ORIGINAL_IMAGE,
+            tokenToCheckIfIsVisible.data.img,
+          );
+          await conditionalVisibilitySocket.executeAsUser(
+            'drawImageByUserCV',
+            atcvEffectSource.visionTargetImage,
+            tokenToCheckIfIsVisible,
+          );
           foundedImageToUpdated = true;
           break;
         }
@@ -2311,7 +2340,7 @@ export async function drawHandlerCVImage(controlledToken: Token, tokenToCheckIfI
         // tokenToCheckIfIsVisible.clear();
       }
     }
-    if(!foundedImageToUpdated){
+    if (!foundedImageToUpdated) {
       for (const atcvEffectTarget of atcvEffectsTarget) {
         // if (atcvEffectTarget.visionTargetImage) {
         //   if(atcvEffectTarget.visionTargetImage != tokenToCheckIfIsVisible.data.img){
@@ -2322,23 +2351,43 @@ export async function drawHandlerCVImage(controlledToken: Token, tokenToCheckIfI
         //   }
         // }
         if (atcvEffectTarget.visionSourceImage) {
-          if (atcvEffectTarget.visionSourceImage != tokenToCheckIfIsVisible.data.img){
-            await tokenToCheckIfIsVisible.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.ORIGINAL_IMAGE, tokenToCheckIfIsVisible.data.img)
-            await conditionalVisibilitySocket.executeAsUser('drawImageByUserCV', atcvEffectTarget.visionSourceImage, tokenToCheckIfIsVisible);
+          if (atcvEffectTarget.visionSourceImage != tokenToCheckIfIsVisible.data.img) {
+            await tokenToCheckIfIsVisible.actor?.setFlag(
+              CONSTANTS.MODULE_NAME,
+              ConditionalVisibilityFlags.ORIGINAL_IMAGE,
+              tokenToCheckIfIsVisible.data.img,
+            );
+            await conditionalVisibilitySocket.executeAsUser(
+              'drawImageByUserCV',
+              atcvEffectTarget.visionSourceImage,
+              tokenToCheckIfIsVisible,
+            );
             foundedImageToUpdated = true;
             break;
           }
-        }
-        else {
+        } else {
           // Do noting
           // tokenToCheckIfIsVisible.clear();
         }
       }
     }
-    if(!foundedImageToUpdated && tokenToCheckIfIsVisible.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.ORIGINAL_IMAGE)){
-      if (tokenToCheckIfIsVisible.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.ORIGINAL_IMAGE) != tokenToCheckIfIsVisible.data.img){
-        await conditionalVisibilitySocket.executeAsUser('drawImageByUserCV',tokenToCheckIfIsVisible.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.ORIGINAL_IMAGE), tokenToCheckIfIsVisible);
-        await tokenToCheckIfIsVisible.actor?.unsetFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.ORIGINAL_IMAGE);
+    if (
+      !foundedImageToUpdated &&
+      tokenToCheckIfIsVisible.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.ORIGINAL_IMAGE)
+    ) {
+      if (
+        tokenToCheckIfIsVisible.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.ORIGINAL_IMAGE) !=
+        tokenToCheckIfIsVisible.data.img
+      ) {
+        await conditionalVisibilitySocket.executeAsUser(
+          'drawImageByUserCV',
+          tokenToCheckIfIsVisible.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.ORIGINAL_IMAGE),
+          tokenToCheckIfIsVisible,
+        );
+        await tokenToCheckIfIsVisible.actor?.unsetFlag(
+          CONSTANTS.MODULE_NAME,
+          ConditionalVisibilityFlags.ORIGINAL_IMAGE,
+        );
       }
     }
   }
@@ -2363,13 +2412,11 @@ export function buildButton(html, tooltip, atcvEffectFlagData) {
 
   const iconClass = 'fas fa-eye'; // TODO customize icon ???
   const button = $(
-    `<div class="control-icon toggleStealth ${
-      hiddenValue && hiddenValue != 0 ? 'active' : ''
-    }" ${
+    `<div class="control-icon toggleStealth ${hiddenValue && hiddenValue != 0 ? 'active' : ''}" ${
       hiddenValue && hiddenValue != 0
         ? `style="background: blue; opacity:0.85;"`
         : `style="background: blueviolet; opacity:0.85;"`
-    } title="${tooltip}"> <i class="${iconClass}"></i></div>`
+    } title="${tooltip}"> <i class="${iconClass}"></i></div>`,
   );
   const settingHudColClass = <string>game.settings.get(CONSTANTS.MODULE_NAME, 'hudColumn') ?? 'left';
   const settingHudTopBottomClass = <string>game.settings.get(CONSTANTS.MODULE_NAME, 'hudTopBottom') ?? 'top';
@@ -2385,9 +2432,17 @@ export function buildButton(html, tooltip, atcvEffectFlagData) {
   return button;
 }
 
-export async function renderDialogRegisterSenseData(isSense:boolean, senses:AtcvEffect[], conditions:AtcvEffect[]): Promise<Dialog> {
-  const filteredSenses = senses.filter(function(el) { return el.visionId != AtcvEffectConditionFlags.NONE });
-  const filteredConditions = conditions.filter(function(el) { return el.visionId != AtcvEffectConditionFlags.NONE });
+export async function renderDialogRegisterSenseData(
+  isSense: boolean,
+  senses: AtcvEffect[],
+  conditions: AtcvEffect[],
+): Promise<Dialog> {
+  const filteredSenses = senses.filter(function (el) {
+    return el.visionId != AtcvEffectConditionFlags.NONE;
+  });
+  const filteredConditions = conditions.filter(function (el) {
+    return el.visionId != AtcvEffectConditionFlags.NONE;
+  });
   const data = {
     // Sense data
     id: '',
@@ -2406,8 +2461,8 @@ export async function renderDialogRegisterSenseData(isSense:boolean, senses:Atcv
     // End sense data
     isSense: isSense,
     senses: filteredSenses,
-    conditions: filteredConditions
-  }
+    conditions: filteredConditions,
+  };
   const myContent = await renderTemplate(`modules/${CONSTANTS.MODULE_NAME}/templates/add_new_sensedata.hbs`, data);
 
   return new Dialog({
@@ -2415,7 +2470,7 @@ export async function renderDialogRegisterSenseData(isSense:boolean, senses:Atcv
       ? i18n(`${CONSTANTS.MODULE_NAME}.windows.dialogs.addsense.title`)
       : i18n(`${CONSTANTS.MODULE_NAME}.windows.dialogs.addcondition.title`),
     content: myContent,
-    render: (html:JQuery<HTMLElement>) => {
+    render: (html: JQuery<HTMLElement>) => {
       //@ts-ignore
       $($(html[0]).find('.conditionSources')[0]).SumoSelect({
         placeholder: 'Select sense sources...',
@@ -2426,7 +2481,7 @@ export async function renderDialogRegisterSenseData(isSense:boolean, senses:Atcv
         placeholder: 'Select condition targets...',
       });
 
-      for ( const fp of html.find('button.file-picker-conditional-visibility-img') ) {
+      for (const fp of html.find('button.file-picker-conditional-visibility-img')) {
         fp?.addEventListener('click', async function (event) {
           event.preventDefault();
           event.stopPropagation();
@@ -2437,10 +2492,10 @@ export async function renderDialogRegisterSenseData(isSense:boolean, senses:Atcv
           //@ts-ignore
           const field = button.form[target] || null;
           const pickedFile = await new FilePicker({
-            type: "imagevideo",
+            type: 'imagevideo',
             callback: async (path) => {
               $(field).val(path);
-            }
+            },
           });
           pickedFile.browse(target);
         });
@@ -2457,26 +2512,29 @@ export async function renderDialogRegisterSenseData(isSense:boolean, senses:Atcv
           senseData.name = <string>$(`[name="conditional-visibility-name"]`).val();
           senseData.path = <string>$(`[name="conditional-visibility-path"]`).val();
           senseData.img = <string>$(`[name="conditional-visibility-img"]`).val();
-          senseData.conditionElevation = $(`[name="conditional-visibility-conditionElevation"]`).val() === 'true' ? true : false;
+          senseData.conditionElevation =
+            $(`[name="conditional-visibility-conditionElevation"]`).val() === 'true' ? true : false;
           senseData.conditionTargets = <string[]>$(`[name="conditional-visibility-conditionTargets"]`).val();
           senseData.conditionSources = <string[]>$(`[name="conditional-visibility-conditionSources"]`).val();
           senseData.conditionDistance = <number>$(`[name="conditional-visibility-conditionDistance"]`).val();
           senseData.conditionType = <string>$(`[name="conditional-visibility-conditionType"]`).val();
 
-          senseData.conditionBlinded = $(`[name="conditional-visibility-conditionBlinded"]`).val() === 'true' ? true : false;
-          senseData.conditionBlindedOverride = $(`[name="conditional-visibility-conditionBlindedOverride"]`).val() === 'true' ? true : false;
+          senseData.conditionBlinded =
+            $(`[name="conditional-visibility-conditionBlinded"]`).val() === 'true' ? true : false;
+          senseData.conditionBlindedOverride =
+            $(`[name="conditional-visibility-conditionBlindedOverride"]`).val() === 'true' ? true : false;
 
           senseData.conditionTargetImage = <string>$(`[name="conditional-visibility-conditionTargetImage"]`).val();
           senseData.conditionSourceImage = <string>$(`[name="conditional-visibility-conditionSourceImage"]`).val();
 
-          if(!senseData.id || !senseData.name){
+          if (!senseData.id || !senseData.name) {
             warn(`You must set at least the 'id' and the 'name'`, true);
-            return
+            return;
           }
 
-          if(isSense){
+          if (isSense) {
             API.registerSense(senseData);
-          }else{
+          } else {
             API.registerCondition(senseData);
           }
         },
@@ -2493,13 +2551,21 @@ export async function renderDialogRegisterSenseData(isSense:boolean, senses:Atcv
   });
 }
 
-export async function renderDialogUnRegisterSenseData(isSense:boolean, senses:AtcvEffect[], conditions:AtcvEffect[]): Promise<Dialog> {
-  const filteredSenses = senses.filter(function(el) { return el.visionId != AtcvEffectConditionFlags.NONE });
-  const filteredConditions = conditions.filter(function(el) { return el.visionId != AtcvEffectConditionFlags.NONE });
+export async function renderDialogUnRegisterSenseData(
+  isSense: boolean,
+  senses: AtcvEffect[],
+  conditions: AtcvEffect[],
+): Promise<Dialog> {
+  const filteredSenses = senses.filter(function (el) {
+    return el.visionId != AtcvEffectConditionFlags.NONE;
+  });
+  const filteredConditions = conditions.filter(function (el) {
+    return el.visionId != AtcvEffectConditionFlags.NONE;
+  });
   const data = {
     isSense: isSense,
     senses: senses,
-    conditions: conditions
+    conditions: conditions,
   }; // default value
   const myContent = await renderTemplate(`modules/${CONSTANTS.MODULE_NAME}/templates/delete_sensedata.hbs`, data);
 
@@ -2508,7 +2574,7 @@ export async function renderDialogUnRegisterSenseData(isSense:boolean, senses:At
       ? i18n(`${CONSTANTS.MODULE_NAME}.windows.dialogs.deletesense.title`)
       : i18n(`${CONSTANTS.MODULE_NAME}.windows.dialogs.deletecondition.title`),
     content: myContent,
-    render: (html:JQuery<HTMLElement>) => {
+    render: (html: JQuery<HTMLElement>) => {
       // do nothing
     },
     buttons: {
@@ -2518,18 +2584,18 @@ export async function renderDialogUnRegisterSenseData(isSense:boolean, senses:At
         callback: async (html) => {
           const sense = <string>$(`[name="conditional-visibility-senses"]`).val();
           const condition = <string>$(`[name="conditional-visibility-conditions"]`).val();
-          if(!isSense && !condition){
+          if (!isSense && !condition) {
             warn(`You must set at least a 'condition'`, true);
-            return
+            return;
           }
-          if(isSense && !sense){
+          if (isSense && !sense) {
             warn(`You must set at least a 'sense'`, true);
-            return
+            return;
           }
 
-          if(isSense){
+          if (isSense) {
             API.unRegisterSense(sense);
-          }else{
+          } else {
             API.unRegisterCondition(condition);
           }
         },
@@ -2556,7 +2622,7 @@ export async function renderDialogUnRegisterSenseData(isSense:boolean, senses:At
  * @param {*} checks Number of checks/recursive calls to wait for the previous draw() operation to end
  * @returns
  */
- export async function checkAndDisplayUserSpecificImage(image:string, token, forceDraw = false, checks = 40) {
+export async function checkAndDisplayUserSpecificImage(image: string, token, forceDraw = false, checks = 40) {
   if (!token.document) {
     token = canvas.tokens?.get(token.id);
   }
@@ -2571,7 +2637,7 @@ export async function renderDialogUnRegisterSenseData(isSense:boolean, senses:At
       checks--;
       if (checks > 1)
         new Promise((resolve) => setTimeout(resolve, 1)).then(() =>
-          checkAndDisplayUserSpecificImage(image, token, forceDraw, checks)
+          checkAndDisplayUserSpecificImage(image, token, forceDraw, checks),
         );
       return;
     }

@@ -27,5 +27,5 @@ export default {
       conditionBlindedOverride: false,
     },
   ],
-  EFFECTS: <Effect[]>[]
+  EFFECTS: <Effect[]>[],
 };

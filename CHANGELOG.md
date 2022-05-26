@@ -1,3 +1,7 @@
+### 0.5.42
+
+- [BETA] of the new draw image on token based 
+
 ### 0.5.41
 
 - Added a very poor button for add and remove sense/condition on the token configuration

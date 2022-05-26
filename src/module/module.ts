@@ -8,6 +8,7 @@ import {
   buildButton,
   debug,
   drawHandlerCVImage,
+  drawHandlerCVImageAll,
   duplicateExtended,
   getAllDefaultSensesAndConditions,
   getConditionsFromToken,
@@ -621,7 +622,9 @@ const module = {
         }
       }
     }
-    // drawHandlerCVImageAll(sourceToken);
+    if (game?.ready && game.settings.get(CONSTANTS.MODULE_NAME, 'enableDrawCVHandler')) {
+      drawHandlerCVImageAll(sourceToken);
+    }
   },
   //async updateActiveEffect(activeEffect: ActiveEffect, options: EffectChangeData, isRemoved: boolean) {
   async updateActiveEffect(activeEffect: ActiveEffect, options: any, isRemoved: boolean) {

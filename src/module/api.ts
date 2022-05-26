@@ -7,6 +7,7 @@ import {
   getAllDefaultSensesAndConditions,
   getConditionsFromTokenFast,
   getSensesFromTokenFast,
+  getToken,
   i18n,
   info,
   isStringEquals,
@@ -1166,7 +1167,15 @@ const API = {
     if (!Array.isArray(inAttributes)) {
       throw error('drawImageByUserArr | inAttributes must be of type array');
     }
-    const [sourceToken, image] = inAttributes;
+    const [image, sourceTokenId] = inAttributes;
+    const tokens = <Token[]>canvas.tokens?.placeables;
+    const sourceToken = <Token>tokens.find((token) => {
+      return isStringEquals(token.name, i18n(sourceTokenId)) || isStringEquals(token.id, sourceTokenId);
+    });
+
+    if (!sourceToken) {
+      warn(`No token found with reference '${sourceTokenId}'`, true);
+    }
     checkAndDisplayUserSpecificImage(image, sourceToken, true, 40);
   },
 

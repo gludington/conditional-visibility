@@ -59,7 +59,7 @@ export class EffectSupport {
     if (effect.atlChanges.length > 0) {
       for (const atlChange of effect.atlChanges) {
         if (arrChanges.filter((e) => e.key === atlChange.key).length <= 0) {
-          if(!effect.isDuplicateEffectChange(atlChange.key,arrChanges)){
+          if(!EffectSupport.isDuplicateEffectChange(atlChange.key,arrChanges)){
             arrChanges.push(atlChange);
           }
         }
@@ -69,7 +69,7 @@ export class EffectSupport {
     if (effect.tokenMagicChanges.length > 0) {
       for (const tokenMagicChange of effect.tokenMagicChanges) {
         if (arrChanges.filter((e) => e.key === tokenMagicChange.key).length <= 0) {
-          if(!effect.isDuplicateEffectChange(tokenMagicChange.key,arrChanges)){
+          if(!EffectSupport.isDuplicateEffectChange(tokenMagicChange.key,arrChanges)){
             arrChanges.push(tokenMagicChange);
           }
         }
@@ -79,7 +79,7 @@ export class EffectSupport {
     if (effect.atcvChanges.length > 0) {
       for (const atcvChange of effect.atcvChanges) {
         if (arrChanges.filter((e) => e.key === atcvChange.key).length <= 0) {
-          if(!effect.isDuplicateEffectChange(atcvChange.key,arrChanges)){
+          if(!EffectSupport.isDuplicateEffectChange(atcvChange.key,arrChanges)){
             arrChanges.push(atcvChange);
           }
         }

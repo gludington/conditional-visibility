@@ -2426,28 +2426,25 @@ export async function renderDialogRegisterSenseData(isSense:boolean, senses:Atcv
         placeholder: 'Select condition targets...',
       });
 
-      // for ( const fp of html.find('button.file-picker') ) {
-      //   fp?.addEventListener('click', async function (event) {
-      //     event.preventDefault();
-      //     event.stopPropagation();
-      //     const buttonClick = event.button; // 0 left click
-      //     const button = event.currentTarget;
-      //     //@ts-ignore
-      //     const target = button.dataset.target;
-      //     //@ts-ignore
-      //     const field = button.form[target] || null;
-      //     const options = {
-      //       //@ts-ignore
-      //       field: field,
-      //       type: button.dataset.type,
-      //       current: field?.value ?? "",
-      //       button: button,
-      //       callback: this._onSelectFile.bind(this)
-      //     }
-      //     const fp = new FilePicker(options);
-      //     return fp.browse();
-      //   });
-      // }
+      for ( const fp of html.find('button.file-picker-conditional-visibility-img') ) {
+        fp?.addEventListener('click', async function (event) {
+          event.preventDefault();
+          event.stopPropagation();
+          const buttonClick = event.button; // 0 left click
+          const button = <EventTarget>event.currentTarget;
+          //@ts-ignore
+          const target = button.dataset.target;
+          //@ts-ignore
+          const field = button.form[target] || null;
+          const pickedFile = await new FilePicker({
+            type: "imagevideo",
+            callback: async (path) => {
+              $(field).val(path);
+            }
+          });
+          pickedFile.browse(target);
+        });
+      }
     },
     buttons: {
       add: {

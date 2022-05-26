@@ -14,6 +14,7 @@ import {
   prepareActiveEffectForConditionalVisibility,
   repairAndSetFlag,
   repairAndUnSetFlag,
+  retrieveAtcvVisionLevelKeyFromChanges,
   shouldIncludeVisionV2,
   warn,
   _registerSenseData,
@@ -840,7 +841,7 @@ const API = {
       visionLevel = 0;
     }
 
-    const effectsDefinition = <Effect[]>ConditionalVisibilityEffectDefinitions.all(distance, visionLevel);
+    const effectsDefinition = await ConditionalVisibilityEffectDefinitions.all(distance, visionLevel);
 
     let effect: Effect | undefined = undefined;
     //let senseData: SenseData | undefined = undefined;
@@ -912,12 +913,17 @@ const API = {
           }
         }
         if (!foundedFlagVisionValue) {
-          changesTmp.push(<any>{
-            key: 'ATCV.' + senseDataEffect.visionId,
-            mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
-            value: String(senseDataEffect.visionLevelValue),
-            priority: 5,
-          });
+          // 2022-05-26 check for duplicate
+          const valueKey = retrieveAtcvVisionLevelKeyFromChanges(changesTmp);
+          if(!valueKey){
+            changesTmp.push(<any>{
+              key: 'ATCV.' + senseDataEffect.visionId,
+              mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+              value: String(senseDataEffect.visionLevelValue),
+              priority: 5,
+            });
+            foundedFlagVisionValue = true;
+          }
         }
         effect = <Effect>duplicateExtended(dfredEffect);
         if (effect) {
@@ -1004,13 +1010,14 @@ const API = {
       }
     }
     // TODO check if we need this ??? ADDED 2022-05-22
-    // else if(changesTmp.length == 0){
-    //   const effectTmp = AtcvEffect.toEffect(senseDataEffect);
-    //   effect.changes = effectTmp.changes;
-    //   effect.tokenMagicChanges = effectTmp.tokenMagicChanges;
-    //   effect.atlChanges = effectTmp.atlChanges;
-    //   effect.atcvChanges = effectTmp.atcvChanges;
-    // }
+    else if(changesTmp.length == 0){
+      info(`The use case 'changesTmp.length==0' should not be happening`)
+      const effectTmp = AtcvEffect.toEffect(senseDataEffect);
+      effect.changes = effectTmp.changes;
+      effect.tokenMagicChanges = effectTmp.tokenMagicChanges;
+      effect.atlChanges = effectTmp.atlChanges;
+      effect.atcvChanges = effectTmp.atcvChanges;
+    }
 
     // Add some feature if is a sense or a condition
     if (!effect) {

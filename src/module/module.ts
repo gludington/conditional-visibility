@@ -862,7 +862,7 @@ const module = {
       // https://github.com/DFreds/dfreds-convenient-effects/issues/110
       //@ts-ignore
       if (game.modules.get('dfreds-convenient-effects')?.active && game.dfreds && game.dfreds.effectInterface) {
-        const effects = ConditionalVisibilityEffectDefinitions.all(0, 1);
+        const effects = await ConditionalVisibilityEffectDefinitions.all(0, 1);
         const activeEffectsData: any[] = [];
         for (const effect of effects) {
           // Ignore the stealthed effect

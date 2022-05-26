@@ -75,6 +75,7 @@
   "conditional-visibility.windows.dialogs.confirm.apply.choice.delete": "Delete",
   "conditional-visibility.windows.dialogs.deletesense.title": "Delete sense",
   "conditional-visibility.windows.dialogs.deletecondition.title": "Delete condition",
+  "conditional-visibility.token.config.noeditmessage": "For foundryvtt 9 there is no editing mechanism for the effects already existing at the token configuration level, simply because you can simply edit the active effects to make your own customizations",
 
   "conditional-visibility.token.config.addnewcondition": "Add new condition",
   "conditional-visibility.token.config.addnewsense": "Add new sense",

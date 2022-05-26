@@ -16,7 +16,7 @@ export class ConditionalVisibilityEffectDefinitions {
    *
    * @returns {Effect[]} all the effects
    */
-  static all(distance = 0, visionLevel = 0): Effect[] {
+  static async all(distance = 0, visionLevel = 0): Promise<Effect[]> {
     const effects: Effect[] = [];
 
     // EffectDefinitions.shadowEffect(distance),
@@ -188,7 +188,8 @@ export class ConditionalVisibilityEffectDefinitions {
   }
 
   static async effect(nameOrCustomId: string, distance = 0, visionLevel = 0): Promise<Effect | undefined> {
-    const effect = <Effect>ConditionalVisibilityEffectDefinitions.all(distance, visionLevel).find((effect: Effect) => {
+    const effectsToCheck = await ConditionalVisibilityEffectDefinitions.all(distance, visionLevel);
+    const effect = effectsToCheck.find((effect: Effect) => {
       return isStringEquals(effect.name, nameOrCustomId) || isStringEquals(effect.customId, nameOrCustomId);
     });
     // TODO no need this ??

@@ -2279,21 +2279,24 @@ export function drawHandlerCVImageAll(controlledToken: Token) {
 
 export async function drawHandlerCVImage(controlledToken: Token, tokenToCheckIfIsVisible: Token) {
   if (game?.ready && game.settings.get(CONSTANTS.MODULE_NAME, 'enableDrawCVHandler')) {
-    // if (<number>(<Token[]>canvas.tokens?.controlled.filter((t) => t.id == controlledToken.id))?.length <= 0) {
-    //   if(game.user?.isGM){
-    //     if (
-    //       tokenToCheckIfIsVisible.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.ORIGINAL_IMAGE)
-    //     ) {
-    //       await conditionalVisibilitySocket.executeAsUser(
-    //         'drawImageByUserCV',
-    //         game.userId,
-    //         tokenToCheckIfIsVisible.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.ORIGINAL_IMAGE),
-    //         tokenToCheckIfIsVisible.id,
-    //       );
-    //     }
-    //   }
-    //   return;
-    // }
+    const currentFlag = tokenToCheckIfIsVisible.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.ORIGINAL_IMAGE+"_"+game.userId);
+    if (<number>(<Token[]>canvas.tokens?.controlled.filter((t) => t.id == controlledToken.id))?.length <= 0) {
+      if(game.user?.isGM){
+        if(currentFlag){
+          await conditionalVisibilitySocket.executeAsUser(
+            'drawImageByUserCV',
+            game.userId,
+            currentFlag,
+            tokenToCheckIfIsVisible.id,
+          );
+          await tokenToCheckIfIsVisible.actor?.unsetFlag(
+            CONSTANTS.MODULE_NAME,
+            ConditionalVisibilityFlags.ORIGINAL_IMAGE+"_"+game.userId,
+          );
+        }
+      }
+      return;
+    }
 
     let sourceVisionLevels =
       <AtcvEffect[]>controlledToken.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES) ??
@@ -2333,7 +2336,7 @@ export async function drawHandlerCVImage(controlledToken: Token, tokenToCheckIfI
         if (atcvEffectSource.visionTargetImage != tokenToCheckIfIsVisible.data.img) {
           await tokenToCheckIfIsVisible.actor?.setFlag(
             CONSTANTS.MODULE_NAME,
-            ConditionalVisibilityFlags.ORIGINAL_IMAGE,
+            ConditionalVisibilityFlags.ORIGINAL_IMAGE+"_"+game.userId,
             tokenToCheckIfIsVisible.data.img,
           );
           await conditionalVisibilitySocket.executeAsUser(
@@ -2359,6 +2362,7 @@ export async function drawHandlerCVImage(controlledToken: Token, tokenToCheckIfI
         // tokenToCheckIfIsVisible.clear();
       }
     }
+
     if (!foundedImageToUpdated) {
       for (const atcvEffectTarget of atcvEffectsTarget) {
         // if (atcvEffectTarget.visionTargetImage) {
@@ -2373,7 +2377,7 @@ export async function drawHandlerCVImage(controlledToken: Token, tokenToCheckIfI
           if (atcvEffectTarget.visionSourceImage != tokenToCheckIfIsVisible.data.img) {
             await tokenToCheckIfIsVisible.actor?.setFlag(
               CONSTANTS.MODULE_NAME,
-              ConditionalVisibilityFlags.ORIGINAL_IMAGE,
+              ConditionalVisibilityFlags.ORIGINAL_IMAGE+"_"+game.userId,
               tokenToCheckIfIsVisible.data.img,
             );
             await conditionalVisibilitySocket.executeAsUser(
@@ -2391,25 +2395,22 @@ export async function drawHandlerCVImage(controlledToken: Token, tokenToCheckIfI
         }
       }
     }
-    if (
-      !foundedImageToUpdated &&
-      tokenToCheckIfIsVisible.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.ORIGINAL_IMAGE)
-    ) {
-      if (
-        tokenToCheckIfIsVisible.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.ORIGINAL_IMAGE) !=
-        tokenToCheckIfIsVisible.data.img
-      ) {
+    if (!foundedImageToUpdated && currentFlag) {
+      // if (
+      //   tokenToCheckIfIsVisible.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.ORIGINAL_IMAGE) !=
+      //   tokenToCheckIfIsVisible.data.img
+      // ) {
         await conditionalVisibilitySocket.executeAsUser(
           'drawImageByUserCV',
           game.userId,
-          tokenToCheckIfIsVisible.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.ORIGINAL_IMAGE),
+          currentFlag,
           tokenToCheckIfIsVisible.id,
         );
         await tokenToCheckIfIsVisible.actor?.unsetFlag(
           CONSTANTS.MODULE_NAME,
-          ConditionalVisibilityFlags.ORIGINAL_IMAGE,
+          ConditionalVisibilityFlags.ORIGINAL_IMAGE+"_"+game.userId,
         );
-      }
+      // }
     }
   }
 }

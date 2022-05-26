@@ -105,6 +105,15 @@ export const registerSettings = function (): void {
   //   type: Boolean,
   // });
 
+  // game.settings.register(CONSTANTS.MODULE_NAME, 'autoPerception', {
+  //   name: `${CONSTANTS.MODULE_NAME}.setting.autoPerception.name`,
+  //   hint: `${CONSTANTS.MODULE_NAME}.setting.autoPerception.hint`,
+  //   scope: 'world',
+  //   config: true,
+  //   default: false,
+  //   type: Boolean,
+  // });
+
   game.settings.register(CONSTANTS.MODULE_NAME, 'enableDrawCVHandler', {
     name: `${CONSTANTS.MODULE_NAME}.setting.enableDrawCVHandler.name`,
     hint: `${CONSTANTS.MODULE_NAME}.setting.enableDrawCVHandler.hint`,
@@ -457,6 +466,15 @@ function otherSettings(apply = false) {
     // autoPassivePerception: {
     //   name: `${CONSTANTS.MODULE_NAME}.setting.autoPassivePerception.name`,
     //   hint: `${CONSTANTS.MODULE_NAME}.setting.autoPassivePerception.hint`,
+    //   scope: 'world',
+    //   config: true,
+    //   default: false,
+    //   type: Boolean,
+    // },
+
+    // autoPerception: {
+    //   name: `${CONSTANTS.MODULE_NAME}.setting.autoPerception.name`,
+    //   hint: `${CONSTANTS.MODULE_NAME}.setting.autoPerception.hint`,
     //   scope: 'world',
     //   config: true,
     //   default: false,

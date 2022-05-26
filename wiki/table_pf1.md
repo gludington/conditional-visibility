@@ -1,4 +1,4 @@
-## System Pf2e Tables
+## System Pf1 Tables (Working in progress)
 
 These tables are essential because they help the community to decide how to calculate a hierarchy between the Active Effect
 

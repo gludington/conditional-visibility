@@ -120,34 +120,4 @@ export function getSocket() {
   return data.socket;
 }
 
-Hooks.once('libChangelogsReady', function () {
-  //@ts-ignore
-  libChangelogs.registerConflict(
-    CONSTANTS.MODULE_NAME,
-    'levels',
-    `With levels module enabled and active, **if the scene is with "Token vision" set to false (unchecked box)**, after selected a token and click on the canvas with the option "Release on left click" enable the hidden token are visible for a small instant this is a incompatibility with the [Levels](https://github.com/theripper93/Levels) module i cannot solve, the simple solution is just enable the token vision on the current scene.`,
-    'minor',
-  );
 
-  //@ts-ignore
-  libChangelogs.registerConflict(
-    CONSTANTS.MODULE_NAME,
-    'less-fog',
-    `With less-fog module enabled and active. The module "less fog" breaks the dm view of tokens. The gm still see an invisible token as other tokens, but the players don't so is a minor issue. The solution is just make sure the module 'Less Fog' settings 'Reveal Tokens' and 'Reveal to All Players' are set to false (unchecked box) both.`,
-    'minor',
-  );
-
-  //@ts-ignore
-  libChangelogs.register(
-    CONSTANTS.MODULE_NAME,
-    `
-    - Add 'ATCV.conditionBlinded' and 'ATCV.conditionBlindedOverride' condtions for [https://github.com/p4535992/conditional-visibility/issues/32](https://github.com/p4535992/conditional-visibility/issues/32)
-    - Clean up comments
-    - Add module settins for hud position [Option for changing CV's HUD button position](https://github.com/p4535992/conditional-visibility/issues/34)
-    - Bug fix: [[BUG] Duplicate token configuration panel and some sight issue bug](https://github.com/p4535992/conditional-visibility/issues/29)
-    - Add class field to extra_sense template
-    - Update renderChat for autostealth for mutliligual (the community need to pr me a language file)
-    `,
-    'minor',
-  );
-});

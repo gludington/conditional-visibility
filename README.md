@@ -65,7 +65,10 @@ This module uses the [ATE](https://github.com/kandashi/Active-Token-Lighting) li
 - **[WORKING IN PROGRESS]** With levels module enabled and active, **if the scene is with "Token vision" set to false (unchecked box)**, after selected a token and click on the canvas with the option "Release on left click" enable the hidden token are visible for a small instant this is a incompatibility with the [Levels](https://github.com/theripper93/Levels) module i cannot solve, the simple solution is just enable the token vision on the current scene.
 - **[NOT SOLVED]** There is a small incompatibility with the Dfred convenient effects module, for some strange reason the passive effect are applied has temporary effect here the issue related https://github.com/DFreds/dfreds-convenient-effects/issues/137, it's seem Dfred manage only temporary effect so we leave this issue _not resolved_
 - **[PATCHED]** The module "less fog" breaks the dm view of tokens. The gm still see an invisible token as other tokens, but the players don't so is a minor issue. The solution is just make sure the module 'Less Fog' settings 'Reveal Tokens' and 'Reveal to All Players' are set to false (uncheked box) both.
-- **[TODO]** Better integration with [ATE](https://github.com/kandashi/Active-Token-Lighting) for now yu must do some manual settings... hoope for the future to do a better automatize.
+- **[TODO]** Better integration with [ATE](https://github.com/kandashi/Active-Token-Lighting) for now yu 
+must do some manual settings... hoope for the future to do a better automatize.
+- **[TODO]** Minor issue with Token factions module
+
 
 ## Usage
 

@@ -1,3 +1,9 @@
+### 0.5.41
+
+- Added a very poor button for add and remove sense/condition on the token configuration
+- Bug fix now the tokens should hide when disabled the active effect condition
+- Other minor bug fix
+
 ### 0.5.40
 
 - Add `ATCV.conditionBlinded` and `ATCV.conditionBlindedOverride` condtions for [https://github.com/p4535992/conditional-visibility/issues/32](https://github.com/p4535992/conditional-visibility/issues/32)

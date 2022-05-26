@@ -1,6 +1,9 @@
 {
-  "conditional-visibility.setting.autoStealth.name": "Auto hide on stealth rolls",
-  "conditional-visibility.setting.autoStealth.hint": "[This is system dependent] On supported game systems, set the 'hidden' condition on a token's stealth roll. NOTE: Is impossible to make the auto stealth work with other modules like token action hud, LMRTFY or similar module in a multisystem environment without specific hooks, so now i just rendered the result roll on the chat message and hope everything is working like expected, so if no chat is been rendered on the client side no stealth effect is applied and you are force to use the token hud feature.",
+  "conditional-visibility.setting.autoStealth.name": "Auto hide on 'stealth' rolls",
+  "conditional-visibility.setting.autoStealth.hint": "[This is system dependent] On supported game systems, set the 'hidden' condition on a token's 'stealth' roll. NOTE: Is very hard to make the auto stealth work with other modules like token action hud, LMRTFY or similar module in a multisystem environment without specific hooks, so now i just rendered the result roll on the chat message and hope everything is working like expected, so if no chat is been rendered on the client side no stealth effect is applied and you are force to use the token hud feature.",
+
+  "conditional-visibility.setting.autoPerception.name": "Auto show on 'perception' rolls",
+  "conditional-visibility.setting.autoPerception.hint": "[This is system dependent] On supported game systems, set the 'perception' condition on a token's 'perception' roll. NOTE: Is very hard to make the auto 'perception' work with other modules like token action hud, LMRTFY or similar module in a multisystem environment without specific hooks, so now i just rendered the result roll on the chat message and hope everything is working like expected, so if no chat is been rendered on the client side no stealth effect is applied and you are force to use the token hud feature.",
 
   "conditional-visibility.setting.autoPassivePerception.name": "Auto check with passive perception",
   "conditional-visibility.setting.autoPassivePerception.hint": "[This is system dependent] On supported game systems, if checked it will apply the flag 'Use Stealth Passive' by default on the token when is created created. Is advisable to set to false'",
@@ -75,7 +78,7 @@
   "conditional-visibility.windows.dialogs.confirm.apply.choice.delete": "Delete",
   "conditional-visibility.windows.dialogs.deletesense.title": "Delete sense",
   "conditional-visibility.windows.dialogs.deletecondition.title": "Delete condition",
-  "conditional-visibility.token.config.noeditmessage": "For foundryvtt 9 there is no editing mechanism for the effects already existing at the token configuration level, simply because you can simply edit the active effects to make your own customizations",
+  "conditional-visibility.token.config.noeditmessage": "NOTE: For foundryvtt 9 there is no editing mechanism for the effects already existing at the token configuration level, simply because you can edit directly the active effects to make your own customizations, anyone can help with some PR for enrich this.",
 
   "conditional-visibility.token.config.addnewcondition": "Add new condition",
   "conditional-visibility.token.config.addnewsense": "Add new sense",

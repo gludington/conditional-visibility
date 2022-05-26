@@ -655,6 +655,7 @@ const module = {
     }
     const sourceToken = tokenArray[0];
     */
+    let isDisabledUpdated = false;
     if (!options?.changes) {
       if (isRemoved) {
         const senseOrCondition = (await getAllDefaultSensesAndConditions(sourceToken)).find((sense) => {
@@ -668,7 +669,12 @@ const module = {
         }
         return;
       } else {
-        return;
+        // 2022-05-26 special case for disabled effect
+        if (options?.disabled) {
+          isDisabledUpdated = options?.disabled;
+        } else {
+          return;
+        }
       }
     }
     if (
@@ -696,7 +702,7 @@ const module = {
       const atcvEffects = totalEffects.filter(
         (entity) => !!entity.data.changes.find((effect) => effect.key.includes('ATCV')),
       );
-      if (activeEffect.data.disabled || isRemoved) {
+      if (activeEffect.data.disabled || isRemoved || isDisabledUpdated) {
         const atcvEffectsChanges = activeEffect.data.changes.filter((entity) => entity.key.includes('ATCV'));
         if (atcvEffectsChanges && atcvEffectsChanges.length > 0) {
           const alreadyPresent = atcvEffects.find((ae) => {

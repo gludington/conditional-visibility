@@ -690,21 +690,16 @@ export function getSensesFromTokenFast(
   filterValueNoZero = false,
   filterIsDisabled = false,
 ): AtcvEffect[] {
-  // let maxSightDistance =
-  //   <number>tokenDocument.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.MAX_SIGHT_DISTANCE) ?? 0;
-  // if(maxSightDistance <=0){
-  //   maxSightDistance = getDistanceSightFromToken(<Token>tokenDocument.object);
-  //   tokenDocument.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.MAX_SIGHT_DISTANCE, maxSightDistance);
-  // }
-
+  // 2022-05.27
+  /*
   const atcvEffects =
     <AtcvEffect[]>tokenDocument.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES) ?? [];
 
   if (atcvEffects.filter((a) => !a.visionId).length > 0) {
-    // const atcvEffectsTmp = atcvEffects.filter((a) => a.visionId);
-    // tokenDocument.actor?.unsetFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES);
     return getSensesFromToken(tokenDocument);
   }
+  */
+  const atcvEffects = getSensesFromToken(tokenDocument);
   if (atcvEffects.length > 0) {
     return atcvEffects;
   } else {
@@ -712,8 +707,8 @@ export function getSensesFromTokenFast(
     for (const key in atcvEffectsObject) {
       const senseIdKey = key;
       if (
-        senseIdKey == ConditionalVisibilityFlags.DATA_SENSES ||
-        senseIdKey == ConditionalVisibilityFlags.DATA_CONDITIONS ||
+        // senseIdKey == ConditionalVisibilityFlags.DATA_SENSES || // 2022-05.27
+        // senseIdKey == ConditionalVisibilityFlags.DATA_CONDITIONS || // 2022-05.27
         senseIdKey == ConditionalVisibilityFlags.FORCE_VISIBLE
       ) {
         continue;
@@ -728,7 +723,8 @@ export function getSensesFromTokenFast(
       atcvEffects.push(senseValue);
     }
     const senses = atcvEffects.filter((a) => a.visionType === 'sense') ?? [];
-    tokenDocument.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES, senses);
+    // 2022-05.27
+    //tokenDocument.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES, senses);
     return senses;
   }
 }
@@ -738,20 +734,15 @@ export function getConditionsFromTokenFast(
   filterValueNoZero = false,
   filterIsDisabled = false,
 ): AtcvEffect[] {
-  // let maxSightDistance =
-  //   <number>tokenDocument.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.MAX_SIGHT_DISTANCE) ?? 0;
-  // if(maxSightDistance <=0){
-  //   maxSightDistance = getDistanceSightFromToken(<Token>tokenDocument.object);
-  //   tokenDocument.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.MAX_SIGHT_DISTANCE, maxSightDistance);
-  // }
-
+  // 2022-05-27
+  /*
   const atcvEffects =
     <AtcvEffect[]>tokenDocument.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_CONDITIONS) ?? [];
   if (atcvEffects.filter((a) => !a.visionId).length > 0) {
-    // const atcvEffectsTmp = atcvEffects.filter((a) => a.visionId);
-    // tokenDocument.actor?.unsetFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_CONDITIONS);
     return getConditionsFromToken(tokenDocument);
   }
+  */
+  const atcvEffects = getConditionsFromToken(tokenDocument);
   if (atcvEffects.length > 0) {
     return atcvEffects;
   } else {
@@ -759,8 +750,8 @@ export function getConditionsFromTokenFast(
     for (const key in atcvEffectsObject) {
       const conditionIdKey = key;
       if (
-        conditionIdKey == ConditionalVisibilityFlags.DATA_SENSES ||
-        conditionIdKey == ConditionalVisibilityFlags.DATA_CONDITIONS ||
+        //conditionIdKey == ConditionalVisibilityFlags.DATA_SENSES || // 2022-05.27
+        //conditionIdKey == ConditionalVisibilityFlags.DATA_CONDITIONS || // 2022-05.27
         conditionIdKey == ConditionalVisibilityFlags.FORCE_VISIBLE
       ) {
         continue;
@@ -775,7 +766,8 @@ export function getConditionsFromTokenFast(
       atcvEffects.push(conditionValue);
     }
     const conditions = atcvEffects.filter((a) => a.visionType === 'condition') ?? [];
-    tokenDocument.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_CONDITIONS, conditions);
+    // 2022-05.27
+    //tokenDocument.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_CONDITIONS, conditions);
     return conditions;
   }
 }
@@ -1585,7 +1577,17 @@ export async function repairAndSetFlag(token: Token, key: string, value: AtcvEff
       await token.actor.unsetFlag(CONSTANTS.MODULE_NAME, 'conditionBlindedOverride');
     }
     // TODO END TO REMOVE THIS IS FOR A RETROCOMPATIBILITY ISSUE
-
+    if (thereISADifference) {
+      await token.actor?.setFlag(CONSTANTS.MODULE_NAME, key, value);
+      if (game.settings.get(CONSTANTS.MODULE_NAME, 'enableRefreshSightCVHandler')) {
+        canvas.perception.schedule({
+          lighting: { refresh: true },
+          sight: { refresh: true },
+        });
+      }
+    }
+    // 2022-05.27
+    /*
     if (thereISADifference) {
       await token.actor?.setFlag(CONSTANTS.MODULE_NAME, key, value);
       let data: AtcvEffect[] = [];
@@ -1625,24 +1627,15 @@ export async function repairAndSetFlag(token: Token, key: string, value: AtcvEff
         return;
       }
     }
-    // if (game.settings.get(CONSTANTS.MODULE_NAME, 'enableFastModeCVHandler')) {
-    //   const keysToRemove = new Set<String>();
-    //   const prefix = <string>game.user?.id;
-    //   for (const key of API.weakMap.keys()) {
-    //     if (key.startsWith(prefix)) {
-    //       keysToRemove.add(key);
-    //     }
-    //   }
-    //   for (const s of keysToRemove) {
-    //     API.weakMap.delete(s);
-    //   }
-    // }
+
     if (game.settings.get(CONSTANTS.MODULE_NAME, 'enableRefreshSightCVHandler')) {
       canvas.perception.schedule({
         lighting: { refresh: true },
         sight: { refresh: true },
       });
     }
+    */
+
   }
 }
 
@@ -1686,6 +1679,10 @@ export async function repairAndUnSetFlag(token: Token, key: string) {
     // TODO END TO REMOVE
 
     await token.actor?.unsetFlag(CONSTANTS.MODULE_NAME, key);
+    // 2022-05.27
+    
+    /*
+    await token.actor?.unsetFlag(CONSTANTS.MODULE_NAME, key);
 
     const isSense = !!API.SENSES.find((sense: SenseData) => {
       return isStringEquals(sense.id, key);
@@ -1727,18 +1724,7 @@ export async function repairAndUnSetFlag(token: Token, key: string) {
       // DO NOTHING
       return;
     }
-    // if (game.settings.get(CONSTANTS.MODULE_NAME, 'enableFastModeCVHandler')) {
-    //   const keysToRemove = new Set<String>();
-    //   const prefix = <string>game.user?.id;
-    //   for (const key of API.weakMap.keys()) {
-    //     if (key.startsWith(prefix)) {
-    //       keysToRemove.add(key);
-    //     }
-    //   }
-    //   for (const s of keysToRemove) {
-    //     API.weakMap.delete(s);
-    //   }
-    // }
+    */
     if (game.settings.get(CONSTANTS.MODULE_NAME, 'enableRefreshSightCVHandler')) {
       canvas.perception.schedule({
         lighting: { refresh: true },
@@ -1832,6 +1818,8 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
   // const sourceVisionLevels:AtcvEffect[] = getSensesFromTokenFast(sourceToken.document, true, true) ?? [];
   // const targetVisionLevels:AtcvEffect[] = getConditionsFromTokenFast(targetToken.document, true, true) ?? [];
 
+  // 2022-05.27
+  /*
   let sourceVisionLevels =
     <AtcvEffect[]>sourceToken.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES) ??
     <AtcvEffect[]>sourceToken.document.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES) ?? // TODO TO REMOVE
@@ -1854,6 +1842,9 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
     );
     targetVisionLevels = getConditionsFromToken(targetToken.document, true, true);
   }
+  */
+  let sourceVisionLevels: AtcvEffect[] = getSensesFromToken(sourceToken.document, true, true);
+  const targetVisionLevels: AtcvEffect[] = getConditionsFromToken(targetToken.document, true, true);
 
   debug(`(3.6) '${sourceToken.data.name}' with sourceVisionLevels = ` + JSON.stringify(sourceVisionLevels, null, 4));
   debug(`(3.7) '${targetToken.data.name}' with targetVisionLevels = ` + JSON.stringify(targetVisionLevels, null, 4));
@@ -2319,6 +2310,8 @@ export async function drawHandlerCVImage(controlledToken: Token, tokenToCheckIfI
       return;
     }
 
+    // 2022-05-27
+    /*
     let sourceVisionLevels =
       <AtcvEffect[]>controlledToken.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES) ??
       <AtcvEffect[]>(
@@ -2343,6 +2336,11 @@ export async function drawHandlerCVImage(controlledToken: Token, tokenToCheckIfI
     if (targetVisionLevels.length <= 0) {
       targetVisionLevels = getConditionsFromToken(tokenToCheckIfIsVisible.document, true, true);
     }
+    */
+
+    const sourceVisionLevels = getSensesFromToken(controlledToken.document, true, true);
+    const targetVisionLevels = getConditionsFromToken(tokenToCheckIfIsVisible.document, true, true);
+
     let foundedImageToUpdated = false;
     // TODO add priority value for set up the order
     const atcvEffectsSource = sourceVisionLevels.sort((a, b) =>

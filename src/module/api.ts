@@ -1094,8 +1094,6 @@ const API = {
       effect.atcvChanges = AtcvEffect.retrieveAtcvChangesFromEffect(effect);
       const atcvEffectFlagData = AtcvEffect.fromEffect(token.document, effect);
       const result = atcvEffectFlagData;
-      // 2022-05-27
-      await repairAndSetFlag(token,atcvEffectFlagData.visionId,atcvEffectFlagData)
       return result;
     }
   },

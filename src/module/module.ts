@@ -395,10 +395,9 @@ const module = {
     if (
       change.actor &&
       change.actor.data &&
-      change.actor.data.flags[CONSTANTS.MODULE_NAME] &&
-      // !getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`) &&
-      !getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_SENSES}`) &&
-      !getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_CONDITIONS}`)
+      change.actor.data.flags[CONSTANTS.MODULE_NAME]
+      // !getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_SENSES}`) && // 2022-05-27
+      // !getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_CONDITIONS}`) // 2022-05-27
     ) {
       module.updateToken(sourceToken.document, change, options, userId);
     }
@@ -468,9 +467,9 @@ const module = {
     if (
       change.actor &&
       change.actor.data &&
-      change.actor.data.flags[CONSTANTS.MODULE_NAME] &&
-      !getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_SENSES}`) &&
-      !getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_CONDITIONS}`)
+      change.actor.data.flags[CONSTANTS.MODULE_NAME]
+      //!getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_SENSES}`) && // 2022-05-27
+      //!getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_CONDITIONS}`) // 2022-05-27
     ) {
       isEnabledForToken = true;
       p = getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}`);
@@ -603,9 +602,9 @@ const module = {
       getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`) !=
         null &&
       getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`) !=
-        undefined &&
-      !getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_SENSES}`) &&
-      !getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_CONDITIONS}`)
+        undefined
+      //!getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_SENSES}`) && // 2022-05-27
+      //!getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_CONDITIONS}`) // 2022-05-27
     ) {
       const forceVisible = !!getProperty(
         change,
@@ -634,9 +633,9 @@ const module = {
       getProperty(
         change,
         `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.USE_STEALTH_PASSIVE}`,
-      ) != undefined &&
-      !getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_SENSES}`) &&
-      !getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_CONDITIONS}`)
+      ) != undefined
+      // !getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_SENSES}`) && // 2022-05-27
+      // !getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_CONDITIONS}`)// 2022-05-27
     ) {
       const useStealthPassive = !!getProperty(
         change,

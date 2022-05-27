@@ -87,9 +87,27 @@ export const registerSettings = function (): void {
     type: Boolean,
   });
 
-  game.settings.register(CONSTANTS.MODULE_NAME, 'autoStealth', {
-    name: `${CONSTANTS.MODULE_NAME}.setting.autoStealth.name`,
-    hint: `${CONSTANTS.MODULE_NAME}.setting.autoStealth.hint`,
+  // game.settings.register(CONSTANTS.MODULE_NAME, 'autoStealth', {
+  //   name: `${CONSTANTS.MODULE_NAME}.setting.autoStealth.name`,
+  //   hint: `${CONSTANTS.MODULE_NAME}.setting.autoStealth.hint`,
+  //   scope: 'world',
+  //   config: true,
+  //   default: false,
+  //   type: Boolean,
+  // });
+
+  game.settings.register(CONSTANTS.MODULE_NAME, 'autoSkills', {
+    name: `${CONSTANTS.MODULE_NAME}.setting.autoSkills.name`,
+    hint: `${CONSTANTS.MODULE_NAME}.setting.autoSkills.hint`,
+    scope: 'world',
+    config: true,
+    default: true,
+    type: Boolean,
+  });
+
+  game.settings.register(CONSTANTS.MODULE_NAME, 'autoSkillsSkipDialog', {
+    name: `${CONSTANTS.MODULE_NAME}.setting.autoSkillsSkipDialog.name`,
+    hint: `${CONSTANTS.MODULE_NAME}.setting.autoSkillsSkipDialog.hint`,
     scope: 'world',
     config: true,
     default: false,
@@ -273,6 +291,14 @@ function defaultSettings(apply = false) {
       default: apply && SYSTEMS.DATA ? SYSTEMS.DATA.EFFECTS : [],
       type: Array,
     },
+    skills: {
+      name: `${CONSTANTS.MODULE_NAME}.setting.skills.name`,
+      hint: `${CONSTANTS.MODULE_NAME}.setting.skills.hint`,
+      scope: 'world',
+      config: false,
+      default: apply && SYSTEMS.DATA ? SYSTEMS.DATA.EFFECTS : [],
+      type: Array,
+    },
     npcType: {
       name: `${CONSTANTS.MODULE_NAME}.setting.npcType.name`,
       hint: `${CONSTANTS.MODULE_NAME}.setting.npcType.hint`,
@@ -313,14 +339,14 @@ function defaultSettings(apply = false) {
     //   default: apply && SYSTEMS.DATA ? SYSTEMS.DATA.STEALTH_ID_SKILL : '',
     //   type: String,
     // },
-    idLangStealthSkill: {
-      name: `${CONSTANTS.MODULE_NAME}.setting.idLangStealthSkill.name`,
-      hint: `${CONSTANTS.MODULE_NAME}.setting.idLangStealthSkill.hint`,
-      scope: 'world',
-      config: true,
-      default: apply && SYSTEMS.DATA ? SYSTEMS.DATA.STEALTH_ID_LANG_SKILL : '',
-      type: String,
-    },
+    // idLangStealthSkill: {
+    //   name: `${CONSTANTS.MODULE_NAME}.setting.idLangStealthSkill.name`,
+    //   hint: `${CONSTANTS.MODULE_NAME}.setting.idLangStealthSkill.hint`,
+    //   scope: 'world',
+    //   config: true,
+    //   default: apply && SYSTEMS.DATA ? SYSTEMS.DATA.STEALTH_ID_LANG_SKILL : '',
+    //   type: String,
+    // },
     pathAttributesSenses: {
       name: `${CONSTANTS.MODULE_NAME}.setting.pathAttributesSenses.name`,
       hint: `${CONSTANTS.MODULE_NAME}.setting.pathAttributesSenses.hint`,
@@ -454,9 +480,27 @@ function otherSettings(apply = false) {
       type: Boolean,
     },
 
-    autoStealth: {
-      name: `${CONSTANTS.MODULE_NAME}.setting.autoStealth.name`,
-      hint: `${CONSTANTS.MODULE_NAME}.setting.autoStealth.hint`,
+    // autoStealth: {
+    //   name: `${CONSTANTS.MODULE_NAME}.setting.autoStealth.name`,
+    //   hint: `${CONSTANTS.MODULE_NAME}.setting.autoStealth.hint`,
+    //   scope: 'world',
+    //   config: true,
+    //   default: false,
+    //   type: Boolean,
+    // },
+
+    autoSkills: {
+      name: `${CONSTANTS.MODULE_NAME}.setting.autoSkills.name`,
+      hint: `${CONSTANTS.MODULE_NAME}.setting.autoSkills.hint`,
+      scope: 'world',
+      config: true,
+      default: true,
+      type: Boolean,
+    },
+
+    autoSkillsSkipDialog: {
+      name: `${CONSTANTS.MODULE_NAME}.setting.autoSkillsSkipDialog.name`,
+      hint: `${CONSTANTS.MODULE_NAME}.setting.autoSkillsSkipDialog.hint`,
       scope: 'world',
       config: true,
       default: false,

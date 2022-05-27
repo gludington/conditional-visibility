@@ -1,5 +1,5 @@
 import { ConditionalVisibilityEffectDefinitions } from '../conditional-visibility-effect-definition';
-import { AtcvEffectSenseFlags, AtcvEffectConditionFlags, SenseData } from '../conditional-visibility-models';
+import { AtcvEffectSenseFlags, AtcvEffectConditionFlags, SenseData, CVSkillData } from '../conditional-visibility-models';
 import CONSTANTS from '../constants';
 import type Effect from '../effects/effect';
 
@@ -132,6 +132,19 @@ export default {
       conditionBlinded: false,
       conditionBlindedOverride: false,
     },
+    // Skills sense
+    {
+      id: 'perception',
+      name: 'DND5E.SkillPrc',
+      path: ``,
+      img: `/modules/${CONSTANTS.MODULE_NAME}/icons/skills/perception.svg`,
+      conditionType: 'sense',
+      conditionSources: <string[]>[],
+      conditionTargets: <string[]>[],
+      conditionElevation: false,
+      conditionBlinded: false,
+      conditionBlindedOverride: false,
+    },
   ],
   CONDITIONS: <SenseData[]>[
     {
@@ -215,6 +228,72 @@ export default {
       conditionBlinded: false,
       conditionBlindedOverride: false,
     },
+    // Skills condition
+    {
+      id: 'stealth',
+      name: 'DND5E.SkillSte',
+      path: ``,
+      img: `/modules/${CONSTANTS.MODULE_NAME}/icons/skills/stealth.svg`,
+      conditionType: 'condition',
+      conditionSources: <string[]>['perception'],
+      conditionTargets: <string[]>[],
+      conditionElevation: false,
+      conditionBlinded: false,
+      conditionBlindedOverride: false,
+    },
   ],
   EFFECTS: <Effect[]>[],
+  SKILLS: <CVSkillData[]>[
+    { id:'acrobatics', name: 'DND5E.SkillAcr', icon: `/modules/${CONSTANTS.MODULE_NAME}/icons/skills/acrobatics.svg`, enable: false, senseData: null },
+    { id:'animal_handling', name: 'DND5E.SkillAni', icon: `/modules/${CONSTANTS.MODULE_NAME}/icons/skills/animal_handling.svg`, enable: false, senseData: null },
+    { id:'arcana', name: 'DND5E.SkillArc', icon: `/modules/${CONSTANTS.MODULE_NAME}/icons/skills/arcana.svg`, enable: false, senseData: null },
+    { id:'athletics', name: 'DND5E.SkillAth', icon: `/modules/${CONSTANTS.MODULE_NAME}/icons/skills/athletics.svg`, enable: false, senseData: null },
+    { id:'deception', name: 'DND5E.SkillDec', icon: `/modules/${CONSTANTS.MODULE_NAME}/icons/skills/deception.svg`, enable: false, senseData: null },
+    { id:'history', name: 'DND5E.SkillHis', icon: `/modules/${CONSTANTS.MODULE_NAME}/icons/skills/history.svg`, enable: false, senseData: null },
+    { id:'insight', name: 'DND5E.SkillIns', icon: `/modules/${CONSTANTS.MODULE_NAME}/icons/skills/insight.svg`, enable: false, senseData: null },
+    { id:'intimidation', name: 'DND5E.SkillItm', icon: `/modules/${CONSTANTS.MODULE_NAME}/icons/skills/intimidation.svg`, enable: false, senseData: null },
+    { id:'investigation', name: 'DND5E.SkillInv', icon: `/modules/${CONSTANTS.MODULE_NAME}/icons/skills/investigation.svg`, enable: false, senseData: null },
+    { id:'medicine', name: 'DND5E.SkillMed', icon: `/modules/${CONSTANTS.MODULE_NAME}/icons/skills/medicine.svg`, enable: false, senseData: null },
+    { id:'nature', name: 'DND5E.SkillNat', icon: `/modules/${CONSTANTS.MODULE_NAME}/icons/skills/nature.svg`, enable: false, senseData: null },
+    {
+      id:'perception',
+      name: 'DND5E.SkillPrc',
+      icon: `/modules/${CONSTANTS.MODULE_NAME}/icons/skills/perception.svg`,
+      enable: true,
+      senseData: {
+        id: 'perception',
+        name: 'DND5E.SkillPrc',
+        path: ``,
+        img: `/modules/${CONSTANTS.MODULE_NAME}/icons/skills/perception.svg`,
+        conditionType: 'sense',
+        conditionSources: <string[]>[],
+        conditionTargets: <string[]>[],
+        conditionElevation: false,
+        conditionBlinded: false,
+        conditionBlindedOverride: false,
+      },
+    },
+    { id:'performance', name: 'DND5E.SkillPrf', icon: `/modules/${CONSTANTS.MODULE_NAME}/icons/skills/performance.svg`, enable: false, senseData: null },
+    { id:'persuasion', name: 'DND5E.SkillPer', icon: `/modules/${CONSTANTS.MODULE_NAME}/icons/skills/persuasion.svg`, enable: false, senseData: null },
+    { id:'religion', name: 'DND5E.SkillRel', icon: `/modules/${CONSTANTS.MODULE_NAME}/icons/skills/religion.svg`, enable: false, senseData: null },
+    { id:'sleight_of_hand', name: 'DND5E.SkillSlt', icon: `/modules/${CONSTANTS.MODULE_NAME}/icons/skills/sleight_of_hand.svg`, enable: false, senseData: null },
+    { id:'stealth',
+      name: 'DND5E.SkillSte',
+      icon: `/modules/${CONSTANTS.MODULE_NAME}/icons/skills/stealth.svg`,
+      enable: true,
+      senseData: {
+        id: 'stealth',
+        name: 'DND5E.SkillSte',
+        path: ``,
+        img: `/modules/${CONSTANTS.MODULE_NAME}/icons/skills/stealth.svg`,
+        conditionType: 'condition',
+        conditionSources: <string[]>['perception'],
+        conditionTargets: <string[]>[],
+        conditionElevation: false,
+        conditionBlinded: false,
+        conditionBlindedOverride: false,
+      },
+    },
+    { id:'survival', name: 'DND5E.SkillSur', icon: `/modules/${CONSTANTS.MODULE_NAME}/icons/skills/survival.svg`, enable: false, senseData: null },
+  ],
 };

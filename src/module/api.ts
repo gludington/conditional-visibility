@@ -26,6 +26,7 @@ import {
   AtcvEffect,
   AtcvEffectConditionFlags,
   ConditionalVisibilityFlags,
+  CVSkillData,
   SenseData,
 } from './conditional-visibility-models';
 import type Effect from './effects/effect';
@@ -67,6 +68,15 @@ const API = {
    */
   get EFFECTS(): Effect[] {
     return <Effect[]>game.settings.get(CONSTANTS.MODULE_NAME, 'effects');
+  },
+
+  /**
+   * The attributes used to track dynamic attributes in this system
+   *
+   * @returns {CVSkillData[]}
+   */
+  get SKILLS(): CVSkillData[] {
+    return <CVSkillData[]>game.settings.get(CONSTANTS.MODULE_NAME, 'skills');
   },
 
   /**
@@ -114,14 +124,14 @@ const API = {
   //   return <string>game.settings.get(CONSTANTS.MODULE_NAME, 'idStealthSkill');
   // },
 
-  /**
-   * The attributes used to track dynamic attributes in this system
-   *
-   * @returns {string}
-   */
-  get STEALTH_ID_LANG_SKILL(): string {
-    return <string>game.settings.get(CONSTANTS.MODULE_NAME, 'idLangStealthSkill') ?? 'Stealth';
-  },
+  // /**
+  //  * The attributes used to track dynamic attributes in this system
+  //  *
+  //  * @returns {string}
+  //  */
+  // get STEALTH_ID_LANG_SKILL(): string {
+  //   return <string>game.settings.get(CONSTANTS.MODULE_NAME, 'idLangStealthSkill') ?? 'Stealth';
+  // },
 
   /**
    * The attributes used to track dynamic attributes in this system

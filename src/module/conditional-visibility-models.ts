@@ -544,6 +544,14 @@ export class AtcvEffect {
   }
 }
 
+export class CVSkillData {
+  id:string;
+  name: string;
+  icon: string;
+  enable:boolean;
+  senseData: SenseData|null
+}
+
 export interface SenseData {
   id: string; // This is the unique id used for sync all the senses and conditions (please no strange character, no whitespace and all in lowercase...)
   name: string; // This is the unique name used for sync all the senses and conditions (here you cna put any dirty character you want)

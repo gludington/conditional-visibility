@@ -6,6 +6,7 @@ import CONSTANTS from './constants';
 import HOOKS from './hooks';
 import {
   buildButton,
+  checkIfAtLeastAEnabledSkillIsFoundedOnChatMessage,
   debug,
   drawHandlerCVImage,
   drawHandlerCVImageAll,
@@ -14,8 +15,10 @@ import {
   getConditionsFromToken,
   getSensesFromToken,
   i18n,
+  i18nFormat,
   isStringEquals,
   is_real_number,
+  manageActiveEffectForAutoSkillsFeature,
   prepareActiveEffectForConditionalVisibility,
   renderDialogRegisterSenseData,
   renderDialogUnRegisterSenseData,
@@ -33,6 +36,7 @@ import {
   AtcvEffectConditionFlags,
   AtcvEffectSenseFlags,
   ConditionalVisibilityFlags,
+  CVSkillData,
   SenseData,
   VisionCapabilities,
 } from './conditional-visibility-models';
@@ -974,7 +978,7 @@ const module = {
     if (!game?.ready) {
       return;
     }
-    if (!game.settings.get(CONSTANTS.MODULE_NAME, 'autoStealth')) {
+    if (!game.settings.get(CONSTANTS.MODULE_NAME, 'autoSkills')) {
       return;
     }
     let tokenChatId = <string>speakerInfo.message.speaker.token;
@@ -1009,26 +1013,8 @@ const module = {
     if (!game.user?.isGM && !isPlayerOwned) {
       return;
     }
-    /*
-    let selectedTokens = <Token[]>[];
-    if (token) {
-      selectedTokens = [token];
-    }
-    if (!selectedTokens || selectedTokens.length == 0) {
-      selectedTokens = [<Token[]>canvas.tokens?.controlled][0];
-    }
 
-    const sourceToken = selectedTokens[0];
-    if (!sourceToken) {
-      return;
-    }
-    const isPlayerOwned = <boolean>sourceToken.document.isOwner;
-    if (!game.user?.isGM && !isPlayerOwned) {
-      return;
-    }
-    */
-
-    let isStealth = false;
+    let enabledSkill:CVSkillData|undefined|null;
     // This work with TAH, LMRTFY and character sheet
     if (speakerInfo.message.roll || message.data.flags['monks-tokenbar'] || message.data.flags['betterrolls5e']) {
       let rollChatTotal: string =
@@ -1047,110 +1033,61 @@ const module = {
           ? <string>message.data.flavor
           : <string>message.data.content;
       if (fullTextContent) {
-        // Clean up the string for multisystem (D&D5, PF2, ecc.)
-        const innerTextTmp = fullTextContent.toLowerCase().trim();
-        const arr1 = innerTextTmp.split(/\r?\n/);
-        for (let i = 0; i < arr1.length; i++) {
-          let text = arr1[i];
-          if (text) {
-            text = text.toLowerCase().trim();
-            // TODO integration multisystem
-            const check = i18n(`${CONSTANTS.MODULE_NAME}.labels.check`);
-            const ability = i18n(`${CONSTANTS.MODULE_NAME}.labels.ability`);
-            const skill = i18n(`${CONSTANTS.MODULE_NAME}.labels.skill`);
-
-            // Better roll support
-            if (text.indexOf(`title="${i18n(API.STEALTH_ID_LANG_SKILL)?.toLowerCase()}"`) !== -1) {
-              // is ok ??
-            }
-            // Keywords to avoid for all the system ?
-            else if (text.indexOf(check) !== -1 || text.indexOf(ability) !== -1 || text.indexOf(skill) !== -1) {
-              // is ok ??
-            } else {
-              continue;
-            }
-            text = text.replace(/\W/g, ' ');
-            text = text.replace(skill, '');
-            text = text.replace(check, '');
-            text = text.replace(ability, '');
-            text = text.replace(/[0-9]/g, '');
-            if (text.trim().indexOf(i18n(API.STEALTH_ID_LANG_SKILL).toLowerCase()) !== -1) {
-              isStealth = true;
-              break;
-            }
-          }
-        }
+        enabledSkill = <CVSkillData>checkIfAtLeastAEnabledSkillIsFoundedOnChatMessage(fullTextContent);
       }
 
-      if (isStealth) {
+      if (enabledSkill) {
         //@ts-ignore
-        let valStealthRoll = parseInt(rollChatTotal);
-        if (!is_real_number(valStealthRoll)) {
-          valStealthRoll = 0;
+        let valSkillRoll = parseInt(rollChatTotal);
+        if (!is_real_number(valSkillRoll)) {
+          valSkillRoll = 0;
         }
 
-        const senseId = AtcvEffectSenseFlags.NONE;
-        const conditionId = AtcvEffectConditionFlags.HIDDEN;
+        // const senseId = AtcvEffectSenseFlags.NONE;
+        // const conditionId = AtcvEffectConditionFlags.HIDDEN;
 
         const selectedToken = sourceToken;
         // for (const selectedToken of selectedTokens) {
         // if (!selectedToken) {
         //   continue;
         // }
-        const setAeToRemove = new Set<string>();
-        const actorEffects = <EmbeddedCollection<typeof ActiveEffect, ActorData>>selectedToken.actor?.data.effects;
-        if (senseId != AtcvEffectSenseFlags.NONE && senseId != AtcvEffectSenseFlags.NORMAL) {
-          const effect = <Effect>await ConditionalVisibilityEffectDefinitions.effect(senseId);
-          if (effect) {
-            if (valStealthRoll == 0) {
-              // await API.removeEffectOnToken(selectedToken.id, i18n(<string>effect?.name));
-              const effectToRemove = <ActiveEffect>(
-                actorEffects.find((activeEffect) =>
-                  isStringEquals(<string>activeEffect?.data?.label, <string>effect?.name),
-                )
-              );
-              if (effectToRemove) {
-                setAeToRemove.add(<string>effectToRemove.id);
-              }
-              await repairAndUnSetFlag(selectedToken, senseId);
-            } else {
-              const atcvEffectFlagData = AtcvEffect.fromEffect(selectedToken.document, effect);
-              atcvEffectFlagData.visionLevelValue = valStealthRoll;
-              await repairAndSetFlag(selectedToken, senseId, atcvEffectFlagData);
-            }
-          } else {
-            warn(`Can't find effect definition for '${senseId}'`, true);
-          }
+        if (game.settings.get(CONSTANTS.MODULE_NAME, 'autoSkillsSkipDialog')) {
+          manageActiveEffectForAutoSkillsFeature(<CVSkillData>enabledSkill, selectedToken, valSkillRoll);
+        }else{
+          const isSense = enabledSkill.senseData?.conditionType === 'sense' ? true : false;
+          const dialog = new Dialog({
+            title: isSense
+              ? i18n(`${CONSTANTS.MODULE_NAME}.windows.dialogs.addsense.title`)
+              : i18n(`${CONSTANTS.MODULE_NAME}.windows.dialogs.addcondition.title`),
+            content:  isSense
+              ? i18nFormat(`${CONSTANTS.MODULE_NAME}.windows.dialogs.addsense.areyousure`, { sense: i18n(enabledSkill.name), name: i18n(selectedToken.name)})
+              : i18nFormat(`${CONSTANTS.MODULE_NAME}.windows.dialogs.addcondition.areyousure`, { condition: i18n(enabledSkill.name), name: i18n(selectedToken.name) }),
+            render: (html: JQuery<HTMLElement>) => {
+              // do nothing
+            },
+            buttons: {
+              delete: {
+                icon: '<i class="fas fa-check"></i>',
+                label: i18n(`${CONSTANTS.MODULE_NAME}.windows.dialogs.confirm.apply.choice.add`),
+                callback: async (html) => {
+                  manageActiveEffectForAutoSkillsFeature(<CVSkillData>enabledSkill, selectedToken, valSkillRoll);
+                },
+              },
+              donothing: {
+                icon: '<i class="fas fa-times"></i>',
+                label: i18n(`${CONSTANTS.MODULE_NAME}.windows.dialogs.confirm.apply.choice.donothing`),
+                callback: (html) => {
+                  // Do nothing
+                },
+              },
+            },
+            default: 'donothing',
+          });
+          dialog.options.height = 150;
+          dialog.position.height = 150;
+          return dialog;
         }
-        //@ts-ignore
-        if (conditionId != AtcvEffectConditionFlags.NONE) {
-          const effect = <Effect>await ConditionalVisibilityEffectDefinitions.effect(conditionId);
-          if (effect) {
-            if (valStealthRoll == 0) {
-              // await API.removeEffectOnToken(selectedToken.id, i18n(<string>effect?.name));
-              const effectToRemove = <ActiveEffect>(
-                actorEffects.find((activeEffect) =>
-                  isStringEquals(<string>activeEffect?.data?.label, <string>effect?.name),
-                )
-              );
-              if (effectToRemove) {
-                setAeToRemove.add(<string>effectToRemove.id);
-              }
-              await repairAndUnSetFlag(selectedToken, conditionId);
-            } else {
-              const atcvEffectFlagData = AtcvEffect.fromEffect(selectedToken.document, effect);
-              atcvEffectFlagData.visionLevelValue = valStealthRoll;
-              await repairAndSetFlag(selectedToken, conditionId, atcvEffectFlagData);
-            }
-          } else {
-            warn(`Can't find effect definition for '${conditionId}'`, true);
-          }
-        }
-        // FINALLY REMVE ALL THE ACTIVE EFFECT
-        if (setAeToRemove.size > 0) {
-          API.removeEffectFromIdOnTokenMultiple(<string>selectedToken.id, Array.from(setAeToRemove));
-        }
-        // }
+
       }
     }
     /*

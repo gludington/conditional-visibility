@@ -1,5 +1,5 @@
 import { ConditionalVisibilityEffectDefinitions } from '../conditional-visibility-effect-definition';
-import { AtcvEffectSenseFlags, AtcvEffectConditionFlags, SenseData } from '../conditional-visibility-models';
+import { AtcvEffectSenseFlags, AtcvEffectConditionFlags, SenseData, CVSkillData } from '../conditional-visibility-models';
 import CONSTANTS from '../constants';
 import type Effect from '../effects/effect';
 
@@ -93,6 +93,19 @@ export default {
       conditionBlinded: false,
       conditionBlindedOverride: false,
     },
+    // Skills sense
+    {
+      id: 'perception',
+      name: 'PF2E.ActionsCheck.perception',
+      path: ``,
+      img: `/modules/${CONSTANTS.MODULE_NAME}/icons/skills/perception.svg`,
+      conditionType: 'sense',
+      conditionSources: <string[]>[],
+      conditionTargets: <string[]>[],
+      conditionElevation: false,
+      conditionBlinded: false,
+      conditionBlindedOverride: false,
+    },
   ],
   CONDITIONS: <SenseData[]>[
     {
@@ -166,6 +179,72 @@ export default {
       conditionBlinded: false,
       conditionBlindedOverride: false,
     },
+    // Skills condition
+    {
+      id: 'stealth',
+      name: 'PF2E.ActionsCheck.stealth',
+      path: ``,
+      img: `/modules/${CONSTANTS.MODULE_NAME}/icons/skills/stealth.svg`,
+      conditionType: 'condition',
+      conditionSources: <string[]>['perception'],
+      conditionTargets: <string[]>[],
+      conditionElevation: false,
+      conditionBlinded: false,
+      conditionBlindedOverride: false,
+    },
   ],
   EFFECTS: <Effect[]>[],
+  SKILLS: <CVSkillData[]>[
+    { id: 'acrobatics', name: 'PF2E.ActionsCheck.acrobatics', icon: `/modules/${CONSTANTS.MODULE_NAME}/icons/skills/acrobatics.svg`, enable: false, senseData: null },
+    { id: 'arcana', name: 'PF2E.ActionsCheck.arcana', icon: `/modules/${CONSTANTS.MODULE_NAME}/icons/skills/arcana.svg`, enable: false, senseData: null },
+    { id: 'athletics', name: 'PF2E.ActionsCheck.athletics', icon: `/modules/${CONSTANTS.MODULE_NAME}/icons/skills/athletics.svg`, enable: false, senseData: null },
+    { id: 'crafting', name: 'PF2E.ActionsCheck.crafting', icon: `/modules/${CONSTANTS.MODULE_NAME}/icons/skills/crafting.svg`, enable: false, senseData: null },
+    { id: 'deception', name: 'PF2E.ActionsCheck.deception', icon: `/modules/${CONSTANTS.MODULE_NAME}/icons/skills/deception.svg`, enable: false, senseData: null },
+    { id: 'diplomacy', name: 'PF2E.ActionsCheck.diplomacy', icon: `/modules/${CONSTANTS.MODULE_NAME}/icons/skills/diplomacy.svg`, enable: false, senseData: null },
+    { id: 'intimidation', name: 'PF2E.ActionsCheck.intimidation', icon: `/modules/${CONSTANTS.MODULE_NAME}/icons/skills/intimidation.svg`, enable: false, senseData: null },
+    { id: 'medicine', name: 'PF2E.ActionsCheck.medicine', icon: `/modules/${CONSTANTS.MODULE_NAME}/icons/skills/medicine.svg`, enable: false, senseData: null },
+    { id: 'nature', name: 'PF2E.ActionsCheck.nature', icon: `/modules/${CONSTANTS.MODULE_NAME}/icons/skills/nature.svg`, enable: false, senseData: null },
+    { id: 'occultism', name: 'PF2E.ActionsCheck.occultism', icon: `/modules/${CONSTANTS.MODULE_NAME}/icons/skills/occultism.svg`, enable: false, senseData: null },
+    {
+      id: 'perception',
+      name: 'PF2E.ActionsCheck.perception',
+      icon: `/modules/${CONSTANTS.MODULE_NAME}/icons/skills/perception.svg`,
+      enable: false,
+      senseData: {
+        id: 'perception',
+        name: 'PF2E.ActionsCheck.perception',
+        path: ``,
+        img: `/modules/${CONSTANTS.MODULE_NAME}/icons/skills/perception.svg`,
+        conditionType: 'sense',
+        conditionSources: <string[]>[],
+        conditionTargets: <string[]>[],
+        conditionElevation: false,
+        conditionBlinded: false,
+        conditionBlindedOverride: false,
+      },
+    },
+    { id: 'performance', name: 'PF2E.ActionsCheck.performance', icon: `/modules/${CONSTANTS.MODULE_NAME}/icons/skills/performance.svg`, enable: false, senseData: null },
+    { id: 'religion', name: 'PF2E.ActionsCheck.religion', icon: `/modules/${CONSTANTS.MODULE_NAME}/icons/skills/religion.svg`, enable: false, senseData: null },
+    { id: 'society', name: 'PF2E.ActionsCheck.society', icon: `/modules/${CONSTANTS.MODULE_NAME}/icons/skills/society.svg`, enable: false, senseData: null },
+    {
+      id: 'stealth',
+      name: 'PF2E.ActionsCheck.stealth',
+      icon: `/modules/${CONSTANTS.MODULE_NAME}/icons/skills/stealth.svg`,
+      enable: true,
+      senseData: {
+        id: 'stealth',
+        name: 'PF2E.ActionsCheck.stealth',
+        path: ``,
+        img: `/modules/${CONSTANTS.MODULE_NAME}/icons/skills/stealth.svg`,
+        conditionType: 'condition',
+        conditionSources: <string[]>['perception'],
+        conditionTargets: <string[]>[],
+        conditionElevation: false,
+        conditionBlinded: false,
+        conditionBlindedOverride: false,
+      },
+    },
+    { id: 'survival', name: 'PF2E.ActionsCheck.survival', icon: `/modules/${CONSTANTS.MODULE_NAME}/icons/skills/survival.svg`, enable: false, senseData: null },
+    { id: 'thievery', name: 'PF2E.ActionsCheck.thievery', icon: `/modules/${CONSTANTS.MODULE_NAME}/icons/skills/thievery.svg`, enable: false, senseData: null },
+  ]
 };

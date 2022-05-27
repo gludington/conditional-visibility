@@ -1,6 +1,12 @@
 {
   "conditional-visibility.setting.autoStealth.name": "Auto hide on 'stealth' rolls",
-  "conditional-visibility.setting.autoStealth.hint": "[This is system dependent] On supported game systems, set the 'hidden' condition on a token's 'stealth' roll. NOTE: Is very hard to make the auto stealth work with other modules like token action hud, LMRTFY or similar module in a multisystem environment without specific hooks, so now i just rendered the result roll on the chat message and hope everything is working like expected, so if no chat is been rendered on the client side no stealth effect is applied and you are force to use the token hud feature.",
+  "conditional-visibility.setting.autoStealth.hint": "[This is system dependent] On supported game systems, set the 'hidden' sense/condition on a token's 'stealth' roll. NOTE: Is very hard to make the auto stealth work with other modules like token action hud, LMRTFY or similar module in a multisystem environment without specific hooks, so now i just rendered the result roll on the chat message and hope everything is working like expected, so if no chat is been rendered on the client side no stealth effect is applied and you are force to use the token hud feature.",
+
+  "conditional-visibility.setting.autoSkills.name": "Auto apply effect for pre configured skills",
+  "conditional-visibility.setting.autoSkills.hint": "[This is system dependent] On supported game systems, set the pre configured sense/condition on token's pre configured skills like 'stealth' and 'perception' roll. NOTE: Is very hard to make the 'auto skills' to work with other modules like 'token action hud', 'LMRTFY' or similar module in a multisystem environment without specific hooks, so now i just rendered the result roll on the chat message and hope everything is working like expected, so if no chat is been rendered on the client side no stealth effect is applied and you are force to use the token hud feature.",
+
+  "conditional-visibility.setting.autoSkillsSkipDialog.name": "Skip dialog confirmation for 'Auto apply pre configured skills'",
+  "conditional-visibility.setting.autoSkillsSkipDialog.hint": "Make sense only with module setting 'Auto apply effect for pre configured skills' enabled, it will skip the dialog confirmation, is not advisable to disable this.",
 
   "conditional-visibility.setting.autoPerception.name": "Auto show on 'perception' rolls",
   "conditional-visibility.setting.autoPerception.hint": "[This is system dependent] On supported game systems, set the 'perception' condition on a token's 'perception' roll. NOTE: Is very hard to make the auto 'perception' work with other modules like token action hud, LMRTFY or similar module in a multisystem environment without specific hooks, so now i just rendered the result roll on the chat message and hope everything is working like expected, so if no chat is been rendered on the client side no stealth effect is applied and you are force to use the token hud feature.",
@@ -70,6 +76,7 @@
 
   "conditional-visibility.token.config.datausestealthpassive.notes2": "NOTE: If the checkbox is check, but no AE with name 'Stealthed' is applied on the actor uncheck and recheck this checkbox for refresh the actor.",
   "conditional-visibility.token.config.datausestealthpassive.notes3": "NOTE: If the 'Hidden' condition is applied on this token the condition 'Stealthed' is ignored for the concept \"active stealth\" is used instead \"passive stealth\".",
+  "conditional-visibility.token.config.noeditmessage": "NOTE: For foundryvtt 9 there is no editing mechanism for the effects already existing at the token configuration level, simply because you can edit directly the active effects to make your own customizations, anyone can help with some PR for enrich this.",
 
   "conditional-visibility.windows.dialogs.addsense.title": "Add new sense",
   "conditional-visibility.windows.dialogs.addcondition.title": "Add new condition",
@@ -78,27 +85,32 @@
   "conditional-visibility.windows.dialogs.confirm.apply.choice.delete": "Delete",
   "conditional-visibility.windows.dialogs.deletesense.title": "Delete sense",
   "conditional-visibility.windows.dialogs.deletecondition.title": "Delete condition",
-  "conditional-visibility.token.config.noeditmessage": "NOTE: For foundryvtt 9 there is no editing mechanism for the effects already existing at the token configuration level, simply because you can edit directly the active effects to make your own customizations, anyone can help with some PR for enrich this.",
+
+  "conditional-visibility.windows.dialogs.addsense.areyousure": "Are you sure to apply the sense '{sense}' to {name} ?",
+  "conditional-visibility.windows.dialogs.addcondition.areyousure": "Are you sure to apply the condition '{condition}' to {name} ?",
 
   "conditional-visibility.token.config.addnewcondition": "Add new condition",
   "conditional-visibility.token.config.addnewsense": "Add new sense",
   "conditional-visibility.token.config.deletecondition": "Delete condition",
   "conditional-visibility.token.config.deletesense": "Delete sense",
 
-  "conditional-visibility.token.config.conditionValue": "The numeric value assoicated to the id of the current sense/condition used on the checker",
+  "conditional-visibility.token.config.conditionValue": "The numeric value associated to the id of the current sense/condition used on the checker",
   "conditional-visibility.token.config.id": "This is the unique id used for sync all the senses and conditions (please no strange character, no whitespace and all in lowercase...)",
   "conditional-visibility.token.config.name": "This is the unique name used for sync all the senses and conditions (here you cna put any dirty character you want)",
   "conditional-visibility.token.config.path": "This is the path to the property you want to associate with this sense e.g. data.skills.prc.passive",
   "conditional-visibility.token.config.img": "String path to the image to associate to this sense",
   "conditional-visibility.token.config.conditionElevation": "if true will force to check the elevation between tokens source and target, VERY USEFUL IF YOU USE LEVELS",
-  "conditional-visibility.token.config.conditionTargets": "This is used for explicitly tell to the checker what AE Condition can be see from this AE Sense based on the custom id used from this module (you can set this but is used only from a sense effect)",
-  "conditional-visibility.token.config.conditionSources": "This is used for explicitly tell to the checker what AE Sense can be see from this AE Condition based on the custom id used from this module (you can set this but is used only from a condition effect)",
+  "conditional-visibility.token.config.conditionTargets": "This is used for explicitly tell to the checker what ALREADY EXISTENT AE Condition can be see from this AE Sense based on the custom id used from this module (you can set this but is used only from a sense effect)",
+  "conditional-visibility.token.config.conditionSources": "This is used for explicitly tell to the checker what ALREADY EXISTENT AE Sense can be see from this AE Condition based on the custom id used from this module (you can set this but is used only from a condition effect)",
   "conditional-visibility.token.config.conditionDistance": "Set a maximum distance for check the sight/vision with this effect",
   "conditional-visibility.token.config.conditionType": "Indicate the type of CV usually they are or 'sense' or 'condition' not both",
   "conditional-visibility.token.config.conditionBlinded": "If true this effect / condition is applied on the token / actor it will be evaluated for the blinded check and only another effect with 'Blinded Override' enabled",
   "conditional-visibility.token.config.conditionBlindedOverride": "If true it indicates that this effect is able to work even with the \"Blinded\" condition applied to the token",
   "conditional-visibility.token.config.conditionTargetImage": "String path to the image applied on target token and used from the source token (the one you click on) for replace the image token only for that player with a special sight, only if the CV check is true",
   "conditional-visibility.token.config.conditionSourceImage": "String path to the image applied on target token and used from the target token (the one you try to see) for replace the image token only for that player with a special sight, only if the CV check is true",
+  "conditional-visibility.token.config.conditionTargetsExplicit": "This is used for explicitly tell to the checker what NOT ALREADY EXISTENT AE Condition can be see from this AE Sense based on the custom id used from this module (you can set this but is used only from a sense effect)",
+  "conditional-visibility.token.config.conditionSourcesExplicit": "This is used for explicitly tell to the checker what NOT ALREADY EXISTENT AE Sense can be see from this AE Condition based on the custom id used from this module (you can set this but is used only from a condition effect)",
+
 
   "conditional-visibility.invisible": "Invisible",
   "conditional-visibility.obscured": "Obscured",

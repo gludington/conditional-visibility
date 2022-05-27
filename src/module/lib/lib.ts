@@ -18,6 +18,7 @@ import type EmbeddedCollection from '@league-of-foundry-developers/foundry-vtt-t
 import type { EffectChangeData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/data.mjs/effectChangeData';
 import type Effect from '../effects/effect.js';
 import { ConditionalVisibilityEffectDefinitions } from '../conditional-visibility-effect-definition.js';
+import { EffectSupport } from '../effects/effect-support';
 
 // =============================
 // Module Generic function
@@ -951,6 +952,24 @@ function _getCVFromToken(
   // }
 }
 
+export function retrieveEffectChangeDataFromSenseData(senseData: SenseData, visionLevelValue: number, isDisabled:boolean):EffectChangeData[]{
+  const atcvEffect = AtcvEffect.fromSenseData(senseData, visionLevelValue, isDisabled);
+  const effect = AtcvEffect.toEffectFromAtcvEffect(atcvEffect);
+  const effectChanges: EffectChangeData[] = EffectSupport._handleIntegrations(effect) || [];
+  return effectChanges;
+}
+
+export function retrieveEffectChangeDataFromAtcvEffect(atcvEffect: AtcvEffect):EffectChangeData[]{
+  const effect = AtcvEffect.toEffectFromAtcvEffect(atcvEffect);
+  const effectChanges: EffectChangeData[] = EffectSupport._handleIntegrations(effect) || [];
+  return effectChanges;
+}
+
+export function retrieveEffectChangeDataFromEffect(effect: Effect,):EffectChangeData[]{
+  const effectChanges: EffectChangeData[] = EffectSupport._handleIntegrations(effect) || [];
+  return effectChanges;
+}
+
 export function retrieveAtcvEffectFromActiveEffect(
   tokenDocument: TokenDocument,
   effectChanges: EffectChangeData[],
@@ -1699,6 +1718,7 @@ export async function repairAndUnSetFlag(token: Token, key: string) {
         !a.visionIsDisabled
       );
     });
+    
     if (isSense) {
       await token.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES, data);
     } else if (isCondition) {
@@ -2190,7 +2210,7 @@ export async function _registerSenseData(
 
   // Register new effect
   const atcvEffcetX = AtcvEffect.fromSenseData(senseData, 0, false);
-  const effectExternal = AtcvEffect.toEffect(atcvEffcetX);
+  const effectExternal = AtcvEffect.toEffectFromAtcvEffect(atcvEffcetX);
   let newEffectsData: Effect[] = API.EFFECTS || [];
   let effectFounded = !!API.EFFECTS.find((effect: Effect) => {
     return isStringEquals(effect.name, effectExternal.name) || isStringEquals(effect.customId, effectExternal.customId);
@@ -2825,7 +2845,7 @@ export async function manageActiveEffectForAutoSkillsFeature(enabledSkill:CVSkil
   const actorEffects = <EmbeddedCollection<typeof ActiveEffect, ActorData>>selectedToken.actor?.data.effects;
   if (enabledSkill.senseData?.conditionType === 'sense') {
     const senseId = enabledSkill.senseData.id;
-    const effect = AtcvEffect.toEffect(AtcvEffect.fromSenseData(enabledSkill.senseData, valSkillRoll, false));
+    const effect = AtcvEffect.toEffectFromAtcvEffect(AtcvEffect.fromSenseData(enabledSkill.senseData, valSkillRoll, false));
     //const effect = <Effect>await ConditionalVisibilityEffectDefinitions.effect(senseId);
     if (effect) {
       if (valSkillRoll == 0 || valSkillRoll < -1) {
@@ -2851,7 +2871,7 @@ export async function manageActiveEffectForAutoSkillsFeature(enabledSkill:CVSkil
   //@ts-ignore
   if (enabledSkill.senseData?.conditionType === 'condition') {
     const conditionId = enabledSkill.senseData.id;
-    const effect = AtcvEffect.toEffect(AtcvEffect.fromSenseData(enabledSkill.senseData, valSkillRoll, false));
+    const effect = AtcvEffect.toEffectFromAtcvEffect(AtcvEffect.fromSenseData(enabledSkill.senseData, valSkillRoll, false));
     //const effect = <Effect>await ConditionalVisibilityEffectDefinitions.effect(conditionId);
     if (effect) {
       if (valSkillRoll == 0) {

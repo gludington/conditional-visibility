@@ -1,7 +1,7 @@
 import type { ActiveEffectDataProperties } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/data.mjs/activeEffectData';
 import type { EffectChangeData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/data.mjs/effectChangeData';
 import type { PropertiesToSource } from '@league-of-foundry-developers/foundry-vtt-types/src/types/helperTypes';
-import { duplicateExtended, i18n } from '../lib/lib';
+import { duplicateExtended, i18n, isStringEquals } from '../lib/lib';
 import Effect, { Constants } from './effect';
 
 export class EffectSupport {
@@ -46,12 +46,13 @@ export class EffectSupport {
   }
 
   static isDuplicateEffectChange(aeKey: string, arrChanges: EffectChangeData[]) {
-    const valueArr = arrChanges.map(function (item) {
-      return item.key === aeKey;
-    });
-    const isDuplicate = valueArr.some(function (item, idx) {
-      return valueArr.indexOf(item) != idx;
-    });
+    let isDuplicate = false;
+    for(const aec of arrChanges){
+      if(isStringEquals(aec.key,aeKey)){
+        isDuplicate = true;
+        break;
+      }
+    }
     return isDuplicate;
   }
 

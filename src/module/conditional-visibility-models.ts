@@ -363,6 +363,9 @@ export class AtcvEffect {
       undefined,
       effect.isDisabled,
     );
+    if(!res.visionId && effect.customId){
+      res.visionId = effect.customId;
+    }
     /*
     let sensesOrConditions: SenseData[] = [];
     sensesOrConditions.push(...API.SENSES);
@@ -404,7 +407,7 @@ export class AtcvEffect {
     return res;
   }
 
-  static toEffect(res: AtcvEffect): Effect {
+  static toEffectFromAtcvEffect(res: AtcvEffect): Effect {
     const visionLevel = res.visionLevelValue;
     const nameOrCustomId = res.visionId;
     const isSense = res.visionType && res.visionType === 'sense' ? true : false;
@@ -417,7 +420,7 @@ export class AtcvEffect {
     changesTmp.push(<any>{
       key: 'ATCV.' + nameOrCustomId,
       mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
-      value: 0,
+      value: visionLevel ?? 0,
       priority: 5,
     });
     changesTmp.push({
@@ -491,9 +494,14 @@ export class AtcvEffect {
       });
     }
 
+    let nameToUse = res.visionName;
+    if (!nameToUse.endsWith('(CV)')) {
+      nameToUse = nameToUse + ' (CV)';
+    }
+
     const effect = new Effect({
       customId: res.visionId,
-      name: res.visionName,
+      name: nameToUse,
       description: '',
       icon: res.visionIcon,
       tint: '',

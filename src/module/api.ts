@@ -16,6 +16,8 @@ import {
   repairAndSetFlag,
   repairAndUnSetFlag,
   retrieveAtcvVisionLevelKeyFromChanges,
+  retrieveEffectChangeDataFromAtcvEffect,
+  retrieveEffectChangeDataFromSenseData,
   shouldIncludeVisionV2,
   warn,
   _registerSenseData,
@@ -894,6 +896,7 @@ const API = {
         if (!dfredEffect.atcvChanges) {
           dfredEffect.atcvChanges = [];
         }
+        /*
         changesTmp = EffectSupport._handleIntegrations(dfredEffect);
         changesTmp = changesTmp.filter((c) => !c.key.startsWith(`data.`));
         if (senseDataEffect.visionDistanceValue && senseDataEffect.visionDistanceValue > 0) {
@@ -911,6 +914,8 @@ const API = {
             break;
           }
         }
+        */
+        
         if (!foundedFlagVisionValue) {
           for (const obj of changesTmp) {
             if (
@@ -963,6 +968,7 @@ const API = {
         );
       });
       if (senseOrCondition) {
+        /*
         changesTmp = <any[]>[
           {
             key: 'ATCV.' + senseOrCondition.visionId,
@@ -980,6 +986,8 @@ const API = {
             priority: 5,
           });
         }
+        */
+        changesTmp = retrieveEffectChangeDataFromAtcvEffect(senseDataEffect);
         effect = EffectSupport.buildDefault(
           senseOrCondition.visionId,
           senseOrCondition.visionName,
@@ -991,6 +999,7 @@ const API = {
           changesTmp,
         );
       } else {
+        /*
         changesTmp = <any[]>[
           {
             key: 'ATCV.' + senseDataEffect.visionId,
@@ -1008,6 +1017,8 @@ const API = {
             priority: 5,
           });
         }
+        */
+        changesTmp = retrieveEffectChangeDataFromAtcvEffect(senseDataEffect);
         effect = EffectSupport.buildDefault(
           senseDataEffect.visionId,
           senseDataEffect.visionName,
@@ -1023,7 +1034,7 @@ const API = {
     // TODO check if we need this ??? ADDED 2022-05-22
     else if (changesTmp.length == 0) {
       info(`The use case 'changesTmp.length==0' should not be happening`);
-      const effectTmp = AtcvEffect.toEffect(senseDataEffect);
+      const effectTmp = AtcvEffect.toEffectFromAtcvEffect(senseDataEffect);
       effect.changes = effectTmp.changes;
       effect.tokenMagicChanges = effectTmp.tokenMagicChanges;
       effect.atlChanges = effectTmp.atlChanges;
@@ -1060,7 +1071,7 @@ const API = {
       if (!effectToFoundByName.endsWith('(CV)')) {
         effectToFoundByName = effectToFoundByName + ' (CV)';
       }
-      const nameToUse = effectToFoundByName ? effectToFoundByName : effect?.name;
+      let nameToUse = effectToFoundByName ? effectToFoundByName : effect?.name;
       const activeEffectFounded = <ActiveEffect>await API.findEffectByNameOnToken(<string>token.id, nameToUse);
       if (activeEffectFounded) {
         await (<EffectInterface>this.effectInterface).updateEffectFromIdOnToken(
@@ -1071,12 +1082,20 @@ const API = {
           effect,
         );
       } else {
+        if (!nameToUse.endsWith('(CV)')) {
+          nameToUse = nameToUse + ' (CV)';
+          
+        }
+        if (!effect.name.endsWith('(CV)')) {
+          effect.name = effect.name + ' (CV)';
+        }
         await (<EffectInterface>this.effectInterface).addEffectOnToken(nameToUse, <string>token.id, effect);
       }
-      // await (<EffectInterface>this.effectInterface).addEffectOnToken(nameToUse, <string>token.id, effect);
       effect.atcvChanges = AtcvEffect.retrieveAtcvChangesFromEffect(effect);
       const atcvEffectFlagData = AtcvEffect.fromEffect(token.document, effect);
       const result = atcvEffectFlagData;
+      // 2022-05-27
+      await repairAndSetFlag(token,atcvEffectFlagData.visionId,atcvEffectFlagData)
       return result;
     }
   },

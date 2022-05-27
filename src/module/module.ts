@@ -46,6 +46,8 @@ import type { ActorData } from '@league-of-foundry-developers/foundry-vtt-types/
 import { setApi } from '../conditional-visibility';
 import { EffectSupport } from './effects/effect-support';
 import HandlebarHelpers from './apps/conditional-visibility-handlebar-helper';
+import type { PropertiesToSource } from '@league-of-foundry-developers/foundry-vtt-types/src/types/helperTypes';
+import type { ActiveEffectDataProperties } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/data.mjs/activeEffectData';
 
 export const initHooks = (): void => {
   // registerSettings();
@@ -209,6 +211,9 @@ const module = {
     for (const s of senses) {
       if (s.visionId != AtcvEffectSenseFlags.NONE && s.visionId != AtcvEffectSenseFlags.NORMAL) {
         const s2: any = duplicateExtended(s);
+        if (!i18n(s2.visionName).endsWith('(CV)')) {
+          s2.visionName = i18n(s2.visionName) + ' (CV)';
+        }
         // const currentAtcvEffectFlagData = <AtcvEffect>tokenConfig.object.getFlag(CONSTANTS.MODULE_NAME, s.visionId);
         const currentAtcvEffectFlagData =
           <AtcvEffect>tokenConfig.actor.getFlag(CONSTANTS.MODULE_NAME, s.visionId) ??
@@ -350,7 +355,38 @@ const module = {
           if (!change.actor.data.flags[CONSTANTS.MODULE_NAME]) {
             change.actor.data.flags[CONSTANTS.MODULE_NAME] = {};
           }
-          change.actor.data.flags[CONSTANTS.MODULE_NAME] = change.actorData.flags[CONSTANTS.MODULE_NAME];
+          if(change.actorData && change.actorData.flags && change.actorData.flags[CONSTANTS.MODULE_NAME]){
+            change.actor.data.flags[CONSTANTS.MODULE_NAME] = change.actorData.flags[CONSTANTS.MODULE_NAME];
+          }
+        } else if(change.actorData && change.actorData.effects && change.actorData.effects.length > 0) {
+          if (!change.actor) {
+            change.actor = {};
+          }
+          if (!change.actor.data) {
+            change.actor.data = {};
+          }
+          if (!change.actor.data.flags) {
+            change.actor.data.flags = {};
+          }
+          if (!change.actor.data.flags[CONSTANTS.MODULE_NAME]) {
+            change.actor.data.flags[CONSTANTS.MODULE_NAME] = {};
+          }
+          if(change.actorData && change.actorData.flags && change.actorData.flags[CONSTANTS.MODULE_NAME]){
+            change.actor.data.flags[CONSTANTS.MODULE_NAME] = change.actorData.flags[CONSTANTS.MODULE_NAME];
+          }
+          const effectsTmp = duplicateExtended(change.actorData.effects);
+          for(const aetoken of <PropertiesToSource<ActiveEffectDataProperties>[]>document.data.actorData.effects){
+            let foundeEffect = false;
+            for(const ae of effectsTmp){
+              if(isStringEquals(aetoken.label,ae.label)){
+                foundeEffect = true;
+                break;
+              }
+            }
+            if(!foundeEffect){
+              change.actorData.effects.push(aetoken)
+            }
+          }
         } else {
           return;
         }
@@ -391,7 +427,38 @@ const module = {
         if (!change.actor.data.flags[CONSTANTS.MODULE_NAME]) {
           change.actor.data.flags[CONSTANTS.MODULE_NAME] = {};
         }
-        change.actor.data.flags[CONSTANTS.MODULE_NAME] = change.actorData.flags[CONSTANTS.MODULE_NAME];
+        if(change.actorData && change.actorData.flags && change.actorData.flags[CONSTANTS.MODULE_NAME]){
+          change.actor.data.flags[CONSTANTS.MODULE_NAME] = change.actorData.flags[CONSTANTS.MODULE_NAME];
+        }
+      } else if(change.actorData && change.actorData.effects && change.actorData.effects.length > 0) {
+        if (!change.actor) {
+          change.actor = {};
+        }
+        if (!change.actor.data) {
+          change.actor.data = {};
+        }
+        if (!change.actor.data.flags) {
+          change.actor.data.flags = {};
+        }
+        if (!change.actor.data.flags[CONSTANTS.MODULE_NAME]) {
+          change.actor.data.flags[CONSTANTS.MODULE_NAME] = {};
+        }
+        if(change.actorData && change.actorData.flags && change.actorData.flags[CONSTANTS.MODULE_NAME]){
+          change.actor.data.flags[CONSTANTS.MODULE_NAME] = change.actorData.flags[CONSTANTS.MODULE_NAME];
+        }
+        const effectsTmp = duplicateExtended(change.actorData.effects);
+        for(const aetoken of <PropertiesToSource<ActiveEffectDataProperties>[]>document.data.actorData.effects){
+          let foundeEffect = false;
+          for(const ae of effectsTmp){
+            if(isStringEquals(aetoken.label,ae.label)){
+              foundeEffect = true;
+              break;
+            }
+          }
+          if(!foundeEffect){
+            change.actorData.effects.push(aetoken)
+          }
+        }
       } else {
         return;
       }
@@ -1085,7 +1152,7 @@ const module = {
           });
           dialog.options.height = 150;
           dialog.position.height = 150;
-          return dialog;
+          dialog.render(true);
         }
 
       }

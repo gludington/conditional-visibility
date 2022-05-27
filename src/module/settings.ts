@@ -296,7 +296,7 @@ function defaultSettings(apply = false) {
       hint: `${CONSTANTS.MODULE_NAME}.setting.skills.hint`,
       scope: 'world',
       config: false,
-      default: apply && SYSTEMS.DATA ? SYSTEMS.DATA.EFFECTS : [],
+      default: apply && SYSTEMS.DATA ? SYSTEMS.DATA.SKILLS : [],
       type: Array,
     },
     npcType: {

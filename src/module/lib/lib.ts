@@ -1168,8 +1168,11 @@ export function retrieveAtcvEffectFromActiveEffect(
 
   atcvEffect.visionIsDisabled = String(isDisabled) === 'true' ? true : false;
 
-  return AtcvEffect.mergeWithSensedataDefault(atcvEffect);
-  //return atcvEffect;
+  const atcvEffect2 = AtcvEffect.mergeWithSensedataDefault(atcvEffect);
+  if (!atcvEffect2.visionName.endsWith('(CV)')) {
+    atcvEffect2.visionName = atcvEffect2.visionName + ' (CV)';
+  }
+  return atcvEffect2;
 }
 
 /**

@@ -16,6 +16,7 @@ import {
   getSensesFromToken,
   i18n,
   i18nFormat,
+  info,
   isStringEquals,
   is_real_number,
   manageActiveEffectForAutoSkillsFeature,
@@ -755,7 +756,7 @@ const module = {
     }
     const sourceToken = tokenArray[0];
     */
-    let isDisabledUpdated = false;
+    // let isDisabledUpdated = false;
     if (!options?.changes) {
       if (isRemoved) {
         const senseOrCondition = (await getAllDefaultSensesAndConditions(sourceToken)).find((sense) => {
@@ -1028,6 +1029,7 @@ const module = {
           //@ts-ignore
           const effectFounded = <Effect>game.dfreds.effectInterface.findCustomEffectByName(effectToFoundByName);
           if (!effectFounded) {
+            info(`ATTENTION the module 'DFreds Convenient Effects' has a effect with name '${effectToFoundByName}', so we use thate, edit that effect if you want to apply a customize solution`); 
             const origin = undefined;
             const overlay = false;
             const disabled = false;

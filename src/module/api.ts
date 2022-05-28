@@ -893,11 +893,13 @@ const API = {
       //@ts-ignore
       const dfredEffect = <Effect>await game.dfreds.effectInterface.findCustomEffectByName(effectToFoundByName);
       if (dfredEffect) {
+        info(`ATTENTION the module 'DFreds Convenient Effects' has a effect with name '${effectToFoundByName}', so we use thate, edit that effect if you want to apply a customize solution`, true)
         let foundedFlagVisionValue = false;
         if (!dfredEffect.atcvChanges) {
           dfredEffect.atcvChanges = [];
         }
         changesTmp = retrieveEffectChangeDataFromEffect(dfredEffect);
+        changesTmp = changesTmp.filter((c) => !c.key.startsWith(`data.`));
         /*
         changesTmp = EffectSupport._handleIntegrations(dfredEffect);
         changesTmp = changesTmp.filter((c) => !c.key.startsWith(`data.`));

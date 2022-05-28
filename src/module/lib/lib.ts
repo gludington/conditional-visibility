@@ -2667,7 +2667,7 @@ export async function renderDialogRegisterSenseData(
           senseData.conditionTargets = <string[]>$(`[name="conditional-visibility-conditionTargets"]`).val() || [];
 
           const conditionTargetsExplicit = <string>$(`[name="conditional-visibility-conditionTargets-explicit"]`).val();
-          if(conditionTargetsExplicit && conditionTargetsExplicit.includes(',')){
+          if(conditionTargetsExplicit){
             const arr = conditionTargetsExplicit.split(',');
             for(const a of arr){
               if(a){
@@ -2679,7 +2679,7 @@ export async function renderDialogRegisterSenseData(
           senseData.conditionSources = <string[]>$(`[name="conditional-visibility-conditionSources"]`).val() || [];
 
           const conditionSourcesExplicit = <string>$(`[name="conditional-visibility-conditionSources-explicit"]`).val();
-          if(conditionSourcesExplicit && conditionSourcesExplicit.includes(',')){
+          if(conditionSourcesExplicit){
             const arr = conditionSourcesExplicit.split(',');
             for(const a of arr){
               if(a){

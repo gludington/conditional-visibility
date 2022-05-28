@@ -108,8 +108,8 @@
   "conditional-visibility.token.config.conditionBlindedOverride": "If true it indicates that this effect is able to work even with the \"Blinded\" condition applied to the token",
   "conditional-visibility.token.config.conditionTargetImage": "String path to the image applied on target token and used from the source token (the one you click on) for replace the image token only for that player with a special sight, only if the CV check is true",
   "conditional-visibility.token.config.conditionSourceImage": "String path to the image applied on target token and used from the target token (the one you try to see) for replace the image token only for that player with a special sight, only if the CV check is true",
-  "conditional-visibility.token.config.conditionTargetsExplicit": "This is used for explicitly tell to the checker what NOT ALREADY EXISTENT AE Condition can be see from this AE Sense based on the custom id used from this module (you can set this but is used only from a sense effect)",
-  "conditional-visibility.token.config.conditionSourcesExplicit": "This is used for explicitly tell to the checker what NOT ALREADY EXISTENT AE Sense can be see from this AE Condition based on the custom id used from this module (you can set this but is used only from a condition effect)",
+  "conditional-visibility.token.config.conditionTargets-explicit": "This is used for explicitly tell to the checker what NOT ALREADY EXISTENT AE Condition can be see from this AE Sense based on the custom id used from this module (you can set this but is used only from a sense effect)",
+  "conditional-visibility.token.config.conditionSources-explicit": "This is used for explicitly tell to the checker what NOT ALREADY EXISTENT AE Sense can be see from this AE Condition based on the custom id used from this module (you can set this but is used only from a condition effect)",
 
 
   "conditional-visibility.invisible": "Invisible (CV)",

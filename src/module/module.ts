@@ -269,7 +269,7 @@ const module = {
         event.preventDefault();
         event.stopPropagation();
         const buttonClick = event.button; // 0 left click
-        (await renderDialogRegisterSenseData(true, senses, conditions)).render(true);
+        (await renderDialogRegisterSenseData(true, senses, conditions)).render(false);
       });
 
     $(html)
@@ -278,7 +278,7 @@ const module = {
         event.preventDefault();
         event.stopPropagation();
         const buttonClick = event.button; // 0 left click
-        (await renderDialogRegisterSenseData(false, senses, conditions)).render(true);
+        (await renderDialogRegisterSenseData(false, senses, conditions)).render(false);
       });
 
     $(html)
@@ -287,7 +287,7 @@ const module = {
         event.preventDefault();
         event.stopPropagation();
         const buttonClick = event.button; // 0 left click
-        (await renderDialogUnRegisterSenseData(true, senses, conditions)).render(true);
+        (await renderDialogUnRegisterSenseData(true, senses, conditions)).render(false);
       });
 
     $(html)
@@ -296,7 +296,7 @@ const module = {
         event.preventDefault();
         event.stopPropagation();
         const buttonClick = event.button; // 0 left click
-        (await renderDialogUnRegisterSenseData(false, senses, conditions)).render(true);
+        (await renderDialogUnRegisterSenseData(false, senses, conditions)).render(false);
       });
   },
   async updateActor(document: TokenDocument, changeOri, options, userId) {
@@ -446,7 +446,10 @@ const module = {
           const atcvValue = <number>atcveEffect.visionLevelValue;
           // const atcvValue = retrieveAtcvVisionLevelValueFromActiveEffect(sourceToken,changesTmp)
           if (atcvValue == 0 || atcvValue <= -1 || !atcvValue) {
-            const effectNameToCheckOnActor = i18n(<string>atcveEffect?.visionName);
+            let effectNameToCheckOnActor = i18n(<string>atcveEffect?.visionName);
+            if (!effectNameToCheckOnActor.endsWith('(CV)')) {
+              effectNameToCheckOnActor = effectNameToCheckOnActor + ' (CV)';
+            }
             const activeEffectToRemove = <ActiveEffect>(
               await API.findEffectByNameOnToken(<string>sourceToken.id, effectNameToCheckOnActor)
             );
@@ -495,26 +498,29 @@ const module = {
           continue;
         }
         if (senseOrConditionIdKey.includes('-=')) {
-          // 2022-05-28
-          /*
+          // 2022-05-29
+          
           const visionIdTmp = senseOrConditionIdKey.replace('-=','');
           // Make sure to remove anything with value 0
           for (const senseData of await getAllDefaultSensesAndConditions(sourceToken)) {
             if (senseData.visionId === visionIdTmp) {
-              const effectNameToCheckOnActor = i18n(<string>senseData?.visionName);
+              let effectNameToCheckOnActor = i18n(<string>senseData?.visionName);
+              if (!effectNameToCheckOnActor.endsWith('(CV)')) {
+                effectNameToCheckOnActor = effectNameToCheckOnActor + ' (CV)';
+              }
               const activeEffectToRemove = <ActiveEffect>(
                 await API.findEffectByNameOnToken(<string>sourceToken.id, effectNameToCheckOnActor)
               );
               if (activeEffectToRemove) {
                 const actveValue = senseOrConditionValue?.visionLevelValue ?? 0;
                 if (actveValue === 0 || actveValue === null || actveValue === undefined || !actveValue) {
-                  //await API.removeEffectFromIdOnToken(<string>sourceToken.id, <string>activeEffectToRemove.id);
-                  setAeToRemove.add(<string>activeEffectToRemove.id);
+                  await API.removeEffectFromIdOnToken(<string>sourceToken.id, <string>activeEffectToRemove.id);
+                  //setAeToRemove.add(<string>activeEffectToRemove.id);
                 }
               }
             }
           }
-          */
+          
           continue;
         }
         if (
@@ -596,7 +602,10 @@ const module = {
           // Make sure to remove anything with value 0
           for (const senseData of await getAllDefaultSensesAndConditions(sourceToken)) {
             if (senseData.visionId === senseOrConditionIdKey) {
-              const effectNameToCheckOnActor = i18n(<string>senseData?.visionName);
+              let effectNameToCheckOnActor = i18n(<string>senseData?.visionName);
+              if (!effectNameToCheckOnActor.endsWith('(CV)')) {
+                effectNameToCheckOnActor = effectNameToCheckOnActor + ' (CV)';
+              }
               const activeEffectToRemove = <ActiveEffect>(
                 await API.findEffectByNameOnToken(<string>sourceToken.id, effectNameToCheckOnActor)
               );
@@ -687,7 +696,10 @@ const module = {
             if (String(useStealthPassive) === 'true') {
               await API.addOrUpdateEffectConditionalVisibilityOnToken(sourceToken.id, atcvEffectStealthed, false);
             } else {
-              const effectNameToCheckOnActor = i18n(<string>atcvEffectStealthed?.visionName);
+              let effectNameToCheckOnActor = i18n(<string>atcvEffectStealthed?.visionName);
+              if (!effectNameToCheckOnActor.endsWith('(CV)')) {
+                effectNameToCheckOnActor = effectNameToCheckOnActor + ' (CV)';
+              }
               const activeEffectToRemove = <ActiveEffect>(
                 await API.findEffectByNameOnToken(<string>sourceToken.id, effectNameToCheckOnActor)
               );
@@ -702,7 +714,10 @@ const module = {
         } else {
           await sourceToken.actor?.unsetFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.USE_STEALTH_PASSIVE);
           if (atcvEffectStealthed) {
-            const effectNameToCheckOnActor = i18n(<string>atcvEffectStealthed?.visionName);
+            let effectNameToCheckOnActor = i18n(<string>atcvEffectStealthed?.visionName);
+            if (!effectNameToCheckOnActor.endsWith('(CV)')) {
+              effectNameToCheckOnActor = effectNameToCheckOnActor + ' (CV)';
+            }
             const activeEffectToRemove = <ActiveEffect>(
               await API.findEffectByNameOnToken(<string>sourceToken.id, effectNameToCheckOnActor)
             );
@@ -1037,9 +1052,11 @@ const module = {
           //@ts-ignore
           const effectFounded = <Effect>game.dfreds.effectInterface.findCustomEffectByName(effectToFoundByName);
           if (!effectFounded) {
-            info(
-              `ATTENTION the module 'DFreds Convenient Effects' has a effect with name '${effectToFoundByName}', so we use thate, edit that effect if you want to apply a customize solution`,
-            );
+            if(game.user?.isGM){
+              info(
+                `ATTENTION the module 'DFreds Convenient Effects' has a effect with name '${effectToFoundByName}', so we use that, edit that effect if you want to apply a customize solution`,
+              );
+            }
             const origin = undefined;
             const overlay = false;
             const disabled = false;

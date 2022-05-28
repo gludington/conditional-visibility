@@ -893,10 +893,11 @@ const API = {
       //@ts-ignore
       const dfredEffect = <Effect>await game.dfreds.effectInterface.findCustomEffectByName(effectToFoundByName);
       if (dfredEffect) {
-        info(
-          `ATTENTION the module 'DFreds Convenient Effects' has a effect with name '${effectToFoundByName}', so we use thate, edit that effect if you want to apply a customize solution`,
-          true,
-        );
+        if(game.user?.isGM){
+          info(
+            `ATTENTION the module 'DFreds Convenient Effects' has a effect with name '${effectToFoundByName}', so we use that, edit that effect if you want to apply a customize solution`,
+          );
+        }
         let foundedFlagVisionValue = false;
         if (!dfredEffect.atcvChanges) {
           dfredEffect.atcvChanges = [];
@@ -1078,6 +1079,9 @@ const API = {
         effectToFoundByName = effectToFoundByName + ' (CV)';
       }
       let nameToUse = effectToFoundByName ? effectToFoundByName : effect?.name;
+      if (!nameToUse.endsWith('(CV)')) {
+        nameToUse = nameToUse + ' (CV)';
+      }
       const activeEffectFounded = <ActiveEffect>await API.findEffectByNameOnToken(<string>token.id, nameToUse);
       if (activeEffectFounded) {
         await (<EffectInterface>this.effectInterface).updateEffectFromIdOnToken(

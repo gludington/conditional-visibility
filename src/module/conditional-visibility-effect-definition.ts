@@ -119,9 +119,11 @@ export class ConditionalVisibilityEffectDefinitions {
           //@ts-ignore
           const dfredEffect = <Effect>await game.dfreds.effectInterface.findCustomEffectByName(effectToFoundByName);
           if (dfredEffect) {
-            info(
-              `ATTENTION the module 'DFreds Convenient Effects' has a effect with name '${effectToFoundByName}', so we use thate, edit that effect if you want to apply a customize solution`,
-            );
+            if(game.user?.isGM){
+              info(
+                `ATTENTION the module 'DFreds Convenient Effects' has a effect with name '${effectToFoundByName}', so we use that, edit that effect if you want to apply a customize solution`,
+              );
+            }
             let foundedFlagVisionValue = false;
             if (!dfredEffect.atcvChanges) {
               dfredEffect.atcvChanges = [];

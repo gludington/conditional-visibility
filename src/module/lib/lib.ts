@@ -429,7 +429,10 @@ export async function prepareActiveEffectForConditionalVisibility(
 
   // Make sure to remove anything with value 0
   for (const senseData of await getAllDefaultSensesAndConditions(sourceToken)) {
-    const effectNameToCheckOnActor = i18n(<string>senseData?.visionName);
+    let effectNameToCheckOnActor = i18n(<string>senseData?.visionName);
+    if (!effectNameToCheckOnActor.endsWith('(CV)')) {
+      effectNameToCheckOnActor = effectNameToCheckOnActor + ' (CV)';
+    }
     if (await API.hasEffectAppliedOnToken(<string>sourceToken.id, effectNameToCheckOnActor, true)) {
       const activeEffectToRemove = <ActiveEffect>(
         await API.findEffectByNameOnToken(<string>sourceToken.id, effectNameToCheckOnActor)
@@ -454,7 +457,10 @@ export async function prepareActiveEffectForConditionalVisibility(
 
   // const keysSensesFirstTime: string[] = [];
   for (const [key, sense] of visionCapabilities.retrieveSenses()) {
-    const effectNameToCheckOnActor = i18n(<string>sense.visionName);
+    let effectNameToCheckOnActor = i18n(<string>sense.visionName);
+    if (!effectNameToCheckOnActor.endsWith('(CV)')) {
+      effectNameToCheckOnActor = effectNameToCheckOnActor + ' (CV)';
+    }
     const activeEffectFounded = <ActiveEffect>(
       await API.findEffectByNameOnToken(<string>sourceToken.id, effectNameToCheckOnActor)
     );
@@ -576,7 +582,10 @@ export async function prepareActiveEffectForConditionalVisibility(
 
   // const keysConditionsFirstTime: string[] = [];
   for (const [key, condition] of visionCapabilities.retrieveConditions()) {
-    const effectNameToCheckOnActor = i18n(<string>condition.visionName);
+    let effectNameToCheckOnActor = i18n(<string>condition.visionName);
+    if (!effectNameToCheckOnActor.endsWith('(CV)')) {
+      effectNameToCheckOnActor = effectNameToCheckOnActor + ' (CV)';
+    }
     const activeEffectFounded = <ActiveEffect>(
       await API.findEffectByNameOnToken(<string>sourceToken.id, effectNameToCheckOnActor)
     );
@@ -706,6 +715,23 @@ export function getSensesFromTokenFast(
   filterValueNoZero = false,
   filterIsDisabled = false,
 ): AtcvEffect[] {
+  return _getCVFromTokenFast(tokenDocument,filterValueNoZero,filterIsDisabled,true);
+}
+
+export function getConditionsFromTokenFast(
+  tokenDocument: TokenDocument,
+  filterValueNoZero = false,
+  filterIsDisabled = false,
+): AtcvEffect[] {
+  return _getCVFromTokenFast(tokenDocument,filterValueNoZero,filterIsDisabled,false)
+}
+
+export function _getCVFromTokenFast(
+  tokenDocument: TokenDocument,
+  filterValueNoZero = false,
+  filterIsDisabled = false,
+  isSense = true,
+): AtcvEffect[] {
   // 2022-05.27
   /*
   const atcvEffects =
@@ -715,78 +741,184 @@ export function getSensesFromTokenFast(
     return getSensesFromToken(tokenDocument);
   }
   */
-  const atcvEffects = getSensesFromToken(tokenDocument);
-  if (atcvEffects.length > 0) {
-    return atcvEffects;
+  // const atcvEffects = isSense ? getSensesFromToken(tokenDocument) : getConditionsFromToken(tokenDocument);
+  const statusEffects: AtcvEffect[] = [];
+
+  // If not token is find we go back to the default preset list...
+  if (!tokenDocument) {
+    info(`No token found i get only the default registered`);
+    //return [];
+    let sensesOrConditions: SenseData[] = [];
+    if (isSense) {
+      sensesOrConditions = API.SENSES;
+    } else {
+      sensesOrConditions = API.CONDITIONS;
+    }
+    for (const senseData of sensesOrConditions) {
+      const alreadyPresent = statusEffects.find((e) => {
+        return isStringEquals(e.visionId, senseData.id);
+      });
+      if (!alreadyPresent) {
+        senseData.conditionType = isSense ? 'sense' : 'condition';
+        const atcvEffect = AtcvEffect.fromSenseData(senseData, 0);
+        if (filterValueNoZero && atcvEffect.visionLevelValue == 0) {
+          continue;
+        }
+        if (filterIsDisabled && atcvEffect.visionIsDisabled) {
+          continue;
+        }
+        if (isSense && atcvEffect.visionType === 'sense') {
+          statusEffects.push(atcvEffect);
+        } else if (!isSense && atcvEffect.visionType === 'condition') {
+          statusEffects.push(atcvEffect);
+        }
+      }
+    }
+    if(isSense){
+      return statusEffects.filter((a) => a.visionType === 'sense') ?? [];
+    }else{
+      return statusEffects.filter((a) => a.visionType === 'condition') ?? [];
+    }
+    // if (filterValueNoZero) {
+    //   return statusEffects.filter((a) => a.visionLevelValue != 0);
+    // } else {
+    //   return statusEffects;
+    // }
+  }
+
+  // A token is present
+  const actor = <Actor>tokenDocument?.actor; // <Actor>token.document?.getActor() ||
+  if (!actor) {
+    info(`No actor found for token '${tokenDocument.name}'`);
+    return [];
+  }
+  const actorEffects = <EmbeddedCollection<typeof ActiveEffect, ActorData>>actor?.data.effects;
+  //const totalEffects = <EmbeddedCollection<typeof ActiveEffect, ActorData>>actor?.data.effects.contents.filter(i => !i.data.disabled);
+  const atcvEffects = actorEffects.filter(
+    (entity) => !!entity.data.changes.find((effect) => effect.key.includes('ATCV')),
+  );
+
+  for (const effectEntity of atcvEffects) {
+    const effectNameToSet = effectEntity.name ? effectEntity.name : effectEntity.data.label;
+    if (!effectNameToSet) {
+      continue;
+    }
+    const atcvEffectTmp = retrieveAtcvEffectFromActiveEffect(
+      tokenDocument,
+      effectEntity.data.changes,
+      effectNameToSet,
+      <string>effectEntity.data.icon,
+      undefined,
+      effectEntity.data.disabled,
+    );
+
+    if (!atcvEffectTmp.visionId) {
+      continue;
+    }
+    if (filterValueNoZero && atcvEffectTmp.visionLevelValue == 0) {
+      continue;
+    }
+    if (filterIsDisabled && atcvEffectTmp.visionIsDisabled) {
+      continue;
+    }
+    const alreadyPresent = statusEffects.find((e) => {
+      return isStringEquals(e.visionId,atcvEffectTmp.visionId);
+    });
+    if (!alreadyPresent) {
+      if (isSense && atcvEffectTmp.visionType === 'sense') {
+        statusEffects.push(atcvEffectTmp);
+      } else if (!isSense && atcvEffectTmp.visionType === 'condition') {
+        statusEffects.push(atcvEffectTmp);
+      }
+    }
+  }
+
+  if (statusEffects.length > 0) {
+    return statusEffects;
   } else {
     const atcvEffectsObject = getProperty(<Actor>tokenDocument?.actor, `data.flags.${CONSTANTS.MODULE_NAME}`);
     for (const key in atcvEffectsObject) {
-      const senseIdKey = key;
+      const senseOrConditionIdKey = key;
       if (
-        // senseIdKey == ConditionalVisibilityFlags.DATA_SENSES || // 2022-05.27
-        // senseIdKey == ConditionalVisibilityFlags.DATA_CONDITIONS || // 2022-05.27
-        senseIdKey == ConditionalVisibilityFlags.FORCE_VISIBLE
+        // senseOrConditionIdKey == ConditionalVisibilityFlags.DATA_SENSES || // 2022-05.27
+        // senseOrConditionIdKey == ConditionalVisibilityFlags.DATA_CONDITIONS || // 2022-05.27
+        senseOrConditionIdKey == ConditionalVisibilityFlags.FORCE_VISIBLE
       ) {
         continue;
       }
       const senseValue = <AtcvEffect>atcvEffectsObject[key];
+
+      if (!senseValue.visionId) {
+        continue;
+      }
       if (filterValueNoZero && senseValue.visionLevelValue == 0) {
         continue;
       }
       if (filterIsDisabled && senseValue.visionIsDisabled) {
         continue;
       }
-      atcvEffects.push(senseValue);
+      
+      const alreadyPresent = statusEffects.find((e) => {
+        return isStringEquals(e.visionId,senseValue.visionId);
+      });
+      if (!alreadyPresent) {
+        if (isSense && senseValue.visionType === 'sense') {
+          statusEffects.push(senseValue);
+        } else if (!isSense && senseValue.visionType === 'condition') {
+          statusEffects.push(senseValue);
+        }
+      }
     }
-    const senses = atcvEffects.filter((a) => a.visionType === 'sense') ?? [];
-    // 2022-05.27
-    //tokenDocument.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES, senses);
-    return senses;
+    if(isSense){
+      return statusEffects.filter((a) => a.visionType === 'sense') ?? [];
+    }else{
+      return statusEffects.filter((a) => a.visionType === 'condition') ?? [];
+    }
   }
 }
 
-export function getConditionsFromTokenFast(
-  tokenDocument: TokenDocument,
-  filterValueNoZero = false,
-  filterIsDisabled = false,
-): AtcvEffect[] {
-  // 2022-05-27
-  /*
-  const atcvEffects =
-    <AtcvEffect[]>tokenDocument.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_CONDITIONS) ?? [];
-  if (atcvEffects.filter((a) => !a.visionId).length > 0) {
-    return getConditionsFromToken(tokenDocument);
-  }
-  */
-  const atcvEffects = getConditionsFromToken(tokenDocument);
-  if (atcvEffects.length > 0) {
-    return atcvEffects;
-  } else {
-    const atcvEffectsObject = getProperty(<Actor>tokenDocument?.actor, `data.flags.${CONSTANTS.MODULE_NAME}`);
-    for (const key in atcvEffectsObject) {
-      const conditionIdKey = key;
-      if (
-        //conditionIdKey == ConditionalVisibilityFlags.DATA_SENSES || // 2022-05.27
-        //conditionIdKey == ConditionalVisibilityFlags.DATA_CONDITIONS || // 2022-05.27
-        conditionIdKey == ConditionalVisibilityFlags.FORCE_VISIBLE
-      ) {
-        continue;
-      }
-      const conditionValue = <AtcvEffect>atcvEffectsObject[key];
-      if (filterValueNoZero && conditionValue.visionLevelValue == 0) {
-        continue;
-      }
-      if (filterIsDisabled && conditionValue.visionIsDisabled) {
-        continue;
-      }
-      atcvEffects.push(conditionValue);
-    }
-    const conditions = atcvEffects.filter((a) => a.visionType === 'condition') ?? [];
-    // 2022-05.27
-    //tokenDocument.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_CONDITIONS, conditions);
-    return conditions;
-  }
-}
+// export function getConditionsFromTokenFast(
+//   tokenDocument: TokenDocument,
+//   filterValueNoZero = false,
+//   filterIsDisabled = false,
+// ): AtcvEffect[] {
+//   // 2022-05-27
+//   /*
+//   const atcvEffects =
+//     <AtcvEffect[]>tokenDocument.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_CONDITIONS) ?? [];
+//   if (atcvEffects.filter((a) => !a.visionId).length > 0) {
+//     return getConditionsFromToken(tokenDocument);
+//   }
+//   */
+//   const atcvEffects = getConditionsFromToken(tokenDocument);
+//   if (atcvEffects.length > 0) {
+//     return atcvEffects;
+//   } else {
+//     const atcvEffectsObject = getProperty(<Actor>tokenDocument?.actor, `data.flags.${CONSTANTS.MODULE_NAME}`);
+//     for (const key in atcvEffectsObject) {
+//       const conditionIdKey = key;
+//       if (
+//         //conditionIdKey == ConditionalVisibilityFlags.DATA_SENSES || // 2022-05.27
+//         //conditionIdKey == ConditionalVisibilityFlags.DATA_CONDITIONS || // 2022-05.27
+//         conditionIdKey == ConditionalVisibilityFlags.FORCE_VISIBLE
+//       ) {
+//         continue;
+//       }
+//       const conditionValue = <AtcvEffect>atcvEffectsObject[key];
+//       if (filterValueNoZero && conditionValue.visionLevelValue == 0) {
+//         continue;
+//       }
+//       if (filterIsDisabled && conditionValue.visionIsDisabled) {
+//         continue;
+//       }
+//       atcvEffects.push(conditionValue);
+//     }
+//     const conditions = atcvEffects.filter((a) => a.visionType === 'condition') ?? [];
+//     // 2022-05.27
+//     //tokenDocument.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_CONDITIONS, conditions);
+//     return conditions;
+//   }
+// }
 
 export function getSensesFromToken(
   tokenDocument: TokenDocument | null,
@@ -1369,7 +1501,7 @@ export async function toggleStealth(event, app) {
     },
     default: 'close',
   });
-  hud.render(true);
+  hud.render(false);
 }
 
 export function getDistanceSightFromToken(token: Token): number {
@@ -1492,7 +1624,10 @@ export async function repairAndSetFlag(token: Token, key: string, value: AtcvEff
     return;
   }
   if (token.actor) {
-    const effectNameToCheckOnActor = i18n(<string>value.visionName);
+    let effectNameToCheckOnActor = i18n(<string>value.visionName);
+    if (!effectNameToCheckOnActor.endsWith('(CV)')) {
+      effectNameToCheckOnActor = effectNameToCheckOnActor + ' (CV)';
+    }
     const activeEffectFounded = <ActiveEffect>(
       await API.findEffectByNameOnToken(<string>token.id, effectNameToCheckOnActor)
     );
@@ -1860,9 +1995,6 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
   // 1 - Preparation of the active effect
   // =========================================
 
-  // const sourceVisionLevels:AtcvEffect[] = getSensesFromTokenFast(sourceToken.document, true, true) ?? [];
-  // const targetVisionLevels:AtcvEffect[] = getConditionsFromTokenFast(targetToken.document, true, true) ?? [];
-
   // 2022-05.27
   /*
   let sourceVisionLevels =
@@ -1888,8 +2020,8 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
     targetVisionLevels = getConditionsFromToken(targetToken.document, true, true);
   }
   */
-  let sourceVisionLevels: AtcvEffect[] = getSensesFromToken(sourceToken.document, true, true);
-  const targetVisionLevels: AtcvEffect[] = getConditionsFromToken(targetToken.document, true, true);
+  let sourceVisionLevels: AtcvEffect[] = getSensesFromTokenFast(sourceToken.document, true, true) ?? [];
+  const targetVisionLevels: AtcvEffect[] = getConditionsFromTokenFast(targetToken.document, true, true) ?? [];
 
   debug(`(3.6) '${sourceToken.data.name}' with sourceVisionLevels = ` + JSON.stringify(sourceVisionLevels, null, 4));
   debug(`(3.7) '${targetToken.data.name}' with targetVisionLevels = ` + JSON.stringify(targetVisionLevels, null, 4));
@@ -2336,7 +2468,7 @@ export function drawHandlerCVImageAll(controlledToken: Token) {
 
 export async function drawHandlerCVImage(controlledToken: Token, tokenToCheckIfIsVisible: Token) {
   if (game?.ready && game.settings.get(CONSTANTS.MODULE_NAME, 'enableDrawCVHandler')) {
-    const currentFlag = controlledToken.actor?.getFlag(
+    const currentFlag = tokenToCheckIfIsVisible.actor?.getFlag(
       CONSTANTS.MODULE_NAME,
       ConditionalVisibilityFlags.ORIGINAL_IMAGE + '_' + game.userId + '_' + tokenToCheckIfIsVisible.id,
     );
@@ -2349,7 +2481,7 @@ export async function drawHandlerCVImage(controlledToken: Token, tokenToCheckIfI
             currentFlag,
             tokenToCheckIfIsVisible.id,
           );
-          await controlledToken.actor?.unsetFlag(
+          await tokenToCheckIfIsVisible.actor?.unsetFlag(
             CONSTANTS.MODULE_NAME,
             ConditionalVisibilityFlags.ORIGINAL_IMAGE + '_' + game.userId + '_' + tokenToCheckIfIsVisible.id,
           );
@@ -2386,8 +2518,8 @@ export async function drawHandlerCVImage(controlledToken: Token, tokenToCheckIfI
     }
     */
 
-    const sourceVisionLevels = getSensesFromToken(controlledToken.document, true, true);
-    const targetVisionLevels = getConditionsFromToken(tokenToCheckIfIsVisible.document, true, true);
+    const sourceVisionLevels = getSensesFromTokenFast(controlledToken.document, true, true);
+    const targetVisionLevels = getConditionsFromTokenFast(tokenToCheckIfIsVisible.document, true, true);
 
     let foundedImageToUpdated = false;
     // TODO add priority value for set up the order
@@ -2401,7 +2533,7 @@ export async function drawHandlerCVImage(controlledToken: Token, tokenToCheckIfI
     for (const atcvEffectSource of atcvEffectsSource) {
       if (atcvEffectSource.visionTargetImage) {
         if (atcvEffectSource.visionTargetImage != tokenToCheckIfIsVisible.data.img) {
-          await controlledToken.actor?.setFlag(
+          await tokenToCheckIfIsVisible.actor?.setFlag(
             CONSTANTS.MODULE_NAME,
             ConditionalVisibilityFlags.ORIGINAL_IMAGE + '_' + game.userId + '_' + tokenToCheckIfIsVisible.id,
             tokenToCheckIfIsVisible.data.img,
@@ -2418,7 +2550,7 @@ export async function drawHandlerCVImage(controlledToken: Token, tokenToCheckIfI
       }
       // else if (atcvEffectSource.visionSourceImage) {
       //   if (atcvEffectSource.visionSourceImage != tokenToCheckIfIsVisible.data.img){
-      //     await controlledToken.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.ORIGINAL_IMAGE, tokenToCheckIfIsVisible.data.img)
+      //     await tokenToCheckIfIsVisible.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.ORIGINAL_IMAGE, tokenToCheckIfIsVisible.data.img)
       //     await conditionalVisibilitySocket.executeAsUser('drawImageByUserCV', game.userId, atcvEffectSource.visionSourceImage, tokenToCheckIfIsVisible.id);
       //     foundedImageToUpdated = true;
       //     break;
@@ -2434,7 +2566,7 @@ export async function drawHandlerCVImage(controlledToken: Token, tokenToCheckIfI
       for (const atcvEffectTarget of atcvEffectsTarget) {
         // if (atcvEffectTarget.visionTargetImage) {
         //   if(atcvEffectTarget.visionTargetImage != tokenToCheckIfIsVisible.data.img){
-        //     await controlledToken.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.ORIGINAL_IMAGE, tokenToCheckIfIsVisible.data.img)
+        //     await tokenToCheckIfIsVisible.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.ORIGINAL_IMAGE, tokenToCheckIfIsVisible.data.img)
         //     await conditionalVisibilitySocket.executeAsUser('drawImageByUserCV', game.userId, atcvEffectTarget.visionTargetImage, tokenToCheckIfIsVisible.id);
         //     foundedImageToUpdated = true;
         //     break;
@@ -2442,7 +2574,7 @@ export async function drawHandlerCVImage(controlledToken: Token, tokenToCheckIfI
         // }
         if (atcvEffectTarget.visionSourceImage) {
           if (atcvEffectTarget.visionSourceImage != tokenToCheckIfIsVisible.data.img) {
-            await controlledToken.actor?.setFlag(
+            await tokenToCheckIfIsVisible.actor?.setFlag(
               CONSTANTS.MODULE_NAME,
               ConditionalVisibilityFlags.ORIGINAL_IMAGE + '_' + game.userId + '_' + tokenToCheckIfIsVisible.id,
               tokenToCheckIfIsVisible.data.img,
@@ -2464,7 +2596,7 @@ export async function drawHandlerCVImage(controlledToken: Token, tokenToCheckIfI
     }
     if (!foundedImageToUpdated && currentFlag) {
       // if (
-      //   controlledToken.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.ORIGINAL_IMAGE) !=
+      //   tokenToCheckIfIsVisible.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.ORIGINAL_IMAGE) !=
       //   tokenToCheckIfIsVisible.data.img
       // ) {
       await conditionalVisibilitySocket.executeAsUser(
@@ -2473,7 +2605,7 @@ export async function drawHandlerCVImage(controlledToken: Token, tokenToCheckIfI
         currentFlag,
         tokenToCheckIfIsVisible.id,
       );
-      await controlledToken.actor?.unsetFlag(
+      await tokenToCheckIfIsVisible.actor?.unsetFlag(
         CONSTANTS.MODULE_NAME,
         ConditionalVisibilityFlags.ORIGINAL_IMAGE + '_' + game.userId + '_' + tokenToCheckIfIsVisible.id,
       );

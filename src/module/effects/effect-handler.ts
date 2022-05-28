@@ -880,15 +880,24 @@ export default class EffectHandler {
   async removeEffectFromIdOnTokenMultiple(effectIds: string[], uuid: string) {
     if (effectIds) {
       const token = <Token>this._foundryHelpers.getTokenByUuid(uuid);
+      const effectIdsTmp:string[] = [];
+      const actorEffects = <EmbeddedCollection<typeof ActiveEffect, ActorData>>token.actor?.data.effects;
+      for(const effectIdTmp of effectIds){
+        const effectToRemove = <ActiveEffect>actorEffects.find(
+          (activeEffect) => <string>activeEffect?.data?._id == effectIdTmp,
+        );
+        if(effectToRemove){
+          effectIdsTmp.push(effectIdTmp);
+        }
+      }
       // const actorEffects = <EmbeddedCollection<typeof ActiveEffect, ActorData>>token.actor?.data.effects;
       // const effectToRemove = <ActiveEffect>actorEffects.find(
       //   //(activeEffect) => <boolean>activeEffect?.data?.flags?.isConvenient && <string>activeEffect.id == effectId,
       //   (activeEffect) => <string>activeEffect?.data?._id == effectId,
       // );
-
       // await effectToRemove.update({ disabled: true });
       // await effectToRemove.delete();
-      await token.actor?.deleteEmbeddedDocuments('ActiveEffect', effectIds);
+      await token.actor?.deleteEmbeddedDocuments('ActiveEffect', effectIdsTmp);
       log(`Removed effect ${effectIds.join(',')} from ${token.name} - ${token.id}`);
     }
   }

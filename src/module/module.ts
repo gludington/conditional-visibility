@@ -24,6 +24,7 @@ import {
   renderDialogUnRegisterSenseData,
   repairAndSetFlag,
   repairAndUnSetFlag,
+  retrieveAtcvVisionLevelValueFromActiveEffect,
   toggleStealth,
   warn,
 } from './lib/lib';
@@ -48,6 +49,7 @@ import { EffectSupport } from './effects/effect-support';
 import HandlebarHelpers from './apps/conditional-visibility-handlebar-helper';
 import type { PropertiesToSource } from '@league-of-foundry-developers/foundry-vtt-types/src/types/helperTypes';
 import type { ActiveEffectDataProperties } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/data.mjs/activeEffectData';
+import type { EffectChangeData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/data.mjs/effectChangeData';
 
 export const initHooks = (): void => {
   // registerSettings();
@@ -358,35 +360,35 @@ const module = {
           if(change.actorData && change.actorData.flags && change.actorData.flags[CONSTANTS.MODULE_NAME]){
             change.actor.data.flags[CONSTANTS.MODULE_NAME] = change.actorData.flags[CONSTANTS.MODULE_NAME];
           }
-        } else if(change.actorData && change.actorData.effects && change.actorData.effects.length > 0) {
-          if (!change.actor) {
-            change.actor = {};
-          }
-          if (!change.actor.data) {
-            change.actor.data = {};
-          }
-          if (!change.actor.data.flags) {
-            change.actor.data.flags = {};
-          }
-          if (!change.actor.data.flags[CONSTANTS.MODULE_NAME]) {
-            change.actor.data.flags[CONSTANTS.MODULE_NAME] = {};
-          }
-          if(change.actorData && change.actorData.flags && change.actorData.flags[CONSTANTS.MODULE_NAME]){
-            change.actor.data.flags[CONSTANTS.MODULE_NAME] = change.actorData.flags[CONSTANTS.MODULE_NAME];
-          }
-          const effectsTmp = duplicateExtended(change.actorData.effects);
-          for(const aetoken of <PropertiesToSource<ActiveEffectDataProperties>[]>document.data.actorData.effects){
-            let foundeEffect = false;
-            for(const ae of effectsTmp){
-              if(isStringEquals(aetoken.label,ae.label)){
-                foundeEffect = true;
-                break;
-              }
-            }
-            if(!foundeEffect){
-              change.actorData.effects.push(aetoken)
-            }
-          }
+        // } else if(change.actorData && change.actorData.effects && change.actorData.effects.length > 0) {
+        //   if (!change.actor) {
+        //     change.actor = {};
+        //   }
+        //   if (!change.actor.data) {
+        //     change.actor.data = {};
+        //   }
+        //   if (!change.actor.data.flags) {
+        //     change.actor.data.flags = {};
+        //   }
+        //   if (!change.actor.data.flags[CONSTANTS.MODULE_NAME]) {
+        //     change.actor.data.flags[CONSTANTS.MODULE_NAME] = {};
+        //   }
+        //   if(change.actorData && change.actorData.flags && change.actorData.flags[CONSTANTS.MODULE_NAME]){
+        //     change.actor.data.flags[CONSTANTS.MODULE_NAME] = change.actorData.flags[CONSTANTS.MODULE_NAME];
+        //   }
+        //   const effectsTmp = duplicateExtended(change.actorData.effects);
+        //   for(const aetoken of <PropertiesToSource<ActiveEffectDataProperties>[]>document.data.actorData.effects){
+        //     let foundeEffect = false;
+        //     for(const ae of effectsTmp){
+        //       if(isStringEquals(aetoken.label,ae.label)){
+        //         foundeEffect = true;
+        //         break;
+        //       }
+        //     }
+        //     if(!foundeEffect){
+        //       change.actorData.effects.push(aetoken)
+        //     }
+        //   }
         } else {
           return;
         }
@@ -429,35 +431,35 @@ const module = {
         if(change.actorData && change.actorData.flags && change.actorData.flags[CONSTANTS.MODULE_NAME]){
           change.actor.data.flags[CONSTANTS.MODULE_NAME] = change.actorData.flags[CONSTANTS.MODULE_NAME];
         }
-      } else if(change.actorData && change.actorData.effects && change.actorData.effects.length > 0) {
-        if (!change.actor) {
-          change.actor = {};
-        }
-        if (!change.actor.data) {
-          change.actor.data = {};
-        }
-        if (!change.actor.data.flags) {
-          change.actor.data.flags = {};
-        }
-        if (!change.actor.data.flags[CONSTANTS.MODULE_NAME]) {
-          change.actor.data.flags[CONSTANTS.MODULE_NAME] = {};
-        }
-        if(change.actorData && change.actorData.flags && change.actorData.flags[CONSTANTS.MODULE_NAME]){
-          change.actor.data.flags[CONSTANTS.MODULE_NAME] = change.actorData.flags[CONSTANTS.MODULE_NAME];
-        }
-        const effectsTmp = duplicateExtended(change.actorData.effects);
-        for(const aetoken of <PropertiesToSource<ActiveEffectDataProperties>[]>document.data.actorData.effects){
-          let foundeEffect = false;
-          for(const ae of effectsTmp){
-            if(isStringEquals(aetoken.label,ae.label)){
-              foundeEffect = true;
-              break;
-            }
-          }
-          if(!foundeEffect){
-            change.actorData.effects.push(aetoken)
-          }
-        }
+      // } else if(change.actorData && change.actorData.effects && change.actorData.effects.length > 0) {
+      //   if (!change.actor) {
+      //     change.actor = {};
+      //   }
+      //   if (!change.actor.data) {
+      //     change.actor.data = {};
+      //   }
+      //   if (!change.actor.data.flags) {
+      //     change.actor.data.flags = {};
+      //   }
+      //   if (!change.actor.data.flags[CONSTANTS.MODULE_NAME]) {
+      //     change.actor.data.flags[CONSTANTS.MODULE_NAME] = {};
+      //   }
+      //   if(change.actorData && change.actorData.flags && change.actorData.flags[CONSTANTS.MODULE_NAME]){
+      //     change.actor.data.flags[CONSTANTS.MODULE_NAME] = change.actorData.flags[CONSTANTS.MODULE_NAME];
+      //   }
+      //   const effectsTmp = duplicateExtended(change.actorData.effects);
+      //   for(const aetoken of <PropertiesToSource<ActiveEffectDataProperties>[]>document.data.actorData.effects){
+      //     let foundeEffect = false;
+      //     for(const ae of effectsTmp){
+      //       if(isStringEquals(aetoken.label,ae.label)){
+      //         foundeEffect = true;
+      //         break;
+      //       }
+      //     }
+      //     if(!foundeEffect){
+      //       change.actorData.effects.push(aetoken)
+      //     }
+      //   }
       } else {
         return;
       }
@@ -493,7 +495,28 @@ const module = {
         //   );
         //   continue;
         // }
-        if (senseOrConditionIdKey.includes('-=') || senseOrConditionIdKey.startsWith('data')) {
+        if(senseOrConditionIdKey.startsWith('data')){
+          continue;
+        }
+        if (senseOrConditionIdKey.includes('-=')) {
+          // 2022-05-28
+          const visionIdTmp = senseOrConditionIdKey.replace('-=','');
+          // Make sure to remove anything with value 0
+          for (const senseData of await getAllDefaultSensesAndConditions(sourceToken)) {
+            if (senseData.visionId === visionIdTmp) {
+              const effectNameToCheckOnActor = i18n(<string>senseData?.visionName);
+              const activeEffectToRemove = <ActiveEffect>(
+                await API.findEffectByNameOnToken(<string>sourceToken.id, effectNameToCheckOnActor)
+              );
+              if (activeEffectToRemove) {
+                const actveValue = senseOrConditionValue?.visionLevelValue ?? 0;
+                if (actveValue === 0 || actveValue === null || actveValue === undefined || !actveValue) {
+                  //await API.removeEffectFromIdOnToken(<string>sourceToken.id, <string>activeEffectToRemove.id);
+                  setAeToRemove.add(<string>activeEffectToRemove.id);
+                }
+              }
+            }
+          }
           continue;
         }
         if (
@@ -584,6 +607,8 @@ const module = {
                 if (actve === 0 || actve === null || actve === undefined || !actve) {
                   //await API.removeEffectFromIdOnToken(<string>sourceToken.id, <string>activeEffectToRemove.id);
                   setAeToRemove.add(<string>activeEffectToRemove.id);
+                  // 2022-05-28
+                  await repairAndUnSetFlag(sourceToken, senseOrConditionValue.visionId);
                 }
               }
             }
@@ -592,7 +617,7 @@ const module = {
       } // Fine for
       // FINALLY REMOVE ALL THE ACTIVE EFFECT
       if (setAeToRemove.size > 0) {
-        API.removeEffectFromIdOnTokenMultiple(<string>sourceToken.id, Array.from(setAeToRemove));
+        await API.removeEffectFromIdOnTokenMultiple(<string>sourceToken.id, Array.from(setAeToRemove));
       }
     }
     if (
@@ -757,6 +782,34 @@ const module = {
         }
       }
     }
+    // 2022-05-28
+    if (options?.changes && options.changes?.find((effect) => effect.key.includes('ATCV'))) {
+      const val = retrieveAtcvVisionLevelValueFromActiveEffect(sourceToken, activeEffect.data.changes);
+      if(parseInt(val) == 0 || parseInt(val) < -1){
+        isRemoved = true;
+      }
+    //   const atcvEffectsChangesUpdated:EffectChangeData[] = [];
+    //   const atcvEffectsChanges:EffectChangeData[] = activeEffect.data.changes;
+    //   const atcvEffectsChangesTmp:EffectChangeData[] = options?.changes.filter((entity) => entity.key.includes('ATCV'));
+
+    //   const val = retrieveAtcvVisionLevelValueFromActiveEffect(sourceToken, atcvEffectsChangesTmp);
+    //   if(parseInt(val) == 0 || parseInt(val) < -1){
+    //     isRemoved = true;
+    //   }
+      
+    //   for(const aec of atcvEffectsChanges){
+    //     let currentAe = aec;
+    //     for(const aetmp of atcvEffectsChangesTmp){
+    //       if(aetmp.key.includes('ATCV') && aec.key === aetmp.key){
+    //         currentAe = aetmp;
+    //         break;
+    //       }
+    //     }
+    //     atcvEffectsChangesUpdated.push(currentAe);
+    //   }
+    //   activeEffect.data.changes = atcvEffectsChangesUpdated;
+
+    }
     if (
       options?.changes &&
       (options?.changes.length <= 0 || !options.changes?.find((effect) => effect.key.includes('ATCV')))
@@ -778,6 +831,9 @@ const module = {
       }
     } else {
       // TODO make a better code
+      // 2022-05-28
+      const atcvEffects = [activeEffect];
+      /*
       const totalEffects = <ActiveEffect[]>actor?.effects.contents.filter((i) => !i.data.disabled);
       const atcvEffects = totalEffects.filter(
         (entity) => !!entity.data.changes.find((effect) => effect.key.includes('ATCV')),
@@ -793,6 +849,7 @@ const module = {
           }
         }
       }
+      */
 
       if (atcvEffects.length > 0) {
         for (const atcvEffect of atcvEffects) {
@@ -1255,7 +1312,7 @@ const module = {
         }
         // FINALLY REMVE ALL THE ACTIVE EFFECT
         if (setAeToRemove.size > 0) {
-          API.removeEffectFromIdOnTokenMultiple(<string>selectedToken.id, Array.from(setAeToRemove));
+          await API.removeEffectFromIdOnTokenMultiple(<string>selectedToken.id, Array.from(setAeToRemove));
         }
         // }
       }

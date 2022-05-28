@@ -440,6 +440,8 @@ export async function prepareActiveEffectForConditionalVisibility(
         if (actve === 0 || actve === null || actve === undefined || !actve) {
           // await API.removeEffectFromIdOnToken(<string>sourceToken.id, <string>activeEffectToRemove.id);
           setAeToRemove.add(<string>activeEffectToRemove.id);
+          // 2022-05-28
+          await repairAndUnSetFlag(sourceToken, atcvEffectFlagData.visionId);
         }
       }
     }
@@ -460,10 +462,10 @@ export async function prepareActiveEffectForConditionalVisibility(
       // TODO why this failed to return ???
       //if (await API.hasEffectAppliedOnToken(<string>sourceToken.id, effectNameToCheckOnActor, true)) {
       if (activeEffectFounded) {
-        const actve = retrieveAtcvVisionLevelValueFromActiveEffect(
-          sourceToken,
-          activeEffectFounded.data?.changes || [],
-        );
+        // const actve = retrieveAtcvVisionLevelValueFromActiveEffect(
+        //   sourceToken,
+        //   activeEffectFounded.data?.changes || [],
+        // );
         // if (sense.visionLevelValue != actve) {
         //@ts-ignore
         const data = <ActiveEffectData>duplicateExtended(activeEffectFounded.data);
@@ -550,13 +552,20 @@ export async function prepareActiveEffectForConditionalVisibility(
       // TODO why this failed to return ???
       //if (await API.hasEffectAppliedOnToken(<string>sourceToken.id, effectNameToCheckOnActor, true)) {
       if (activeEffectFounded) {
-        const actve = retrieveAtcvVisionLevelValueFromActiveEffect(
-          sourceToken,
+        // 2022-05-28
+        // const actve = retrieveAtcvVisionLevelValueFromActiveEffect(
+        //   sourceToken,
+        //   activeEffectFounded.data?.changes || [],
+        // );
+        const actve = retrieveAtcvEffectFromActiveEffectSimple(
+          sourceToken.document,
           activeEffectFounded.data?.changes || [],
         );
-        if (sense.visionLevelValue != actve) {
+        if (sense.visionLevelValue != actve.visionLevelValue) {
           //await API.removeEffectFromIdOnToken(<string>sourceToken.id, <string>activeEffectFounded.id);
           setAeToRemove.add(<string>activeEffectFounded.id);
+          // 2022-05-28
+          await repairAndUnSetFlag(sourceToken, actve.visionId);
         }
       }
     }
@@ -575,10 +584,10 @@ export async function prepareActiveEffectForConditionalVisibility(
       // TODO why this failed to return ???
       //if (await API.hasEffectAppliedOnToken(<string>sourceToken.id, effectNameToCheckOnActor, true)) {
       if (activeEffectFounded) {
-        const actve = retrieveAtcvVisionLevelValueFromActiveEffect(
-          sourceToken,
-          activeEffectFounded.data?.changes || [],
-        );
+        // const actve = retrieveAtcvVisionLevelValueFromActiveEffect(
+        //   sourceToken,
+        //   activeEffectFounded.data?.changes || [],
+        // );
         // if (condition.visionLevelValue != actve) {
         //@ts-ignore
         const data = <ActiveEffectData>duplicateExtended(activeEffectFounded.data);
@@ -665,13 +674,20 @@ export async function prepareActiveEffectForConditionalVisibility(
       // TODO why this failed to return ???
       //if (await API.hasEffectAppliedOnToken(<string>sourceToken.id, effectNameToCheckOnActor, true)) {
       if (activeEffectFounded) {
-        const actve = retrieveAtcvVisionLevelValueFromActiveEffect(
-          sourceToken,
+        // 2022-05-28
+        // const actve = retrieveAtcvVisionLevelValueFromActiveEffect(
+        //   sourceToken,
+        //   activeEffectFounded.data?.changes || [],
+        // );
+        const actve = retrieveAtcvEffectFromActiveEffectSimple(
+          sourceToken.document,
           activeEffectFounded.data?.changes || [],
         );
-        if (condition.visionLevelValue != actve) {
+        if (condition.visionLevelValue != actve.visionLevelValue) {
           //await API.removeEffectFromIdOnToken(<string>sourceToken.id, <string>activeEffectFounded.id);
           setAeToRemove.add(<string>activeEffectFounded.id);
+          // 2022-05-28
+          await repairAndUnSetFlag(sourceToken, actve.visionId);
         }
       }
     }
@@ -679,7 +695,7 @@ export async function prepareActiveEffectForConditionalVisibility(
 
   // FINALLY REMVE ALL THE ACTIVE EFFECT
   if (setAeToRemove.size > 0) {
-    API.removeEffectFromIdOnTokenMultiple(<string>sourceToken.id, Array.from(setAeToRemove));
+    await API.removeEffectFromIdOnTokenMultiple(<string>sourceToken.id, Array.from(setAeToRemove));
   }
 
   return mapToUpdate;
@@ -962,6 +978,29 @@ export function retrieveEffectChangeDataFromEffect(effect: Effect,):EffectChange
   return effectChanges;
 }
 
+export function retrieveAtcvEffectFromActiveEffectSimple(
+  tokenDocument: TokenDocument,
+  effectChanges: EffectChangeData[],
+): AtcvEffect {
+  const effectName = '';
+  const atcvValueChange = <EffectChangeData>effectChanges.find((aee) => {
+    if (aee.key.startsWith('ATCV.') && aee.key === 'ATCV.conditionType' && aee.value) {
+      return aee;
+    }
+  });
+  const isSense = (atcvValueChange.value === 'sense') ? true : false;
+  const isDisabled = false;
+  const  effectIcon = '';
+  return retrieveAtcvEffectFromActiveEffect(
+    tokenDocument,
+    effectChanges,
+    effectName,
+    effectIcon,
+    isSense,
+    isDisabled
+  );
+}
+
 export function retrieveAtcvEffectFromActiveEffect(
   tokenDocument: TokenDocument,
   effectChanges: EffectChangeData[],
@@ -1138,29 +1177,29 @@ export function retrieveAtcvEffectFromActiveEffect(
  * @param effectChanges
  * @returns
  */
-export function retrieveAtcvVisionLevelValueFromActiveEffect(token: Token, effectChanges: EffectChangeData[]): number {
-  let atcvValue = 0;
+export function retrieveAtcvVisionLevelValueFromActiveEffect(token: Token, effectChanges: EffectChangeData[]): string {
+  let atcvValue = '0';
   const effectEntityChanges = effectChanges.sort((a, b) => <number>a.priority - <number>b.priority);
-  const atcvValueChange = <EffectChangeData>effectEntityChanges.find((aee) => {
+  const atcvEffectChangeData = <EffectChangeData>effectEntityChanges.find((aee) => {
     if (aee.key.startsWith('ATCV.') && !aee.key.startsWith('ATCV.condition') && aee.value) {
       return aee;
     }
   });
-  if (!atcvValueChange) {
+  if (!atcvEffectChangeData) {
     // Ignore ???
-    if (atcvValueChange === '0') {
-      return 0;
+    if (atcvEffectChangeData === '0') {
+      return '0';
     } else {
-      return 1;
+      return '1';
     }
   }
-  if (atcvValueChange && String(atcvValueChange.value).startsWith('data.')) {
-    atcvValue = Number(getProperty(<ActorData>token.document?.actor?.data, String(atcvValueChange.value)));
+  if (atcvEffectChangeData && String(atcvEffectChangeData.value).startsWith('data.')) {
+    atcvValue = String(getProperty(<ActorData>token.document?.actor?.data, String(atcvEffectChangeData.value)));
   } else {
-    atcvValue = Number(atcvValueChange.value);
+    atcvValue = String(atcvEffectChangeData.value);
   }
-  if (!is_real_number(atcvValue)) {
-    return 1;
+  if (!is_real_number(parseInt(atcvValue))) {
+    return '1';
   }
   return atcvValue;
 }
@@ -1318,7 +1357,7 @@ export async function toggleStealth(event, app) {
             }
             // FINALLY REMVE ALL THE ACTIVE EFFECT
             if (setAeToRemove.size > 0) {
-              API.removeEffectFromIdOnTokenMultiple(<string>selectedToken.id, Array.from(setAeToRemove));
+              await API.removeEffectFromIdOnTokenMultiple(<string>selectedToken.id, Array.from(setAeToRemove));
             }
           }
           event.currentTarget.classList.toggle('active', valStealthRoll && valStealthRoll != 0);
@@ -1575,6 +1614,13 @@ export async function repairAndSetFlag(token: Token, key: string, value: AtcvEff
     }
     if (token.actor.getFlag(CONSTANTS.MODULE_NAME, 'conditionBlindedOverride')) {
       await token.actor.unsetFlag(CONSTANTS.MODULE_NAME, 'conditionBlindedOverride');
+    }
+
+    if (token.actor.getFlag(CONSTANTS.MODULE_NAME, 'datasenses')) {
+      await token.actor.unsetFlag(CONSTANTS.MODULE_NAME, 'datasenses');
+    }
+    if (token.actor.getFlag(CONSTANTS.MODULE_NAME, 'dataconditions')) {
+      await token.actor.unsetFlag(CONSTANTS.MODULE_NAME, 'dataconditions');
     }
     // TODO END TO REMOVE THIS IS FOR A RETROCOMPATIBILITY ISSUE
     if (thereISADifference) {
@@ -2894,7 +2940,8 @@ export async function manageActiveEffectForAutoSkillsFeature(enabledSkill:CVSkil
   }
   // FINALLY REMVE ALL THE ACTIVE EFFECT
   if (setAeToRemove.size > 0) {
-    API.removeEffectFromIdOnTokenMultiple(<string>selectedToken.id, Array.from(setAeToRemove));
+    await API.removeEffectFromIdOnTokenMultiple(<string>selectedToken.id, Array.from(setAeToRemove));
+
   }
   // }
 }

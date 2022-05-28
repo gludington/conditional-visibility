@@ -843,8 +843,8 @@ const API = {
       warn(`No token found with reference '${tokenNameOrId}'`, true);
     }
 
-    let distance = senseDataEffect.visionDistanceValue;
-    let visionLevel = senseDataEffect.visionLevelValue;
+    let distance = <number>senseDataEffect.visionDistanceValue;
+    let visionLevel = <number>senseDataEffect.visionLevelValue;
 
     if (!distance) {
       distance = 0;

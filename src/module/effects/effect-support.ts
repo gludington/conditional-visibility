@@ -47,8 +47,8 @@ export class EffectSupport {
 
   static isDuplicateEffectChange(aeKey: string, arrChanges: EffectChangeData[]) {
     let isDuplicate = false;
-    for(const aec of arrChanges){
-      if(isStringEquals(aec.key,aeKey)){
+    for (const aec of arrChanges) {
+      if (isStringEquals(aec.key, aeKey)) {
         isDuplicate = true;
         break;
       }
@@ -57,9 +57,9 @@ export class EffectSupport {
   }
 
   static _handleIntegrations(effect: Effect): EffectChangeData[] {
-    const arrChanges:EffectChangeData[] = [];
+    const arrChanges: EffectChangeData[] = [];
     for (const change of effect?.changes) {
-      if(!change.value){
+      if (!change.value) {
         change.value = '';
       }
       arrChanges.push(change);
@@ -69,7 +69,7 @@ export class EffectSupport {
       for (const atlChange of effect.atlChanges) {
         if (arrChanges.filter((e) => e.key === atlChange.key).length <= 0) {
           if (!EffectSupport.isDuplicateEffectChange(atlChange.key, arrChanges)) {
-            if(!atlChange.value){
+            if (!atlChange.value) {
               atlChange.value = '';
             }
             arrChanges.push(atlChange);
@@ -82,7 +82,7 @@ export class EffectSupport {
       for (const tokenMagicChange of effect.tokenMagicChanges) {
         if (arrChanges.filter((e) => e.key === tokenMagicChange.key).length <= 0) {
           if (!EffectSupport.isDuplicateEffectChange(tokenMagicChange.key, arrChanges)) {
-            if(!tokenMagicChange.value){
+            if (!tokenMagicChange.value) {
               tokenMagicChange.value = '';
             }
             arrChanges.push(tokenMagicChange);
@@ -95,7 +95,7 @@ export class EffectSupport {
       for (const atcvChange of effect.atcvChanges) {
         if (arrChanges.filter((e) => e.key === atcvChange.key).length <= 0) {
           if (!EffectSupport.isDuplicateEffectChange(atcvChange.key, arrChanges)) {
-            if(!atcvChange.value){
+            if (!atcvChange.value) {
               atcvChange.value = '';
             }
             arrChanges.push(atcvChange);

@@ -28,5 +28,5 @@ export default {
     },
   ],
   EFFECTS: <Effect[]>[],
-  SKILLS: <CVSkillData[]>[]
+  SKILLS: <CVSkillData[]>[],
 };

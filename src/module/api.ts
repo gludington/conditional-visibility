@@ -893,7 +893,10 @@ const API = {
       //@ts-ignore
       const dfredEffect = <Effect>await game.dfreds.effectInterface.findCustomEffectByName(effectToFoundByName);
       if (dfredEffect) {
-        info(`ATTENTION the module 'DFreds Convenient Effects' has a effect with name '${effectToFoundByName}', so we use thate, edit that effect if you want to apply a customize solution`, true)
+        info(
+          `ATTENTION the module 'DFreds Convenient Effects' has a effect with name '${effectToFoundByName}', so we use thate, edit that effect if you want to apply a customize solution`,
+          true,
+        );
         let foundedFlagVisionValue = false;
         if (!dfredEffect.atcvChanges) {
           dfredEffect.atcvChanges = [];
@@ -919,7 +922,7 @@ const API = {
           }
         }
         */
-        
+
         if (!foundedFlagVisionValue) {
           for (const obj of changesTmp) {
             if (
@@ -1087,7 +1090,6 @@ const API = {
       } else {
         if (!nameToUse.endsWith('(CV)')) {
           nameToUse = nameToUse + ' (CV)';
-          
         }
         if (!effect.name.endsWith('(CV)')) {
           effect.name = effect.name + ' (CV)';

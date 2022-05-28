@@ -196,8 +196,8 @@ export default class Effect {
 
   isDuplicateEffectChange(aeKey: string, arrChanges: EffectChangeData[]) {
     let isDuplicate = false;
-    for(const aec of arrChanges){
-      if(isStringEquals(aec.key,aeKey)){
+    for (const aec of arrChanges) {
+      if (isStringEquals(aec.key, aeKey)) {
         isDuplicate = true;
         break;
       }
@@ -206,9 +206,9 @@ export default class Effect {
   }
 
   _handleIntegrations() {
-    const arrChanges:EffectChangeData[] = [];
+    const arrChanges: EffectChangeData[] = [];
     for (const change of <EffectChangeData[]>this?.changes) {
-      if(!change.value){
+      if (!change.value) {
         change.value = '';
       }
       arrChanges.push(change);
@@ -218,7 +218,7 @@ export default class Effect {
       for (const atlChange of this.atlChanges) {
         if (arrChanges.filter((e) => e.key === atlChange.key).length <= 0) {
           if (!this.isDuplicateEffectChange(atlChange.key, arrChanges)) {
-            if(!atlChange.value){
+            if (!atlChange.value) {
               atlChange.value = '';
             }
             arrChanges.push(atlChange);
@@ -231,7 +231,7 @@ export default class Effect {
       for (const tokenMagicChange of this.tokenMagicChanges) {
         if (arrChanges.filter((e) => e.key === tokenMagicChange.key).length <= 0) {
           if (!this.isDuplicateEffectChange(tokenMagicChange.key, arrChanges)) {
-            if(!tokenMagicChange.value){
+            if (!tokenMagicChange.value) {
               tokenMagicChange.value = '';
             }
             arrChanges.push(tokenMagicChange);
@@ -244,7 +244,7 @@ export default class Effect {
       for (const atcvChange of this.atcvChanges) {
         if (arrChanges.filter((e) => e.key === atcvChange.key).length <= 0) {
           if (!this.isDuplicateEffectChange(atcvChange.key, arrChanges)) {
-            if(!atcvChange.value){
+            if (!atcvChange.value) {
               atcvChange.value = '';
             }
             arrChanges.push(atcvChange);

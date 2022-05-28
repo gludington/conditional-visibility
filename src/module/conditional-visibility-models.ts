@@ -363,7 +363,7 @@ export class AtcvEffect {
       undefined,
       effect.isDisabled,
     );
-    if(!res.visionId && effect.customId){
+    if (!res.visionId && effect.customId) {
       res.visionId = effect.customId;
     }
     /*
@@ -553,11 +553,11 @@ export class AtcvEffect {
 }
 
 export class CVSkillData {
-  id:string;
+  id: string;
   name: string;
   icon: string;
-  enable:boolean;
-  senseData: SenseData|null
+  enable: boolean;
+  senseData: SenseData | null;
 }
 
 export interface SenseData {

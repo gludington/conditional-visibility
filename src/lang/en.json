@@ -111,7 +111,6 @@
   "conditional-visibility.token.config.conditionTargets-explicit": "This is used for explicitly tell to the checker what NOT ALREADY EXISTENT AE Condition can be see from this AE Sense based on the custom id used from this module (you can set this but is used only from a sense effect)",
   "conditional-visibility.token.config.conditionSources-explicit": "This is used for explicitly tell to the checker what NOT ALREADY EXISTENT AE Sense can be see from this AE Condition based on the custom id used from this module (you can set this but is used only from a condition effect)",
 
-
   "conditional-visibility.invisible": "Invisible (CV)",
   "conditional-visibility.obscured": "Obscured (CV)",
   "conditional-visibility.indarkness": "In Darkness (CV)",

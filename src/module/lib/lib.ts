@@ -960,20 +960,24 @@ function _getCVFromToken(
   // }
 }
 
-export function retrieveEffectChangeDataFromSenseData(senseData: SenseData, visionLevelValue: number, isDisabled:boolean):EffectChangeData[]{
+export function retrieveEffectChangeDataFromSenseData(
+  senseData: SenseData,
+  visionLevelValue: number,
+  isDisabled: boolean,
+): EffectChangeData[] {
   const atcvEffect = AtcvEffect.fromSenseData(senseData, visionLevelValue, isDisabled);
   const effect = AtcvEffect.toEffectFromAtcvEffect(atcvEffect);
   const effectChanges: EffectChangeData[] = EffectSupport._handleIntegrations(effect) || [];
   return effectChanges;
 }
 
-export function retrieveEffectChangeDataFromAtcvEffect(atcvEffect: AtcvEffect):EffectChangeData[]{
+export function retrieveEffectChangeDataFromAtcvEffect(atcvEffect: AtcvEffect): EffectChangeData[] {
   const effect = AtcvEffect.toEffectFromAtcvEffect(atcvEffect);
   const effectChanges: EffectChangeData[] = EffectSupport._handleIntegrations(effect) || [];
   return effectChanges;
 }
 
-export function retrieveEffectChangeDataFromEffect(effect: Effect,):EffectChangeData[]{
+export function retrieveEffectChangeDataFromEffect(effect: Effect): EffectChangeData[] {
   const effectChanges: EffectChangeData[] = EffectSupport._handleIntegrations(effect) || [];
   return effectChanges;
 }
@@ -988,17 +992,10 @@ export function retrieveAtcvEffectFromActiveEffectSimple(
       return aee;
     }
   });
-  const isSense = (atcvValueChange.value === 'sense') ? true : false;
+  const isSense = atcvValueChange.value === 'sense' ? true : false;
   const isDisabled = false;
-  const  effectIcon = '';
-  return retrieveAtcvEffectFromActiveEffect(
-    tokenDocument,
-    effectChanges,
-    effectName,
-    effectIcon,
-    isSense,
-    isDisabled
-  );
+  const effectIcon = '';
+  return retrieveAtcvEffectFromActiveEffect(tokenDocument, effectChanges, effectName, effectIcon, isSense, isDisabled);
 }
 
 export function retrieveAtcvEffectFromActiveEffect(
@@ -1684,7 +1681,6 @@ export async function repairAndSetFlag(token: Token, key: string, value: AtcvEff
       });
     }
     */
-
   }
 }
 
@@ -1729,7 +1725,7 @@ export async function repairAndUnSetFlag(token: Token, key: string) {
 
     await token.actor?.unsetFlag(CONSTANTS.MODULE_NAME, key);
     // 2022-05.27
-    
+
     /*
     await token.actor?.unsetFlag(CONSTANTS.MODULE_NAME, key);
 
@@ -2328,10 +2324,10 @@ export function drawHandlerCVImageAll(controlledToken: Token) {
     // if(<number>(<Token[]>canvas.tokens?.controlled.filter((t)=> t.id==controlledToken.id))?.length <= 0){
     //   return;
     // }
-    for(const token of <Token[]>canvas.tokens?.placeables){
-      if(token.id!=controlledToken.id){
-        if(shouldIncludeVisionV2(controlledToken,token)){
-          drawHandlerCVImage(controlledToken,token);
+    for (const token of <Token[]>canvas.tokens?.placeables) {
+      if (token.id != controlledToken.id) {
+        if (shouldIncludeVisionV2(controlledToken, token)) {
+          drawHandlerCVImage(controlledToken, token);
         }
       }
     }
@@ -2340,10 +2336,13 @@ export function drawHandlerCVImageAll(controlledToken: Token) {
 
 export async function drawHandlerCVImage(controlledToken: Token, tokenToCheckIfIsVisible: Token) {
   if (game?.ready && game.settings.get(CONSTANTS.MODULE_NAME, 'enableDrawCVHandler')) {
-    const currentFlag = controlledToken.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.ORIGINAL_IMAGE+"_"+game.userId+"_"+tokenToCheckIfIsVisible.id);
+    const currentFlag = controlledToken.actor?.getFlag(
+      CONSTANTS.MODULE_NAME,
+      ConditionalVisibilityFlags.ORIGINAL_IMAGE + '_' + game.userId + '_' + tokenToCheckIfIsVisible.id,
+    );
     if (<number>(<Token[]>canvas.tokens?.controlled.filter((t) => t.id == controlledToken.id))?.length <= 0) {
-      if(game.user?.isGM){
-        if(currentFlag){
+      if (game.user?.isGM) {
+        if (currentFlag) {
           await conditionalVisibilitySocket.executeAsUser(
             'drawImageByUserCV',
             game.userId,
@@ -2352,7 +2351,7 @@ export async function drawHandlerCVImage(controlledToken: Token, tokenToCheckIfI
           );
           await controlledToken.actor?.unsetFlag(
             CONSTANTS.MODULE_NAME,
-            ConditionalVisibilityFlags.ORIGINAL_IMAGE+"_"+game.userId+"_"+tokenToCheckIfIsVisible.id,
+            ConditionalVisibilityFlags.ORIGINAL_IMAGE + '_' + game.userId + '_' + tokenToCheckIfIsVisible.id,
           );
         }
       }
@@ -2404,7 +2403,7 @@ export async function drawHandlerCVImage(controlledToken: Token, tokenToCheckIfI
         if (atcvEffectSource.visionTargetImage != tokenToCheckIfIsVisible.data.img) {
           await controlledToken.actor?.setFlag(
             CONSTANTS.MODULE_NAME,
-            ConditionalVisibilityFlags.ORIGINAL_IMAGE+"_"+game.userId+"_"+tokenToCheckIfIsVisible.id,
+            ConditionalVisibilityFlags.ORIGINAL_IMAGE + '_' + game.userId + '_' + tokenToCheckIfIsVisible.id,
             tokenToCheckIfIsVisible.data.img,
           );
           await conditionalVisibilitySocket.executeAsUser(
@@ -2445,7 +2444,7 @@ export async function drawHandlerCVImage(controlledToken: Token, tokenToCheckIfI
           if (atcvEffectTarget.visionSourceImage != tokenToCheckIfIsVisible.data.img) {
             await controlledToken.actor?.setFlag(
               CONSTANTS.MODULE_NAME,
-              ConditionalVisibilityFlags.ORIGINAL_IMAGE+"_"+game.userId+"_"+tokenToCheckIfIsVisible.id,
+              ConditionalVisibilityFlags.ORIGINAL_IMAGE + '_' + game.userId + '_' + tokenToCheckIfIsVisible.id,
               tokenToCheckIfIsVisible.data.img,
             );
             await conditionalVisibilitySocket.executeAsUser(
@@ -2468,16 +2467,16 @@ export async function drawHandlerCVImage(controlledToken: Token, tokenToCheckIfI
       //   controlledToken.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.ORIGINAL_IMAGE) !=
       //   tokenToCheckIfIsVisible.data.img
       // ) {
-        await conditionalVisibilitySocket.executeAsUser(
-          'drawImageByUserCV',
-          game.userId,
-          currentFlag,
-          tokenToCheckIfIsVisible.id,
-        );
-        await controlledToken.actor?.unsetFlag(
-          CONSTANTS.MODULE_NAME,
-          ConditionalVisibilityFlags.ORIGINAL_IMAGE+"_"+game.userId+"_"+tokenToCheckIfIsVisible.id,
-        );
+      await conditionalVisibilitySocket.executeAsUser(
+        'drawImageByUserCV',
+        game.userId,
+        currentFlag,
+        tokenToCheckIfIsVisible.id,
+      );
+      await controlledToken.actor?.unsetFlag(
+        CONSTANTS.MODULE_NAME,
+        ConditionalVisibilityFlags.ORIGINAL_IMAGE + '_' + game.userId + '_' + tokenToCheckIfIsVisible.id,
+      );
       // }
     }
   }
@@ -2648,7 +2647,6 @@ export async function renderDialogRegisterSenseData(
           pickedFile.browse(target);
         });
       }
-
     },
     buttons: {
       add: {
@@ -2667,10 +2665,10 @@ export async function renderDialogRegisterSenseData(
           senseData.conditionTargets = <string[]>$(`[name="conditional-visibility-conditionTargets"]`).val() || [];
 
           const conditionTargetsExplicit = <string>$(`[name="conditional-visibility-conditionTargets-explicit"]`).val();
-          if(conditionTargetsExplicit){
+          if (conditionTargetsExplicit) {
             const arr = conditionTargetsExplicit.split(',');
-            for(const a of arr){
-              if(a){
+            for (const a of arr) {
+              if (a) {
                 senseData.conditionTargets.push(a);
               }
             }
@@ -2679,10 +2677,10 @@ export async function renderDialogRegisterSenseData(
           senseData.conditionSources = <string[]>$(`[name="conditional-visibility-conditionSources"]`).val() || [];
 
           const conditionSourcesExplicit = <string>$(`[name="conditional-visibility-conditionSources-explicit"]`).val();
-          if(conditionSourcesExplicit){
+          if (conditionSourcesExplicit) {
             const arr = conditionSourcesExplicit.split(',');
-            for(const a of arr){
-              if(a){
+            for (const a of arr) {
+              if (a) {
                 senseData.conditionSources.push(a);
               }
             }
@@ -2839,7 +2837,7 @@ export async function checkAndDisplayUserSpecificImage(image: string, token, for
  * @param textToCheck
  * @returns
  */
-export function checkIfAtLeastAEnabledSkillIsFoundedOnChatMessage(textToCheck:string): CVSkillData|null{
+export function checkIfAtLeastAEnabledSkillIsFoundedOnChatMessage(textToCheck: string): CVSkillData | null {
   const cvSkillsData = <CVSkillData[]>API.SKILLS;
   const fullTextContent = textToCheck.toLowerCase().trim();
   // TODO special word for integration multisystem and help to identify the chat text
@@ -2847,9 +2845,9 @@ export function checkIfAtLeastAEnabledSkillIsFoundedOnChatMessage(textToCheck:st
   const ability = i18n(`${CONSTANTS.MODULE_NAME}.labels.ability`);
   const skill = i18n(`${CONSTANTS.MODULE_NAME}.labels.skill`);
 
-  let currentCVSkillData:CVSkillData|null = null;
-  for(const cvSkillData of cvSkillsData){
-    if(!cvSkillData.enable){
+  let currentCVSkillData: CVSkillData | null = null;
+  for (const cvSkillData of cvSkillsData) {
+    if (!cvSkillData.enable) {
       continue;
     }
 
@@ -2880,27 +2878,31 @@ export function checkIfAtLeastAEnabledSkillIsFoundedOnChatMessage(textToCheck:st
         }
       }
     }
-    if(currentCVSkillData){
+    if (currentCVSkillData) {
       break;
     }
   }
   return currentCVSkillData;
 }
 
-export async function manageActiveEffectForAutoSkillsFeature(enabledSkill:CVSkillData, selectedToken:Token, valSkillRoll:number){
+export async function manageActiveEffectForAutoSkillsFeature(
+  enabledSkill: CVSkillData,
+  selectedToken: Token,
+  valSkillRoll: number,
+) {
   const setAeToRemove = new Set<string>();
   const actorEffects = <EmbeddedCollection<typeof ActiveEffect, ActorData>>selectedToken.actor?.data.effects;
   if (enabledSkill.senseData?.conditionType === 'sense') {
     const senseId = enabledSkill.senseData.id;
-    const effect = AtcvEffect.toEffectFromAtcvEffect(AtcvEffect.fromSenseData(enabledSkill.senseData, valSkillRoll, false));
+    const effect = AtcvEffect.toEffectFromAtcvEffect(
+      AtcvEffect.fromSenseData(enabledSkill.senseData, valSkillRoll, false),
+    );
     //const effect = <Effect>await ConditionalVisibilityEffectDefinitions.effect(senseId);
     if (effect) {
       if (valSkillRoll == 0 || valSkillRoll < -1) {
         // await API.removeEffectOnToken(selectedToken.id, i18n(<string>effect?.name));
         const effectToRemove = <ActiveEffect>(
-          actorEffects.find((activeEffect) =>
-            isStringEquals(<string>activeEffect?.data?.label, <string>effect?.name),
-          )
+          actorEffects.find((activeEffect) => isStringEquals(<string>activeEffect?.data?.label, <string>effect?.name))
         );
         if (effectToRemove) {
           setAeToRemove.add(<string>effectToRemove.id);
@@ -2918,15 +2920,15 @@ export async function manageActiveEffectForAutoSkillsFeature(enabledSkill:CVSkil
   //@ts-ignore
   if (enabledSkill.senseData?.conditionType === 'condition') {
     const conditionId = enabledSkill.senseData.id;
-    const effect = AtcvEffect.toEffectFromAtcvEffect(AtcvEffect.fromSenseData(enabledSkill.senseData, valSkillRoll, false));
+    const effect = AtcvEffect.toEffectFromAtcvEffect(
+      AtcvEffect.fromSenseData(enabledSkill.senseData, valSkillRoll, false),
+    );
     //const effect = <Effect>await ConditionalVisibilityEffectDefinitions.effect(conditionId);
     if (effect) {
       if (valSkillRoll == 0) {
         // await API.removeEffectOnToken(selectedToken.id, i18n(<string>effect?.name));
         const effectToRemove = <ActiveEffect>(
-          actorEffects.find((activeEffect) =>
-            isStringEquals(<string>activeEffect?.data?.label, <string>effect?.name),
-          )
+          actorEffects.find((activeEffect) => isStringEquals(<string>activeEffect?.data?.label, <string>effect?.name))
         );
         if (effectToRemove) {
           setAeToRemove.add(<string>effectToRemove.id);
@@ -2944,7 +2946,6 @@ export async function manageActiveEffectForAutoSkillsFeature(enabledSkill:CVSkil
   // FINALLY REMVE ALL THE ACTIVE EFFECT
   if (setAeToRemove.size > 0) {
     await API.removeEffectFromIdOnTokenMultiple(<string>selectedToken.id, Array.from(setAeToRemove));
-
   }
   // }
 }

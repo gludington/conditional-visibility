@@ -3,7 +3,17 @@ import { AtcvEffectSenseFlags, AtcvEffectConditionFlags, SenseData, AtcvEffect }
 import CONSTANTS from './constants';
 import Effect from './effects/effect';
 import { EffectSupport } from './effects/effect-support';
-import { debug, duplicateExtended, i18n, i18nFormat, info, isStringEquals, mergeByProperty, retrieveEffectChangeDataFromEffect, warn } from './lib/lib';
+import {
+  debug,
+  duplicateExtended,
+  i18n,
+  i18nFormat,
+  info,
+  isStringEquals,
+  mergeByProperty,
+  retrieveEffectChangeDataFromEffect,
+  warn,
+} from './lib/lib';
 
 /**
  * Defines all of the effect definitions
@@ -109,7 +119,9 @@ export class ConditionalVisibilityEffectDefinitions {
           //@ts-ignore
           const dfredEffect = <Effect>await game.dfreds.effectInterface.findCustomEffectByName(effectToFoundByName);
           if (dfredEffect) {
-            info(`ATTENTION the module 'DFreds Convenient Effects' has a effect with name '${effectToFoundByName}', so we use thate, edit that effect if you want to apply a customize solution`); 
+            info(
+              `ATTENTION the module 'DFreds Convenient Effects' has a effect with name '${effectToFoundByName}', so we use thate, edit that effect if you want to apply a customize solution`,
+            );
             let foundedFlagVisionValue = false;
             if (!dfredEffect.atcvChanges) {
               dfredEffect.atcvChanges = [];

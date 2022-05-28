@@ -880,13 +880,13 @@ export default class EffectHandler {
   async removeEffectFromIdOnTokenMultiple(effectIds: string[], uuid: string) {
     if (effectIds) {
       const token = <Token>this._foundryHelpers.getTokenByUuid(uuid);
-      const effectIdsTmp:string[] = [];
+      const effectIdsTmp: string[] = [];
       const actorEffects = <EmbeddedCollection<typeof ActiveEffect, ActorData>>token.actor?.data.effects;
-      for(const effectIdTmp of effectIds){
-        const effectToRemove = <ActiveEffect>actorEffects.find(
-          (activeEffect) => <string>activeEffect?.data?._id == effectIdTmp,
+      for (const effectIdTmp of effectIds) {
+        const effectToRemove = <ActiveEffect>(
+          actorEffects.find((activeEffect) => <string>activeEffect?.data?._id == effectIdTmp)
         );
-        if(effectToRemove){
+        if (effectToRemove) {
           effectIdsTmp.push(effectIdTmp);
         }
       }

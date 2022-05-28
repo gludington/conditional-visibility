@@ -770,11 +770,12 @@ const module = {
         return;
       } else {
         // 2022-05-26 special case for disabled effect
-        if (options?.disabled) {
-          isDisabledUpdated = options?.disabled;
-        } else {
-          return;
-        }
+        // if (options?.disabled) {
+        //   isDisabledUpdated = options?.disabled;
+        // } else {
+        //   return;
+        // }
+        return;
       }
     }
     // 2022-05-28

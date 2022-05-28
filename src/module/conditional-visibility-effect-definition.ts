@@ -126,6 +126,7 @@ export class ConditionalVisibilityEffectDefinitions {
             }
             */
             changesTmp = retrieveEffectChangeDataFromEffect(dfredEffect);
+            changesTmp = changesTmp.filter((c) => !c.key.startsWith(`data.`));
             for (const obj of changesTmp) {
               if (obj.key === 'ATCV.' + effectExternal.customId && obj.value != String(visionLevel)) {
                 obj.value = String(visionLevel);
@@ -261,6 +262,12 @@ export class ConditionalVisibilityEffectDefinitions {
           value: `${visionLevel}`,
           priority: 5,
         },
+        {
+          key: 'ATCV.conditionType',
+          mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+          value: `sense`,
+          priority: 5,
+        },
       ],
       isTemporary: false,
     });
@@ -302,6 +309,12 @@ export class ConditionalVisibilityEffectDefinitions {
           key: 'ATCV.' + AtcvEffectSenseFlags.BLIND_SIGHT,
           mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
           value: `${visionLevel}`,
+          priority: 5,
+        },
+        {
+          key: 'ATCV.conditionType',
+          mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+          value: `sense`,
           priority: 5,
         },
       ],
@@ -347,6 +360,12 @@ export class ConditionalVisibilityEffectDefinitions {
           value: `${visionLevel}`,
           priority: 5,
         },
+        {
+          key: 'ATCV.conditionType',
+          mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+          value: `sense`,
+          priority: 5,
+        },
       ],
       isTemporary: false,
     });
@@ -388,6 +407,12 @@ export class ConditionalVisibilityEffectDefinitions {
           key: 'ATCV.' + AtcvEffectSenseFlags.TRUE_SIGHT,
           mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
           value: `${visionLevel}`,
+          priority: 5,
+        },
+        {
+          key: 'ATCV.conditionType',
+          mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+          value: `sense`,
           priority: 5,
         },
       ],
@@ -433,6 +458,12 @@ export class ConditionalVisibilityEffectDefinitions {
           value: `${visionLevel}`,
           priority: 5,
         },
+        {
+          key: 'ATCV.conditionType',
+          mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+          value: `sense`,
+          priority: 5,
+        },
       ],
       isTemporary: false,
     });
@@ -474,6 +505,12 @@ export class ConditionalVisibilityEffectDefinitions {
           key: 'ATCV.' + AtcvEffectSenseFlags.DEVILS_SIGHT,
           mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
           value: `${visionLevel}`,
+          priority: 5,
+        },
+        {
+          key: 'ATCV.conditionType',
+          mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+          value: `sense`,
           priority: 5,
         },
       ],
@@ -533,6 +570,12 @@ export class ConditionalVisibilityEffectDefinitions {
           value: `${visionLevel}`,
           priority: 5,
         },
+        {
+          key: 'ATCV.conditionType',
+          mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+          value: `sense`,
+          priority: 5,
+        },
       ],
       isTemporary: false,
     });
@@ -587,6 +630,12 @@ export class ConditionalVisibilityEffectDefinitions {
           value: `${visionLevel}`,
           priority: 5,
         },
+        {
+          key: 'ATCV.conditionType',
+          mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+          value: `sense`,
+          priority: 5,
+        },
       ],
       isTemporary: false,
     });
@@ -620,6 +669,12 @@ export class ConditionalVisibilityEffectDefinitions {
           value: `${visionLevel}`,
           priority: 5,
         },
+        {
+          key: 'ATCV.conditionType',
+          mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+          value: `condition`,
+          priority: 5,
+        },
       ],
       isTemporary: true,
     });
@@ -647,6 +702,12 @@ export class ConditionalVisibilityEffectDefinitions {
           key: 'ATCV.' + AtcvEffectConditionFlags.INVISIBLE,
           mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
           value: `${visionLevel}`,
+          priority: 5,
+        },
+        {
+          key: 'ATCV.conditionType',
+          mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+          value: `condition`,
           priority: 5,
         },
       ],
@@ -678,6 +739,12 @@ export class ConditionalVisibilityEffectDefinitions {
           value: `${visionLevel}`,
           priority: 5,
         },
+        {
+          key: 'ATCV.conditionType',
+          mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+          value: `condition`,
+          priority: 5,
+        },
       ],
       isTemporary: true,
     });
@@ -707,6 +774,12 @@ export class ConditionalVisibilityEffectDefinitions {
           value: `${visionLevel}`,
           priority: 5,
         },
+        {
+          key: 'ATCV.conditionType',
+          mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+          value: `condition`,
+          priority: 5,
+        },
       ],
       isTemporary: true,
     });
@@ -726,6 +799,12 @@ export class ConditionalVisibilityEffectDefinitions {
           key: 'ATCV.' + AtcvEffectConditionFlags.STEALTHED,
           mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
           value: visionLevel != 0 ? `${visionLevel}` : API.STEALTH_PASSIVE_SKILL, //`data.skills.ste.passive`,
+          priority: 5,
+        },
+        {
+          key: 'ATCV.conditionType',
+          mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+          value: `condition`,
           priority: 5,
         },
       ],

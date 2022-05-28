@@ -17,6 +17,7 @@ import {
   repairAndUnSetFlag,
   retrieveAtcvVisionLevelKeyFromChanges,
   retrieveEffectChangeDataFromAtcvEffect,
+  retrieveEffectChangeDataFromEffect,
   retrieveEffectChangeDataFromSenseData,
   shouldIncludeVisionV2,
   warn,
@@ -896,6 +897,7 @@ const API = {
         if (!dfredEffect.atcvChanges) {
           dfredEffect.atcvChanges = [];
         }
+        changesTmp = retrieveEffectChangeDataFromEffect(dfredEffect);
         /*
         changesTmp = EffectSupport._handleIntegrations(dfredEffect);
         changesTmp = changesTmp.filter((c) => !c.key.startsWith(`data.`));
@@ -932,12 +934,11 @@ const API = {
           // 2022-05-26 check for duplicate
           const valueKey = retrieveAtcvVisionLevelKeyFromChanges(changesTmp);
           if (!valueKey) {
-            changesTmp.push(<any>{
-              key: 'ATCV.' + senseDataEffect.visionId,
-              mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
-              value: String(senseDataEffect.visionLevelValue),
-              priority: 5,
-            });
+            senseDataEffect = AtcvEffect.mergeWithSensedataDefault(senseDataEffect);
+            if (!senseDataEffect.visionName.endsWith('(CV)')) {
+              senseDataEffect.visionName = senseDataEffect.visionName + ' (CV)';
+            }
+            changesTmp = retrieveEffectChangeDataFromAtcvEffect(senseDataEffect);
             foundedFlagVisionValue = true;
           }
         }

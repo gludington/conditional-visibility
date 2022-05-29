@@ -86,7 +86,7 @@ export function isGMConnected() {
 }
 
 export function isGMConnectedAndSocketLibEnable() {
-  return isGMConnected() && !game.settings.get(CONSTANTS.MODULE_NAME, 'doNotUseSocketLibFeature');
+  return isGMConnected(); // && !game.settings.get(CONSTANTS.MODULE_NAME, 'doNotUseSocketLibFeature');
 }
 
 export function wait(ms) {
@@ -474,7 +474,7 @@ export async function prepareActiveEffectForConditionalVisibility(
         // );
         // if (sense.visionLevelValue != actve) {
         //@ts-ignore
-        const data = <ActiveEffectData>duplicateExtended(activeEffectFounded.data);
+        const data = <ActiveEffectData>duplicateExtended(activeEffectFounded.data ? activeEffectFounded.data : activeEffectFounded);
         let thereISADifference = false;
         for (const aee of data?.changes) {
           if (aee.key.startsWith('ATCV.')) {
@@ -599,7 +599,7 @@ export async function prepareActiveEffectForConditionalVisibility(
         // );
         // if (condition.visionLevelValue != actve) {
         //@ts-ignore
-        const data = <ActiveEffectData>duplicateExtended(activeEffectFounded.data);
+        const data = <ActiveEffectData>duplicateExtended(activeEffectFounded.data ? activeEffectFounded.data : activeEffectFounded);
         let thereISADifference = false;
         for (const aee of data?.changes) {
           if (aee.key.startsWith('ATCV.')) {
@@ -715,7 +715,7 @@ export function getSensesFromTokenFast(
   filterValueNoZero = false,
   filterIsDisabled = false,
 ): AtcvEffect[] {
-  return _getCVFromTokenFast(tokenDocument,filterValueNoZero,filterIsDisabled,true);
+  return _getCVFromTokenFast(tokenDocument, filterValueNoZero, filterIsDisabled, true);
 }
 
 export function getConditionsFromTokenFast(
@@ -723,7 +723,7 @@ export function getConditionsFromTokenFast(
   filterValueNoZero = false,
   filterIsDisabled = false,
 ): AtcvEffect[] {
-  return _getCVFromTokenFast(tokenDocument,filterValueNoZero,filterIsDisabled,false)
+  return _getCVFromTokenFast(tokenDocument, filterValueNoZero, filterIsDisabled, false);
 }
 
 export function _getCVFromTokenFast(
@@ -774,9 +774,9 @@ export function _getCVFromTokenFast(
         }
       }
     }
-    if(isSense){
+    if (isSense) {
       return statusEffects.filter((a) => a.visionType === 'sense') ?? [];
-    }else{
+    } else {
       return statusEffects.filter((a) => a.visionType === 'condition') ?? [];
     }
     // if (filterValueNoZero) {
@@ -822,7 +822,7 @@ export function _getCVFromTokenFast(
       continue;
     }
     const alreadyPresent = statusEffects.find((e) => {
-      return isStringEquals(e.visionId,atcvEffectTmp.visionId);
+      return isStringEquals(e.visionId, atcvEffectTmp.visionId);
     });
     if (!alreadyPresent) {
       if (isSense && atcvEffectTmp.visionType === 'sense') {
@@ -857,9 +857,9 @@ export function _getCVFromTokenFast(
       if (filterIsDisabled && senseValue.visionIsDisabled) {
         continue;
       }
-      
+
       const alreadyPresent = statusEffects.find((e) => {
-        return isStringEquals(e.visionId,senseValue.visionId);
+        return isStringEquals(e.visionId, senseValue.visionId);
       });
       if (!alreadyPresent) {
         if (isSense && senseValue.visionType === 'sense') {
@@ -869,9 +869,9 @@ export function _getCVFromTokenFast(
         }
       }
     }
-    if(isSense){
+    if (isSense) {
       return statusEffects.filter((a) => a.visionType === 'sense') ?? [];
-    }else{
+    } else {
       return statusEffects.filter((a) => a.visionType === 'condition') ?? [];
     }
   }
@@ -1634,7 +1634,7 @@ export async function repairAndSetFlag(token: Token, key: string, value: AtcvEff
     let thereISADifference = false;
     if (activeEffectFounded) {
       //@ts-ignore
-      const data = <ActiveEffectData>duplicateExtended(activeEffectFounded.data);
+      const data = <ActiveEffectData>duplicateExtended(activeEffectFounded.data ? activeEffectFounded.data : activeEffectFounded);
       for (const aee of data?.changes) {
         if (aee.key.startsWith('ATCV.')) {
           let updateKey = '';
@@ -2720,6 +2720,7 @@ export async function renderDialogRegisterSenseData(
           });
           pickedFile.browse(target);
         });
+        break;
       }
       for (const fp of html.find('button.file-picker-conditional-visibility-img')) {
         fp?.addEventListener('click', async function (event) {
@@ -2739,6 +2740,7 @@ export async function renderDialogRegisterSenseData(
           });
           pickedFile.browse(target);
         });
+        break;
       }
       for (const fp of html.find('button.file-picker-conditional-visibility-conditionTargetImage')) {
         fp?.addEventListener('click', async function (event) {
@@ -2758,6 +2760,7 @@ export async function renderDialogRegisterSenseData(
           });
           pickedFile.browse(target);
         });
+        break;
       }
 
       for (const fp of html.find('button.file-picker-conditional-visibility-conditionSourceImage')) {
@@ -2962,6 +2965,46 @@ export async function checkAndDisplayUserSpecificImage(image: string, token, for
     token.visible = visible;
     if (hadActiveHud) canvas.tokens?.hud.bind(token);
   }
+}
+
+export function renderAutoSkillsDialog(selectedToken:Token, enabledSkill:CVSkillData, isSense:boolean, valSkillRoll:number){
+  const dialog = new Dialog({
+    title: isSense
+      ? i18n(`${CONSTANTS.MODULE_NAME}.windows.dialogs.addsense.title`)
+      : i18n(`${CONSTANTS.MODULE_NAME}.windows.dialogs.addcondition.title`),
+    content: isSense
+      ? i18nFormat(`${CONSTANTS.MODULE_NAME}.windows.dialogs.addsense.areyousure`, {
+          sense: i18n(enabledSkill.name),
+          name: i18n(selectedToken.name),
+        })
+      : i18nFormat(`${CONSTANTS.MODULE_NAME}.windows.dialogs.addcondition.areyousure`, {
+          condition: i18n(enabledSkill.name),
+          name: i18n(selectedToken.name),
+        }),
+    render: (html: JQuery<HTMLElement>) => {
+      // do nothing
+    },
+    buttons: {
+      delete: {
+        icon: '<i class="fas fa-check"></i>',
+        label: i18n(`${CONSTANTS.MODULE_NAME}.windows.dialogs.confirm.apply.choice.add`),
+        callback: async (html) => {
+          manageActiveEffectForAutoSkillsFeature(<CVSkillData>enabledSkill, selectedToken, valSkillRoll);
+        },
+      },
+      donothing: {
+        icon: '<i class="fas fa-times"></i>',
+        label: i18n(`${CONSTANTS.MODULE_NAME}.windows.dialogs.confirm.apply.choice.donothing`),
+        callback: (html) => {
+          // Do nothing
+        },
+      },
+    },
+    default: 'donothing',
+  });
+  dialog.options.height = 150;
+  dialog.position.height = 150;
+  dialog.render(true);
 }
 
 /**

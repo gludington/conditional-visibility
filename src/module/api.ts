@@ -9,10 +9,13 @@ import {
   getSensesFromTokenFast,
   getToken,
   i18n,
+  i18nFormat,
   info,
   isStringEquals,
   is_real_number,
+  manageActiveEffectForAutoSkillsFeature,
   prepareActiveEffectForConditionalVisibility,
+  renderAutoSkillsDialog,
   repairAndSetFlag,
   repairAndUnSetFlag,
   retrieveAtcvVisionLevelKeyFromChanges,
@@ -893,7 +896,7 @@ const API = {
       //@ts-ignore
       const dfredEffect = <Effect>await game.dfreds.effectInterface.findCustomEffectByName(effectToFoundByName);
       if (dfredEffect) {
-        if(game.user?.isGM){
+        if (game.user?.isGM) {
           info(
             `ATTENTION the module 'DFreds Convenient Effects' has a effect with name '${effectToFoundByName}', so we use that, edit that effect if you want to apply a customize solution`,
           );
@@ -1199,9 +1202,9 @@ const API = {
     }
   },
 
-  drawImageByUserArr(...inAttributes) {
+  drawImageByUserCVArr(...inAttributes) {
     if (!Array.isArray(inAttributes)) {
-      throw error('drawImageByUserArr | inAttributes must be of type array');
+      throw error('drawImageByUserCVArr | inAttributes must be of type array');
     }
     const [image, sourceTokenId] = inAttributes;
     const tokens = <Token[]>canvas.tokens?.placeables;
@@ -1213,6 +1216,22 @@ const API = {
       warn(`No token found with reference '${sourceTokenId}'`, true);
     }
     checkAndDisplayUserSpecificImage(image, sourceToken, true, 40);
+  },
+
+  renderAutoSkillsDialogCVArr(...inAttributes) {
+    if (!Array.isArray(inAttributes)) {
+      throw error('renderAutoSkillsDialogCVArr | inAttributes must be of type array');
+    }
+    const [sourceTokenId, enabledSkill, isSense, valSkillRoll] = inAttributes;
+    const tokens = <Token[]>canvas.tokens?.placeables;
+    const sourceToken = <Token>tokens.find((token) => {
+      return isStringEquals(token.name, i18n(sourceTokenId)) || isStringEquals(token.id, sourceTokenId);
+    });
+
+    if (!sourceToken) {
+      warn(`No token found with reference '${sourceTokenId}'`, true);
+    }
+    renderAutoSkillsDialog(sourceToken, enabledSkill, isSense, valSkillRoll);
   },
 
   canSee(sourceToken: Token, targetToken: Token): boolean {

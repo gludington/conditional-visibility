@@ -21,6 +21,7 @@ import {
   is_real_number,
   manageActiveEffectForAutoSkillsFeature,
   prepareActiveEffectForConditionalVisibility,
+  renderAutoSkillsDialog,
   renderDialogRegisterSenseData,
   renderDialogUnRegisterSenseData,
   repairAndSetFlag,
@@ -175,6 +176,24 @@ export const readyHooks = (): void => {
   Hooks.on('renderChatMessage', async (message: ChatMessage, html: JQuery<HTMLElement>, speakerInfo) => {
     module.renderChatMessage(message, html, speakerInfo);
   });
+
+  // Hooks.on('preCreateActiveEffect', async (activeEffect:ActiveEffect, _config, _userId) => {
+  //   if (
+  //     !activeEffect?.data?.flags?.isConvenient ||
+  //     !(activeEffect?.parent instanceof Actor)
+  //   ){
+  //     return;
+  //   }
+  // });
+
+  // Hooks.on('createActiveEffect', async (activeEffect:ActiveEffect, _config, _userId:string) => {
+  //   if (
+  //     !activeEffect?.data?.flags?.isConvenient ||
+  //     !(activeEffect?.parent instanceof Actor)
+  //   ){
+  //     return;
+  //   }
+  // });
 };
 
 const module = {
@@ -269,7 +288,7 @@ const module = {
         event.preventDefault();
         event.stopPropagation();
         const buttonClick = event.button; // 0 left click
-        (await renderDialogRegisterSenseData(true, senses, conditions)).render(false);
+        (await renderDialogRegisterSenseData(true, senses, conditions)).render(true);
       });
 
     $(html)
@@ -278,7 +297,7 @@ const module = {
         event.preventDefault();
         event.stopPropagation();
         const buttonClick = event.button; // 0 left click
-        (await renderDialogRegisterSenseData(false, senses, conditions)).render(false);
+        (await renderDialogRegisterSenseData(false, senses, conditions)).render(true);
       });
 
     $(html)
@@ -287,7 +306,7 @@ const module = {
         event.preventDefault();
         event.stopPropagation();
         const buttonClick = event.button; // 0 left click
-        (await renderDialogUnRegisterSenseData(true, senses, conditions)).render(false);
+        (await renderDialogUnRegisterSenseData(true, senses, conditions)).render(true);
       });
 
     $(html)
@@ -296,7 +315,7 @@ const module = {
         event.preventDefault();
         event.stopPropagation();
         const buttonClick = event.button; // 0 left click
-        (await renderDialogUnRegisterSenseData(false, senses, conditions)).render(false);
+        (await renderDialogUnRegisterSenseData(false, senses, conditions)).render(true);
       });
   },
   async updateActor(document: TokenDocument, changeOri, options, userId) {
@@ -499,8 +518,8 @@ const module = {
         }
         if (senseOrConditionIdKey.includes('-=')) {
           // 2022-05-29
-          
-          const visionIdTmp = senseOrConditionIdKey.replace('-=','');
+
+          const visionIdTmp = senseOrConditionIdKey.replace('-=', '');
           // Make sure to remove anything with value 0
           for (const senseData of await getAllDefaultSensesAndConditions(sourceToken)) {
             if (senseData.visionId === visionIdTmp) {
@@ -520,7 +539,7 @@ const module = {
               }
             }
           }
-          
+
           continue;
         }
         if (
@@ -1052,7 +1071,7 @@ const module = {
           //@ts-ignore
           const effectFounded = <Effect>game.dfreds.effectInterface.findCustomEffectByName(effectToFoundByName);
           if (!effectFounded) {
-            if(game.user?.isGM){
+            if (game.user?.isGM) {
               info(
                 `ATTENTION the module 'DFreds Convenient Effects' has a effect with name '${effectToFoundByName}', so we use that, edit that effect if you want to apply a customize solution`,
               );
@@ -1140,6 +1159,9 @@ const module = {
     if (!game.settings.get(CONSTANTS.MODULE_NAME, 'autoSkills')) {
       return;
     }
+    if(speakerInfo.author.id != game.userId) {
+      return;
+    }
     let tokenChatId = <string>speakerInfo.message.speaker.token;
     const actorChatId = <string>speakerInfo.message.speaker.actor;
     let sourceToken: Token | null = null;
@@ -1214,43 +1236,7 @@ const module = {
           manageActiveEffectForAutoSkillsFeature(<CVSkillData>enabledSkill, selectedToken, valSkillRoll);
         } else {
           const isSense = enabledSkill.senseData?.conditionType === 'sense' ? true : false;
-          const dialog = new Dialog({
-            title: isSense
-              ? i18n(`${CONSTANTS.MODULE_NAME}.windows.dialogs.addsense.title`)
-              : i18n(`${CONSTANTS.MODULE_NAME}.windows.dialogs.addcondition.title`),
-            content: isSense
-              ? i18nFormat(`${CONSTANTS.MODULE_NAME}.windows.dialogs.addsense.areyousure`, {
-                  sense: i18n(enabledSkill.name),
-                  name: i18n(selectedToken.name),
-                })
-              : i18nFormat(`${CONSTANTS.MODULE_NAME}.windows.dialogs.addcondition.areyousure`, {
-                  condition: i18n(enabledSkill.name),
-                  name: i18n(selectedToken.name),
-                }),
-            render: (html: JQuery<HTMLElement>) => {
-              // do nothing
-            },
-            buttons: {
-              delete: {
-                icon: '<i class="fas fa-check"></i>',
-                label: i18n(`${CONSTANTS.MODULE_NAME}.windows.dialogs.confirm.apply.choice.add`),
-                callback: async (html) => {
-                  manageActiveEffectForAutoSkillsFeature(<CVSkillData>enabledSkill, selectedToken, valSkillRoll);
-                },
-              },
-              donothing: {
-                icon: '<i class="fas fa-times"></i>',
-                label: i18n(`${CONSTANTS.MODULE_NAME}.windows.dialogs.confirm.apply.choice.donothing`),
-                callback: (html) => {
-                  // Do nothing
-                },
-              },
-            },
-            default: 'donothing',
-          });
-          dialog.options.height = 150;
-          dialog.position.height = 150;
-          dialog.render(true);
+          renderAutoSkillsDialog(selectedToken,enabledSkill,isSense,valSkillRoll);
         }
       }
     }

@@ -1,4 +1,4 @@
-import { error, i18n, isStringEquals, log } from '../lib/lib';
+import { error, i18n, isStringEquals, log, warn } from '../lib/lib';
 import FoundryHelpers from './foundry-helpers';
 import Effect from './effect';
 import type EmbeddedCollection from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/abstract/embedded-collection.mjs';
@@ -193,6 +193,11 @@ export default class EffectHandler {
     // });
     effect.origin = origin;
     effect.overlay = overlay;
+    const activeEffectFounded = <ActiveEffect>await this.findEffectByNameOnActor(effectName, uuid);
+    if (activeEffectFounded) {
+      warn(`Can't add the effect with name ${effectName} on actor ${actor.name}, because is alredy added`);
+      return;
+    }
     const activeEffectData = EffectSupport.convertToActiveEffectData(effect);
     await actor.createEmbeddedDocuments('ActiveEffect', [activeEffectData]);
     // Update
@@ -547,6 +552,11 @@ export default class EffectHandler {
       // });
       effect.origin = origin;
       effect.overlay = overlay;
+      const activeEffectFounded = <ActiveEffect>await this.findEffectByNameOnActor(effectName, uuid);
+      if (activeEffectFounded) {
+        warn(`Can't add the effect with name ${effectName} on actor ${actor.name}, because is alredy added`);
+        return;
+      }
       const activeEffectData = EffectSupport.convertToActiveEffectData(effect);
       await actor.createEmbeddedDocuments('ActiveEffect', [activeEffectData]);
       log(`Added effect ${effect.name ? effect.name : effectName} to ${actor.name} - ${actor.id}`);
@@ -611,7 +621,7 @@ export default class EffectHandler {
 
   async toggleEffectFromIdOnActorArr(...inAttributes) {
     if (!Array.isArray(inAttributes)) {
-      throw error('addEffectOnActorArr | inAttributes must be of type array');
+      throw error('toggleEffectFromIdOnActorArr | inAttributes must be of type array');
     }
     const [effectId, uuid, alwaysDelete, forceEnabled, forceDisabled] = inAttributes;
     return this.toggleEffectFromIdOnActor(effectId, uuid, alwaysDelete, forceEnabled, forceDisabled);
@@ -665,7 +675,8 @@ export default class EffectHandler {
       return effect;
     }
     for (const effectEntity of actorEffects) {
-      const effectNameToSet = effectEntity.data.label;
+      //@ts-ignore
+      const effectNameToSet = effectEntity.data ? effectEntity.data.label : effectEntity.label;
       if (!effectNameToSet) {
         continue;
       }
@@ -944,6 +955,11 @@ export default class EffectHandler {
       // });
       effect.origin = origin;
       effect.overlay = overlay;
+      const activeEffectFounded = <ActiveEffect>await this.findEffectByNameOnToken(effectName, uuid);
+      if (activeEffectFounded) {
+        warn(`Can't add the effect with name ${effectName} on token ${token.name}, because is alredy added`);
+        return;
+      }
       const activeEffectData = EffectSupport.convertToActiveEffectData(effect);
       await token.actor?.createEmbeddedDocuments('ActiveEffect', [activeEffectData]);
       log(`Added effect ${effect.name ? effect.name : effectName} to ${token.name} - ${token.id}`);
@@ -1011,7 +1027,7 @@ export default class EffectHandler {
 
   async toggleEffectFromIdOnTokenArr(...inAttributes) {
     if (!Array.isArray(inAttributes)) {
-      throw error('addEffectOnTokenArr | inAttributes must be of type array');
+      throw error('toggleEffectFromIdOnTokenArr | inAttributes must be of type array');
     }
     const [effectId, uuid, alwaysDelete, forceEnabled, forceDisabled] = inAttributes;
     return this.toggleEffectFromIdOnToken(effectId, uuid, alwaysDelete, forceEnabled, forceDisabled);

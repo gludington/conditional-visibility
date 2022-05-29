@@ -43,8 +43,8 @@ export const registerSettings = function (): void {
 
   /** Which column should the button be placed on */
   game.settings.register(CONSTANTS.MODULE_NAME, 'hudColumn', {
-    name: i18n(`${CONSTANTS.MODULE_NAME}.settings.hudColumn.title`),
-    hint: i18n(`${CONSTANTS.MODULE_NAME}.settings.hudColumn.hint`),
+    name: i18n(`${CONSTANTS.MODULE_NAME}.setting.hudColumn.title`),
+    hint: i18n(`${CONSTANTS.MODULE_NAME}.setting.hudColumn.hint`),
     scope: 'world',
     config: true,
     type: String,
@@ -57,8 +57,8 @@ export const registerSettings = function (): void {
 
   /** Whether the button should be placed on the top or bottom of the column */
   game.settings.register(CONSTANTS.MODULE_NAME, 'hudTopBottom', {
-    name: i18n(`${CONSTANTS.MODULE_NAME}.settings.hudTopBottom.title`),
-    hint: i18n(`${CONSTANTS.MODULE_NAME}.settings.hudTopBottom.hint`),
+    name: i18n(`${CONSTANTS.MODULE_NAME}.setting.hudTopBottom.title`),
+    hint: i18n(`${CONSTANTS.MODULE_NAME}.setting.hudTopBottom.hint`),
     scope: 'world',
     config: true,
     type: String,
@@ -159,14 +159,14 @@ export const registerSettings = function (): void {
     type: Boolean,
   });
 
-  game.settings.register(CONSTANTS.MODULE_NAME, 'doNotUseSocketLibFeature', {
-    name: `${CONSTANTS.MODULE_NAME}.setting.doNotUseSocketLibFeature.name`,
-    hint: `${CONSTANTS.MODULE_NAME}.setting.doNotUseSocketLibFeature.hint`,
-    scope: 'world',
-    config: true,
-    type: Boolean,
-    default: false,
-  });
+  // game.settings.register(CONSTANTS.MODULE_NAME, 'doNotUseSocketLibFeature', {
+  //   name: `${CONSTANTS.MODULE_NAME}.setting.doNotUseSocketLibFeature.name`,
+  //   hint: `${CONSTANTS.MODULE_NAME}.setting.doNotUseSocketLibFeature.hint`,
+  //   scope: 'world',
+  //   config: true,
+  //   type: Boolean,
+  //   default: false,
+  // });
 
   // ========================================================================
 
@@ -436,8 +436,8 @@ function otherSettings(apply = false) {
 
     /** Which column should the button be placed on */
     hudColumn: {
-      name: i18n(`${CONSTANTS.MODULE_NAME}.settings.hudColumn.title`),
-      hint: i18n(`${CONSTANTS.MODULE_NAME}.settings.hudColumn.hint`),
+      name: i18n(`${CONSTANTS.MODULE_NAME}.setting.hudColumn.title`),
+      hint: i18n(`${CONSTANTS.MODULE_NAME}.setting.hudColumn.hint`),
       scope: 'world',
       config: true,
       type: String,
@@ -450,8 +450,8 @@ function otherSettings(apply = false) {
 
     /** Whether the button should be placed on the top or bottom of the column */
     hudTopBottom: {
-      name: i18n(`${CONSTANTS.MODULE_NAME}.settings.hudTopBottom.title`),
-      hint: i18n(`${CONSTANTS.MODULE_NAME}.settings.hudTopBottom.hint`),
+      name: i18n(`${CONSTANTS.MODULE_NAME}.setting.hudTopBottom.title`),
+      hint: i18n(`${CONSTANTS.MODULE_NAME}.setting.hudTopBottom.hint`),
       scope: 'world',
       config: true,
       type: String,
@@ -552,14 +552,14 @@ function otherSettings(apply = false) {
       type: Boolean,
     },
 
-    doNotUseSocketLibFeature: {
-      name: `${CONSTANTS.MODULE_NAME}.setting.doNotUseSocketLibFeature.name`,
-      hint: `${CONSTANTS.MODULE_NAME}.setting.doNotUseSocketLibFeature.hint`,
-      scope: 'world',
-      config: true,
-      type: Boolean,
-      default: true,
-    },
+    // doNotUseSocketLibFeature: {
+    //   name: `${CONSTANTS.MODULE_NAME}.setting.doNotUseSocketLibFeature.name`,
+    //   hint: `${CONSTANTS.MODULE_NAME}.setting.doNotUseSocketLibFeature.hint`,
+    //   scope: 'world',
+    //   config: true,
+    //   type: Boolean,
+    //   default: true,
+    // },
   };
 }
 

@@ -50,7 +50,9 @@ export function registerSocket() {
   conditionalVisibilitySocket.register('updateSourceCV', (...args) => API.updateSourceCVArr(...args));
   conditionalVisibilitySocket.register('sightRefreshCV', (...args) => API.sightRefreshCVArr(...args));
   conditionalVisibilitySocket.register('drawImageByUserCV', (...args) => API.drawImageByUserCVArr(...args));
-  conditionalVisibilitySocket.register('renderAutoSkillsDialogCV', (...args) => API.renderAutoSkillsDialogCVArr(...args));
+  conditionalVisibilitySocket.register('renderAutoSkillsDialogCV', (...args) =>
+    API.renderAutoSkillsDialogCVArr(...args),
+  );
   /**
    * UI sockets
    */

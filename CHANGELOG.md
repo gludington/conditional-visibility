@@ -1,3 +1,7 @@
+### 0.6.2
+
+- Added hook on 'canvasReady' for clean up old flag
+
 ### 0.6.1
 
 - BUg fix on file picker

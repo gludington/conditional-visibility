@@ -13,6 +13,7 @@ import {
   duplicateExtended,
   getAllDefaultSensesAndConditions,
   getConditionsFromToken,
+  getOwnedTokens,
   getSensesFromToken,
   i18n,
   i18nFormat,
@@ -177,7 +178,7 @@ export const readyHooks = (): void => {
     module.renderChatMessage(message, html, speakerInfo);
   });
 
-  Hooks.on("deleteToken", (document:TokenDocument, options, userId:string) => {
+  Hooks.on('deleteToken', async (document: TokenDocument, options, userId: string) => {
     const sourceToken = <Token>document.object;
     if (!sourceToken) {
       return;
@@ -186,9 +187,10 @@ export const readyHooks = (): void => {
     if (!game.user?.isGM && !isPlayerOwned) {
       return;
     }
-    for(const token of <Token[]>canvas.tokens?.placeables){
-      if(token.id != document.id){
-        sourceToken.actor?.unsetFlag(
+    const tokens = <Token[]>canvas.tokens?.placeables;
+    for (const token of tokens) {
+      if (token.id != document.id) {
+        await sourceToken.actor?.unsetFlag(
           CONSTANTS.MODULE_NAME,
           ConditionalVisibilityFlags.ORIGINAL_IMAGE + '_' + game.userId + '_' + token.id,
         );
@@ -214,6 +216,34 @@ export const readyHooks = (): void => {
   //   }
   // });
 };
+
+Hooks.on('canvasReady', async () => {
+  const tokens = canvas.tokens?.placeables || [];
+  const ownedsTokens = getOwnedTokens(false) || [];
+  for (const sourceToken of ownedsTokens) {
+    if (sourceToken.actor && getProperty(sourceToken.actor, `data.flags.${CONSTANTS.MODULE_NAME}`)) {
+      const p = getProperty(sourceToken.actor, `data.flags.${CONSTANTS.MODULE_NAME}`);
+      for (const key in p) {
+        const senseOrConditionIdKey = key;
+        const senseOrConditionValue = <AtcvEffect>p[key];
+        if (senseOrConditionIdKey && senseOrConditionIdKey.startsWith(ConditionalVisibilityFlags.ORIGINAL_IMAGE)) {
+          const tokenToCheckId = senseOrConditionIdKey.split('_').pop();
+          if (tokenToCheckId) {
+            const tokenIsOnTheCanvas = tokens.find((t) => {
+              return t.id === tokenToCheckId;
+            });
+            if (!tokenIsOnTheCanvas) {
+              await sourceToken.actor?.unsetFlag(
+                CONSTANTS.MODULE_NAME,
+                ConditionalVisibilityFlags.ORIGINAL_IMAGE + '_' + game.userId + '_' + tokenToCheckId,
+              );
+            }
+          }
+        }
+      }
+    }
+  }
+});
 
 const module = {
   async onRenderTokenConfig(tokenConfig: TokenConfig, html: JQuery<HTMLElement>, data: object): Promise<void> {
@@ -485,7 +515,7 @@ const module = {
         for (const ae of effectsTmp) {
           const changesTmp = ae.changes;
           const atcveEffect = retrieveAtcvEffectFromActiveEffectSimple(sourceToken.document, changesTmp);
-          if(!atcveEffect){
+          if (!atcveEffect) {
             continue;
           }
           const atcvValue = <number>atcveEffect.visionLevelValue;
@@ -832,7 +862,7 @@ const module = {
         //   await repairAndUnSetFlag(sourceToken, senseOrCondition?.visionId);
         // }
         const atcvKey = retrieveAtcvVisionLevelKeyFromChanges(activeEffect.data.changes);
-        if(atcvKey){
+        if (atcvKey) {
           await repairAndUnSetFlag(sourceToken, atcvKey);
         }
         return;
@@ -1032,7 +1062,7 @@ const module = {
               activeEffect.id === atcvEffect.id
             ) {
               const atcvEffectFlagData = AtcvEffect.fromActiveEffect(sourceToken.document, atcvEffect);
-              if(atcvEffectFlagData){
+              if (atcvEffectFlagData) {
                 if (
                   <number>atcvEffectFlagData.visionLevelValue == 0 ||
                   <number>atcvEffectFlagData.visionLevelValue < -1
@@ -1044,7 +1074,7 @@ const module = {
               }
             } else if (activeEffect.id === atcvEffect.id) {
               const atcvEffectFlagData = AtcvEffect.fromActiveEffect(sourceToken.document, atcvEffect);
-              if(atcvEffectFlagData){
+              if (atcvEffectFlagData) {
                 if (
                   <number>atcvEffectFlagData.visionLevelValue == 0 ||
                   <number>atcvEffectFlagData.visionLevelValue < -1
@@ -1058,8 +1088,11 @@ const module = {
             //}
           } else if (thereISADifference) {
             const atcvEffectFlagData = AtcvEffect.fromActiveEffect(sourceToken.document, atcvEffect);
-            if(atcvEffectFlagData){
-              if (<number>atcvEffectFlagData.visionLevelValue == 0 || <number>atcvEffectFlagData.visionLevelValue < -1) {
+            if (atcvEffectFlagData) {
+              if (
+                <number>atcvEffectFlagData.visionLevelValue == 0 ||
+                <number>atcvEffectFlagData.visionLevelValue < -1
+              ) {
                 await repairAndUnSetFlag(sourceToken, updateKey);
               } else {
                 await repairAndSetFlag(sourceToken, updateKey, atcvEffectFlagData);
@@ -1195,7 +1228,7 @@ const module = {
     if (!game.settings.get(CONSTANTS.MODULE_NAME, 'autoSkills')) {
       return;
     }
-    if(speakerInfo.author.id != game.userId) {
+    if (speakerInfo.author.id != game.userId) {
       return;
     }
     let tokenChatId = <string>speakerInfo.message.speaker.token;
@@ -1273,7 +1306,7 @@ const module = {
           manageActiveEffectForAutoSkillsFeature(senseData, selectedToken, valSkillRoll);
         } else {
           const isSense = enabledSkill.senseData?.conditionType === 'sense' ? true : false;
-          renderAutoSkillsDialog(selectedToken,enabledSkill,isSense,valSkillRoll);
+          renderAutoSkillsDialog(selectedToken, enabledSkill, isSense, valSkillRoll);
         }
       }
     }

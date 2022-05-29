@@ -363,7 +363,7 @@ export class AtcvEffect {
       undefined,
       effect.isDisabled,
     );
-    if(!res){
+    if (!res) {
       return;
     }
     if (!res.visionId && effect.customId) {
@@ -395,7 +395,7 @@ export class AtcvEffect {
       undefined,
       activeEffect.data.disabled,
     );
-    if(!res){
+    if (!res) {
       return;
     }
     /*

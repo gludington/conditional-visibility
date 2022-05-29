@@ -1,5 +1,10 @@
 import { ConditionalVisibilityEffectDefinitions } from '../conditional-visibility-effect-definition';
-import { AtcvEffectConditionFlags, AtcvEffectSenseFlags, CVSkillData, SenseData } from '../conditional-visibility-models';
+import {
+  AtcvEffectConditionFlags,
+  AtcvEffectSenseFlags,
+  CVSkillData,
+  SenseData,
+} from '../conditional-visibility-models';
 import CONSTANTS from '../constants';
 import type Effect from '../effects/effect';
 
@@ -36,7 +41,7 @@ export default {
       conditionElevation: false,
       conditionBlinded: false,
       conditionBlindedOverride: false,
-    }
+    },
   ],
   CONDITIONS: <SenseData[]>[
     {

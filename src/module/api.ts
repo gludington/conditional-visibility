@@ -88,22 +88,22 @@ const API = {
 
   // TODO MAKE THIS BETTER
   get SKILLS_CONDITION(): String[] {
-    if(game.system.id === 'dnd5e'){
+    if (game.system.id === 'dnd5e') {
       return [AtcvEffectConditionFlags.HIDDEN, 'stealth'];
-    }else if(game.system.id === 'pf2e'){
+    } else if (game.system.id === 'pf2e') {
       return [AtcvEffectConditionFlags.HIDDEN, 'stealth'];
-    }else {
+    } else {
       return [AtcvEffectConditionFlags.HIDDEN];
     }
   },
 
   // TODO MAKE THIS BETTER
   get SKILLS_SENSE(): String[] {
-    if(game.system.id === 'dnd5e'){
+    if (game.system.id === 'dnd5e') {
       return [AtcvEffectSenseFlags.NORMAL, 'perception'];
-    }else if(game.system.id === 'pf2e'){
+    } else if (game.system.id === 'pf2e') {
       return [AtcvEffectSenseFlags.NORMAL, 'perception'];
-    }else {
+    } else {
       return [AtcvEffectSenseFlags.NORMAL];
     }
   },

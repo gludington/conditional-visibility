@@ -31,6 +31,7 @@ import EffectInterface from './effects/effect-interface';
 import {
   AtcvEffect,
   AtcvEffectConditionFlags,
+  AtcvEffectSenseFlags,
   ConditionalVisibilityFlags,
   CVSkillData,
   SenseData,
@@ -83,6 +84,28 @@ const API = {
    */
   get SKILLS(): CVSkillData[] {
     return <CVSkillData[]>game.settings.get(CONSTANTS.MODULE_NAME, 'skills');
+  },
+
+  // TODO MAKE THIS BETTER
+  get SKILLS_CONDITION(): String[] {
+    if(game.system.id === 'dnd5e'){
+      return [AtcvEffectConditionFlags.HIDDEN, 'stealth'];
+    }else if(game.system.id === 'pf2e'){
+      return [AtcvEffectConditionFlags.HIDDEN, 'stealth'];
+    }else {
+      return [AtcvEffectConditionFlags.HIDDEN];
+    }
+  },
+
+  // TODO MAKE THIS BETTER
+  get SKILLS_SENSE(): String[] {
+    if(game.system.id === 'dnd5e'){
+      return [AtcvEffectSenseFlags.NORMAL, 'perception'];
+    }else if(game.system.id === 'pf2e'){
+      return [AtcvEffectSenseFlags.NORMAL, 'perception'];
+    }else {
+      return [AtcvEffectSenseFlags.NORMAL];
+    }
   },
 
   /**

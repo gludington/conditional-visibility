@@ -256,7 +256,11 @@ const module = {
 
     const sensesTemplateData: any[] = [];
     for (const s of senses) {
-      if (s.visionId != AtcvEffectSenseFlags.NONE && s.visionId != AtcvEffectSenseFlags.NORMAL) {
+      if (
+        s.visionId != AtcvEffectSenseFlags.NONE
+        // 2022-05-30
+        // s.visionId != AtcvEffectSenseFlags.NORMAL
+      ) {
         const s2: any = duplicateExtended(s);
         if (!i18n(s2.visionName).endsWith('(CV)')) {
           s2.visionName = i18n(s2.visionName) + ' (CV)';
@@ -1324,7 +1328,11 @@ const module = {
         //   }
         const setAeToRemove = new Set<string>();
         const actorEffects = <EmbeddedCollection<typeof ActiveEffect, ActorData>>selectedToken.actor?.data.effects;
-        if (senseId != AtcvEffectSenseFlags.NONE && senseId != AtcvEffectSenseFlags.NORMAL) {
+        if (
+          senseId != AtcvEffectSenseFlags.NONE 
+          // 2022-05-30
+          //senseId != AtcvEffectSenseFlags.NORMAL
+        ) {
           const effect = <Effect>await ConditionalVisibilityEffectDefinitions.effect(senseId);
           if (effect) {
             if (valStealthRoll == 0) {

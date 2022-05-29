@@ -1454,7 +1454,11 @@ export async function toggleStealth(event, app) {
           for (const selectedToken of selectedTokens) {
             const setAeToRemove = new Set<string>();
             const actorEffects = <EmbeddedCollection<typeof ActiveEffect, ActorData>>selectedToken.actor?.data.effects;
-            if (senseId != AtcvEffectSenseFlags.NONE && senseId != AtcvEffectSenseFlags.NORMAL) {
+            if (
+              senseId != AtcvEffectSenseFlags.NONE
+              // 2022-05-30
+              //senseId != AtcvEffectSenseFlags.NORMAL
+            ) {
               const effect = <Effect>await ConditionalVisibilityEffectDefinitions.effect(senseId);
               if (effect) {
                 if (valStealthRoll == 0) {
@@ -2075,7 +2079,9 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
   }
 
   if (targetVisionLevels.length == 1) {
-    if (targetVisionLevels[0]?.visionId == AtcvEffectConditionFlags.HIDDEN) {
+    // 2022-05-30
+    //if (targetVisionLevels[0]?.visionId == AtcvEffectConditionFlags.HIDDEN) {
+    if (API.SKILLS_CONDITION.includes(<string>targetVisionLevels[0]?.visionId)) {
       if (perceptionPassiveValue >= (<number>targetVisionLevels[0]?.visionLevelValue ?? 0)) {
         debug(`(8) Is true, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
         return true;
@@ -2132,10 +2138,15 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
   let hasHidden = false;
   let hasStealthed = false;
   for (let i = 0; i < targetVisionLevels.length; i++) {
+    // 2022-05-30
+    // if (
+    //   targetVisionLevels[i]?.visionId === AtcvEffectConditionFlags.HIDDEN &&
+    //   targetVisionLevels[i]?.visionLevelValue != 0
+    // ) {
     if (
-      targetVisionLevels[i]?.visionId === AtcvEffectConditionFlags.HIDDEN &&
+      API.SKILLS_CONDITION.includes(<string>targetVisionLevels[i]?.visionId) &&
       targetVisionLevels[i]?.visionLevelValue != 0
-    ) {
+    ) { 
       hasHidden = true;
     }
     if (
@@ -2186,7 +2197,9 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
   // THIS WILL BE CHECK ONLY IF ONE CONDITION IS PRESENT ON THE TARGET AND THE CONDITION TYPE IS 'HIDDEN'
   if (targetVisionLevels.length == 1) {
     if (isStealthPassive) {
-      if (targetVisionLevels[0]?.visionId == AtcvEffectConditionFlags.HIDDEN) {
+      // 2022-05-30
+      //if (targetVisionLevels[0]?.visionId == AtcvEffectConditionFlags.HIDDEN) {
+      if (API.SKILLS_CONDITION.includes(<string>targetVisionLevels[0]?.visionId)) {
         if (perceptionPassiveValue >= (<number>targetVisionLevels[0]?.visionLevelValue ?? 0)) {
           debug(`(8) Is true, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
           return true;
@@ -2217,7 +2230,8 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
       if (
         !targetVisionLevel ||
         !targetVisionLevel.visionId ||
-        targetVisionLevel.visionId === AtcvEffectSenseFlags.NORMAL ||
+        // 2022-05-30
+        //targetVisionLevel.visionId === AtcvEffectSenseFlags.NORMAL ||
         targetVisionLevel.visionId === AtcvEffectSenseFlags.NONE
       ) {
         // sourceVisionLevelsValid.set(sourceVisionLevel.visionId, true);

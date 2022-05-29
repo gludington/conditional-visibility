@@ -1228,6 +1228,9 @@ const module = {
     if (!game.settings.get(CONSTANTS.MODULE_NAME, 'autoSkills')) {
       return;
     }
+    if (!speakerInfo || !speakerInfo.author || !speakerInfo.author.id){
+      return;
+    }
     if (speakerInfo.author.id != game.userId) {
       return;
     }

@@ -1,3 +1,7 @@
+### 0.6.3
+
+- Bug fix on strange chat message wihtout speakrt info id
+
 ### 0.6.2
 
 - Added hook on 'canvasReady' for clean up old flag

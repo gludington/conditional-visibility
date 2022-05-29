@@ -1228,10 +1228,14 @@ const module = {
     if (!game.settings.get(CONSTANTS.MODULE_NAME, 'autoSkills')) {
       return;
     }
-    if (!speakerInfo || !speakerInfo.author || !speakerInfo.author.id){
-      return;
+    let currentUserId = '';
+    if (!currentUserId && speakerInfo && speakerInfo.author && speakerInfo.author.id){
+      currentUserId = speakerInfo.author.id;
     }
-    if (speakerInfo.author.id != game.userId) {
+    if(!currentUserId && message && message.data && message.data.user){
+      currentUserId = message.data.user;
+    }
+    if (currentUserId != game.userId) {
       return;
     }
     let tokenChatId = <string>speakerInfo.message.speaker.token;

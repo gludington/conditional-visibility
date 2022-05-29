@@ -178,6 +178,14 @@ CUB already manage the connection with active effect and a management with the [
 
 ![cub](./wiki/video/feature_cub_cv_1.gif)
 
+### Customize you own sense or condition
+
+![img6](./wiki/video/feature_your_own_effect.gif)
+
+### Customize for each token specific image for specific token
+
+![img6](./wiki/video/feature_image_1.gif)
+
 ## Api
 
 The API documentation is reachable here [API](./wiki/api.md)

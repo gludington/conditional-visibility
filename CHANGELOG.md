@@ -1,12 +1,13 @@
 ### 0.6.0 [BREAKING CHANGES]
 
-- [BREAKING CHANGES] Please do not update jus before a session
-- Rewrite almost everything in preparation of FVTT 10 and for a bunch of nug fixing from the community (ty to all for the patience)
-- Update the alghoritm checker, sacrificed speed in favor of a better accuracy on the checking, so for maps with many visible tokens you may encounter a bit of lag if you open an issue
+- [BREAKING CHANGES] Please do not update this module just before a session
+- Rewrite almost everything in preparation of FVTT 10 and for a bunch of bug fixing encounter from the community (ty to all for the patience)
+- Update the alghoritm checker, sacrificed speed in favor of a better accuracy on the checking, so for maps with many visible tokens you may encounter a bit of lag.
 - NEW FEATURE: [BETA] First beta of the conditional image feature, for the options `conditionTargetImage` and the  `conditionSouceImage` 
-- NEW FEATURE: Add a very porr buttons on the token configurations per add some custom sense and condition
+- NEW FEATURE: Add a very poor buttons on the token configurations for add some custom sense and condition, is not beatiful , but is doing the job
+- NEW FEATURE: Add for each system a preconfigured list of skills
 - Bug fix: Now all the combination of Add/Update/Remove CV Active effect should be managed, if you find another use case open a new issue on the github project
-- Bug fix: Add a dialog when roll pre configured skills based on the current system e.g. for the system dnd5e now the two precofigured skill are 'Stealth' (Condition visible only to preception sense) and 'Perception' (A dedicated sense), in the dialog you can still chose the old generic multisystem 'Hidden' (condition) and 'Normal' (Sense)
+- Bug fix: Add a dialog when roll pre configured skills from the character sheet (or ohers modules...) based on the current system e.g. for the system dnd5e now the two precofigured skill are 'Stealth' (Condition visible only to preception sense) and 'Perception' (A dedicated sense), in the dialog you can still choose the old generic multisystem effect 'Hidden' (condition) and 'Normal' (sense)
 
 ### 0.5.42
 

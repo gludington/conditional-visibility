@@ -75,7 +75,7 @@
   "conditional-visibility.token.config.datausestealthpassive.notes": "[This is system dependent] If checked (true value), this setting will automatic generate a new CV condition effect named 'Stealthed' where the value is retrieve from the property set on module settings 'Passive stealth skill'.",
 
   "conditional-visibility.token.config.datausestealthpassive.notes2": "NOTE: If the checkbox is check, but no AE with name 'Stealthed' is applied on the actor uncheck and recheck this checkbox for refresh the actor.",
-  "conditional-visibility.token.config.datausestealthpassive.notes3": "NOTE: If the 'Hidden' condition is applied on this token the condition 'Stealthed' is ignored for the concept \"active stealth\" is used instead \"passive stealth\".",
+  "conditional-visibility.token.config.datausestealthpassive.notes3": "NOTE: If the a condition is applied on this token the condition 'Stealthed' is ignored for the concept \"active stealth\" is used instead \"passive stealth\".",
   "conditional-visibility.token.config.noeditmessage": "NOTE: For foundryvtt 9 there is no editing mechanism for the effects already existing at the token configuration level, simply because you can edit directly the active effects to make your own customizations, anyone can help with some PR for enrich this.",
 
   "conditional-visibility.windows.dialogs.addsense.title": "Conditional visibility: Add new sense",
@@ -86,8 +86,8 @@
   "conditional-visibility.windows.dialogs.deletesense.title": "Conditional visibility: Delete sense",
   "conditional-visibility.windows.dialogs.deletecondition.title": "Conditional visibility: Delete condition",
 
-  "conditional-visibility.windows.dialogs.addsense.areyousure": "Are you sure to apply the sense '{sense}' to {name} ?",
-  "conditional-visibility.windows.dialogs.addcondition.areyousure": "Are you sure to apply the condition '{condition}' to {name} ?",
+  "conditional-visibility.windows.dialogs.addsense.areyousure": "Are you sure to apply the sense '{sense}' to {name} ? There are two options a system dedicate one (first option) and the generic multisystem (second option)",
+  "conditional-visibility.windows.dialogs.addcondition.areyousure": "Are you sure to apply the condition '{condition}' to {name} ? There are two options a system dedicate one (first option) and the generic multisystem (second option)",
 
   "conditional-visibility.token.config.addnewcondition": "Add new condition",
   "conditional-visibility.token.config.addnewsense": "Add new sense",

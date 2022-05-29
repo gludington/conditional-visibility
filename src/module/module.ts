@@ -28,6 +28,7 @@ import {
   repairAndUnSetFlag,
   retrieveAtcvEffectFromActiveEffect,
   retrieveAtcvEffectFromActiveEffectSimple,
+  retrieveAtcvVisionLevelKeyFromChanges,
   retrieveAtcvVisionLevelValueFromActiveEffect,
   toggleStealth,
   warn,
@@ -796,14 +797,18 @@ const module = {
     // let isDisabledUpdated = false;
     if (!options?.changes) {
       if (isRemoved) {
-        const senseOrCondition = (await getAllDefaultSensesAndConditions(sourceToken)).find((sense) => {
-          return (
-            isStringEquals(sense.visionName, <string>activeEffect.name) ||
-            isStringEquals(sense.visionName, activeEffect.data.label)
-          );
-        });
-        if (senseOrCondition?.visionId) {
-          await repairAndUnSetFlag(sourceToken, senseOrCondition?.visionId);
+        // const senseOrCondition = (await getAllDefaultSensesAndConditions(sourceToken)).find((sense) => {
+        //   return (
+        //     isStringEquals(sense.visionName, <string>activeEffect.name) ||
+        //     isStringEquals(sense.visionName, activeEffect.data.label)
+        //   );
+        // });
+        // if (senseOrCondition?.visionId) {
+        //   await repairAndUnSetFlag(sourceToken, senseOrCondition?.visionId);
+        // }
+        const atcvKey = retrieveAtcvVisionLevelKeyFromChanges(activeEffect.data.changes);
+        if(atcvKey){
+          await repairAndUnSetFlag(sourceToken, atcvKey);
         }
         return;
       } else {
@@ -1233,7 +1238,8 @@ const module = {
         //   continue;
         // }
         if (game.settings.get(CONSTANTS.MODULE_NAME, 'autoSkillsSkipDialog')) {
-          manageActiveEffectForAutoSkillsFeature(<CVSkillData>enabledSkill, selectedToken, valSkillRoll);
+          const senseData = <SenseData>(<CVSkillData>enabledSkill).senseData;
+          manageActiveEffectForAutoSkillsFeature(senseData, selectedToken, valSkillRoll);
         } else {
           const isSense = enabledSkill.senseData?.conditionType === 'sense' ? true : false;
           renderAutoSkillsDialog(selectedToken,enabledSkill,isSense,valSkillRoll);

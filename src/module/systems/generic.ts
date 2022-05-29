@@ -1,5 +1,5 @@
 import { ConditionalVisibilityEffectDefinitions } from '../conditional-visibility-effect-definition';
-import { AtcvEffectConditionFlags, CVSkillData, SenseData } from '../conditional-visibility-models';
+import { AtcvEffectConditionFlags, AtcvEffectSenseFlags, CVSkillData, SenseData } from '../conditional-visibility-models';
 import CONSTANTS from '../constants';
 import type Effect from '../effects/effect';
 
@@ -12,7 +12,32 @@ export default {
   STEALTH_ID_LANG_SKILL: ``,
   PATH_ATTRIBUTES_SENSES: ``,
   NPC_TYPE: ``,
-  SENSES: <SenseData[]>[],
+  SENSES: <SenseData[]>[
+    {
+      id: AtcvEffectSenseFlags.NONE,
+      name: `${CONSTANTS.MODULE_NAME}.${AtcvEffectSenseFlags.NONE}`,
+      path: '',
+      img: `modules/${CONSTANTS.MODULE_NAME}/icons/ae/light_01.jpg`,
+      conditionType: 'sense',
+      conditionSources: <string[]>[],
+      conditionTargets: <string[]>[],
+      conditionElevation: false,
+      conditionBlinded: false,
+      conditionBlindedOverride: false,
+    },
+    {
+      id: AtcvEffectSenseFlags.NORMAL,
+      name: `${CONSTANTS.MODULE_NAME}.${AtcvEffectSenseFlags.NORMAL}`,
+      path: ``,
+      img: `modules/${CONSTANTS.MODULE_NAME}/icons/ae/light_02.jpg`,
+      conditionType: 'sense',
+      conditionSources: <string[]>[],
+      conditionTargets: <string[]>[],
+      conditionElevation: false,
+      conditionBlinded: false,
+      conditionBlindedOverride: false,
+    }
+  ],
   CONDITIONS: <SenseData[]>[
     {
       id: AtcvEffectConditionFlags.HIDDEN,

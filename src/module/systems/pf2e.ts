@@ -41,7 +41,7 @@ export default {
     {
       id: AtcvEffectSenseFlags.NORMAL,
       name: `${CONSTANTS.MODULE_NAME}.${AtcvEffectSenseFlags.NORMAL}`,
-      path: 'data.traits.senses.blinded',
+      path: ``,
       img: `modules/${CONSTANTS.MODULE_NAME}/icons/ae/light_02.jpg`,
       conditionType: 'sense',
       conditionSources: <string[]>[],

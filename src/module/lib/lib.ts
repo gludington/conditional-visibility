@@ -2985,11 +2985,32 @@ export function renderAutoSkillsDialog(selectedToken:Token, enabledSkill:CVSkill
       // do nothing
     },
     buttons: {
-      delete: {
+      addSystemSenseData: {
         icon: '<i class="fas fa-check"></i>',
-        label: i18n(`${CONSTANTS.MODULE_NAME}.windows.dialogs.confirm.apply.choice.add`),
+        label: i18n(`${CONSTANTS.MODULE_NAME}.windows.dialogs.confirm.apply.choice.add`) + " " + i18n(enabledSkill.name),
         callback: async (html) => {
-          manageActiveEffectForAutoSkillsFeature(<CVSkillData>enabledSkill, selectedToken, valSkillRoll);
+          const senseData:SenseData = <SenseData>(<CVSkillData>enabledSkill).senseData;
+          manageActiveEffectForAutoSkillsFeature(senseData, selectedToken, valSkillRoll);
+        },
+      },
+      addGenericSenseData: {
+        icon: '<i class="fas fa-check"></i>',
+        label: 
+          isSense
+            ? i18n(`${CONSTANTS.MODULE_NAME}.windows.dialogs.addsense.title`) + " " + i18n(`${CONSTANTS.MODULE_NAME}.normal`)
+            : i18n(`${CONSTANTS.MODULE_NAME}.windows.dialogs.confirm.apply.choice.add`) + " " + i18n(`${CONSTANTS.MODULE_NAME}.hidden`),
+        callback: async (html) => {
+          let senseData:SenseData;
+          if(isSense){
+            senseData = <SenseData>API.SENSES.find((s) => {
+              return s.id === AtcvEffectSenseFlags.NORMAL;
+            });
+          }else{
+            senseData = <SenseData>API.CONDITIONS.find((s) => {
+              return s.id === AtcvEffectConditionFlags.HIDDEN;
+            });
+          }
+          manageActiveEffectForAutoSkillsFeature(senseData, selectedToken, valSkillRoll);
         },
       },
       donothing: {
@@ -3061,16 +3082,16 @@ export function checkIfAtLeastAEnabledSkillIsFoundedOnChatMessage(textToCheck: s
 }
 
 export async function manageActiveEffectForAutoSkillsFeature(
-  enabledSkill: CVSkillData,
+  senseData: SenseData,
   selectedToken: Token,
   valSkillRoll: number,
 ) {
   const setAeToRemove = new Set<string>();
   const actorEffects = <EmbeddedCollection<typeof ActiveEffect, ActorData>>selectedToken.actor?.data.effects;
-  if (enabledSkill.senseData?.conditionType === 'sense') {
-    const senseId = enabledSkill.senseData.id;
+  if (senseData?.conditionType === 'sense') {
+    const senseId = senseData.id;
     const effect = AtcvEffect.toEffectFromAtcvEffect(
-      AtcvEffect.fromSenseData(enabledSkill.senseData, valSkillRoll, false),
+      AtcvEffect.fromSenseData(senseData, valSkillRoll, false),
     );
     //const effect = <Effect>await ConditionalVisibilityEffectDefinitions.effect(senseId);
     if (effect) {
@@ -3092,11 +3113,11 @@ export async function manageActiveEffectForAutoSkillsFeature(
       warn(`Can't find effect definition for sense with id = '${senseId}'`, true);
     }
   }
-  //@ts-ignore
-  if (enabledSkill.senseData?.conditionType === 'condition') {
-    const conditionId = enabledSkill.senseData.id;
+
+  if (senseData?.conditionType === 'condition') {
+    const conditionId = senseData.id;
     const effect = AtcvEffect.toEffectFromAtcvEffect(
-      AtcvEffect.fromSenseData(enabledSkill.senseData, valSkillRoll, false),
+      AtcvEffect.fromSenseData(senseData, valSkillRoll, false),
     );
     //const effect = <Effect>await ConditionalVisibilityEffectDefinitions.effect(conditionId);
     if (effect) {

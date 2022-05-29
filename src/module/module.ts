@@ -178,6 +178,25 @@ export const readyHooks = (): void => {
     module.renderChatMessage(message, html, speakerInfo);
   });
 
+  Hooks.on("deleteToken", (document:TokenDocument, options, userId:string) => {
+    const sourceToken = <Token>document.object;
+    if (!sourceToken) {
+      return;
+    }
+    const isPlayerOwned = <boolean>document.isOwner;
+    if (!game.user?.isGM && !isPlayerOwned) {
+      return;
+    }
+    for(const token of <Token[]>canvas.tokens?.placeables){
+      if(token.id != document.id){
+        sourceToken.actor?.unsetFlag(
+          CONSTANTS.MODULE_NAME,
+          ConditionalVisibilityFlags.ORIGINAL_IMAGE + '_' + game.userId + '_' + token.id,
+        );
+      }
+    }
+  });
+
   // Hooks.on('preCreateActiveEffect', async (activeEffect:ActiveEffect, _config, _userId) => {
   //   if (
   //     !activeEffect?.data?.flags?.isConvenient ||
@@ -463,6 +482,9 @@ const module = {
         for (const ae of effectsTmp) {
           const changesTmp = ae.changes;
           const atcveEffect = retrieveAtcvEffectFromActiveEffectSimple(sourceToken.document, changesTmp);
+          if(!atcveEffect){
+            continue;
+          }
           const atcvValue = <number>atcveEffect.visionLevelValue;
           // const atcvValue = retrieveAtcvVisionLevelValueFromActiveEffect(sourceToken,changesTmp)
           if (atcvValue == 0 || atcvValue <= -1 || !atcvValue) {
@@ -1007,32 +1029,38 @@ const module = {
               activeEffect.id === atcvEffect.id
             ) {
               const atcvEffectFlagData = AtcvEffect.fromActiveEffect(sourceToken.document, atcvEffect);
-              if (
-                <number>atcvEffectFlagData.visionLevelValue == 0 ||
-                <number>atcvEffectFlagData.visionLevelValue < -1
-              ) {
-                await repairAndUnSetFlag(sourceToken, updateKey);
-              } else {
-                await repairAndSetFlag(sourceToken, updateKey, atcvEffectFlagData);
+              if(atcvEffectFlagData){
+                if (
+                  <number>atcvEffectFlagData.visionLevelValue == 0 ||
+                  <number>atcvEffectFlagData.visionLevelValue < -1
+                ) {
+                  await repairAndUnSetFlag(sourceToken, updateKey);
+                } else {
+                  await repairAndSetFlag(sourceToken, updateKey, atcvEffectFlagData);
+                }
               }
             } else if (activeEffect.id === atcvEffect.id) {
               const atcvEffectFlagData = AtcvEffect.fromActiveEffect(sourceToken.document, atcvEffect);
-              if (
-                <number>atcvEffectFlagData.visionLevelValue == 0 ||
-                <number>atcvEffectFlagData.visionLevelValue < -1
-              ) {
-                await repairAndUnSetFlag(sourceToken, updateKey);
-              } else {
-                await repairAndSetFlag(sourceToken, updateKey, atcvEffectFlagData);
+              if(atcvEffectFlagData){
+                if (
+                  <number>atcvEffectFlagData.visionLevelValue == 0 ||
+                  <number>atcvEffectFlagData.visionLevelValue < -1
+                ) {
+                  await repairAndUnSetFlag(sourceToken, updateKey);
+                } else {
+                  await repairAndSetFlag(sourceToken, updateKey, atcvEffectFlagData);
+                }
               }
             }
             //}
           } else if (thereISADifference) {
             const atcvEffectFlagData = AtcvEffect.fromActiveEffect(sourceToken.document, atcvEffect);
-            if (<number>atcvEffectFlagData.visionLevelValue == 0 || <number>atcvEffectFlagData.visionLevelValue < -1) {
-              await repairAndUnSetFlag(sourceToken, updateKey);
-            } else {
-              await repairAndSetFlag(sourceToken, updateKey, atcvEffectFlagData);
+            if(atcvEffectFlagData){
+              if (<number>atcvEffectFlagData.visionLevelValue == 0 || <number>atcvEffectFlagData.visionLevelValue < -1) {
+                await repairAndUnSetFlag(sourceToken, updateKey);
+              } else {
+                await repairAndSetFlag(sourceToken, updateKey, atcvEffectFlagData);
+              }
             }
           } else if (currentAtcvEffectFlagData.visionIsDisabled != atcvEffect.data.disabled) {
             if (

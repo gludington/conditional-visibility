@@ -363,6 +363,9 @@ export class AtcvEffect {
       undefined,
       effect.isDisabled,
     );
+    if(!res){
+      return;
+    }
     if (!res.visionId && effect.customId) {
       res.visionId = effect.customId;
     }
@@ -392,6 +395,9 @@ export class AtcvEffect {
       undefined,
       activeEffect.data.disabled,
     );
+    if(!res){
+      return;
+    }
     /*
     let sensesOrConditions: SenseData[] = [];
     sensesOrConditions.push(...API.SENSES);

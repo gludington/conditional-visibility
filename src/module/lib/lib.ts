@@ -2468,55 +2468,62 @@ export function drawHandlerCVImageAll(controlledToken: Token) {
 
 export async function drawHandlerCVImage(controlledToken: Token, tokenToCheckIfIsVisible: Token) {
   if (game?.ready && game.settings.get(CONSTANTS.MODULE_NAME, 'enableDrawCVHandler')) {
-    const currentFlag = tokenToCheckIfIsVisible.actor?.getFlag(
+    const currentFlag = controlledToken.actor?.getFlag(
       CONSTANTS.MODULE_NAME,
       ConditionalVisibilityFlags.ORIGINAL_IMAGE + '_' + game.userId + '_' + tokenToCheckIfIsVisible.id,
     );
-    if (<number>(<Token[]>canvas.tokens?.controlled.filter((t) => t.id == controlledToken.id))?.length <= 0) {
-      if (game.user?.isGM) {
-        if (currentFlag) {
-          await conditionalVisibilitySocket.executeAsUser(
-            'drawImageByUserCV',
-            game.userId,
-            currentFlag,
-            tokenToCheckIfIsVisible.id,
-          );
-          await tokenToCheckIfIsVisible.actor?.unsetFlag(
+    if (<number>canvas.tokens?.controlled.length <= 0){
+      if (currentFlag &&  currentFlag != tokenToCheckIfIsVisible.data.img) {
+        await conditionalVisibilitySocket.executeAsUser(
+          'drawImageByUserCV',
+          game.userId,
+          currentFlag,
+          tokenToCheckIfIsVisible.id,
+        );
+        // controlledToken.actor?.unsetFlag(
+        //   CONSTANTS.MODULE_NAME,
+        //   ConditionalVisibilityFlags.ORIGINAL_IMAGE + '_' + game.userId + '_' + tokenToCheckIfIsVisible.id,
+        // );
+      }else{
+        const ownedsTokens = getOwnedTokens(false).filter((t) => t.id != tokenToCheckIfIsVisible.id);
+        for(const ownToken of ownedsTokens){
+          const currentFlagTmp = ownToken.actor?.getFlag(
             CONSTANTS.MODULE_NAME,
             ConditionalVisibilityFlags.ORIGINAL_IMAGE + '_' + game.userId + '_' + tokenToCheckIfIsVisible.id,
           );
+          if(currentFlagTmp && currentFlagTmp != tokenToCheckIfIsVisible.data.img){
+            await conditionalVisibilitySocket.executeAsUser(
+              'drawImageByUserCV',
+              game.userId,
+              currentFlagTmp,
+              tokenToCheckIfIsVisible.id,
+            );
+            // ownToken.actor?.unsetFlag(
+            //   CONSTANTS.MODULE_NAME,
+            //   ConditionalVisibilityFlags.ORIGINAL_IMAGE + '_' + game.userId + '_' + tokenToCheckIfIsVisible.id,
+            // );
+          }
         }
       }
       return;
     }
-
-    // 2022-05-27
-    /*
-    let sourceVisionLevels =
-      <AtcvEffect[]>controlledToken.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES) ??
-      <AtcvEffect[]>(
-        controlledToken.document.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES)
-      ) ?? // TODO to remove
-      [];
-    if (sourceVisionLevels.length <= 0) {
-      sourceVisionLevels = getSensesFromToken(controlledToken.document, true, true);
-    }
-    // TODO we need this
-    let targetVisionLevels =
-      <AtcvEffect[]>(
-        tokenToCheckIfIsVisible.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_CONDITIONS)
-      ) ??
-      <AtcvEffect[]>(
-        tokenToCheckIfIsVisible.document.actor?.getFlag(
-          CONSTANTS.MODULE_NAME,
-          ConditionalVisibilityFlags.DATA_CONDITIONS,
-        )
-      ) ?? // TODO to remove
-      [];
-    if (targetVisionLevels.length <= 0) {
-      targetVisionLevels = getConditionsFromToken(tokenToCheckIfIsVisible.document, true, true);
-    }
-    */
+    // if (<number>(<Token[]>canvas.tokens?.controlled.filter((t) => t.id == controlledToken.id))?.length <= 0) {
+    //   if (game.user?.isGM) {
+    //     if (currentFlag) {
+    //       await conditionalVisibilitySocket.executeAsUser(
+    //         'drawImageByUserCV',
+    //         game.userId,
+    //         currentFlag,
+    //         tokenToCheckIfIsVisible.id,
+    //       );
+    //       await controlledToken.actor?.unsetFlag(
+    //         CONSTANTS.MODULE_NAME,
+    //         ConditionalVisibilityFlags.ORIGINAL_IMAGE + '_' + game.userId + '_' + tokenToCheckIfIsVisible.id,
+    //       );
+    //     }
+    //   }
+    //   return;
+    // }
 
     const sourceVisionLevels = getSensesFromTokenFast(controlledToken.document, true, true);
     const targetVisionLevels = getConditionsFromTokenFast(tokenToCheckIfIsVisible.document, true, true);
@@ -2533,29 +2540,23 @@ export async function drawHandlerCVImage(controlledToken: Token, tokenToCheckIfI
     for (const atcvEffectSource of atcvEffectsSource) {
       if (atcvEffectSource.visionTargetImage) {
         if (atcvEffectSource.visionTargetImage != tokenToCheckIfIsVisible.data.img) {
-          await tokenToCheckIfIsVisible.actor?.setFlag(
-            CONSTANTS.MODULE_NAME,
-            ConditionalVisibilityFlags.ORIGINAL_IMAGE + '_' + game.userId + '_' + tokenToCheckIfIsVisible.id,
-            tokenToCheckIfIsVisible.data.img,
-          );
+          const oriImage = tokenToCheckIfIsVisible.data.img;
           await conditionalVisibilitySocket.executeAsUser(
             'drawImageByUserCV',
             game.userId,
             atcvEffectSource.visionTargetImage,
             tokenToCheckIfIsVisible.id,
           );
+          controlledToken.actor?.setFlag(
+            CONSTANTS.MODULE_NAME,
+            ConditionalVisibilityFlags.ORIGINAL_IMAGE + '_' + game.userId + '_' + tokenToCheckIfIsVisible.id,
+            oriImage,
+          );
           foundedImageToUpdated = true;
           break;
         }
+        foundedImageToUpdated = true;
       }
-      // else if (atcvEffectSource.visionSourceImage) {
-      //   if (atcvEffectSource.visionSourceImage != tokenToCheckIfIsVisible.data.img){
-      //     await tokenToCheckIfIsVisible.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.ORIGINAL_IMAGE, tokenToCheckIfIsVisible.data.img)
-      //     await conditionalVisibilitySocket.executeAsUser('drawImageByUserCV', game.userId, atcvEffectSource.visionSourceImage, tokenToCheckIfIsVisible.id);
-      //     foundedImageToUpdated = true;
-      //     break;
-      //   }
-      // }
       else {
         // Do noting
         // tokenToCheckIfIsVisible.clear();
@@ -2564,30 +2565,24 @@ export async function drawHandlerCVImage(controlledToken: Token, tokenToCheckIfI
 
     if (!foundedImageToUpdated) {
       for (const atcvEffectTarget of atcvEffectsTarget) {
-        // if (atcvEffectTarget.visionTargetImage) {
-        //   if(atcvEffectTarget.visionTargetImage != tokenToCheckIfIsVisible.data.img){
-        //     await tokenToCheckIfIsVisible.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.ORIGINAL_IMAGE, tokenToCheckIfIsVisible.data.img)
-        //     await conditionalVisibilitySocket.executeAsUser('drawImageByUserCV', game.userId, atcvEffectTarget.visionTargetImage, tokenToCheckIfIsVisible.id);
-        //     foundedImageToUpdated = true;
-        //     break;
-        //   }
-        // }
         if (atcvEffectTarget.visionSourceImage) {
           if (atcvEffectTarget.visionSourceImage != tokenToCheckIfIsVisible.data.img) {
-            await tokenToCheckIfIsVisible.actor?.setFlag(
-              CONSTANTS.MODULE_NAME,
-              ConditionalVisibilityFlags.ORIGINAL_IMAGE + '_' + game.userId + '_' + tokenToCheckIfIsVisible.id,
-              tokenToCheckIfIsVisible.data.img,
-            );
+            const oriImage = tokenToCheckIfIsVisible.data.img;
             await conditionalVisibilitySocket.executeAsUser(
               'drawImageByUserCV',
               game.userId,
               atcvEffectTarget.visionSourceImage,
               tokenToCheckIfIsVisible.id,
             );
+            controlledToken.actor?.setFlag(
+              CONSTANTS.MODULE_NAME,
+              ConditionalVisibilityFlags.ORIGINAL_IMAGE + '_' + game.userId + '_' + tokenToCheckIfIsVisible.id,
+              oriImage,
+            );
             foundedImageToUpdated = true;
             break;
           }
+          foundedImageToUpdated = true;
         } else {
           // Do noting
           // tokenToCheckIfIsVisible.clear();
@@ -2595,21 +2590,18 @@ export async function drawHandlerCVImage(controlledToken: Token, tokenToCheckIfI
       }
     }
     if (!foundedImageToUpdated && currentFlag) {
-      // if (
-      //   tokenToCheckIfIsVisible.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.ORIGINAL_IMAGE) !=
-      //   tokenToCheckIfIsVisible.data.img
-      // ) {
-      await conditionalVisibilitySocket.executeAsUser(
-        'drawImageByUserCV',
-        game.userId,
-        currentFlag,
-        tokenToCheckIfIsVisible.id,
-      );
-      await tokenToCheckIfIsVisible.actor?.unsetFlag(
-        CONSTANTS.MODULE_NAME,
-        ConditionalVisibilityFlags.ORIGINAL_IMAGE + '_' + game.userId + '_' + tokenToCheckIfIsVisible.id,
-      );
-      // }
+      if (currentFlag != tokenToCheckIfIsVisible.data.img) {
+        await conditionalVisibilitySocket.executeAsUser(
+          'drawImageByUserCV',
+          game.userId,
+          currentFlag,
+          tokenToCheckIfIsVisible.id,
+        );
+        // controlledToken.actor?.unsetFlag(
+        //   CONSTANTS.MODULE_NAME,
+        //   ConditionalVisibilityFlags.ORIGINAL_IMAGE + '_' + game.userId + '_' + tokenToCheckIfIsVisible.id,
+        // );
+      }
     }
   }
 }

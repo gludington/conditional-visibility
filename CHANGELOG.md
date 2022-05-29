@@ -1,3 +1,7 @@
+### 0.6.1
+
+- BUg fix on file picker
+
 ### 0.6.0 [BREAKING CHANGES]
 
 - [BREAKING CHANGES] Please do not update this module just before a session

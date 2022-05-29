@@ -115,15 +115,15 @@ There three type of these AE used and supported from this module:
 | `ATCV.conditionType`  | string | indicate the type of CV usually they are or 'sense' or 'condition' not both, **THIS IS ESSENTIAL FOR USE SENSE AND CONDITION NOT REGISTERED ON THE MODULE IF NOT FOUNDED BY DEFAULT IS CONSIDERED A SENSE**, so now you can just modify the AE and you are not forced to call the registered macro of the module CV, this is very useful for integration with other modules. | `ATCV.conditionType = sense, ATCV.conditionType = condition` |
 | `ATCV.conditionBlinded` | boolean | If true this effect / condition is applied on the token / actor it will be evaluated for the blinded check and only another effect with `ATCV.conditionBlindedOverride = true` will be able to avoid this check. |  `ATCV.conditionBlinded=true` |
 | `ATCV.conditionBlindedOverride` | boolean | If true it indicates that this effect is able to work even with the "Blinded" condition applied to the token | `ATCV.conditionBlindedOverride=true` |
-
+| `ATCV.conditionTargetImage`     | string  | string path to the image applied on target token and used from the source token (the one you click on) for replace the image token only for that player with a special sight, only if the CV check is true |
+| `ATCV.conditionSourceImage`     | string  | string path to the image applied on target token and used from the target token (the one you try to see) for replace the image token only for that player with a special sight, only if the CV check is true |
 
 
 [WORKING IN PROGRESS]
 
 | Key Syntax                      | Type    | Description                         | Examples Active Effect Data [Key = value] |
 | :------------------------------:|:-------:|:-----------------------------------:|:--------:|
-| `ATCV.conditionTargetImage`     | string  | string path to the image applied on target token and used from the source token (the one you click on) for replace the image token only for that player with a special sight, only if the CV check is true |
-| `ATCV.conditionSourceImage`     | string  | string path to the image applied on target token and used from the target token (the one you try to see) for replace the image token only for that player with a special sight, only if the CV check is true |
+
 
 ## Can i add my custom sense or condition on it ?
 

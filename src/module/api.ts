@@ -39,7 +39,7 @@ import {
 import type Effect from './effects/effect';
 import { ConditionalVisibilityEffectDefinitions } from './conditional-visibility-effect-definition';
 import type { EnhancedConditions } from './cub/enhanced-conditions';
-import type { ActiveEffectData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/module.mjs';
+import type { ActiveEffectData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/data.mjs';
 import { EffectSupport } from './effects/effect-support';
 
 const API = {

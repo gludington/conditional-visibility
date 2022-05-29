@@ -48,7 +48,6 @@ import {
 } from './conditional-visibility-models';
 import type Effect from './effects/effect';
 import type EmbeddedCollection from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/abstract/embedded-collection.mjs';
-import type { ActorData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/module.mjs';
 import { setApi } from '../conditional-visibility';
 import { EffectSupport } from './effects/effect-support';
 import HandlebarHelpers from './apps/conditional-visibility-handlebar-helper';

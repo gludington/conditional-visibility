@@ -2739,26 +2739,6 @@ export async function renderDialogRegisterSenseData(
           //@ts-ignore
           const field = button.form[target] || null;
           const pickedFile = await new FilePicker({
-            type: 'imagevideo',
-            callback: async (path) => {
-              $(field).val(path);
-            },
-          });
-          pickedFile.browse(target);
-        });
-        break;
-      }
-      for (const fp of html.find('button.file-picker-conditional-visibility-img')) {
-        fp?.addEventListener('click', async function (event) {
-          event.preventDefault();
-          event.stopPropagation();
-          const buttonClick = event.button; // 0 left click
-          const button = <EventTarget>event.currentTarget;
-          //@ts-ignore
-          const target = button.dataset.target;
-          //@ts-ignore
-          const field = button.form[target] || null;
-          const pickedFile = await new FilePicker({
             type: 'image', // imagevideo
             callback: async (path) => {
               $(field).val(path);
@@ -2807,6 +2787,7 @@ export async function renderDialogRegisterSenseData(
           });
           pickedFile.browse(target);
         });
+        break;
       }
     },
     buttons: {

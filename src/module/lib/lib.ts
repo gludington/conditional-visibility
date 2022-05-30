@@ -1921,7 +1921,7 @@ export async function repairAndUnSetFlag(token: Token, key: string) {
         !a.visionIsDisabled
       );
     });
-    
+
     if (isSense) {
       await token.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES, data);
     } else if (isCondition) {
@@ -3109,62 +3109,65 @@ export async function manageActiveEffectForAutoSkillsFeature(
   selectedToken: Token,
   valSkillRoll: number,
 ) {
-  const setAeToRemove = new Set<string>();
-  const actorEffects = <EmbeddedCollection<typeof ActiveEffect, ActorData>>selectedToken.actor?.data.effects;
-  if (senseData?.conditionType === 'sense') {
-    const senseId = senseData.id;
-    const effect = AtcvEffect.toEffectFromAtcvEffect(AtcvEffect.fromSenseData(senseData, valSkillRoll, false));
-    //const effect = <Effect>await ConditionalVisibilityEffectDefinitions.effect(senseId);
-    if (effect) {
-      if (valSkillRoll == 0 || valSkillRoll < -1) {
-        // await API.removeEffectOnToken(selectedToken.id, i18n(<string>effect?.name));
-        const effectToRemove = <ActiveEffect>(
-          actorEffects.find((activeEffect) => isStringEquals(<string>activeEffect?.data?.label, <string>effect?.name))
-        );
-        if (effectToRemove) {
-          setAeToRemove.add(<string>effectToRemove.id);
+  // for(const selectedToken of selectedTokens){
+    const setAeToRemove = new Set<string>();
+    const actorEffects = <EmbeddedCollection<typeof ActiveEffect, ActorData>>selectedToken.actor?.data.effects;
+    if (senseData?.conditionType === 'sense') {
+      const senseId = senseData.id;
+      const effect = AtcvEffect.toEffectFromAtcvEffect(AtcvEffect.fromSenseData(senseData, valSkillRoll, false));
+      //const effect = <Effect>await ConditionalVisibilityEffectDefinitions.effect(senseId);
+      if (effect) {
+        if (valSkillRoll == 0 || valSkillRoll < -1) {
+          // await API.removeEffectOnToken(selectedToken.id, i18n(<string>effect?.name));
+          const effectToRemove = <ActiveEffect>(
+            actorEffects.find((activeEffect) => isStringEquals(<string>activeEffect?.data?.label, <string>effect?.name))
+          );
+          if (effectToRemove) {
+            setAeToRemove.add(<string>effectToRemove.id);
+          }
+          //await repairAndUnSetFlag(selectedToken, senseId);
+        } else {
+          const atcvEffectFlagData = AtcvEffect.fromEffect(selectedToken.document, effect);
+          if (atcvEffectFlagData) {
+            atcvEffectFlagData.visionLevelValue = valSkillRoll;
+            //await repairAndSetFlag(selectedToken, senseId, atcvEffectFlagData);
+            await API.addEffectOnToken(selectedToken.id,effect.name,effect);
+          }
         }
-        await repairAndUnSetFlag(selectedToken, senseId);
       } else {
-        const atcvEffectFlagData = AtcvEffect.fromEffect(selectedToken.document, effect);
-        if (atcvEffectFlagData) {
-          atcvEffectFlagData.visionLevelValue = valSkillRoll;
-          await repairAndSetFlag(selectedToken, senseId, atcvEffectFlagData);
-        }
+        warn(`Can't find effect definition for sense with id = '${senseId}'`, true);
       }
-    } else {
-      warn(`Can't find effect definition for sense with id = '${senseId}'`, true);
     }
-  }
 
-  if (senseData?.conditionType === 'condition') {
-    const conditionId = senseData.id;
-    const effect = AtcvEffect.toEffectFromAtcvEffect(AtcvEffect.fromSenseData(senseData, valSkillRoll, false));
-    //const effect = <Effect>await ConditionalVisibilityEffectDefinitions.effect(conditionId);
-    if (effect) {
-      if (valSkillRoll == 0) {
-        // await API.removeEffectOnToken(selectedToken.id, i18n(<string>effect?.name));
-        const effectToRemove = <ActiveEffect>(
-          actorEffects.find((activeEffect) => isStringEquals(<string>activeEffect?.data?.label, <string>effect?.name))
-        );
-        if (effectToRemove) {
-          setAeToRemove.add(<string>effectToRemove.id);
+    if (senseData?.conditionType === 'condition') {
+      const conditionId = senseData.id;
+      const effect = AtcvEffect.toEffectFromAtcvEffect(AtcvEffect.fromSenseData(senseData, valSkillRoll, false));
+      //const effect = <Effect>await ConditionalVisibilityEffectDefinitions.effect(conditionId);
+      if (effect) {
+        if (valSkillRoll == 0) {
+          // await API.removeEffectOnToken(selectedToken.id, i18n(<string>effect?.name));
+          const effectToRemove = <ActiveEffect>(
+            actorEffects.find((activeEffect) => isStringEquals(<string>activeEffect?.data?.label, <string>effect?.name))
+          );
+          if (effectToRemove) {
+            setAeToRemove.add(<string>effectToRemove.id);
+          }
+          //await repairAndUnSetFlag(selectedToken, conditionId);
+        } else {
+          const atcvEffectFlagData = AtcvEffect.fromEffect(selectedToken.document, effect);
+          if (atcvEffectFlagData) {
+            atcvEffectFlagData.visionLevelValue = valSkillRoll;
+            //await repairAndSetFlag(selectedToken, conditionId, atcvEffectFlagData);
+            await API.addEffectOnToken(selectedToken.id,effect.name,effect);
+          }
         }
-        await repairAndUnSetFlag(selectedToken, conditionId);
       } else {
-        const atcvEffectFlagData = AtcvEffect.fromEffect(selectedToken.document, effect);
-        if (atcvEffectFlagData) {
-          atcvEffectFlagData.visionLevelValue = valSkillRoll;
-          await repairAndSetFlag(selectedToken, conditionId, atcvEffectFlagData);
-        }
+        warn(`Can't find effect definition for condition with id = '${conditionId}'`, true);
       }
-    } else {
-      warn(`Can't find effect definition for condition with id = '${conditionId}'`, true);
     }
-  }
-  // FINALLY REMVE ALL THE ACTIVE EFFECT
-  if (setAeToRemove.size > 0) {
-    await API.removeEffectFromIdOnTokenMultiple(<string>selectedToken.id, Array.from(setAeToRemove));
-  }
+    // FINALLY REMVE ALL THE ACTIVE EFFECT
+    if (setAeToRemove.size > 0) {
+      await API.removeEffectFromIdOnTokenMultiple(<string>selectedToken.id, Array.from(setAeToRemove));
+    }
   // }
 }

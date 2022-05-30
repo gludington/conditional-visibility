@@ -1304,9 +1304,16 @@ const module = {
         // const conditionId = AtcvEffectConditionFlags.HIDDEN;
 
         const selectedToken = sourceToken;
+        // const selectedTokens = <Token[]>canvas.tokens?.controlled || [];
+        // let foundedToken = false;
         // for (const selectedToken of selectedTokens) {
-        // if (!selectedToken) {
-        //   continue;
+        //   if(selectedToken.id === sourceToken.id){
+        //     foundedToken = true;
+        //     break;
+        //   }
+        // }
+        // if(!foundedToken){
+        //   controlledTokens.push(sourceToken);
         // }
         if (game.settings.get(CONSTANTS.MODULE_NAME, 'autoSkillsSkipDialog')) {
           const senseData = <SenseData>(<CVSkillData>enabledSkill).senseData;
@@ -1368,7 +1375,7 @@ const module = {
         const setAeToRemove = new Set<string>();
         const actorEffects = <EmbeddedCollection<typeof ActiveEffect, ActorData>>selectedToken.actor?.data.effects;
         if (
-          senseId != AtcvEffectSenseFlags.NONE 
+          senseId != AtcvEffectSenseFlags.NONE
           // 2022-05-30
           //senseId != AtcvEffectSenseFlags.NORMAL
         ) {

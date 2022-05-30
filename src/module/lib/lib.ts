@@ -1525,7 +1525,7 @@ export async function toggleStealth(event, app) {
     },
     default: 'close',
   });
-  hud.render(false);
+  hud.render(true);
 }
 
 export function getDistanceSightFromToken(token: Token): number {

@@ -1,3 +1,7 @@
+### 0.6.5
+
+- Bug fix [[BUG] CV HUD Element not functional](https://github.com/p4535992/conditional-visibility/issues/40)
+
 ### 0.6.4
 
 - Bug fix [[BUG] Conditional Visibility spam upon Refresh](https://github.com/p4535992/conditional-visibility/issues/38)

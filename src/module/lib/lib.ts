@@ -1194,6 +1194,8 @@ export function retrieveAtcvEffectFromActiveEffect(
             let myresult = 0;
             //roll.roll();
             try {
+              // TODO Roll#evaluate is becoming asynchronous. In the short term you may pass async=true or async=false 
+              // to evaluation options to nominate your preferred behavior.
               roll.evaluate();
               myresult = roll.total ? <number>roll.total : parseInt(roll.result);
             } catch (e) {

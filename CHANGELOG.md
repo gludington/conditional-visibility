@@ -1,3 +1,7 @@
+### 0.6.4
+
+- Bug fix [[BUG] Conditional Visibility spam upon Refresh](https://github.com/p4535992/conditional-visibility/issues/38)
+
 ### 0.6.3
 
 - Bug fix on strange chat message wihtout speakrt info id

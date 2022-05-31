@@ -37,7 +37,7 @@
   "conditional-visibility.setting.pathAttributesSenses.name": "The data path to the attributes senses of the actor",
   "conditional-visibility.setting.pathAttributesSenses.hint": "[This is system dependent] This is the data path from the actor data object for the senses associated to the system, in D&D5e system, the attribute used is \"data.attributes.senses\" so you'd put that in this setting.",
   "conditional-visibility.setting.enableDrawCVHandler.name": "[EXPERIMENTAL] Enable draw CV Handler",
-  "conditional-visibility.setting.enableDrawCVHandler.hint": "Draw specific token base on the CV configuration of the token",
+  "conditional-visibility.setting.enableDrawCVHandler.hint": "Draw specific token images based on the CV configuration of the 'conditionSourceImage' and 'conditionTargetImage' active effect changes applied to the token",
   "conditional-visibility.setting.enableFastModeCVHandler.name": "[EXPERIMENTAL] Enable fast mode CV Handler",
   "conditional-visibility.setting.enableFastModeCVHandler.hint": "This will apply a map for cache the result of the CV for a fast interaction. The map will be cleared every time a CV flag is been modified. ATTENTION: When the 'Fast Mode' is enabled no debug information in generated with the 'Enable debugging' module setting.",
   "conditional-visibility.setting.enableRefreshSightCVHandler.name": "Enable refresh sight CV Handler",

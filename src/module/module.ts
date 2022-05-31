@@ -1273,8 +1273,8 @@ const module = {
 
     const messageTimestamp = message.data.timestamp;
     const secondBetweenTwoDate = Math.abs((Date.now() - messageTimestamp) / 1000);
-    // Ignore all message older than 3 seconds
-    if(secondBetweenTwoDate > 3){
+    // Ignore all message older than 5 seconds
+    if(secondBetweenTwoDate > 5){
       return;
     }
 

@@ -184,6 +184,8 @@ CUB already manage the connection with active effect and a management with the [
 
 ### Customize for each token specific image for specific token
 
+**NOTE:** You must enable the module setting "[EXPERIMENTAL] Enable draw CV Handler" for activated this.
+
 ![img6](./wiki/video/feature_image_1.gif)
 
 ## Api

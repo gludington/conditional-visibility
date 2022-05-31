@@ -1271,6 +1271,13 @@ const module = {
       return;
     }
 
+    const messageTimestamp = message.data.timestamp;
+    const secondBetweenTwoDate = Math.abs((Date.now() - messageTimestamp) / 1000);
+    // Ignore all message older than 3 seconds
+    if(secondBetweenTwoDate > 3){
+      return;
+    }
+
     let enabledSkill: CVSkillData | undefined | null;
     // This work with TAH, LMRTFY and character sheet
     if (speakerInfo.message.roll || message.data.flags['monks-tokenbar'] || message.data.flags['betterrolls5e']) {

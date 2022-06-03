@@ -117,7 +117,7 @@ export class AtcvEffect {
     //   res.visionType = isSense ? 'sense' : 'condition';
     // }
     // if(!res.visionIsDisabled){
-    //   res.visionIsDisabled = Stirng(IsDisabled) === 'true' ? true : false;
+    //   res.visionIsDisabled = String(IsDisabled) === 'true' ? true : false;
     // }
     if (!res.visionBlinded) {
       res.visionBlinded = senseData.conditionBlinded;
@@ -778,8 +778,10 @@ export class VisionCapabilities {
   }
 }
 
-export class CheckerDebugData {
-  atcvSourceEffect: AtcvEffect;
-  atcvTargetEffect: AtcvEffect | string;
-  checkerResult: boolean;
+export class CVResultData {
+  sourceTokenId:string;
+  targetTokenId:string;
+  sourceVisionsLevels: AtcvEffect[];
+  targetVisionsLevels: AtcvEffect[];
+  canSee: boolean;
 }

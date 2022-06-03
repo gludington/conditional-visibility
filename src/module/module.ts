@@ -406,7 +406,14 @@ const module = {
       }
     } // Fine for
 
-    if (!change.actor?.data?.flags[CONSTANTS.MODULE_NAME]) {
+    const hasCVFlagOnChange:boolean =       
+      change.actor &&
+      change.actor.data &&
+      change.actor.data.flags &&
+      change.actor.data.flags[CONSTANTS.MODULE_NAME];
+
+    // if (!change.actor?.data?.flags[CONSTANTS.MODULE_NAME]) {
+    if(!hasCVFlagOnChange){
       if (change.flags && change.flags[CONSTANTS.MODULE_NAME]) {
         if (!change.actor) {
           change.actor = {};
@@ -438,47 +445,17 @@ const module = {
           if (change.actorData && change.actorData.flags && change.actorData.flags[CONSTANTS.MODULE_NAME]) {
             change.actor.data.flags[CONSTANTS.MODULE_NAME] = change.actorData.flags[CONSTANTS.MODULE_NAME];
           }
-          // } else if(change.actorData && change.actorData.effects && change.actorData.effects.length > 0) {
-          //   if (!change.actor) {
-          //     change.actor = {};
-          //   }
-          //   if (!change.actor.data) {
-          //     change.actor.data = {};
-          //   }
-          //   if (!change.actor.data.flags) {
-          //     change.actor.data.flags = {};
-          //   }
-          //   if (!change.actor.data.flags[CONSTANTS.MODULE_NAME]) {
-          //     change.actor.data.flags[CONSTANTS.MODULE_NAME] = {};
-          //   }
-          //   if(change.actorData && change.actorData.flags && change.actorData.flags[CONSTANTS.MODULE_NAME]){
-          //     change.actor.data.flags[CONSTANTS.MODULE_NAME] = change.actorData.flags[CONSTANTS.MODULE_NAME];
-          //   }
-          //   const effectsTmp = duplicateExtended(change.actorData.effects);
-          //   for(const aetoken of <PropertiesToSource<ActiveEffectDataProperties>[]>document.data.actorData.effects){
-          //     let foundeEffect = false;
-          //     for(const ae of effectsTmp){
-          //       if(isStringEquals(aetoken.label,ae.label)){
-          //         foundeEffect = true;
-          //         break;
-          //       }
-          //     }
-          //     if(!foundeEffect){
-          //       change.actorData.effects.push(aetoken)
-          //     }
-          //   }
         } else {
           return;
         }
       }
     }
-    if (
-      change.actor &&
-      change.actor.data &&
-      change.actor.data.flags[CONSTANTS.MODULE_NAME]
-      // !getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_SENSES}`) && // 2022-05-27
-      // !getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_CONDITIONS}`) // 2022-05-27
-    ) {
+    // if (
+    //   change.actor &&
+    //   change.actor.data &&
+    //   change.actor.data.flags[CONSTANTS.MODULE_NAME]
+    // ) {
+    if(hasCVFlagOnChange){
       module.updateToken(sourceToken.document, change, options, userId);
     }
   },
@@ -492,7 +469,15 @@ const module = {
     if (!game.user?.isGM && !isPlayerOwned) {
       return;
     }
-    if (!change.actor?.data?.flags[CONSTANTS.MODULE_NAME]) {
+
+    const hasCVFlagOnChange:boolean =       
+      change.actor &&
+      change.actor.data &&
+      change.actor.data.flags &&
+      change.actor.data.flags[CONSTANTS.MODULE_NAME];
+
+    // if (!change.actor?.data?.flags[CONSTANTS.MODULE_NAME]) {
+    if (!hasCVFlagOnChange) {
       if (change.actorData && change.actorData.flags && change.actorData.flags[CONSTANTS.MODULE_NAME]) {
         if (!change.actor) {
           change.actor = {};
@@ -540,13 +525,13 @@ const module = {
     }
     let isEnabledForToken = false;
     let p;
-    if (
-      change.actor &&
-      change.actor.data &&
-      change.actor.data.flags[CONSTANTS.MODULE_NAME]
-      //!getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_SENSES}`) && // 2022-05-27
-      //!getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_CONDITIONS}`) // 2022-05-27
-    ) {
+    // if (
+    //   change.actor &&
+    //   change.actor.data &&
+    //   change.actor.data.flags &&
+    //   change.actor.data.flags[CONSTANTS.MODULE_NAME]
+    // ) {
+    if(hasCVFlagOnChange){
       isEnabledForToken = true;
       p = getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}`);
     }
@@ -704,15 +689,14 @@ const module = {
       }
     }
     if (
-      change.actor &&
-      change.actor.data &&
-      change.actor.data.flags[CONSTANTS.MODULE_NAME] &&
+      // change.actor &&
+      // change.actor.data &&
+      // change.actor.data.flags[CONSTANTS.MODULE_NAME] &&
+      hasCVFlagOnChange && 
       getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`) !=
         null &&
       getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`) !=
         undefined
-      //!getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_SENSES}`) && // 2022-05-27
-      //!getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_CONDITIONS}`) // 2022-05-27
     ) {
       const forceVisible = !!getProperty(
         change,
@@ -731,9 +715,10 @@ const module = {
       }
     }
     if (
-      change.actor &&
-      change.actor.data &&
-      change.actor.data.flags[CONSTANTS.MODULE_NAME] &&
+      // change.actor &&
+      // change.actor.data &&
+      // change.actor.data.flags[CONSTANTS.MODULE_NAME] &&
+      hasCVFlagOnChange &&
       getProperty(
         change,
         `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.USE_STEALTH_PASSIVE}`,
@@ -742,8 +727,6 @@ const module = {
         change,
         `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.USE_STEALTH_PASSIVE}`,
       ) != undefined
-      // !getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_SENSES}`) && // 2022-05-27
-      // !getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.DATA_CONDITIONS}`)// 2022-05-27
     ) {
       const useStealthPassive = !!getProperty(
         change,

@@ -1,3 +1,9 @@
+### 0.6.7
+
+- Add a checr on the flags property on the updateToken
+- Checker more faster when using the draw handler
+- Update API and tutorial documentation little
+
 ### 0.6.6
 
 - Bug fix (again): [[BUG] Conditional Visibility spam upon Refresh](https://github.com/p4535992/conditional-visibility/issues/38)

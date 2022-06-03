@@ -33,6 +33,7 @@ import {
   AtcvEffectConditionFlags,
   AtcvEffectSenseFlags,
   ConditionalVisibilityFlags,
+  CVResultData,
   CVSkillData,
   SenseData,
 } from './conditional-visibility-models';
@@ -1246,7 +1247,7 @@ const API = {
       throw error('renderAutoSkillsDialogCVArr | inAttributes must be of type array');
     }
     const [sourceTokenId, enabledSkill, isSense, valSkillRoll] = inAttributes;
-    const tokens = <Token[]>canvas.tokens?.placeables;
+    const tokens = <Token[]>canvas.tokens?.placeables || [];
     const sourceToken = <Token>tokens.find((token) => {
       return isStringEquals(token.name, i18n(sourceTokenId)) || isStringEquals(token.id, sourceTokenId);
     });
@@ -1257,8 +1258,40 @@ const API = {
     renderAutoSkillsDialog(sourceToken, enabledSkill, isSense, valSkillRoll);
   },
 
-  canSee(sourceToken: Token, targetToken: Token): boolean {
-    return <boolean>shouldIncludeVisionV2(sourceToken, targetToken);
+  canSee(sourceTokenIdOrName: string, targetTokenIdOrName: string): boolean {
+    const tokens = <Token[]>canvas.tokens?.placeables || [];
+    const sourceToken = <Token>tokens.find((token) => {
+      return isStringEquals(token.name, i18n(targetTokenIdOrName)) || isStringEquals(token.id, targetTokenIdOrName);
+    });
+    const targetToken = <Token>tokens.find((token) => {
+      return isStringEquals(token.name, i18n(sourceTokenIdOrName)) || isStringEquals(token.id, sourceTokenIdOrName);
+    });
+    if (!sourceToken) {
+      warn(`No token found with reference '${sourceTokenIdOrName}'`, true);
+    }
+    if (!targetToken) {
+      warn(`No token found with reference '${targetTokenIdOrName}'`, true);
+    }
+    const cvResultData = shouldIncludeVisionV2(sourceToken, targetToken);
+    return cvResultData.canSee;
+  },
+
+  canSeeWithData(sourceTokenIdOrName: string, targetTokenIdOrName: string): CVResultData {
+    const tokens = <Token[]>canvas.tokens?.placeables || [];
+    const sourceToken = <Token>tokens.find((token) => {
+      return isStringEquals(token.name, i18n(targetTokenIdOrName)) || isStringEquals(token.id, targetTokenIdOrName);
+    });
+    const targetToken = <Token>tokens.find((token) => {
+      return isStringEquals(token.name, i18n(sourceTokenIdOrName)) || isStringEquals(token.id, sourceTokenIdOrName);
+    });
+    if (!sourceToken) {
+      warn(`No token found with reference '${sourceTokenIdOrName}'`, true);
+    }
+    if (!targetToken) {
+      warn(`No token found with reference '${targetTokenIdOrName}'`, true);
+    }
+    const cvResultData = shouldIncludeVisionV2(sourceToken, targetToken);
+    return cvResultData;
   },
 
   async cleanUpToken(tokenId: string) {
@@ -1341,7 +1374,7 @@ const API = {
     }
   },
 
-  weakMap: new Map<String, boolean>(),
+  // weakMap: new Map<String, boolean>(),
 };
 
 export default API;

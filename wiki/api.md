@@ -188,6 +188,54 @@ A method to un-register a customize condition from the world
 
 `game.modules.get('conditional-visibility').api.unRegisterCondition('bloodsight')`
 
+### game.modules.get('conditional-visibility').api.canSee(sourceTokenIdOrName: string, targetTokenIdOrName: string) ⇒ <code>boolean</code>
+
+A method to check if a source token can see a target token
+
+**Returns**: <code>boolean</code>
+
+| Param | Type | Description | Default |
+| --- | --- | --- | --- |
+| sourceTokenIdOrName | <code>string</code> | The source token id or name (if founded) | <code>undefined</code> |
+| targetTokenIdOrName | <code>string</code> | The target token id or name (if founded) | <code>undefined</code> |
+
+### game.modules.get('conditional-visibility').api.canSeeWithData(sourceTokenIdOrName: string, targetTokenIdOrName: string) ⇒ <code>CVResultData</code>
+
+A method to check if a source token can see a target token, with info
+
+**Returns**: <code>CVResultData</code>
+
+| Param | Type | Description | Default |
+| --- | --- | --- | --- |
+| sourceTokenIdOrName | <code>string</code> | The source token id or name (if founded) | <code>undefined</code> |
+| targetTokenIdOrName | <code>string</code> | The target token id or name (if founded) | <code>undefined</code> |
+
+### async game.modules.get('conditional-visibility').api.cleanUpTokenSelected() ⇒ <code>Promise.&lt;void&gt;</code>
+
+Macro to clean up flags on token and actor
+
+**Examples**:
+
+`game.modules.get('automated-polymorpher').api.cleanUpTokenSelected()`
+
+### async game.modules.get('conditional-visibility').api.cleanUpToken(tokenId: string) ⇒ <code>Promise.&lt;void&gt;</code>
+
+Macro to clean up flags on token and actor for specific
+
+**Examples**:
+
+`game.modules.get('automated-polymorpher').api.cleanUpToken('asedtd')`
+
+
+###  [DEPRECATED] async game.modules.get('conditional-visibility').api.cleanUpTokenSelectedOnlyCVData() ⇒ <code>Promise.&lt;void&gt;</code>
+
+Macro to clean up flags on token and actor, but limited only to CVDATA
+
+**Examples**:
+
+`game.modules.get('automated-polymorpher').api.cleanUpTokenSelectedOnlyCVData()`
+
+
 ## Work in progress for add the others function, not sure if i'll find the time for this, but you can read directly the API class if you want [API](../src/module/api.ts)...
 
 # Models
@@ -200,14 +248,17 @@ This is the model used for register a custom sense or condition to the module
 {
   id: string; // This is the unique id used for sync all the senses and conditions (please no strange character, no whitespace and all in lowercase...)
   name: string; // This is the unique name used for sync all the senses and conditions (here you cna put any dirty character you want)
-  path: string; // This is the path to the property you want to associate with this sense e.g. data.skills.prc.passive
+  path: string; // [OPTIONAL] This is the path to the property you want to associate with this sense e.g. data.skills.prc.passive
   img: string; // [OPTIONAL] Image to associate to this sense
-  conditionElevation: boolean; // [OPTIONAL] force to check the elevation between the source token and the target token, useful when using module like 'Levels'
-  conditionTargets: string[]; // [OPTIONAL] force to apply the check only for these sources (you can set this but is used only from sense)
-  conditionSources: string[]; // [OPTIONAL] force to apply the check only for these sources (you can set this but is used only from condition)
-  conditionTargetImage: string; // [OPTIONAL] string path to the image applied on target token and used from the source token (the one you click on) for replace only for that player with a special sight
-  conditionSourceImage: string;
-  conditionDistance: number; // [OPTIONAL] set a maximum distance for check the sight with this effect
+  conditionType:string // indicate the type of CV usually they are or 'sense' or 'condition' not both, **THIS IS ESSENTIAL  FOR USE SENSE AND CONDITION NOT REGISTERED ON THE MODULE IF NOT FOUNDED BY DEFAULT IS CONSIDERED A SENSE**, so now you can just modify the AE and you are not forced to call the registered macro of the module CV, this is very useful for integration with other modules.
+  conditionElevation:boolean; // [OPTIONAL] if true will force to check the elevation between tokens source and target, VERY USEFUL IF YOU USE LEVELS
+  conditionTargets: Array of string; // [OPTIONAL] This is used for explicitly tell to the checker what AE Condition can be see from this AE Sense based on the custom id used from this module (you can set this but is used only from a sense effect), check out the [TABLES](./tables.md) for details, **this is basically a override of the point 6. checker based on the indexes given to the sense
+  conditionSources: Array of string: // [OPTIONAL] This is used for explicitly tell to the checker what AE Sense can be see from this AE Condition based on the custom id used from this module (you can set this but is used only from a condition effect), check out the [TABLES](./tables.md) for details, **this is basically a override of the point 6. checker based on the indexes given to the condition
+  conditionDistance:number; // [OPTIONAL] set a maximum distance for check the sight/vision with this effect
+  conditionBlinded:boolean; // [OPTIONAL] If true this effect / condition is applied on the token / actor it will be evaluated for the blinded check and only another effect with `ATCV.conditionBlindedOverride = true` will be able to avoid this check.
+  conditionBlindedOverride:boolean; // [OPTIONAL] If true it indicates that this effect is able to work even with the "Blinded" condition applied to the token
+  conditionTargetImage:string  // [OPTIONAL] string path to the image applied on target token and used from the source token (the one you click on) for replace the image token only for that player with a special sight, only if the CV check is true
+  conditionSourceImage:string; // [OPTIONAL] string path to the image applied on target token and used from the target token (the one you try to see) for replace the image token only for that player with a special sight, only if the CV check is true
 }
 ```
 
@@ -233,3 +284,33 @@ This is a example
     atcvChanges: {}; // THESE ARE THE NEW CONDITIONAL VISIBILITY CHANGES
 }
 ```
+
+## Active Token Effect Conditiona Visibility  Model or ATCV
+
+{
+  visionId: string, // This is the unique id used for sync all the senses and conditions (please no strange character, no whitespace and all in lowercase...)
+  visionName: string, // This is the unique name used for sync all the senses and conditions (here you cna put any dirty character you want)
+  visionPath: string, // [OPTIONAL] This is the path to the property you want to associate with this sense e.g. data.skills.prc.passive
+  visionIcon: string, // [OPTIONAL] Image to associate to this sense
+  visionLevelValue:number // The numeric value of the sense/condition to check with others
+  visionIsDisabled: boolean, // Boolean value for tell if the effect is disabled or not
+  visionType:string, // indicate the type of CV usually they are or 'sense' or 'condition' not both, **THIS IS ESSENTIAL  FOR USE SENSE AND CONDITION NOT REGISTERED ON THE MODULE IF NOT FOUNDED BY DEFAULT IS CONSIDERED A SENSE**, so now you can just modify the AE and you are not forced to call the registered macro of the module CV, this is very useful for integration with other modules.
+  visionElevation:boolean, // [OPTIONAL] if true will force to check the elevation between tokens source and target, VERY USEFUL IF YOU USE LEVELS
+  visionTargets: Array of string, // [OPTIONAL] This is used for explicitly tell to the checker what AE Condition can be see from this AE Sense based on the custom id used from this module (you can set this but is used only from a sense effect), check out the [TABLES](./tables.md) for details, **this is basically a override of the point 6. checker based on the indexes given to the sense
+  visionSources: Array of string, // [OPTIONAL] This is used for explicitly tell to the checker what AE Sense can be see from this AE Condition based on the custom id used from this module (you can set this but is used only from a condition effect), check out the [TABLES](./tables.md) for details, **this is basically a override of the point 6. checker based on the indexes given to the condition
+  visionDistance:number, // [OPTIONAL] set a maximum distance for check the sight/vision with this effect
+  visionBlinded:boolean, // [OPTIONAL] If true this effect / condition is applied on the token / actor it will be evaluated for the blinded check and only another effect with `ATCV.conditionBlindedOverride = true` will be able to avoid this check.
+  visionBlindedOverride:boolean, // [OPTIONAL] If true it indicates that this effect is able to work even with the "Blinded" condition applied to the token
+  visionTargetImage:string,  // [OPTIONAL] string path to the image applied on target token and used from the source token (the one you click on) for replace the image token only for that player with a special sight, only if the CV check is true
+  visionSourceImage:string, // [OPTIONAL] string path to the image applied on target token and used from the target token (the one you try to see) for replace the image token only for that player with a special sight, only if the CV check is true
+}
+
+## CVResultData
+
+{
+  sourceTokenId:string;
+  targetTokenId:string;
+  sourceVisionsLevels: AtcvEffect[];
+  targetVisionsLevels: AtcvEffect[];
+  canSee: boolean;
+}

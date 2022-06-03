@@ -9,6 +9,7 @@ import {
   SenseData,
   ConditionalVisibilityFlags,
   CVSkillData,
+  CVResultData,
 } from '../conditional-visibility-models.js';
 import type {
   ActorData,
@@ -104,6 +105,35 @@ export function getActiveGMs() {
 export function isResponsibleGM() {
   if (!game.user?.isGM) return false;
   return !getActiveGMs()?.some((other) => other.data._id < <string>game.user?.data._id);
+}
+
+export function firstGM() {
+  return game.users?.find(u => u.isGM && u.active);
+}
+
+export function isFirstGM() {
+  return game.user?.id === firstGM()?.id;
+}
+
+export function firstOwner(doc):User|undefined {
+  /* null docs could mean an empty lookup, null docs are not owned by anyone */
+  if (!doc) return undefined;
+  const permissionObject=(doc instanceof TokenDocument ? doc.actor?.data.permission : doc.data.permission) ?? {}
+  const playerOwners = Object.entries(permissionObject)
+    .filter(([id, level]) => (!game.users?.get(id)?.isGM && game.users?.get(id)?.active) && level === 3)
+    .map(([id, level]) => id);
+  
+  if (playerOwners.length > 0) {
+    return game.users?.get(<string>playerOwners[0]);
+  }
+
+  /* if no online player owns this actor, fall back to first GM */
+  return firstGM();
+}
+
+/* Players first, then GM */
+export function isFirstOwner(doc) {
+  return game.user?.id === firstOwner(doc)?.id;
 }
 
 // ================================
@@ -206,7 +236,7 @@ export function isStringEquals(stringToCheck1: string, stringToCheck2: string, s
 }
 
 /**
- * The duplicate function of foundry keep converting my stirng value to "0"
+ * The duplicate function of foundry keep converting my string value to "0"
  * i don't know why this methos is a brute force solution for avoid that problem
  */
 export function duplicateExtended(obj: any): any {
@@ -740,16 +770,6 @@ export function _getCVFromTokenFast(
   filterIsDisabled = false,
   isSense = true,
 ): AtcvEffect[] {
-  // 2022-05.27
-  /*
-  const atcvEffects =
-    <AtcvEffect[]>tokenDocument.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES) ?? [];
-
-  if (atcvEffects.filter((a) => !a.visionId).length > 0) {
-    return getSensesFromToken(tokenDocument);
-  }
-  */
-  // const atcvEffects = isSense ? getSensesFromToken(tokenDocument) : getConditionsFromToken(tokenDocument);
   const statusEffects: AtcvEffect[] = [];
 
   // If not token is find we go back to the default preset list...
@@ -848,8 +868,6 @@ export function _getCVFromTokenFast(
     for (const key in atcvEffectsObject) {
       const senseOrConditionIdKey = key;
       if (
-        // senseOrConditionIdKey == ConditionalVisibilityFlags.DATA_SENSES || // 2022-05.27
-        // senseOrConditionIdKey == ConditionalVisibilityFlags.DATA_CONDITIONS || // 2022-05.27
         senseOrConditionIdKey == ConditionalVisibilityFlags.FORCE_VISIBLE
       ) {
         continue;
@@ -906,8 +924,6 @@ export function _getCVFromTokenFast(
 //     for (const key in atcvEffectsObject) {
 //       const conditionIdKey = key;
 //       if (
-//         //conditionIdKey == ConditionalVisibilityFlags.DATA_SENSES || // 2022-05.27
-//         //conditionIdKey == ConditionalVisibilityFlags.DATA_CONDITIONS || // 2022-05.27
 //         conditionIdKey == ConditionalVisibilityFlags.FORCE_VISIBLE
 //       ) {
 //         continue;
@@ -1795,55 +1811,6 @@ export async function repairAndSetFlag(token: Token, key: string, value: AtcvEff
         });
       }
     }
-    // 2022-05.27
-    /*
-    if (thereISADifference) {
-      await token.actor?.setFlag(CONSTANTS.MODULE_NAME, key, value);
-      let data: AtcvEffect[] = [];
-      if (value.visionType === 'sense') {
-        // data = <AtcvEffect[]>token.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES) ?? [];
-        data = getSensesFromToken(token.document, true);
-      } else if (value.visionType === 'condition') {
-        // data = <AtcvEffect[]>token.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_CONDITIONS) ?? [];
-        data = getConditionsFromToken(token.document, true);
-      } else {
-        return;
-      }
-
-      //Find index of specific object using findIndex method.
-      const objIndex = data.findIndex((obj) => obj.visionId === value.visionId);
-      if (objIndex >= 0) {
-        //Update object's name property.
-        data[objIndex] = value;
-      } else {
-        data.push(value);
-      }
-      data = data.filter((a) => {
-        return (
-          a.visionLevelValue != 0 &&
-          a.visionLevelValue != undefined &&
-          a.visionLevelValue != null &&
-          is_real_number(a.visionLevelValue) &&
-          !a.visionIsDisabled
-        );
-      });
-      if (value.visionType === 'sense') {
-        await token.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES, data);
-      } else if (value.visionType === 'condition') {
-        await token.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_CONDITIONS, data);
-      } else {
-        // DO NOTHING
-        return;
-      }
-    }
-
-    if (game.settings.get(CONSTANTS.MODULE_NAME, 'enableRefreshSightCVHandler')) {
-      canvas.perception.schedule({
-        lighting: { refresh: true },
-        sight: { refresh: true },
-      });
-    }
-    */
   }
 }
 
@@ -1887,52 +1854,6 @@ export async function repairAndUnSetFlag(token: Token, key: string) {
     // TODO END TO REMOVE
 
     await token.actor?.unsetFlag(CONSTANTS.MODULE_NAME, key);
-    // 2022-05.27
-
-    /*
-    await token.actor?.unsetFlag(CONSTANTS.MODULE_NAME, key);
-
-    const isSense = !!API.SENSES.find((sense: SenseData) => {
-      return isStringEquals(sense.id, key);
-    });
-    const isCondition = !!API.CONDITIONS.find((sense: SenseData) => {
-      return isStringEquals(sense.id, key);
-    });
-    let data: AtcvEffect[] = [];
-    if (isSense) {
-      // data = <AtcvEffect[]>token.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES) ?? [];
-      data = getSensesFromToken(token.document, true);
-    } else if (isCondition) {
-      // data = <AtcvEffect[]>token.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_CONDITIONS) ?? [];
-      data = getConditionsFromToken(token.document, true);
-    } else {
-      return;
-    }
-    //Find index of specific object using findIndex method.
-    const objIndex = data.findIndex((obj) => obj.visionId === key);
-    if (objIndex >= 0) {
-      //Update object's name property.
-      data.splice(objIndex, 1); // 2nd parameter means remove one item only
-    }
-    data = data.filter((a) => {
-      return (
-        a.visionLevelValue != 0 &&
-        a.visionLevelValue != undefined &&
-        a.visionLevelValue != null &&
-        is_real_number(a.visionLevelValue) &&
-        !a.visionIsDisabled
-      );
-    });
-
-    if (isSense) {
-      await token.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES, data);
-    } else if (isCondition) {
-      await token.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_CONDITIONS, data);
-    } else {
-      // DO NOTHING
-      return;
-    }
-    */
     if (game.settings.get(CONSTANTS.MODULE_NAME, 'enableRefreshSightCVHandler')) {
       canvas.perception.schedule({
         lighting: { refresh: true },
@@ -1946,23 +1867,51 @@ export async function repairAndUnSetFlag(token: Token, key: string) {
  * Checker version 2
  * @href https://javascript.plainenglish.io/which-type-of-loop-is-fastest-in-javascript-ec834a0f21b9
  */
-export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): boolean {
+export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): CVResultData {
   if (!sourceToken || !targetToken) {
-    return true;
+    // return true;
+    return {
+      sourceTokenId: sourceToken.id,
+      targetTokenId: targetToken.id,
+      sourceVisionsLevels: [],
+      targetVisionsLevels: [],
+      canSee: true
+    };
   }
   // wtf?? of course i can see myself
   if (sourceToken.id === targetToken.id) {
-    return true;
+    // return true;
+    return {
+      sourceTokenId: sourceToken.id,
+      targetTokenId: targetToken.id,
+      sourceVisionsLevels: [],
+      targetVisionsLevels: [],
+      canSee: true
+    };
   }
   // 1) Check if target token is hidden with standard hud feature of foundry and only GM can see
   if (targetToken.data.hidden) {
-    return game.user?.isGM ? true : false;
+    // return game.user?.isGM ? true : false;
+    return {
+      sourceTokenId: sourceToken.id,
+      targetTokenId: targetToken.id,
+      sourceVisionsLevels: [],
+      targetVisionsLevels: [],
+      canSee: game.user?.isGM ? true : false
+    };
   }
   // 1.1) Check if target token is with the 'Force Visible' flag for Midi Qol integration
   // if (targetToken.actor.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE)) {
   if (targetToken.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE)) {
     debug(`(1.1) Is true, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
-    return true;
+    // return true;
+    return {
+      sourceTokenId: sourceToken.id,
+      targetTokenId: targetToken.id,
+      sourceVisionsLevels: [],
+      targetVisionsLevels: [],
+      canSee: true
+    };
   }
 
   // ===============================================
@@ -1975,7 +1924,14 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
   const isPlayerOwned = <boolean>targetToken.isOwner;
   if (!game.user?.isGM && (isPlayerOwned || targetToken.owner)) {
     debug(`(2) Is true, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
-    return true;
+    // return true;
+    return {
+      sourceTokenId: sourceToken.id,
+      targetTokenId: targetToken.id,
+      sourceVisionsLevels: [],
+      targetVisionsLevels: [],
+      canSee: true
+    };
   }
 
   // 3) Check for the token disposition:
@@ -2005,7 +1961,14 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
     targetActorDisposition == CONST.TOKEN_DISPOSITIONS.HOSTILE
   ) {
     debug(`(3.2) Is true, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
-    return true;
+    // return true;
+    return {
+      sourceTokenId: sourceToken.id,
+      targetTokenId: targetToken.id,
+      sourceVisionsLevels: [],
+      targetVisionsLevels: [],
+      canSee: true
+    };
   }
 
   if (game.settings.get(CONSTANTS.MODULE_NAME, 'disableForNonHostileNpc')) {
@@ -2015,7 +1978,14 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
       sourceActorDisposition != CONST.TOKEN_DISPOSITIONS.HOSTILE
     ) {
       debug(`(3.3) Is true, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
-      return true;
+      // return true;
+      return {
+        sourceTokenId: sourceToken.id,
+        targetTokenId: targetToken.id,
+        sourceVisionsLevels: [],
+        targetVisionsLevels: [],
+        canSee: true
+      };
     }
   }
 
@@ -2023,31 +1993,6 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
   // 1 - Preparation of the active effect
   // =========================================
 
-  // 2022-05.27
-  /*
-  let sourceVisionLevels =
-    <AtcvEffect[]>sourceToken.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES) ??
-    <AtcvEffect[]>sourceToken.document.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES) ?? // TODO TO REMOVE
-    [];
-  if (sourceVisionLevels.length <= 0) {
-    debug(
-      `(3.4) no '${ConditionalVisibilityFlags.DATA_SENSES}' found on '${sourceToken.data.name}' you must refresh the senses/conditions on this token, try to modify some CV value, for now we recalculate the value`,
-    );
-    sourceVisionLevels = getSensesFromToken(sourceToken.document, true, true);
-  }
-  let targetVisionLevels =
-    <AtcvEffect[]>targetToken.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_CONDITIONS) ??
-    <AtcvEffect[]>(
-      targetToken.document.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_CONDITIONS)
-    ) ?? // TODO TO REMOVE
-    [];
-  if (targetVisionLevels.length <= 0) {
-    debug(
-      `(3.5) no '${ConditionalVisibilityFlags.DATA_CONDITIONS}' found on '${targetToken.data.name}' you must refresh the senses/conditions on this token, try to modify some CV value, for now we recalculate the value`,
-    );
-    targetVisionLevels = getConditionsFromToken(targetToken.document, true, true);
-  }
-  */
   let sourceVisionLevels: AtcvEffect[] = getSensesFromTokenFast(sourceToken.document, true, true) ?? [];
   const targetVisionLevels: AtcvEffect[] = getConditionsFromTokenFast(targetToken.document, true, true) ?? [];
 
@@ -2074,14 +2019,35 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
     if (isStealthPassive) {
       if (perceptionPassiveValue >= stealthedPassiveValue) {
         debug(`(4.1) Is true, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
-        return true;
+        // return true;
+        return {
+          sourceTokenId: sourceToken.id,
+          targetTokenId: targetToken.id,
+          sourceVisionsLevels: sourceVisionLevels,
+          targetVisionsLevels: targetVisionLevels,
+          canSee: true
+        };
       } else {
         debug(`(4.2) Is false, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
-        return false;
+        // return false;
+        return {
+          sourceTokenId: sourceToken.id,
+          targetTokenId: targetToken.id,
+          sourceVisionsLevels: sourceVisionLevels,
+          targetVisionsLevels: targetVisionLevels,
+          canSee: false
+        };
       }
     } else {
       debug(`(4.3) Is true, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
-      return true;
+      // return true;
+      return {
+        sourceTokenId: sourceToken.id,
+        targetTokenId: targetToken.id,
+        sourceVisionsLevels: sourceVisionLevels,
+        targetVisionsLevels: targetVisionLevels,
+        canSee: true
+      };
     }
   }
 
@@ -2091,7 +2057,14 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
     if (API.SKILLS_CONDITION.includes(<string>targetVisionLevels[0]?.visionId)) {
       if (perceptionPassiveValue >= (<number>targetVisionLevels[0]?.visionLevelValue ?? 0)) {
         debug(`(8) Is true, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
-        return true;
+        // return true;
+        return {
+          sourceTokenId: sourceToken.id,
+          targetTokenId: targetToken.id,
+          sourceVisionsLevels: sourceVisionLevels,
+          targetVisionsLevels: targetVisionLevels,
+          canSee: true
+        };
       }
     }
   }
@@ -2101,7 +2074,14 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
     // 5.1) If at least a condition is present on target it should be false else with no 'sense' on source e no ' condition' on target is true
     if (targetVisionLevels.length === 0) {
       debug(`(5.1) Is true, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
-      return true;
+      // return true;
+      return {
+        sourceTokenId: sourceToken.id,
+        targetTokenId: targetToken.id,
+        sourceVisionsLevels: sourceVisionLevels,
+        targetVisionsLevels: targetVisionLevels,
+        canSee: true
+      };
     }
   }
 
@@ -2134,7 +2114,14 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
     if (sourceVisionLevelsBlindedOverride.length == 0) {
       // Someone is blind
       debug(`(6) Is false, '${sourceToken.data.name}' can't see '${targetToken.data.name}'`);
-      return false;
+      // return false;
+      return {
+        sourceTokenId: sourceToken.id,
+        targetTokenId: targetToken.id,
+        sourceVisionsLevels: sourceVisionLevels,
+        targetVisionsLevels: targetVisionLevels,
+        canSee: false
+      };
     } else {
       debug(`(6.1) Is true, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
       sourceVisionLevels = sourceVisionLevelsBlindedOverride;
@@ -2194,7 +2181,14 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
       if (targetVisionLevels[0]?.visionId == AtcvEffectConditionFlags.STEALTHED) {
         if (perceptionPassiveValue >= (<number>targetVisionLevels[0]?.visionLevelValue ?? 0)) {
           debug(`(7) Is true, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
-          return true;
+          // return true;
+          return {
+            sourceTokenId: sourceToken.id,
+            targetTokenId: targetToken.id,
+            sourceVisionsLevels: sourceVisionLevels,
+            targetVisionsLevels: targetVisionLevels,
+            canSee: true
+          };
         }
       }
     }
@@ -2209,7 +2203,14 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
       if (API.SKILLS_CONDITION.includes(<string>targetVisionLevels[0]?.visionId)) {
         if (perceptionPassiveValue >= (<number>targetVisionLevels[0]?.visionLevelValue ?? 0)) {
           debug(`(8) Is true, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
-          return true;
+          // return true;
+          return {
+            sourceTokenId: sourceToken.id,
+            targetTokenId: targetToken.id,
+            sourceVisionsLevels: sourceVisionLevels,
+            targetVisionsLevels: targetVisionLevels,
+            canSee: true
+          };
         }
       }
     }
@@ -2369,7 +2370,14 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): b
     }
   }
   debug(`FINAL => '${sourceToken.data.name}' ${resultFinal ? `can see` : `can't see`} '${targetToken.data.name}'`);
-  return resultFinal;
+  // return resultFinal;
+  return {
+    sourceTokenId: sourceToken.id,
+    targetTokenId: targetToken.id,
+    sourceVisionsLevels: sourceVisionLevels,
+    targetVisionsLevels: targetVisionLevels,
+    canSee: resultFinal
+  };
 }
 
 export function getAllDefaultSensesAndConditions(token: Token | null): AtcvEffect[] {
@@ -2496,15 +2504,19 @@ export function drawHandlerCVImageAll(controlledToken: Token) {
     // }
     for (const token of <Token[]>canvas.tokens?.placeables) {
       if (token.id != controlledToken.id) {
-        if (shouldIncludeVisionV2(controlledToken, token)) {
-          drawHandlerCVImage(controlledToken, token);
+        const cvResultData = shouldIncludeVisionV2(controlledToken, token);
+        if (cvResultData.canSee) {
+          drawHandlerCVImage(controlledToken, token, cvResultData.sourceVisionsLevels, cvResultData.targetVisionsLevels);
         }
       }
     }
   }
 }
 
-export async function drawHandlerCVImage(controlledToken: Token, tokenToCheckIfIsVisible: Token) {
+export async function drawHandlerCVImage(
+  controlledToken: Token, tokenToCheckIfIsVisible: Token,  
+  atcvEffectsSource:AtcvEffect[], atcvEffectsTarget:AtcvEffect[]):Promise<void> {
+
   if (game?.ready && game.settings.get(CONSTANTS.MODULE_NAME, 'enableDrawCVHandler')) {
     const currentFlag = controlledToken.actor?.getFlag(
       CONSTANTS.MODULE_NAME,
@@ -2563,17 +2575,18 @@ export async function drawHandlerCVImage(controlledToken: Token, tokenToCheckIfI
     //   return;
     // }
 
-    const sourceVisionLevels = getSensesFromTokenFast(controlledToken.document, true, true);
-    const targetVisionLevels = getConditionsFromTokenFast(tokenToCheckIfIsVisible.document, true, true);
+    // const sourceVisionLevels = getSensesFromTokenFast(controlledToken.document, true, true);
+    // const targetVisionLevels = getConditionsFromTokenFast(tokenToCheckIfIsVisible.document, true, true);
+    // TODO add priority value for set up the order
+    // const atcvEffectsSource = sourceVisionLevels.sort((a, b) =>
+    //   String(a.visionLevelValue).localeCompare(String(b.visionLevelValue)),
+    // );
+    // const atcvEffectsTarget = targetVisionLevels.sort((a, b) =>
+    //   String(a.visionLevelValue).localeCompare(String(b.visionLevelValue)),
+    // );
 
     let foundedImageToUpdated = false;
-    // TODO add priority value for set up the order
-    const atcvEffectsSource = sourceVisionLevels.sort((a, b) =>
-      String(a.visionLevelValue).localeCompare(String(b.visionLevelValue)),
-    );
-    const atcvEffectsTarget = targetVisionLevels.sort((a, b) =>
-      String(a.visionLevelValue).localeCompare(String(b.visionLevelValue)),
-    );
+
 
     if (!foundedImageToUpdated) {
       for (const atcvEffectTarget of atcvEffectsTarget) {

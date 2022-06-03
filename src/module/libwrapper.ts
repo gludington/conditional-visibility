@@ -196,10 +196,11 @@ export function sightLayerPrototypeTokenVisionHandlerNoLevels(wrapped, ...args) 
         //     API.weakMap.set(key, isCVVisible);
         //   }
         // } else {
-        isCVVisible = shouldIncludeVisionV2(ownedToken, token);
+        const cvResultData = shouldIncludeVisionV2(ownedToken, token);
+        isCVVisible = cvResultData.canSee;
         // }
         if (isCVVisible) {
-          drawHandlerCVImage(ownedToken, token);
+          drawHandlerCVImage(ownedToken, token, cvResultData.sourceVisionsLevels, cvResultData.targetVisionsLevels);
         }
         if (!isCVVisible) {
           token.visible = false;
@@ -228,10 +229,11 @@ export function overrideVisibilityTestHandlerWithLevels(wrapped, ...args) {
   //     API.weakMap.set(key, isCVVisible);
   //   }
   // } else {
-  isCVVisible = shouldIncludeVisionV2(sourceToken, targetToken);
+  const cvResultData = shouldIncludeVisionV2(sourceToken, targetToken);
+  isCVVisible = cvResultData.canSee;
   // }
   if (isCVVisible) {
-    drawHandlerCVImage(sourceToken, targetToken);
+    drawHandlerCVImage(sourceToken, targetToken, cvResultData.sourceVisionsLevels, cvResultData.targetVisionsLevels);
     return wrapped(...args);
   } else {
     return false;
@@ -322,10 +324,11 @@ export function sightLayerPrototypeTestVisibilityHandler(wrapped, ...args) {
     //     API.weakMap.set(key, isCVVisible);
     //   }
     // } else {
-    isCVVisible = shouldIncludeVisionV2(controlledToken, tokenToCheckIfIsVisible);
+    const cvResultData = shouldIncludeVisionV2(controlledToken, tokenToCheckIfIsVisible);
+    isCVVisible = cvResultData.canSee;
     // }
     if (isCVVisible) {
-      drawHandlerCVImage(controlledToken, tokenToCheckIfIsVisible);
+      drawHandlerCVImage(controlledToken, tokenToCheckIfIsVisible, cvResultData.sourceVisionsLevels, cvResultData.targetVisionsLevels);
       isCVVisibleFinal = isCVVisible;
       break;
     }
@@ -346,47 +349,6 @@ export function sightLayerPrototypeTestVisibilityHandler(wrapped, ...args) {
   return isCVVisibleFinal;
 }
 
-// export const tokenPrototypeRefreshHandler = function (wrapped, ...args) {
-//   const tokenData: Token = this as Token;
-//   tokenData.data.img = '';
-//   return wrapped(...args);
-// };
-
-/*
-export const tokenPrototypeDrawHandler = function (wrapped, ...args) {
-  const tokenData: Token = this as Token;
-  const isPlayerOwned = <boolean>tokenData.document.isOwner;
-  if(!isPlayerOwned){
-    return wrapped(...args);
-  }
-  const atcvEffects =
-    <AtcvEffect[]>tokenData.document.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.DATA_SENSES) ?? [];
-
-  const targetTokens = <Token[]>canvas.tokens?.placeables;
-  // Get the one with major priority they already are sorted for priority so the first one is the right one
-  for (const targetToken of targetTokens) {
-    if (targetToken.document.actor?.id != tokenData.document.actor?.id) {
-      if(shouldIncludeVisionV2(tokenData,targetToken)){
-        for (const atcvEffect of atcvEffects.sort((a, b) => String(a.visionLevelValue).localeCompare(String(b.visionLevelValue)))) {
-          if (atcvEffect.visionTargetImage) {
-            //tokenData.data.img = currentActvEffect.visionTargetImage;
-            targetToken.document.data.img = atcvEffect.visionTargetImage;
-            // targetToken.clear();
-            targetToken.draw();
-            break;
-          }else if(atcvEffect.visionSourceImage){
-            targetToken.document.data.img = atcvEffect.visionSourceImage;
-            // targetToken.clear();
-            targetToken.draw();
-            break;
-          }
-        }
-      }
-    }
-  }
-  return wrapped(...args);
-};
-*/
 // ============= Eagle Eye  ==============================
 
 // /**

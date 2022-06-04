@@ -13,11 +13,11 @@ import {
   info,
   isStringEquals,
   is_real_number,
-  manageActiveEffectForAutoSkillsFeature,
   prepareActiveEffectForConditionalVisibility,
   renderAutoSkillsDialog,
   repairAndSetFlag,
   repairAndUnSetFlag,
+  retrieveAndMergeEffect,
   retrieveAtcvVisionLevelKeyFromChanges,
   retrieveEffectChangeDataFromAtcvEffect,
   retrieveEffectChangeDataFromEffect,
@@ -882,115 +882,9 @@ const API = {
       visionLevel = 0;
     }
 
-    const effectsDefinition = await ConditionalVisibilityEffectDefinitions.all(distance, visionLevel);
-
-    let effect: Effect | undefined = undefined;
-    //let senseData: SenseData | undefined = undefined;
-
-    // const senseDataId = senseDataEffect.visionId;
-    // for (const sense of sensesAndConditionOrderByName) {
-    //   // Check for dfred convenient effect and retrieve the effect with the specific name
-    //   // https://github.com/DFreds/dfreds-convenient-effects/issues/110
-    //   if (isStringEquals(senseDataId, sense.id)) {
-    //     //@ts-ignore
-    //     if (game.dfreds) {
-    //       //@ts-ignore
-    //       effect = <Effect>await game.dfreds.effectInterface.findCustomEffectByName(effectToFoundByName);
-    //       if (effect) {
-    //         //senseData = sense;
-    //         break;
-    //       }
-    //     }
-    //     effect = <Effect>effectsDefinition.find((effect: Effect) => {
-    //       return isStringEquals(effect.customId, sense.id) || isStringEquals(effect.name, sense.name);
-    //     });
-    //     //senseData = sense;
-    //     break;
-    //   }
-    // }
-    let changesTmp: any[] = [];
-    // Check for dfred convenient effect and retrieve the effect with the specific name
-    // https://github.com/DFreds/dfreds-convenient-effects/issues/110
-    //@ts-ignore
-    if (game.modules.get('dfreds-convenient-effects')?.active && game.dfreds && game.dfreds.effectInterface) {
-      let effectToFoundByName = i18n(senseDataEffect.visionName);
-      if (!effectToFoundByName.endsWith('(CV)')) {
-        effectToFoundByName = effectToFoundByName + ' (CV)';
-      }
-      //@ts-ignore
-      const dfredEffect = <Effect>await game.dfreds.effectInterface.findCustomEffectByName(effectToFoundByName);
-      if (dfredEffect) {
-        if (game.user?.isGM) {
-          info(
-            `ATTENTION the module 'DFreds Convenient Effects' has a effect with name '${effectToFoundByName}', so we use that, edit that effect if you want to apply a customize solution`,
-          );
-        }
-        let foundedFlagVisionValue = false;
-        if (!dfredEffect.atcvChanges) {
-          dfredEffect.atcvChanges = [];
-        }
-        changesTmp = retrieveEffectChangeDataFromEffect(dfredEffect);
-        changesTmp = changesTmp.filter((c) => !c.key.startsWith(`data.`));
-        /*
-        changesTmp = EffectSupport._handleIntegrations(dfredEffect);
-        changesTmp = changesTmp.filter((c) => !c.key.startsWith(`data.`));
-        if (senseDataEffect.visionDistanceValue && senseDataEffect.visionDistanceValue > 0) {
-          changesTmp.push({
-            key: 'ATCV.conditionDistance',
-            mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
-            value: `${senseDataEffect.visionDistanceValue}`,
-            priority: 5,
-          });
-        }
-        for (const obj of changesTmp) {
-          if (obj.key === 'ATCV.' + senseDataEffect.visionId && obj.value != String(senseDataEffect.visionLevelValue)) {
-            obj.value = String(senseDataEffect.visionLevelValue);
-            foundedFlagVisionValue = true;
-            break;
-          }
-        }
-        */
-
-        if (!foundedFlagVisionValue) {
-          for (const obj of changesTmp) {
-            if (
-              obj.key === 'ATCV.' + senseDataEffect.visionId &&
-              obj.value != String(senseDataEffect.visionLevelValue)
-            ) {
-              obj.value = String(senseDataEffect.visionLevelValue);
-              foundedFlagVisionValue = true;
-              break;
-            }
-          }
-        }
-        if (!foundedFlagVisionValue) {
-          // 2022-05-26 check for duplicate
-          const valueKey = retrieveAtcvVisionLevelKeyFromChanges(changesTmp);
-          if (!valueKey) {
-            senseDataEffect = AtcvEffect.mergeWithSensedataDefault(senseDataEffect);
-            if (!senseDataEffect.visionName.endsWith('(CV)')) {
-              senseDataEffect.visionName = senseDataEffect.visionName + ' (CV)';
-            }
-            changesTmp = retrieveEffectChangeDataFromAtcvEffect(senseDataEffect);
-            foundedFlagVisionValue = true;
-          }
-        }
-        effect = <Effect>duplicateExtended(dfredEffect);
-        if (effect) {
-          effect.changes = duplicateExtended(changesTmp);
-        } else {
-          warn(`Found dfred active effect  ${effectToFoundByName} but can't clone...`);
-        }
-      }
-    }
-    if (!effect) {
-      effect = <Effect>effectsDefinition.find((effect: Effect) => {
-        return (
-          isStringEquals(effect.customId, senseDataEffect.visionId) ||
-          isStringEquals(effect.name, senseDataEffect.visionName)
-        );
-      });
-    }
+    let effect:Effect = <Effect>await retrieveAndMergeEffect(
+      senseDataEffect.visionId, senseDataEffect.visionName, 
+      distance, visionLevel);
 
     const isSense = senseDataEffect.visionType === 'sense';
     if (!effect) {
@@ -1021,7 +915,7 @@ const API = {
           });
         }
         */
-        changesTmp = retrieveEffectChangeDataFromAtcvEffect(senseDataEffect);
+        const changesTmp = retrieveEffectChangeDataFromAtcvEffect(senseDataEffect);
         effect = EffectSupport.buildDefault(
           senseOrCondition.visionId,
           senseOrCondition.visionName,
@@ -1052,7 +946,7 @@ const API = {
           });
         }
         */
-        changesTmp = retrieveEffectChangeDataFromAtcvEffect(senseDataEffect);
+        const changesTmp = retrieveEffectChangeDataFromAtcvEffect(senseDataEffect);
         effect = EffectSupport.buildDefault(
           senseDataEffect.visionId,
           senseDataEffect.visionName,
@@ -1066,7 +960,7 @@ const API = {
       }
     }
     // TODO check if we need this ??? ADDED 2022-05-22
-    else if (changesTmp.length == 0) {
+    else if (EffectSupport._handleIntegrations(effect)?.length == 0) {
       info(`The use case 'changesTmp.length==0' should not be happening`);
       const effectTmp = AtcvEffect.toEffectFromAtcvEffect(senseDataEffect);
       effect.changes = effectTmp.changes;

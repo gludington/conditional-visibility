@@ -1,3 +1,7 @@
+### 0.6.9
+
+- Bug fix [[BUG] Auto Roll not apply DF Convenient effect edit](https://github.com/p4535992/conditional-visibility/issues/42)
+
 ### 0.6.8
 
 - Bug fix [[BUG] "Key.split is not a function or its return value is not iterable"](https://github.com/p4535992/conditional-visibility/issues/44)

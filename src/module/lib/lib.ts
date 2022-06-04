@@ -1480,7 +1480,8 @@ export async function toggleStealth(event, app) {
               // 2022-05-30
               //senseId != AtcvEffectSenseFlags.NORMAL
             ) {
-              const effect = <Effect>await ConditionalVisibilityEffectDefinitions.effect(senseId);
+              // const effect = <Effect>await ConditionalVisibilityEffectDefinitions.effect(senseId);
+              const effect = <Effect>await retrieveAndMergeEffect(senseId, '', 0, 0);
               if (effect) {
                 if (valStealthRoll == 0) {
                   // await API.removeEffectOnToken(selectedToken.id, i18n(<string>effect?.name));
@@ -1505,7 +1506,8 @@ export async function toggleStealth(event, app) {
               }
             }
             if (conditionId != AtcvEffectConditionFlags.NONE) {
-              const effect = <Effect>await ConditionalVisibilityEffectDefinitions.effect(conditionId);
+              // const effect = <Effect>await ConditionalVisibilityEffectDefinitions.effect(conditionId);
+              const effect = <Effect>await retrieveAndMergeEffect(conditionId, '', 0, 0);
               if (effect) {
                 if (valStealthRoll == 0) {
                   // await API.removeEffectOnToken(selectedToken.id, i18n(<string>effect?.name));
@@ -3128,9 +3130,13 @@ export async function manageActiveEffectForAutoSkillsFeature(
     const setAeToRemove = new Set<string>();
     const actorEffects = <EmbeddedCollection<typeof ActiveEffect, ActorData>>selectedToken.actor?.data.effects;
     if (senseData?.conditionType === 'sense') {
-      const senseId = senseData.id;
-      const effect = AtcvEffect.toEffectFromAtcvEffect(AtcvEffect.fromSenseData(senseData, valSkillRoll, false));
+      // const senseId = senseData.id;
+      // const effect = AtcvEffect.toEffectFromAtcvEffect(AtcvEffect.fromSenseData(senseData, valSkillRoll, false));
       //const effect = <Effect>await ConditionalVisibilityEffectDefinitions.effect(senseId);
+      const effect = await retrieveAndMergeEffect(
+        senseData.id, senseData.name,
+        0, valSkillRoll
+      );
       if (effect) {
         if (valSkillRoll == 0 || valSkillRoll < -1) {
           // await API.removeEffectOnToken(selectedToken.id, i18n(<string>effect?.name));
@@ -3150,14 +3156,18 @@ export async function manageActiveEffectForAutoSkillsFeature(
           }
         }
       } else {
-        warn(`Can't find effect definition for sense with id = '${senseId}'`, true);
+        warn(`Can't find effect definition for sense with id '${senseData.id}' and name '${senseData.name}'`, true);
       }
     }
 
     if (senseData?.conditionType === 'condition') {
-      const conditionId = senseData.id;
-      const effect = AtcvEffect.toEffectFromAtcvEffect(AtcvEffect.fromSenseData(senseData, valSkillRoll, false));
+      // const conditionId = senseData.id;
+      // const effect = AtcvEffect.toEffectFromAtcvEffect(AtcvEffect.fromSenseData(senseData, valSkillRoll, false));
       //const effect = <Effect>await ConditionalVisibilityEffectDefinitions.effect(conditionId);
+      const effect = await retrieveAndMergeEffect(
+        senseData.id, senseData.name,
+        0, valSkillRoll
+      );
       if (effect) {
         if (valSkillRoll == 0) {
           // await API.removeEffectOnToken(selectedToken.id, i18n(<string>effect?.name));
@@ -3177,7 +3187,7 @@ export async function manageActiveEffectForAutoSkillsFeature(
           }
         }
       } else {
-        warn(`Can't find effect definition for condition with id = '${conditionId}'`, true);
+        warn(`Can't find effect definition for condition with id '${senseData.id}' and name '${senseData.name}'`, true);
       }
     }
     // FINALLY REMVE ALL THE ACTIVE EFFECT
@@ -3185,4 +3195,181 @@ export async function manageActiveEffectForAutoSkillsFeature(
       await API.removeEffectFromIdOnTokenMultiple(<string>selectedToken.id, Array.from(setAeToRemove));
     }
   // }
+}
+
+export async function retrieveAndMergeEffect(
+  atcvId:string, atcvName:string, 
+  distance:number, visionLevel:number):Promise<Effect|undefined>{
+  let effectFounded: Effect | undefined = undefined;
+  let changesTmp: any[] = [];
+
+  // I also added this for specifically checking for custom effects.
+  // It will return undefined if it doesn't exist:
+  let effectToFoundByName = i18n(atcvName);
+  if (!effectToFoundByName.endsWith('(CV)')) {
+    effectToFoundByName = effectToFoundByName + ' (CV)';
+  }
+
+  // TRY FROM DFRED
+  // Check for dfred convenient effect and retrieve the effect with the specific name
+  // https://github.com/DFreds/dfreds-convenient-effects/issues/110
+  //@ts-ignore
+  if (game.modules.get('dfreds-convenient-effects')?.active && game.dfreds && game.dfreds.effectInterface) {
+    //@ts-ignore
+    const dfredEffect = <Effect>await game.dfreds.effectInterface.findCustomEffectByName(effectToFoundByName);
+    if (dfredEffect) {
+      if (game.user?.isGM) {
+        info(
+          `ATTENTION the module 'DFreds Convenient Effects' has a effect with name '${effectToFoundByName}', so we use that, edit that effect if you want to apply a customize solution`,
+        );
+      }
+      if (!dfredEffect.atcvChanges) {
+        dfredEffect.atcvChanges = [];
+      }
+      
+      changesTmp = retrieveEffectChangeDataFromEffect(dfredEffect);
+      changesTmp = changesTmp.filter((c) => !c.key.startsWith(`data.`));
+      // cHECK FOR VALUE
+      let foundedFlagVisionValue = false;
+      for (const obj of changesTmp) {
+        if (obj.key === 'ATCV.' + atcvId && 
+          obj.value != String(visionLevel)) {
+          obj.value = String(visionLevel);
+          foundedFlagVisionValue = true;
+          break;
+        }
+      }
+      if (!foundedFlagVisionValue) {
+        for (const obj of changesTmp) {
+          if (obj.key === 'ATCV.' + atcvId && 
+            obj.value != String(visionLevel)) {
+            obj.value = String(visionLevel);
+            foundedFlagVisionValue = true;
+            break;
+          }
+        }
+      }
+      /*
+      if (!foundedFlagVisionValue) {
+        // 2022-05-26 check for duplicate
+        const valueKey = retrieveAtcvVisionLevelKeyFromChanges(changesTmp);
+        if (!valueKey) {
+          senseDataEffect = AtcvEffect.mergeWithSensedataDefault(senseDataEffect);
+          if (!senseDataEffect.visionName.endsWith('(CV)')) {
+            senseDataEffect.visionName = senseDataEffect.visionName + ' (CV)';
+          }
+          changesTmp = retrieveEffectChangeDataFromAtcvEffect(senseDataEffect);
+          foundedFlagVisionValue = true;
+        }
+      }
+      */
+      if (!foundedFlagVisionValue) {
+        changesTmp.push(<any>{
+          key: 'ATCV.' + atcvId,
+          mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+          value: String(visionLevel),
+          priority: 5,
+        });
+      }
+      // CHECK FOR TYPE
+      let foundedFlagVisionType = false;
+      for (const obj of changesTmp) {
+        if (obj.key === 'ATCV.conditionType' && obj.value) {
+          foundedFlagVisionType = true;
+          break;
+        }
+      }
+      if (!foundedFlagVisionType) {
+        changesTmp.push({
+          key: 'ATCV.conditionType',
+          mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+          value: 'sense',
+          priority: 5,
+        });
+      }
+      effectFounded = <Effect>duplicateExtended(dfredEffect);
+      if (!effectFounded.name.endsWith('(CV)')) {
+        effectFounded.name = effectFounded.name + ' (CV)';
+      }
+      if (effectFounded) {
+        effectFounded.changes = duplicateExtended(changesTmp);
+      } else {
+        warn(`Found dfred active effect  ${effectToFoundByName} but can't clone...`);
+      }
+    }
+  }
+  // If no dfred effect is founded
+  if(!effectFounded){
+    if (game.user?.isGM) {
+      info(
+        `ATTENTION the module 'DFreds Convenient Effects' NOT has a effect with name '${effectToFoundByName}', so we don't use that, edit that effect and rename if you want to apply a customize solution`,
+      );
+    }
+
+    const effectsDefinition = await ConditionalVisibilityEffectDefinitions.all(distance, visionLevel);
+    effectFounded = <Effect>effectsDefinition.find((effect: Effect) => {
+      return (
+        isStringEquals(effect.customId, atcvId) ||
+        isStringEquals(effect.name, effectToFoundByName)
+      );
+    });
+  }
+  if(!effectFounded){
+    let allSensesAndConditions: SenseData[] = [];
+    const senses = API.SENSES;
+    const conditions = API.CONDITIONS;
+    allSensesAndConditions = mergeByProperty(allSensesAndConditions, senses, 'id');
+    allSensesAndConditions = mergeByProperty(allSensesAndConditions, conditions, 'id');
+    for (const senseData of allSensesAndConditions) {
+      if (isStringEquals(atcvId, senseData.id) || isStringEquals(effectToFoundByName, senseData.name)) {
+        effectFounded = AtcvEffect.toEffectFromAtcvEffect(AtcvEffect.fromSenseData(senseData, visionLevel, false));
+        if(effectFounded){
+          break;
+        }
+      }
+    }
+  }
+  
+  if(!effectFounded){
+    warn(`No effect is been founded with name '${effectToFoundByName}'`, true);
+    return undefined;
+  }
+
+  // Add some feature if is a sense or a condition
+  const origin = undefined;
+  const overlay = false;
+  const disabled = false;
+
+  const isSense = API.SENSES.find((sense: SenseData) => {
+    return isStringEquals(sense.id, <string>effectFounded?.customId) || isStringEquals(i18n(sense.name), effectToFoundByName);
+  });
+  const isCondition = API.CONDITIONS.find((sense: SenseData) => {
+    return isStringEquals(sense.id, <string>effectFounded?.customId) || isStringEquals(i18n(sense.name), effectToFoundByName);
+  });
+  
+  // Force check for make condition temporary and sense passive
+  if (isSense) {
+    effectFounded.isTemporary = false; // passive ae
+  } else {
+    effectFounded.isTemporary = true;
+    if (!effectFounded.flags?.core?.statusId) {
+      // Just make sure the effect is built it right
+      if (!effectFounded.flags) {
+        effectFounded.flags = {};
+      }
+      if (!effectFounded.flags.core) {
+        effectFounded.flags.core = {};
+      }
+      effectFounded.flags.core.statusId = effectFounded._id;
+    }
+  }
+  effectFounded.transfer = !disabled;
+  if (!i18n(effectFounded.name).endsWith('(CV)')) {
+    effectFounded.name = i18n(effectFounded.name) + ' (CV)';
+  }
+  // BUG ???
+  //const data = effectFounded.convertToActiveEffectData({ origin, overlay });
+  //effectFounded.origin = EffectSupport.prepareOriginForToken(token);
+  effectFounded.overlay = overlay;
+  return effectFounded;
 }

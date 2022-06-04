@@ -188,7 +188,18 @@ A method to un-register a customize condition from the world
 
 `game.modules.get('conditional-visibility').api.unRegisterCondition('bloodsight')`
 
-### game.modules.get('conditional-visibility').api.canSee(sourceTokenIdOrName: string, targetTokenIdOrName: string) ⇒ <code>boolean</code>
+### game.modules.get('conditional-visibility').api.canSee(sourceToken: Token, targetToken: Token) ⇒ <code>boolean</code>
+
+A method to check if a source token can see a target token
+
+**Returns**: <code>boolean</code>
+
+| Param | Type | Description | Default |
+| --- | --- | --- | --- |
+| sourceToken | <code>string</code> | The source token | <code>undefined</code> |
+| targetToken | <code>string</code> | The target token | <code>undefined</code> |
+
+### game.modules.get('conditional-visibility').api.canSeeFromTokenIds(sourceTokenIdOrName: string, targetTokenIdOrName: string) ⇒ <code>boolean</code>
 
 A method to check if a source token can see a target token
 

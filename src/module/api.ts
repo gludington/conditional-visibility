@@ -1258,7 +1258,13 @@ const API = {
     renderAutoSkillsDialog(sourceToken, enabledSkill, isSense, valSkillRoll);
   },
 
-  canSee(sourceTokenIdOrName: string, targetTokenIdOrName: string): boolean {
+  canSeeFromTokenIds(sourceTokenIdOrName: string, targetTokenIdOrName: string): boolean {
+    if (!sourceTokenIdOrName) {
+      warn(`No source token reference is passed`, true);
+    }
+    if (!targetTokenIdOrName) {
+      warn(`No target token reference is passed`, true);
+    }
     const tokens = <Token[]>canvas.tokens?.placeables || [];
     const sourceToken = <Token>tokens.find((token) => {
       return isStringEquals(token.name, i18n(targetTokenIdOrName)) || isStringEquals(token.id, targetTokenIdOrName);
@@ -1266,11 +1272,15 @@ const API = {
     const targetToken = <Token>tokens.find((token) => {
       return isStringEquals(token.name, i18n(sourceTokenIdOrName)) || isStringEquals(token.id, sourceTokenIdOrName);
     });
+    return this.canSee(sourceToken,targetToken);
+  },
+
+  canSee(sourceToken: Token, targetToken: Token): boolean {
     if (!sourceToken) {
-      warn(`No token found with reference '${sourceTokenIdOrName}'`, true);
+      warn(`No source token is found`, true);
     }
     if (!targetToken) {
-      warn(`No token found with reference '${targetTokenIdOrName}'`, true);
+      warn(`No target token is found`, true);
     }
     const cvResultData = shouldIncludeVisionV2(sourceToken, targetToken);
     return cvResultData.canSee;

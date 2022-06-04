@@ -1,3 +1,7 @@
+### 0.6.8
+
+- Bug fix [[BUG] "Key.split is not a function or its return value is not iterable"](https://github.com/p4535992/conditional-visibility/issues/44)
+
 ### 0.6.7
 
 - Add a checr on the flags property on the updateToken

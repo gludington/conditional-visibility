@@ -188,6 +188,18 @@ A method to un-register a customize condition from the world
 
 `game.modules.get('conditional-visibility').api.unRegisterCondition('bloodsight')`
 
+
+### async game.modules.get('conditional-visibility').api.unHide(tokens: Token[]) ⇒  <code>Promise.&lt;void&gt;</code>
+
+A method to force a array of tokens to be  visible to everyone with a specific flag "Force to be visible". This flag can be managed on the token configuration panel of every token.
+
+**Returns**: <code>Promise.&lt;void&gt;</code> - A empty promise
+
+| Param | Type | Description | Default |
+| --- | --- | --- | --- |
+| tokens | <code>Token[]</code> | The array of tokens to make visible to everyone | <code>undefined</code> |
+
+
 ### game.modules.get('conditional-visibility').api.canSee(sourceToken: Token, targetToken: Token) ⇒ <code>boolean</code>
 
 A method to check if a source token can see a target token

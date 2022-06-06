@@ -100,7 +100,7 @@ export class ConditionalVisibilityEffectDefinitions {
       effects.push(indarkness);
     }
     for (const effectExternal of API.EFFECTS) {
-      if(effectExternal.customId){
+      if (effectExternal.customId) {
         effects.push(effectExternal);
       }
     }

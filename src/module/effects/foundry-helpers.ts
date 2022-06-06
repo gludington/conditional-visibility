@@ -32,6 +32,9 @@ export default class FoundryHelpers {
    */
   getActorByUuid(uuid) {
     const actorToken = this.fromUuid(uuid);
+    if (!actorToken) {
+      return <Actor>game.actors?.get(uuid);
+    }
     const actor = actorToken?.actor ? actorToken?.actor : actorToken;
     return actor;
   }

@@ -1,3 +1,8 @@
+### 0.6.10
+
+- Update API
+- Bug fix error with DAE effect
+
 ### 0.6.9
 
 - Bug fix [[BUG] Auto Roll not apply DF Convenient effect edit](https://github.com/p4535992/conditional-visibility/issues/42)

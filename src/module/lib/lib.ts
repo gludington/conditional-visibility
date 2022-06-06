@@ -108,21 +108,21 @@ export function isResponsibleGM() {
 }
 
 export function firstGM() {
-  return game.users?.find(u => u.isGM && u.active);
+  return game.users?.find((u) => u.isGM && u.active);
 }
 
 export function isFirstGM() {
   return game.user?.id === firstGM()?.id;
 }
 
-export function firstOwner(doc):User|undefined {
+export function firstOwner(doc): User | undefined {
   /* null docs could mean an empty lookup, null docs are not owned by anyone */
   if (!doc) return undefined;
-  const permissionObject=(doc instanceof TokenDocument ? doc.actor?.data.permission : doc.data.permission) ?? {}
+  const permissionObject = (doc instanceof TokenDocument ? doc.actor?.data.permission : doc.data.permission) ?? {};
   const playerOwners = Object.entries(permissionObject)
-    .filter(([id, level]) => (!game.users?.get(id)?.isGM && game.users?.get(id)?.active) && level === 3)
+    .filter(([id, level]) => !game.users?.get(id)?.isGM && game.users?.get(id)?.active && level === 3)
     .map(([id, level]) => id);
-  
+
   if (playerOwners.length > 0) {
     return game.users?.get(<string>playerOwners[0]);
   }
@@ -867,9 +867,7 @@ export function _getCVFromTokenFast(
     const atcvEffectsObject = getProperty(<Actor>tokenDocument?.actor, `data.flags.${CONSTANTS.MODULE_NAME}`);
     for (const key in atcvEffectsObject) {
       const senseOrConditionIdKey = key;
-      if (
-        senseOrConditionIdKey == ConditionalVisibilityFlags.FORCE_VISIBLE
-      ) {
+      if (senseOrConditionIdKey == ConditionalVisibilityFlags.FORCE_VISIBLE) {
         continue;
       }
       const senseValue = <AtcvEffect>atcvEffectsObject[key];
@@ -1210,7 +1208,7 @@ export function retrieveAtcvEffectFromActiveEffect(
             let myresult = 0;
             //roll.roll();
             try {
-              // TODO Roll#evaluate is becoming asynchronous. In the short term you may pass async=true or async=false 
+              // TODO Roll#evaluate is becoming asynchronous. In the short term you may pass async=true or async=false
               // to evaluation options to nominate your preferred behavior.
               roll.evaluate();
               myresult = roll.total ? <number>roll.total : parseInt(roll.result);
@@ -1877,7 +1875,7 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): C
       targetTokenId: targetToken.id,
       sourceVisionsLevels: [],
       targetVisionsLevels: [],
-      canSee: true
+      canSee: true,
     };
   }
   // wtf?? of course i can see myself
@@ -1888,7 +1886,7 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): C
       targetTokenId: targetToken.id,
       sourceVisionsLevels: [],
       targetVisionsLevels: [],
-      canSee: true
+      canSee: true,
     };
   }
   // 1) Check if target token is hidden with standard hud feature of foundry and only GM can see
@@ -1899,7 +1897,7 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): C
       targetTokenId: targetToken.id,
       sourceVisionsLevels: [],
       targetVisionsLevels: [],
-      canSee: game.user?.isGM ? true : false
+      canSee: game.user?.isGM ? true : false,
     };
   }
   // 1.1) Check if target token is with the 'Force Visible' flag for Midi Qol integration
@@ -1912,7 +1910,7 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): C
       targetTokenId: targetToken.id,
       sourceVisionsLevels: [],
       targetVisionsLevels: [],
-      canSee: true
+      canSee: true,
     };
   }
 
@@ -1932,7 +1930,7 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): C
       targetTokenId: targetToken.id,
       sourceVisionsLevels: [],
       targetVisionsLevels: [],
-      canSee: true
+      canSee: true,
     };
   }
 
@@ -1969,7 +1967,7 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): C
       targetTokenId: targetToken.id,
       sourceVisionsLevels: [],
       targetVisionsLevels: [],
-      canSee: true
+      canSee: true,
     };
   }
 
@@ -1986,7 +1984,7 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): C
         targetTokenId: targetToken.id,
         sourceVisionsLevels: [],
         targetVisionsLevels: [],
-        canSee: true
+        canSee: true,
       };
     }
   }
@@ -2027,7 +2025,7 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): C
           targetTokenId: targetToken.id,
           sourceVisionsLevels: sourceVisionLevels,
           targetVisionsLevels: targetVisionLevels,
-          canSee: true
+          canSee: true,
         };
       } else {
         debug(`(4.2) Is false, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
@@ -2037,7 +2035,7 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): C
           targetTokenId: targetToken.id,
           sourceVisionsLevels: sourceVisionLevels,
           targetVisionsLevels: targetVisionLevels,
-          canSee: false
+          canSee: false,
         };
       }
     } else {
@@ -2048,7 +2046,7 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): C
         targetTokenId: targetToken.id,
         sourceVisionsLevels: sourceVisionLevels,
         targetVisionsLevels: targetVisionLevels,
-        canSee: true
+        canSee: true,
       };
     }
   }
@@ -2058,14 +2056,14 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): C
     //if (targetVisionLevels[0]?.visionId == AtcvEffectConditionFlags.HIDDEN) {
     if (API.SKILLS_CONDITION.includes(<string>targetVisionLevels[0]?.visionId)) {
       if (perceptionPassiveValue >= (<number>targetVisionLevels[0]?.visionLevelValue ?? 0)) {
-        debug(`(8) Is true, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
+        debug(`(8) Is true, '${sourceToken.data.name}' can see by perception passive value '${targetToken.data.name}'`);
         // return true;
         return {
           sourceTokenId: sourceToken.id,
           targetTokenId: targetToken.id,
           sourceVisionsLevels: sourceVisionLevels,
           targetVisionsLevels: targetVisionLevels,
-          canSee: true
+          canSee: true,
         };
       }
     }
@@ -2082,7 +2080,7 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): C
         targetTokenId: targetToken.id,
         sourceVisionsLevels: sourceVisionLevels,
         targetVisionsLevels: targetVisionLevels,
-        canSee: true
+        canSee: true,
       };
     }
   }
@@ -2122,7 +2120,7 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): C
         targetTokenId: targetToken.id,
         sourceVisionsLevels: sourceVisionLevels,
         targetVisionsLevels: targetVisionLevels,
-        canSee: false
+        canSee: false,
       };
     } else {
       debug(`(6.1) Is true, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
@@ -2189,7 +2187,7 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): C
             targetTokenId: targetToken.id,
             sourceVisionsLevels: sourceVisionLevels,
             targetVisionsLevels: targetVisionLevels,
-            canSee: true
+            canSee: true,
           };
         }
       }
@@ -2211,7 +2209,7 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): C
             targetTokenId: targetToken.id,
             sourceVisionsLevels: sourceVisionLevels,
             targetVisionsLevels: targetVisionLevels,
-            canSee: true
+            canSee: true,
           };
         }
       }
@@ -2378,7 +2376,7 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): C
     targetTokenId: targetToken.id,
     sourceVisionsLevels: sourceVisionLevels,
     targetVisionsLevels: targetVisionLevels,
-    canSee: resultFinal
+    canSee: resultFinal,
   };
 }
 
@@ -2508,7 +2506,12 @@ export function drawHandlerCVImageAll(controlledToken: Token) {
       if (token.id != controlledToken.id) {
         const cvResultData = shouldIncludeVisionV2(controlledToken, token);
         if (cvResultData.canSee) {
-          drawHandlerCVImage(controlledToken, token, cvResultData.sourceVisionsLevels, cvResultData.targetVisionsLevels);
+          drawHandlerCVImage(
+            controlledToken,
+            token,
+            cvResultData.sourceVisionsLevels,
+            cvResultData.targetVisionsLevels,
+          );
         }
       }
     }
@@ -2516,9 +2519,11 @@ export function drawHandlerCVImageAll(controlledToken: Token) {
 }
 
 export async function drawHandlerCVImage(
-  controlledToken: Token, tokenToCheckIfIsVisible: Token,  
-  atcvEffectsSource:AtcvEffect[], atcvEffectsTarget:AtcvEffect[]):Promise<void> {
-
+  controlledToken: Token,
+  tokenToCheckIfIsVisible: Token,
+  atcvEffectsSource: AtcvEffect[],
+  atcvEffectsTarget: AtcvEffect[],
+): Promise<void> {
   if (game?.ready && game.settings.get(CONSTANTS.MODULE_NAME, 'enableDrawCVHandler')) {
     const currentFlag = controlledToken.actor?.getFlag(
       CONSTANTS.MODULE_NAME,
@@ -2588,7 +2593,6 @@ export async function drawHandlerCVImage(
     // );
 
     let foundedImageToUpdated = false;
-
 
     if (!foundedImageToUpdated) {
       for (const atcvEffectTarget of atcvEffectsTarget) {
@@ -3127,79 +3131,84 @@ export async function manageActiveEffectForAutoSkillsFeature(
   valSkillRoll: number,
 ) {
   // for(const selectedToken of selectedTokens){
-    const setAeToRemove = new Set<string>();
-    const actorEffects = <EmbeddedCollection<typeof ActiveEffect, ActorData>>selectedToken.actor?.data.effects;
-    if (senseData?.conditionType === 'sense') {
-      // const senseId = senseData.id;
-      // const effect = AtcvEffect.toEffectFromAtcvEffect(AtcvEffect.fromSenseData(senseData, valSkillRoll, false));
-      //const effect = <Effect>await ConditionalVisibilityEffectDefinitions.effect(senseId);
-      const effect = await retrieveAndMergeEffect(
-        senseData.id, senseData.name,
-        0, valSkillRoll
-      );
-      if (effect) {
-        if (valSkillRoll == 0 || valSkillRoll < -1) {
-          // await API.removeEffectOnToken(selectedToken.id, i18n(<string>effect?.name));
-          const effectToRemove = <ActiveEffect>(
-            actorEffects.find((activeEffect) => isStringEquals(<string>activeEffect?.data?.label, <string>effect?.name))
-          );
-          if (effectToRemove) {
-            setAeToRemove.add(<string>effectToRemove.id);
-          }
-          //await repairAndUnSetFlag(selectedToken, senseId);
-        } else {
-          const atcvEffectFlagData = AtcvEffect.fromEffect(selectedToken.document, effect);
-          if (atcvEffectFlagData) {
-            atcvEffectFlagData.visionLevelValue = valSkillRoll;
-            //await repairAndSetFlag(selectedToken, senseId, atcvEffectFlagData);
-            await API.addEffectOnToken(selectedToken.id,effect.name,effect);
+  const setAeToRemove = new Set<string>();
+  const actorEffects = <EmbeddedCollection<typeof ActiveEffect, ActorData>>selectedToken.actor?.data.effects;
+  if (senseData?.conditionType === 'sense') {
+    // const senseId = senseData.id;
+    // const effect = AtcvEffect.toEffectFromAtcvEffect(AtcvEffect.fromSenseData(senseData, valSkillRoll, false));
+    //const effect = <Effect>await ConditionalVisibilityEffectDefinitions.effect(senseId);
+    const effect = await retrieveAndMergeEffect(senseData.id, senseData.name, 0, valSkillRoll);
+    if (effect) {
+      if (valSkillRoll == 0 || valSkillRoll < -1) {
+        // await API.removeEffectOnToken(selectedToken.id, i18n(<string>effect?.name));
+        const effectToRemove = <ActiveEffect>(
+          actorEffects.find((activeEffect) => isStringEquals(<string>activeEffect?.data?.label, <string>effect?.name))
+        );
+        if (effectToRemove) {
+          setAeToRemove.add(<string>effectToRemove.id);
+        }
+        //await repairAndUnSetFlag(selectedToken, senseId);
+      } else {
+        const atcvEffectFlagData = AtcvEffect.fromEffect(selectedToken.document, effect);
+        if (atcvEffectFlagData) {
+          atcvEffectFlagData.visionLevelValue = valSkillRoll;
+          //await repairAndSetFlag(selectedToken, senseId, atcvEffectFlagData);
+          if (await API.findEffectByNameOnToken(selectedToken.id, effect.name)) {
+            await API.updateEffectFromNameOnToken(selectedToken.id, effect.name, effect.origin, effect.overlay, effect);
+          } else {
+            await API.addEffectOnToken(selectedToken.id, effect.name, effect);
           }
         }
-      } else {
-        warn(`Can't find effect definition for sense with id '${senseData.id}' and name '${senseData.name}'`, true);
       }
+    } else {
+      warn(`Can't find effect definition for sense with id '${senseData.id}' and name '${senseData.name}'`, true);
     }
+  }
 
-    if (senseData?.conditionType === 'condition') {
-      // const conditionId = senseData.id;
-      // const effect = AtcvEffect.toEffectFromAtcvEffect(AtcvEffect.fromSenseData(senseData, valSkillRoll, false));
-      //const effect = <Effect>await ConditionalVisibilityEffectDefinitions.effect(conditionId);
-      const effect = await retrieveAndMergeEffect(
-        senseData.id, senseData.name,
-        0, valSkillRoll
-      );
-      if (effect) {
-        if (valSkillRoll == 0) {
-          // await API.removeEffectOnToken(selectedToken.id, i18n(<string>effect?.name));
-          const effectToRemove = <ActiveEffect>(
-            actorEffects.find((activeEffect) => isStringEquals(<string>activeEffect?.data?.label, <string>effect?.name))
-          );
-          if (effectToRemove) {
-            setAeToRemove.add(<string>effectToRemove.id);
-          }
-          //await repairAndUnSetFlag(selectedToken, conditionId);
-        } else {
-          const atcvEffectFlagData = AtcvEffect.fromEffect(selectedToken.document, effect);
-          if (atcvEffectFlagData) {
-            atcvEffectFlagData.visionLevelValue = valSkillRoll;
-            //await repairAndSetFlag(selectedToken, conditionId, atcvEffectFlagData);
-            await API.addEffectOnToken(selectedToken.id,effect.name,effect);
+  if (senseData?.conditionType === 'condition') {
+    // const conditionId = senseData.id;
+    // const effect = AtcvEffect.toEffectFromAtcvEffect(AtcvEffect.fromSenseData(senseData, valSkillRoll, false));
+    //const effect = <Effect>await ConditionalVisibilityEffectDefinitions.effect(conditionId);
+    const effect = await retrieveAndMergeEffect(senseData.id, senseData.name, 0, valSkillRoll);
+    if (effect) {
+      if (valSkillRoll == 0) {
+        // await API.removeEffectOnToken(selectedToken.id, i18n(<string>effect?.name));
+        const effectToRemove = <ActiveEffect>(
+          actorEffects.find((activeEffect) => isStringEquals(<string>activeEffect?.data?.label, <string>effect?.name))
+        );
+        if (effectToRemove) {
+          setAeToRemove.add(<string>effectToRemove.id);
+        }
+        //await repairAndUnSetFlag(selectedToken, conditionId);
+      } else {
+        const atcvEffectFlagData = AtcvEffect.fromEffect(selectedToken.document, effect);
+        if (atcvEffectFlagData) {
+          atcvEffectFlagData.visionLevelValue = valSkillRoll;
+          //await repairAndSetFlag(selectedToken, conditionId, atcvEffectFlagData);
+          if (await API.findEffectByNameOnToken(selectedToken.id, effect.name)) {
+            await API.updateEffectFromNameOnToken(selectedToken.id, effect.name, effect.origin, effect.overlay, effect);
+          } else {
+            await API.addEffectOnToken(selectedToken.id, effect.name, effect);
           }
         }
-      } else {
-        warn(`Can't find effect definition for condition with id '${senseData.id}' and name '${senseData.name}'`, true);
       }
+    } else {
+      warn(`Can't find effect definition for condition with id '${senseData.id}' and name '${senseData.name}'`, true);
     }
-    // FINALLY REMVE ALL THE ACTIVE EFFECT
-    if (setAeToRemove.size > 0) {
-      await API.removeEffectFromIdOnTokenMultiple(<string>selectedToken.id, Array.from(setAeToRemove));
-    }
+  }
+  // FINALLY REMVE ALL THE ACTIVE EFFECT
+  if (setAeToRemove.size > 0) {
+    await API.removeEffectFromIdOnTokenMultiple(<string>selectedToken.id, Array.from(setAeToRemove));
+  }
   // }
 }
 
 export async function retrieveAndMergeEffect(
-  atcvId:string, atcvName:string, 
-  distance:number, visionLevel:number):Promise<Effect|undefined>{
+  atcvId: string,
+  atcvName: string,
+  distance: number,
+  visionLevel: number,
+): Promise<Effect | undefined> {
   let effectFounded: Effect | undefined = undefined;
   let changesTmp: any[] = [];
 
@@ -3226,14 +3235,13 @@ export async function retrieveAndMergeEffect(
       if (!dfredEffect.atcvChanges) {
         dfredEffect.atcvChanges = [];
       }
-      
+
       changesTmp = retrieveEffectChangeDataFromEffect(dfredEffect);
       changesTmp = changesTmp.filter((c) => !c.key.startsWith(`data.`));
       // cHECK FOR VALUE
       let foundedFlagVisionValue = false;
       for (const obj of changesTmp) {
-        if (obj.key === 'ATCV.' + atcvId && 
-          obj.value != String(visionLevel)) {
+        if (obj.key === 'ATCV.' + atcvId && obj.value != String(visionLevel)) {
           obj.value = String(visionLevel);
           foundedFlagVisionValue = true;
           break;
@@ -3241,8 +3249,7 @@ export async function retrieveAndMergeEffect(
       }
       if (!foundedFlagVisionValue) {
         for (const obj of changesTmp) {
-          if (obj.key === 'ATCV.' + atcvId && 
-            obj.value != String(visionLevel)) {
+          if (obj.key === 'ATCV.' + atcvId && obj.value != String(visionLevel)) {
             obj.value = String(visionLevel);
             foundedFlagVisionValue = true;
             break;
@@ -3287,7 +3294,8 @@ export async function retrieveAndMergeEffect(
           priority: 5,
         });
       }
-      effectFounded = <Effect>duplicateExtended(dfredEffect);
+      // effectFounded = <Effect>duplicateExtended(dfredEffect);
+      effectFounded = dfredEffect;
       if (!effectFounded.name.endsWith('(CV)')) {
         effectFounded.name = effectFounded.name + ' (CV)';
       }
@@ -3299,7 +3307,7 @@ export async function retrieveAndMergeEffect(
     }
   }
   // If no dfred effect is founded
-  if(!effectFounded){
+  if (!effectFounded) {
     if (game.user?.isGM) {
       info(
         `ATTENTION the module 'DFreds Convenient Effects' NOT has a effect with name '${effectToFoundByName}', so we don't use that, edit that effect and rename if you want to apply a customize solution`,
@@ -3308,13 +3316,10 @@ export async function retrieveAndMergeEffect(
 
     const effectsDefinition = await ConditionalVisibilityEffectDefinitions.all(distance, visionLevel);
     effectFounded = <Effect>effectsDefinition.find((effect: Effect) => {
-      return (
-        isStringEquals(effect.customId, atcvId) ||
-        isStringEquals(effect.name, effectToFoundByName)
-      );
+      return isStringEquals(effect.customId, atcvId) || isStringEquals(effect.name, effectToFoundByName);
     });
   }
-  if(!effectFounded){
+  if (!effectFounded) {
     let allSensesAndConditions: SenseData[] = [];
     const senses = API.SENSES;
     const conditions = API.CONDITIONS;
@@ -3323,14 +3328,14 @@ export async function retrieveAndMergeEffect(
     for (const senseData of allSensesAndConditions) {
       if (isStringEquals(atcvId, senseData.id) || isStringEquals(effectToFoundByName, senseData.name)) {
         effectFounded = AtcvEffect.toEffectFromAtcvEffect(AtcvEffect.fromSenseData(senseData, visionLevel, false));
-        if(effectFounded){
+        if (effectFounded) {
           break;
         }
       }
     }
   }
-  
-  if(!effectFounded){
+
+  if (!effectFounded) {
     warn(`No effect is been founded with name '${effectToFoundByName}'`, true);
     return undefined;
   }
@@ -3341,12 +3346,16 @@ export async function retrieveAndMergeEffect(
   const disabled = false;
 
   const isSense = API.SENSES.find((sense: SenseData) => {
-    return isStringEquals(sense.id, <string>effectFounded?.customId) || isStringEquals(i18n(sense.name), effectToFoundByName);
+    return (
+      isStringEquals(sense.id, <string>effectFounded?.customId) || isStringEquals(i18n(sense.name), effectToFoundByName)
+    );
   });
   const isCondition = API.CONDITIONS.find((sense: SenseData) => {
-    return isStringEquals(sense.id, <string>effectFounded?.customId) || isStringEquals(i18n(sense.name), effectToFoundByName);
+    return (
+      isStringEquals(sense.id, <string>effectFounded?.customId) || isStringEquals(i18n(sense.name), effectToFoundByName)
+    );
   });
-  
+
   // Force check for make condition temporary and sense passive
   if (isSense) {
     effectFounded.isTemporary = false; // passive ae

@@ -786,18 +786,26 @@ const API = {
             repairAndSetFlag(token, AtcvEffectConditionFlags.HIDDEN, atcvEffect);
           }
         }
+        /*
         if (
           game.modules.get('midi-qol')?.active &&
           <boolean>(<any>(<any>game.settings.get('midi-qol', 'ConfigSettings'))?.optionalRules)?.removeHiddenInvis
         ) {
           await token.actor?.unsetFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE);
         }
+        */
+        await token.actor?.unsetFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE);
       }
     }
   },
 
+  /**
+   *
+   * @param tokens This method force the token to be visible after a attack
+   */
   async unHide(tokens: Token[]) {
     for (const token of tokens) {
+      /*
       const sourceVisionLevels = getConditionsFromTokenFast(token.document, true) ?? [];
       for (const sourceVision of sourceVisionLevels) {
         if (isStringEquals(sourceVision.visionId, AtcvEffectConditionFlags.HIDDEN)) {
@@ -813,6 +821,10 @@ const API = {
         if (token.actor) {
           await token.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE, true);
         }
+      }
+      */
+      if (token.actor) {
+        await token.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE, true);
       }
     }
   },
@@ -882,9 +894,9 @@ const API = {
       visionLevel = 0;
     }
 
-    let effect:Effect = <Effect>await retrieveAndMergeEffect(
-      senseDataEffect.visionId, senseDataEffect.visionName, 
-      distance, visionLevel);
+    let effect: Effect = <Effect>(
+      await retrieveAndMergeEffect(senseDataEffect.visionId, senseDataEffect.visionName, distance, visionLevel)
+    );
 
     const isSense = senseDataEffect.visionType === 'sense';
     if (!effect) {
@@ -1161,12 +1173,18 @@ const API = {
     }
     const tokens = <Token[]>canvas.tokens?.placeables || [];
     const sourceToken = <Token>tokens.find((token) => {
-      return isStringEquals(token.name, i18n(targetTokenIdOrName)) || isStringEquals(token.id, targetTokenIdOrName);
-    });
-    const targetToken = <Token>tokens.find((token) => {
       return isStringEquals(token.name, i18n(sourceTokenIdOrName)) || isStringEquals(token.id, sourceTokenIdOrName);
     });
-    return this.canSee(sourceToken,targetToken);
+    const targetToken = <Token>tokens.find((token) => {
+      return isStringEquals(token.name, i18n(targetTokenIdOrName)) || isStringEquals(token.id, targetTokenIdOrName);
+    });
+    if (!sourceToken) {
+      warn(`No token found with reference '${sourceTokenIdOrName}'`, true);
+    }
+    if (!targetToken) {
+      warn(`No token found with reference '${targetTokenIdOrName}'`, true);
+    }
+    return this.canSee(sourceToken, targetToken);
   },
 
   canSee(sourceToken: Token, targetToken: Token): boolean {
@@ -1183,10 +1201,10 @@ const API = {
   canSeeWithData(sourceTokenIdOrName: string, targetTokenIdOrName: string): CVResultData {
     const tokens = <Token[]>canvas.tokens?.placeables || [];
     const sourceToken = <Token>tokens.find((token) => {
-      return isStringEquals(token.name, i18n(targetTokenIdOrName)) || isStringEquals(token.id, targetTokenIdOrName);
+      return isStringEquals(token.name, i18n(sourceTokenIdOrName)) || isStringEquals(token.id, sourceTokenIdOrName);
     });
     const targetToken = <Token>tokens.find((token) => {
-      return isStringEquals(token.name, i18n(sourceTokenIdOrName)) || isStringEquals(token.id, sourceTokenIdOrName);
+      return isStringEquals(token.name, i18n(targetTokenIdOrName)) || isStringEquals(token.id, targetTokenIdOrName);
     });
     if (!sourceToken) {
       warn(`No token found with reference '${sourceTokenIdOrName}'`, true);

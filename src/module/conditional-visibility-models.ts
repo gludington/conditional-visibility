@@ -779,8 +779,8 @@ export class VisionCapabilities {
 }
 
 export class CVResultData {
-  sourceTokenId:string;
-  targetTokenId:string;
+  sourceTokenId: string;
+  targetTokenId: string;
   sourceVisionsLevels: AtcvEffect[];
   targetVisionsLevels: AtcvEffect[];
   canSee: boolean;

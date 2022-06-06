@@ -328,7 +328,12 @@ export function sightLayerPrototypeTestVisibilityHandler(wrapped, ...args) {
     isCVVisible = cvResultData.canSee;
     // }
     if (isCVVisible) {
-      drawHandlerCVImage(controlledToken, tokenToCheckIfIsVisible, cvResultData.sourceVisionsLevels, cvResultData.targetVisionsLevels);
+      drawHandlerCVImage(
+        controlledToken,
+        tokenToCheckIfIsVisible,
+        cvResultData.sourceVisionsLevels,
+        cvResultData.targetVisionsLevels,
+      );
       isCVVisibleFinal = isCVVisible;
       break;
     }

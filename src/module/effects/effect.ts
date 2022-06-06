@@ -91,6 +91,7 @@ export default class Effect {
    */
   convertToActiveEffectData({ origin = '', overlay = false } = {}): Record<string, unknown> {
     const isPassive = !this.isTemporary;
+    const currentDae = this._isEmptyObject(this.dae) ? this.flags.dae : this.dae;
     return {
       id: this._id,
       name: i18n(this.name),
@@ -106,11 +107,11 @@ export default class Effect {
         },
         isConvenient: true,
         convenientDescription: i18n(this.description),
-        dae: this._isEmptyObject(this.dae)
+        dae: this._isEmptyObject(currentDae)
           ? isPassive
             ? { stackable: false, specialDuration: [], transfer: true }
             : {}
-          : this.dae,
+          : currentDae,
       }),
       origin: origin ? origin : this.origin ? this.origin : '', // MOD 4535992
       transfer: isPassive ? false : this.transfer,
@@ -271,10 +272,12 @@ export default class Effect {
   _isEmptyObject(obj: any) {
     // because Object.keys(new Date()).length === 0;
     // we have to do some additional check
+    if (obj == null || obj == undefined) {
+      return true;
+    }
     const result =
       obj && // null and undefined check
-      Object.keys(obj).length === 0 &&
-      Object.getPrototypeOf(obj) === Object.prototype;
+      (Object.keys(obj).length === 0 || Object.getPrototypeOf(obj) === Object.prototype);
     return result;
   }
 }

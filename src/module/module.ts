@@ -406,14 +406,11 @@ const module = {
       }
     } // Fine for
 
-    const hasCVFlagOnChange:boolean =       
-      change.actor &&
-      change.actor.data &&
-      change.actor.data.flags &&
-      change.actor.data.flags[CONSTANTS.MODULE_NAME];
+    const hasCVFlagOnChange: boolean =
+      change.actor && change.actor.data && change.actor.data.flags && change.actor.data.flags[CONSTANTS.MODULE_NAME];
 
     // if (!change.actor?.data?.flags[CONSTANTS.MODULE_NAME]) {
-    if(!hasCVFlagOnChange){
+    if (!hasCVFlagOnChange) {
       if (change.flags && change.flags[CONSTANTS.MODULE_NAME]) {
         if (!change.actor) {
           change.actor = {};
@@ -455,7 +452,7 @@ const module = {
     //   change.actor.data &&
     //   change.actor.data.flags[CONSTANTS.MODULE_NAME]
     // ) {
-    if(hasCVFlagOnChange){
+    if (hasCVFlagOnChange) {
       module.updateToken(sourceToken.document, change, options, userId);
     }
   },
@@ -470,11 +467,8 @@ const module = {
       return;
     }
 
-    const hasCVFlagOnChange:boolean =       
-      change.actor &&
-      change.actor.data &&
-      change.actor.data.flags &&
-      change.actor.data.flags[CONSTANTS.MODULE_NAME];
+    const hasCVFlagOnChange: boolean =
+      change.actor && change.actor.data && change.actor.data.flags && change.actor.data.flags[CONSTANTS.MODULE_NAME];
 
     // if (!change.actor?.data?.flags[CONSTANTS.MODULE_NAME]) {
     if (!hasCVFlagOnChange) {
@@ -531,7 +525,7 @@ const module = {
     //   change.actor.data.flags &&
     //   change.actor.data.flags[CONSTANTS.MODULE_NAME]
     // ) {
-    if(hasCVFlagOnChange){
+    if (hasCVFlagOnChange) {
       isEnabledForToken = true;
       p = getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}`);
     }
@@ -692,7 +686,7 @@ const module = {
       // change.actor &&
       // change.actor.data &&
       // change.actor.data.flags[CONSTANTS.MODULE_NAME] &&
-      hasCVFlagOnChange && 
+      hasCVFlagOnChange &&
       getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`) !=
         null &&
       getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`) !=
@@ -1212,10 +1206,10 @@ const module = {
       return;
     }
     let currentUserId = '';
-    if (!currentUserId && speakerInfo && speakerInfo.author && speakerInfo.author.id){
+    if (!currentUserId && speakerInfo && speakerInfo.author && speakerInfo.author.id) {
       currentUserId = speakerInfo.author.id;
     }
-    if(!currentUserId && message && message.data && message.data.user){
+    if (!currentUserId && message && message.data && message.data.user) {
       currentUserId = message.data.user;
     }
     if (currentUserId != game.userId) {
@@ -1257,7 +1251,7 @@ const module = {
     const messageTimestamp = message.data.timestamp;
     const secondBetweenTwoDate = Math.abs((Date.now() - messageTimestamp) / 1000);
     // Ignore all message older than 5 seconds
-    if(secondBetweenTwoDate > 5){
+    if (secondBetweenTwoDate > 5) {
       return;
     }
 

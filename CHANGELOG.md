@@ -1,3 +1,10 @@
+### 0.6.11
+
+- Bug fix API
+- Update API
+- Bug fix again [[BUG] (Maybe). api.canSee returns true when rolled by a player, but false when rolled by a GM](https://github.com/p4535992/conditional-visibility/issues/41)
+- Update checker add check for both token are owned from a non GM user.
+
 ### 0.6.10
 
 - Update API

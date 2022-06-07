@@ -200,6 +200,48 @@ A method to force a array of tokens to be  visible to everyone with a specific f
 | tokens | <code>Token[]</code> | The array of tokens to make visible to everyone | <code>undefined</code> |
 
 
+### async game.modules.get('conditional-visibility').api.forceToBeVisible(token: Token) ⇒  <code>Promise.&lt;void&gt;</code>
+
+A method to force a token to be visibile for the CV checker
+
+**Returns**: <code>Promise.&lt;void&gt;</code>
+
+| Param | Type | Description | Default |
+| --- | --- | --- | --- |
+| token | <code>string</code> | The token to show | <code>undefined</code> |
+
+### async game.modules.get('conditional-visibility').api.unforceToBeVisible(token:Token) ⇒  <code>Promise.&lt;void&gt;</code>
+
+A method to unforce a token to be visibile for the CV checker, the cheker will work on effects anyway.
+
+**Returns**: <code>Promise.&lt;void&gt;</code>
+
+| Param | Type | Description | Default |
+| --- | --- | --- | --- |
+| token | <code>string</code> | The token to hide | <code>undefined</code> |
+
+### game.modules.get('conditional-visibility').api.hasConditionFromId(tokenNameOrId:string, conditionId:string):boolean{
+
+A method to check if a source token can has a specific condition
+
+**Returns**: <code>boolean</code>
+
+| Param | Type | Description | Default |
+| --- | --- | --- | --- |
+| tokenNameOrId | <code>string</code> | The reference to the token | <code>undefined</code> |
+| conditionId | <code>string</code> | The id of the condition | <code>undefined</code> |
+
+### game.modules.get('conditional-visibility').api.hasCondition(token:Token, conditionId:string):boolean ⇒ <code>boolean</code>
+
+A method to check if a source token can has a specific condition
+
+**Returns**: <code>boolean</code>
+
+| Param | Type | Description | Default |
+| --- | --- | --- | --- |
+| token | <code>string</code> | The source token | <code>undefined</code> |
+| conditionId | <code>string</code> | The id of the condition | <code>undefined</code> |
+
 ### game.modules.get('conditional-visibility').api.canSee(sourceToken: Token, targetToken: Token) ⇒ <code>boolean</code>
 
 A method to check if a source token can see a target token

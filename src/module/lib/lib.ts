@@ -818,12 +818,20 @@ export function _getCVFromTokenFast(
   }
   const actorEffects = <EmbeddedCollection<typeof ActiveEffect, ActorData>>actor?.data.effects;
   //const totalEffects = <EmbeddedCollection<typeof ActiveEffect, ActorData>>actor?.data.effects.contents.filter(i => !i.data.disabled);
-  const atcvEffects = actorEffects.filter((entity) => {
-    return (
-      !!entity.data.changes.find((effect) => effect.key.includes('ATCV')) && filterIsDisabled && !entity.data.disabled
-    );
+  let atcvEffects = actorEffects.filter((entity) => {
+    return !!entity.data.changes.find((effect) => effect.key.includes('ATCV'));
   });
-
+  if (filterIsDisabled) {
+    atcvEffects = atcvEffects.filter((entity) => {
+      const isDisabled = <any>entity.data.disabled;
+      if(is_real_number(isDisabled)){
+        //@ts-ignore
+        return entity.data.disabled <= 0;
+      }else{
+        return !entity.data.disabled;
+      }
+    });
+  }
   if (atcvEffects != null && atcvEffects != undefined) {
     for (const effectEntity of atcvEffects) {
       const effectNameToSet = effectEntity.name ? effectEntity.name : effectEntity.data.label;
@@ -1210,7 +1218,7 @@ export function retrieveAtcvEffectFromActiveEffect(
             try {
               // TODO Roll#evaluate is becoming asynchronous. In the short term you may pass async=true or async=false
               // to evaluation options to nominate your preferred behavior.
-              roll.evaluate({async: false});
+              roll.evaluate({ async: false });
               //await roll.evaluate({async: true});
               myresult = roll.total ? <number>roll.total : parseInt(roll.result);
             } catch (e) {
@@ -1922,8 +1930,9 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): C
 
   // 2) Check if the target is owned from the player if true you can see the token.
   //const isPlayerOwned = <boolean>targetToken.actor?.hasPlayerOwner;
-  const isPlayerOwned = <boolean>targetToken.isOwner;
-  if (!game.user?.isGM && (isPlayerOwned || targetToken.owner)) {
+  const isTargetPlayerOwned = <boolean>targetToken.isOwner || targetToken.owner;
+  const issourcePlayerOwned = <boolean>sourceToken.isOwner || sourceToken.owner;
+  if (!game.user?.isGM && isTargetPlayerOwned && issourcePlayerOwned) {
     debug(`(2) Is true, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
     // return true;
     return {

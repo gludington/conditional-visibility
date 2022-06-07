@@ -842,31 +842,84 @@ const API = {
       for (const atcvEffect of arr2) {
         repairAndUnSetFlag(token, atcvEffect.visionId);
       }
-      if (
-        game.modules.get('midi-qol')?.active &&
-        <boolean>(<any>(<any>game.settings.get('midi-qol', 'ConfigSettings'))?.optionalRules)?.removeHiddenInvis
-      ) {
-        await token.actor?.unsetFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE);
-      }
+      // if (
+      //   game.modules.get('midi-qol')?.active &&
+      //   <boolean>(<any>(<any>game.settings.get('midi-qol', 'ConfigSettings'))?.optionalRules)?.removeHiddenInvis
+      // ) {
+      //   await token.actor?.unsetFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE);
+      // }
     }
   },
 
+  async forceToBeVisible(token: Token) {
+    if (!token.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE)) {
+      await token.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE, true);
+    }
+  },
+
+  async unforceToBeVisible(token: Token) {
+    if (token.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE)) {
+      await token.actor?.unsetFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE);
+    }
+  },
+
+  /**
+   *
+   * @param tokens @deprecated to remove
+   * @param conditionId
+   * @param disabled
+   */
   async setCondition(tokens: Token[], conditionId: string, disabled: boolean): Promise<void> {
     for (const token of tokens) {
-      if (
-        game.modules.get('midi-qol')?.active &&
-        <boolean>(<any>(<any>game.settings.get('midi-qol', 'ConfigSettings'))?.optionalRules)?.removeHiddenInvis
-      ) {
-        await token.actor?.unsetFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE);
-      }
-      const sourceVisionLevels = getConditionsFromTokenFast(token.document, true) ?? [];
-      for (const sourceVision of sourceVisionLevels) {
-        if (isStringEquals(sourceVision.visionId, conditionId)) {
-          const atcvEffect = sourceVision; //AtcvEffect.fromSenseData(senseDataEffect, 1);
+      // if (
+      //   game.modules.get('midi-qol')?.active &&
+      //   <boolean>(<any>(<any>game.settings.get('midi-qol', 'ConfigSettings'))?.optionalRules)?.removeHiddenInvis
+      // ) {
+      //   await token.actor?.unsetFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE);
+      // }
+      const targetVisionLevels = getConditionsFromTokenFast(token.document, true) ?? [];
+      for (const targetVision of targetVisionLevels) {
+        if (isStringEquals(targetVision.visionId, conditionId)) {
+          const atcvEffect = targetVision; //AtcvEffect.fromSenseData(senseDataEffect, 1);
           await token.actor?.setFlag(CONSTANTS.MODULE_NAME, conditionId, atcvEffect);
         }
       }
     }
+  },
+
+  hasConditionFromId(tokenNameOrId: string, conditionId: string): boolean {
+    const tokens = <Token[]>canvas.tokens?.placeables;
+    const token = <Token>tokens.find((token) => {
+      return isStringEquals(token.name, i18n(tokenNameOrId)) || isStringEquals(token.id, tokenNameOrId);
+    });
+    if (!token) {
+      warn(`No token found with reference '${tokenNameOrId}'`, true);
+    }
+    let foundedCondition = false;
+    const targetVisionLevels = getConditionsFromTokenFast(token.document, true) ?? [];
+    for (const targetVision of targetVisionLevels) {
+      if (isStringEquals(targetVision.visionId, conditionId)) {
+        foundedCondition = true;
+        break;
+      }
+    }
+    return foundedCondition;
+  },
+
+  hasCondition(token: Token, conditionId: string): boolean {
+    if (!token) {
+      warn(`No token found with reference'`, true);
+      return false;
+    }
+    let foundedCondition = false;
+    const targetVisionLevels = getConditionsFromTokenFast(token.document, true) ?? [];
+    for (const targetVision of targetVisionLevels) {
+      if (isStringEquals(targetVision.visionId, conditionId)) {
+        foundedCondition = true;
+        break;
+      }
+    }
+    return foundedCondition;
   },
 
   async addOrUpdateEffectConditionalVisibilityOnToken(

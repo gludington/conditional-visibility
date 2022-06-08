@@ -40,7 +40,7 @@ The calculation for the vision checks is split in many phase forall the use case
 
   - 1.1) Check if target token is with the 'Force Visible' flag for Midi Qol integration
 
-2) Check if the target is owned from the player if true you can see the token.
+2) Check if the target token and the source token are owned from the same current player if true you can see the token.
 
 3) Check for the token disposition:
 

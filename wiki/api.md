@@ -242,6 +242,16 @@ A method to check if a source token can has a specific condition
 | token | <code>string</code> | The source token | <code>undefined</code> |
 | conditionId | <code>string</code> | The id of the condition | <code>undefined</code> |
 
+### game.modules.get('conditional-visibility').api.hasAnyCondition(token:Token):boolean ⇒ <code>boolean</code>
+
+A method to check if a source token can has a any condition
+
+**Returns**: <code>boolean</code>
+
+| Param | Type | Description | Default |
+| --- | --- | --- | --- |
+| token | <code>string</code> | The source token | <code>undefined</code> |
+
 ### game.modules.get('conditional-visibility').api.canSee(sourceToken: Token, targetToken: Token) ⇒ <code>boolean</code>
 
 A method to check if a source token can see a target token

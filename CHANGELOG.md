@@ -1,3 +1,7 @@
+### 0.6.12
+
+- Add 'hasAnyCondition' to the API
+
 ### 0.6.11
 
 - Bug fix API

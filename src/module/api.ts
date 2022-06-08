@@ -922,6 +922,18 @@ const API = {
     return foundedCondition;
   },
 
+  hasAnyCondition(token: Token): boolean {
+    if (!token) {
+      warn(`No token found with reference'`, true);
+      return false;
+    }
+    const targetVisionLevels = getConditionsFromTokenFast(token.document, true) ?? [];
+    if(targetVisionLevels.length > 0){
+      return true;
+    }
+    return false;
+  },
+
   async addOrUpdateEffectConditionalVisibilityOnToken(
     tokenNameOrId: string,
     senseDataEffect: AtcvEffect,

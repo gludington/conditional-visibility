@@ -84,13 +84,10 @@ before anything give it a look there and let me know howmuch bad is the document
 
 These modules are suggested for a better user experience with this one :
 
-- [Status Icon Tweaks](https://github.com/jessev14/status-icon-tweaks)
-- [Temporary Effects as Token Statuses](https://github.com/ElfFriend-DnD/foundryvtt-temp-effects-as-statuses)
 - [DFreds Convenient Effects](https://github.com/DFreds/dfreds-convenient-effects)
 - [Combat Utility Belt or CUB](https://github.com/death-save/combat-utility-belt)
 - [Times up](https://gitlab.com/tposney/times-up)
 - [Dae](https://gitlab.com/tposney/dae)
-- [Sense Walls Multisystem](https://github.com/p4535992/fvtt-sense-walls-multisystem/) (working)
 
 ## Conditions and sense combination by system default
 

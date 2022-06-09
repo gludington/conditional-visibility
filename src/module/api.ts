@@ -87,6 +87,15 @@ const API = {
     return <CVSkillData[]>game.settings.get(CONSTANTS.MODULE_NAME, 'skills');
   },
 
+  /**
+   * The attributes used to track dynamic attributes in this system
+   *
+   * @returns {string[]}
+   */
+  get STEALTH_PASSIVE_EFFECTS(): string[] {
+    return <string[]>game.settings.get(CONSTANTS.MODULE_NAME, 'stealthPassiveEffects') || [];
+  },
+
   // TODO MAKE THIS BETTER
   get SKILLS_CONDITION(): String[] {
     if (game.system.id === 'dnd5e') {
@@ -794,7 +803,7 @@ const API = {
           await token.actor?.unsetFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE);
         }
         */
-        await token.actor?.unsetFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE);
+        this.unforceToBeVisible(token);
       }
     }
   },
@@ -824,7 +833,7 @@ const API = {
       }
       */
       if (token.actor) {
-        await token.actor?.setFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE, true);
+        this.forceToBeVisible(token);
       }
     }
   },

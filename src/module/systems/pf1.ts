@@ -24,6 +24,7 @@ export default {
   // STEALTH_ID_SKILL: `data.skills.ste`,
   // STEALTH_ID_LANG_SKILL: `PF1.SkillSte`, // SkillStealth
   PATH_ATTRIBUTES_SENSES: `data.attributes.senses`,
+  STEALTH_PASSIVE_EFFECTS: [AtcvEffectConditionFlags.STEALTHED],
   NPC_TYPE: `npc`,
   SENSES: <SenseData[]>[
     {

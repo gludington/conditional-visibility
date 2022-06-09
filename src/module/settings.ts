@@ -299,6 +299,14 @@ function defaultSettings(apply = false) {
       default: apply && SYSTEMS.DATA ? SYSTEMS.DATA.SKILLS : [],
       type: Array,
     },
+    stealthPassiveEffects: {
+      name: `${CONSTANTS.MODULE_NAME}.setting.stealthPassiveEffects.name`,
+      hint: `${CONSTANTS.MODULE_NAME}.setting.stealthPassiveEffects.hint`,
+      scope: 'world',
+      config: false,
+      default: apply && SYSTEMS.DATA ? SYSTEMS.DATA.STEALTH_PASSIVE_EFFECTS : [],
+      type: Array,
+    },
     npcType: {
       name: `${CONSTANTS.MODULE_NAME}.setting.npcType.name`,
       hint: `${CONSTANTS.MODULE_NAME}.setting.npcType.hint`,

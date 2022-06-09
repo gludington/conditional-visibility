@@ -16,6 +16,7 @@ export default {
   // STEALTH_ID_SKILL: ``,
   // STEALTH_ID_LANG_SKILL: ``,
   PATH_ATTRIBUTES_SENSES: ``,
+  STEALTH_PASSIVE_EFFECTS: [],
   NPC_TYPE: ``,
   SENSES: <SenseData[]>[
     {

@@ -1,7 +1,7 @@
 import type { ActiveEffectDataProperties } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/data.mjs/activeEffectData';
 import type { EffectChangeData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/data.mjs/effectChangeData';
 import type { PropertiesToSource } from '@league-of-foundry-developers/foundry-vtt-types/src/types/helperTypes';
-import { duplicateExtended, i18n, isStringEquals } from '../lib/lib';
+import { duplicateExtended, i18n, isStringEquals, is_real_number } from '../lib/lib';
 import Effect, { Constants } from './effect';
 
 export class EffectSupport {
@@ -238,8 +238,19 @@ export class EffectSupport {
     p: PropertiesToSource<ActiveEffectDataProperties>,
     isPassive: boolean,
   ): ActiveEffect {
+    let isTemporary = false;
     //@ts-ignore
     const currentDae = EffectSupport._isEmptyObject(p.dae) ? p.flags.dae : p.dae;
+    if (is_real_number(p.duration.seconds)) {
+      isTemporary = true;
+    }
+    if (is_real_number(p.duration.rounds)) {
+      isTemporary = true;
+    }
+    if (is_real_number(p.duration.turns)) {
+      isTemporary = true;
+    }
+    isPassive = !isTemporary;
     //@ts-ignore
     return ActiveEffect.create({
       id: p._id,
@@ -282,6 +293,15 @@ export class EffectSupport {
    * @returns {object} The active effect data object for this effect
    */
   public static convertToActiveEffectData(effect: Effect): Record<string, unknown> {
+    if (is_real_number(effect.seconds)) {
+      effect.isTemporary = true;
+    }
+    if (is_real_number(effect.rounds)) {
+      effect.isTemporary = true;
+    }
+    if (is_real_number(effect.turns)) {
+      effect.isTemporary = true;
+    }
     const isPassive = !effect.isTemporary;
     const myid = effect._id ? effect._id : effect.flags?.core?.statusId ? effect.flags.core.statusId : undefined;
     const myoverlay = effect.overlay ? effect.overlay : effect.flags?.core?.overlay ? effect.flags.core.overlay : false;

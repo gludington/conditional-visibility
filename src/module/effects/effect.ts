@@ -1,7 +1,7 @@
 import type { ActiveEffectDataProperties } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/data.mjs/activeEffectData';
 import type { EffectChangeData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/data.mjs/effectChangeData';
 import type { PropertiesToSource } from '@league-of-foundry-developers/foundry-vtt-types/src/types/helperTypes';
-import { duplicateExtended, i18n, isStringEquals } from '../lib/lib';
+import { duplicateExtended, i18n, isStringEquals, is_real_number } from '../lib/lib';
 
 /**
  * Data class for defining an effect
@@ -90,6 +90,15 @@ export default class Effect {
    * @returns {object} The active effect data object for this effect
    */
   convertToActiveEffectData({ origin = '', overlay = false } = {}): Record<string, unknown> {
+    if (is_real_number(this.seconds)) {
+      this.isTemporary = true;
+    }
+    if (is_real_number(this.rounds)) {
+      this.isTemporary = true;
+    }
+    if (is_real_number(this.turns)) {
+      this.isTemporary = true;
+    }
     const isPassive = !this.isTemporary;
     const currentDae = this._isEmptyObject(this.dae) ? this.flags.dae : this.dae;
     return {

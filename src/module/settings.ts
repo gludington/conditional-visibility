@@ -156,9 +156,10 @@ export const registerSettings = function (): void {
     hint: `${CONSTANTS.MODULE_NAME}.setting.setUpCustomAutoSkillListCVHandler.hint`,
     scope: 'world',
     config: true,
-    type: String,
-    default: '',
+    type: Array,
+    default: [],
     choices: <any>retrieveSettingAutoSkillList(),
+    onChange: (value) => <any>onChangeSettingAutoSkillList(value),
   });
 
   game.settings.register(CONSTANTS.MODULE_NAME, 'enableRefreshSightCVHandler', {
@@ -567,7 +568,7 @@ function otherSettings(apply = false) {
       hint: `${CONSTANTS.MODULE_NAME}.setting.setUpCustomAutoSkillListCVHandler.hint`,
       scope: 'world',
       config: true,
-      type: String,
+      type: Array,
       default: '',
       choices: <any>retrieveSettingAutoSkillList(),
     },
@@ -633,15 +634,41 @@ export async function checkSystem() {
   return applyDefaultSettings();
 }
 
-function retrieveSettingAutoSkillList(): Record<string, string> {
+function retrieveSettingAutoSkillList() {
   const cvSkillsData = <CVSkillData[]>SYSTEMS.DATA?.SKILLS || [];
+  const cvSkillsDataS: string[] = [];
   // https://themuuj.com/blog/2021/04/typescript-array-to-object/
   const cvSkillsDataEnabled: Record<string, string> = {};
   for (const cvSkillData of cvSkillsData) {
-    if (!cvSkillData.enable) {
+    // if (!cvSkillData.enable) {
+    //   continue;
+    // }
+    cvSkillsDataEnabled[cvSkillData.id] = cvSkillData.name;
+    cvSkillsDataS.push(cvSkillData.id);
+  }
+  return cvSkillsDataEnabled;
+}
+
+function onChangeSettingAutoSkillList(arrayOfValues) {
+  const cvSkillsData = <CVSkillData[]>SYSTEMS.DATA?.SKILLS || [];
+  // https://themuuj.com/blog/2021/04/typescript-array-to-object/
+  const cvSkillsDataEnabled: string[] = [];
+  for (const cvSkillData of cvSkillsData) {
+    if (!arrayOfValues.includes(cvSkillData.id)) {
       continue;
     }
-    cvSkillsDataEnabled[cvSkillData.id] = cvSkillData.name;
+    cvSkillsDataEnabled.push(cvSkillData.id);
   }
+
+  const newArr = API.SKILLS.map((obj) => {
+    if (cvSkillsDataEnabled.includes(obj.id)) {
+      return { ...obj, enable: true };
+    } else {
+      return { ...obj, enable: false };
+    }
+  });
+
+  game.settings.set(CONSTANTS.MODULE_NAME, 'skills', newArr);
+
   return cvSkillsDataEnabled;
 }

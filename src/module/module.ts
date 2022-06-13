@@ -216,21 +216,88 @@ export const readyHooks = (): void => {
   //   }
   // });
 
-  Hooks.on('renderSettingsConfig', (app, html, data) => {
+  Hooks.on('renderSettingsConfig', (app, html: JQuery<HTMLElement>, data) => {
     // Add colour pickers to the Configure Game Settings: Module Settings menu
     const name = `${CONSTANTS.MODULE_NAME}.setUpCustomAutoSkillListCVHandler`;
     const value = <string>game.settings.get(CONSTANTS.MODULE_NAME, 'setUpCustomAutoSkillListCVHandler');
-    $('<input>')
-      //.attr('type', 'color')
-      .attr('data-edit', name)
-      .val(value)
-      .insertAfter(
-        $(`input[name="${name}"]`, html)
-          //@ts-ignore
-          .SumoSelect({
-            placeholder: 'Select auto skills...',
-          }),
-      );
+
+    const cvSkillsDataIdS: string[] = [];
+    const cvSkillsDataNameS: string[] = [];
+    for (const cvSkillData of API.SKILLS) {
+      if (!cvSkillData.enable) {
+        continue;
+      }
+      cvSkillsDataIdS.push(cvSkillData.id);
+      cvSkillsDataNameS.push(i18n(cvSkillData.name));
+    }
+
+    $(<HTMLElement>html.find(`select[name="${name}"]`)[0]).attr('multiple', 'multiple');
+    $(`select[name="${name}"] option`).each(function () {
+      if (cvSkillsDataIdS.includes(String($(this).val()))) {
+        $(this).attr('selected', 'selected');
+      } else {
+        $(this).removeAttr('selected');
+      }
+    });
+
+    $(<HTMLElement>html.find(`select[name="${name}"]`)[0])
+      //@ts-ignore
+      .SumoSelect({
+        placeholder: 'Select auto skills...',
+      });
+
+    $(html.find(`.SumoSelect`)).each(function () {
+      if (this.classList.contains(`sumo_${name}`)) {
+        // const arrToRemove:string[] = [];
+        $(<HTMLElement>$(this).find(`ul.options`)[0])
+          .find('li')
+          .each(function () {
+            if (cvSkillsDataNameS.includes(String($(this).text()))) {
+              // do nothing
+            } else {
+              // $(this).removeClass("selected");
+              // arrToRemove.push(String($(this).text()));
+              if (this.classList.contains('selected')) {
+                $(this).trigger('click');
+              }
+            }
+          });
+        /*
+        $(<HTMLElement>$(this).find(`p.SelectBox`)[0]).each(function(){
+          let currentTitle = String($(this).attr('title')) || '';
+          for(const s of arrToRemove){
+            if(!cvSkillsDataNameS.includes(s)){
+              currentTitle = currentTitle.replace(s+',','');
+              currentTitle = currentTitle.replace(s,'');
+            }
+          }
+          $(this).attr('title',currentTitle.trim());
+        });
+        $(<HTMLElement>$(this).find(`p.SelectBox span`)[0]).each(function(){
+          let currentText = String($(this).text()) || '';
+          for(const s of arrToRemove){
+            if(!cvSkillsDataNameS.includes(s)){
+              currentText = currentText.replace(s+',','');
+              currentText = currentText.replace(s,'');
+            }
+          }
+          $(this).text(currentText.trim());
+        });
+        */
+      }
+    });
+
+    // $('<input>')
+    //   //.attr('type', 'color')
+    //   .attr('data-edit', name)
+    //   .val(value)
+    //   .insertAfter(
+    //     $(`input[name="${name}"]`, html)
+    //       //@ts-ignore
+    //       .SumoSelect({
+    //         placeholder: 'Select auto skills...',
+    //       }),
+    //   );
   });
 };
 

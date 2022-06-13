@@ -215,6 +215,22 @@ export const readyHooks = (): void => {
   //     return;
   //   }
   // });
+
+  Hooks.on('renderSettingsConfig', (app, html, data) => {
+    // Add colour pickers to the Configure Game Settings: Module Settings menu
+    const name = `${CONSTANTS.MODULE_NAME}.setUpCustomAutoSkillListCVHandler`;
+    const value = <string>game.settings.get(CONSTANTS.MODULE_NAME, 'setUpCustomAutoSkillListCVHandler');
+    $('<input>')
+      //.attr('type', 'color')
+      .attr('data-edit', name)
+      .val(value)
+      .insertAfter($(`input[name="${name}"]`, html)
+        //@ts-ignore
+        .SumoSelect({
+          placeholder: 'Select auto skills...',
+        })
+      );
+  });
 };
 
 Hooks.on('canvasReady', async () => {

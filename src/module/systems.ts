@@ -1,5 +1,6 @@
 // ↓ IMPORT SYSTEMS HERE ↓
 import dnd5e from './systems/dnd5e';
+import pf1 from './systems/pf1';
 import pf2e from './systems/pf2e';
 import generic from './systems/generic';
 
@@ -14,6 +15,7 @@ export const SYSTEMS = {
     return {
       // ↓ ADD SYSTEMS HERE ↓
       dnd5e,
+      pf1,
       pf2e,
       generic,
       // ↑ ADD SYSTEMS HERE ↑

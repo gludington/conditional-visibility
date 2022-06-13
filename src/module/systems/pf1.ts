@@ -1,4 +1,3 @@
-import { ConditionalVisibilityEffectDefinitions } from '../conditional-visibility-effect-definition';
 import {
   AtcvEffectSenseFlags,
   AtcvEffectConditionFlags,
@@ -9,12 +8,13 @@ import CONSTANTS from '../constants';
 import type Effect from '../effects/effect';
 
 /*
-HP: data.hp.value
-Perception: data.perception.value
-Passive perception: data.perception.value + 10
-Stealth: data.skills.ste
-Stealth active: data.skills.ste.value
-Stealth passive: data.skills.ste.value + 10
+Data path to 'HP': data.hp.value
+Data path to 'Perception': data.perception.value
+Data path to 'Passive perception': data.perception.value + 10
+Data path to 'Stealth': data.skills.ste
+Data path to 'Stealth active': data.skills.ste.value
+Data path to 'Stealth passive': data.skills.ste.value + 10
+Data path to 'Senses': data.attributes.senses
 */
 export default {
   HP_ATTRIBUTE: 'data.hp.value',
@@ -88,10 +88,82 @@ export default {
       conditionBlindedOverride: false,
     },
     {
-      id: AtcvEffectSenseFlags.GREATER_DARKVISION,
-      name: `${CONSTANTS.MODULE_NAME}.${AtcvEffectSenseFlags.GREATER_DARKVISION}`,
-      path: 'data.traits.senses.greaterdarkvision',
-      img: `modules/${CONSTANTS.MODULE_NAME}/icons/ae/evil-eye-eerie-1.jpg`,
+      id: AtcvEffectSenseFlags.TREMOR_SENSE,
+      name: `${CONSTANTS.MODULE_NAME}.${AtcvEffectSenseFlags.TREMOR_SENSE}`,
+      path: `data.attributes.senses.tremorsense`,
+      img: `modules/${CONSTANTS.MODULE_NAME}/icons/ae/ice_15.jpg`,
+      conditionType: 'sense',
+      conditionSources: <string[]>[],
+      conditionTargets: <string[]>[],
+      conditionElevation: true,
+      conditionBlinded: false,
+      conditionBlindedOverride: true,
+    },
+    {
+      id: AtcvEffectSenseFlags.SEE_INVISIBILITY,
+      name: `${CONSTANTS.MODULE_NAME}.${AtcvEffectSenseFlags.SEE_INVISIBILITY}`,
+      path: `data.attributes.senses.seeinvisible`, // data.attributes.senses.special
+      img: `modules/${CONSTANTS.MODULE_NAME}/icons/ae/???`, // TODO change icon
+      conditionType: 'sense',
+      conditionSources: <string[]>[],
+      conditionTargets: <string[]>[],
+      conditionElevation: false,
+      conditionBlinded: false,
+      conditionBlindedOverride: false,
+    },
+    {
+      id: AtcvEffectSenseFlags.BLIND_SIGHT,
+      name: `${CONSTANTS.MODULE_NAME}.${AtcvEffectSenseFlags.BLIND_SIGHT}`,
+      path: `data.attributes.senses.blindsight`,
+      img: `modules/${CONSTANTS.MODULE_NAME}/icons/ae/green_18.jpg`,
+      conditionType: 'sense',
+      conditionSources: <string[]>[],
+      conditionTargets: <string[]>[],
+      conditionElevation: false,
+      conditionBlinded: false,
+      conditionBlindedOverride: true,
+    },
+    {
+      id: AtcvEffectSenseFlags.BLIND_SENSE,
+      name: `${CONSTANTS.MODULE_NAME}.${AtcvEffectSenseFlags.BLIND_SENSE}`,
+      path: `data.attributes.senses.blindsight`,
+      img: `modules/${CONSTANTS.MODULE_NAME}/icons/ae/???`, // TODO change icon
+      conditionType: 'sense',
+      conditionSources: <string[]>[],
+      conditionTargets: <string[]>[],
+      conditionElevation: false,
+      conditionBlinded: false,
+      conditionBlindedOverride: true,
+    },
+    {
+      id: AtcvEffectSenseFlags.SCENT,
+      name: `${CONSTANTS.MODULE_NAME}.${AtcvEffectSenseFlags.SCENT}`,
+      path: ``,
+      img: `modules/${CONSTANTS.MODULE_NAME}/icons/ae/???`, // TODO change icon
+      conditionType: 'sense',
+      conditionSources: <string[]>[],
+      conditionTargets: <string[]>[],
+      conditionElevation: false,
+      conditionBlinded: false,
+      conditionBlindedOverride: false,
+    },
+    {
+      id: AtcvEffectSenseFlags.TRUE_SIGHT,
+      name: `${CONSTANTS.MODULE_NAME}.${AtcvEffectSenseFlags.TRUE_SIGHT}`,
+      path: `data.attributes.senses.truesight`,
+      img: `modules/${CONSTANTS.MODULE_NAME}/icons/ae/emerald_11.jpg`,
+      conditionType: 'sense',
+      conditionSources: <string[]>[],
+      conditionTargets: <string[]>[],
+      conditionElevation: false,
+      conditionBlinded: false,
+      conditionBlindedOverride: false,
+    },
+    {
+      id: AtcvEffectSenseFlags.SEE_IN_DARKNESS,
+      name: `${CONSTANTS.MODULE_NAME}.${AtcvEffectSenseFlags.SEE_IN_DARKNESS}`,
+      path: ``,
+      img: `modules/${CONSTANTS.MODULE_NAME}/icons/ae/???`, // TODO change icon
       conditionType: 'sense',
       conditionSources: <string[]>[],
       conditionTargets: <string[]>[],
@@ -142,19 +214,9 @@ export default {
       path: undefined,
       img: `modules/${CONSTANTS.MODULE_NAME}/icons/unknown.jpg`,
       conditionType: 'condition',
-      conditionSources: <string[]>[],
-      conditionTargets: <string[]>[],
-      conditionElevation: false,
-      conditionBlinded: false,
-      conditionBlindedOverride: false,
-    },
-    {
-      id: AtcvEffectConditionFlags.OBSCURED,
-      name: `${CONSTANTS.MODULE_NAME}.${AtcvEffectConditionFlags.OBSCURED}`,
-      path: undefined,
-      img: `modules/${CONSTANTS.MODULE_NAME}/icons/foggy.jpg`,
-      conditionType: 'condition',
-      conditionSources: <string[]>[],
+      conditionSources: <string[]>[
+        AtcvEffectSenseFlags.SEE_INVISIBILITY
+      ],
       conditionTargets: <string[]>[],
       conditionElevation: false,
       conditionBlinded: false,
@@ -166,7 +228,13 @@ export default {
       path: undefined,
       img: `modules/${CONSTANTS.MODULE_NAME}/icons/moon.jpg`,
       conditionType: 'condition',
-      conditionSources: <string[]>[],
+      conditionSources: <string[]>[
+        AtcvEffectSenseFlags.BLIND_SIGHT,
+        AtcvEffectSenseFlags.BLIND_SENSE,
+        AtcvEffectSenseFlags.TREMOR_SENSE,
+        AtcvEffectSenseFlags.SEE_IN_DARKNESS,
+        AtcvEffectSenseFlags.TRUE_SIGHT,
+      ],
       conditionTargets: <string[]>[],
       conditionElevation: false,
       conditionBlinded: false,

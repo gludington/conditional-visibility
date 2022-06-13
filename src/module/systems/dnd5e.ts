@@ -1,4 +1,3 @@
-import { ConditionalVisibilityEffectDefinitions } from '../conditional-visibility-effect-definition';
 import {
   AtcvEffectSenseFlags,
   AtcvEffectConditionFlags,

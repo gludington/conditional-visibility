@@ -1,4 +1,5 @@
 import API from './api';
+import type { CVSkillData } from './conditional-visibility-models';
 import CONSTANTS from './constants';
 import { dialogWarning, i18n, warn } from './lib/lib';
 import { SYSTEMS } from './systems';
@@ -149,6 +150,16 @@ export const registerSettings = function (): void {
   //   default: false,
   //   type: Boolean,
   // });
+
+  game.settings.register(CONSTANTS.MODULE_NAME, 'setUpCustomAutoSkillListCVHandler', {
+    name: `${CONSTANTS.MODULE_NAME}.setting.setUpCustomAutoSkillListCVHandler.name`,
+    hint: `${CONSTANTS.MODULE_NAME}.setting.setUpCustomAutoSkillListCVHandler.hint`,
+    scope: 'world',
+    config: true,
+    type: String,
+    default: '',
+    choices: <any>retrieveSettingAutoSkillList()
+  });
 
   game.settings.register(CONSTANTS.MODULE_NAME, 'enableRefreshSightCVHandler', {
     name: `${CONSTANTS.MODULE_NAME}.setting.enableRefreshSightCVHandler.name`,
@@ -551,6 +562,16 @@ function otherSettings(apply = false) {
     //   type: Boolean,
     // },
 
+    setUpCustomAutoSkillListCVHandler: {
+      name: `${CONSTANTS.MODULE_NAME}.setting.setUpCustomAutoSkillListCVHandler.name`,
+      hint: `${CONSTANTS.MODULE_NAME}.setting.setUpCustomAutoSkillListCVHandler.hint`,
+      scope: 'world',
+      config: true,
+      type: String,
+      default: '',
+      choices: <any>retrieveSettingAutoSkillList()
+    },
+
     enableRefreshSightCVHandler: {
       name: `${CONSTANTS.MODULE_NAME}.setting.enableRefreshSightCVHandler.name`,
       hint: `${CONSTANTS.MODULE_NAME}.setting.enableRefreshSightCVHandler.hint`,
@@ -610,4 +631,17 @@ export async function checkSystem() {
   }
 
   return applyDefaultSettings();
+}
+
+function retrieveSettingAutoSkillList():Record<string,string>{
+  const cvSkillsData = <CVSkillData[]>SYSTEMS.DATA?.SKILLS || [];
+  // https://themuuj.com/blog/2021/04/typescript-array-to-object/
+  const cvSkillsDataEnabled: Record<string, string> = { };
+  for (const cvSkillData of cvSkillsData) {
+    if (!cvSkillData.enable) {
+      continue;
+    }
+    cvSkillsDataEnabled[cvSkillData.id] = cvSkillData.name;
+  }
+  return cvSkillsDataEnabled;
 }

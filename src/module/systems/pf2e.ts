@@ -1,4 +1,3 @@
-import { ConditionalVisibilityEffectDefinitions } from '../conditional-visibility-effect-definition';
 import {
   AtcvEffectSenseFlags,
   AtcvEffectConditionFlags,
@@ -9,12 +8,13 @@ import CONSTANTS from '../constants';
 import type Effect from '../effects/effect';
 
 /*
-HP: data.hp.value
-Perception: data.perception.value
-Passive perception: data.perception.value + 10
-Stealth: data.skills.ste
-Stealth active: data.skills.ste.value
-Stealth passive: data.skills.ste.value + 10
+Data path to 'HP': data.hp.value
+Data path to 'Perception': data.perception.value
+Data path to 'Passive perception': data.perception.value + 10
+Data path to 'Stealth': data.skills.ste
+Data path to 'Stealth active': data.skills.ste.value
+Data path to 'Stealth passive': data.skills.ste.value + 10
+Data path to 'Senses': data.attributes.senses
 */
 export default {
   HP_ATTRIBUTE: 'data.hp.value',

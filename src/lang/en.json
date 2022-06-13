@@ -63,6 +63,8 @@
   "conditional-visibility.setting.forceLimitSightToMaxSightOnConfig.hint": "Takes the maximum distance between the atl effects and the token view values to \"sharply truncate any token at a distance not close enough\"",
   "conditional-visibility.setting.doNotUseSocketLibFeature.name": "Disable the socketLib feature integration",
   "conditional-visibility.setting.doNotUseSocketLibFeature.hint": "This is usually useful only for avoid a socket collision with other modules",
+  "conditional-visibility.setting.setUpCustomAutoSkillListCVHandler.name": "Set up custom auto skill list",
+  "conditional-visibility.setting.setUpCustomAutoSkillListCVHandler.hint": "You can specify for what skill enabled the auto skill feature",
 
   "conditional-visibility.token.config.senses.title": "Senses",
   "conditional-visibility.token.config.conditions.title": "Conditions",

@@ -597,7 +597,7 @@ export enum AtcvEffectSenseFlags {
   // additional generic
   NONE = 'none',
   NORMAL = 'normal',
-  // additional dnd5e and pf2e
+  // additional dnd5e
   DARKVISION = 'darkvision',
   SEE_INVISIBLE = 'seeinvisible',
   BLIND_SIGHT = 'blindsight',
@@ -610,6 +610,11 @@ export enum AtcvEffectSenseFlags {
   GREATER_DARKVISION = 'greaterdarkvision',
   LOW_LIGHT_VISION = 'lowlightvision',
   BLINDED = 'blinded',
+  // additional pf1e
+  SEE_INVISIBILITY = 'seeinvisibility',
+  BLIND_SENSE = 'blindsense',
+  SCENT = 'scent',
+  SEE_IN_DARKNESS = 'seeindarkness'
 }
 
 export enum AtcvEffectConditionFlags {

@@ -33,6 +33,11 @@ export class ConditionalVisibilityEffectDefinitions {
     // EffectDefinitions.shadowEffect(distance),
 
     // SENSES
+    const normal = ConditionalVisibilityEffectDefinitions.normal(distance, visionLevel);
+    if (normal) {
+      normal.atcvChanges = AtcvEffect.retrieveAtcvChangesFromEffect(normal);
+      effects.push(normal);
+    }
     const blinded = ConditionalVisibilityEffectDefinitions.blinded(distance, visionLevel);
     if (blinded) {
       blinded.atcvChanges = AtcvEffect.retrieveAtcvChangesFromEffect(blinded);
@@ -139,6 +144,55 @@ export class ConditionalVisibilityEffectDefinitions {
   // The source effect
   // =============================================
 
+  static normal(number, visionLevel) {
+    const effectSight = API.SENSES.find((a: SenseData) => {
+      return isStringEquals(a.id, AtcvEffectSenseFlags.NORMAL);
+    });
+    if (!effectSight) {
+      debug(
+        `Cannot find for system '${game.system.id}' the active effect with id '${AtcvEffectSenseFlags.NORMAL}'`,
+      );
+      return;
+    }
+    return new Effect({
+      customId: AtcvEffectSenseFlags.NORMAL,
+      name:
+        number && number > 0
+          ? i18nFormat(`${CONSTANTS.MODULE_NAME}.effects.normal.name2`, { number: number })
+          : i18n(`${CONSTANTS.MODULE_NAME}.effects.normal.name`),
+      description:
+        number && number > 0
+          ? i18nFormat(`${CONSTANTS.MODULE_NAME}.effects.normal.description2`, { number: number })
+          : i18n(`${CONSTANTS.MODULE_NAME}.effects.normal.description`),
+      icon:`modules/${CONSTANTS.MODULE_NAME}/icons/ae/light_02.jpg`,
+      // seconds: Constants.SECONDS.IN_EIGHT_HOURS,
+      transfer: true,
+      changes: [
+        // {
+        //   key: 'ATCV.conditionPath',
+        //   mode: CONST.ACTIVE_EFFECT_MODES.UPGRADE,
+        //   value: number && number > 0 ? `${number}` : `${effectSight.path}`,
+        //   priority: 5,
+        // },
+      ],
+      atcvChanges: [
+        {
+          key: 'ATCV.' + AtcvEffectSenseFlags.NORMAL,
+          mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+          value: `${visionLevel}`,
+          priority: 5,
+        },
+        {
+          key: 'ATCV.conditionType',
+          mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+          value: `sense`,
+          priority: 5,
+        },
+      ],
+      isTemporary: false,
+    });
+  }
+
   static darkvision(number: number, visionLevel) {
     const effectSight = API.SENSES.find((a: SenseData) => {
       return isStringEquals(a.id, AtcvEffectSenseFlags.DARKVISION);
@@ -240,6 +294,12 @@ export class ConditionalVisibilityEffectDefinitions {
           value: `sense`,
           priority: 5,
         },
+        {
+          key: 'ATCV.conditionBlindedOverride',
+          mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+          value: `true`,
+          priority: 5,
+        },
       ],
       isTemporary: false,
     });
@@ -287,6 +347,12 @@ export class ConditionalVisibilityEffectDefinitions {
           key: 'ATCV.conditionType',
           mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
           value: `sense`,
+          priority: 5,
+        },
+        {
+          key: 'ATCV.conditionBlindedOverride',
+          mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+          value: `true`,
           priority: 5,
         },
       ],
@@ -549,6 +615,214 @@ export class ConditionalVisibilityEffectDefinitions {
       atcvChanges: [
         {
           key: 'ATCV.' + AtcvEffectSenseFlags.BLINDED,
+          mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+          value: `${visionLevel}`,
+          priority: 5,
+        },
+        {
+          key: 'ATCV.conditionType',
+          mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+          value: `sense`,
+          priority: 5,
+        },
+        {
+          key: 'ATCV.conditionBlinded',
+          mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+          value: `true`,
+          priority: 5,
+        },
+      ],
+      isTemporary: false,
+    });
+  }
+
+  static seeinvisibility(number, visionLevel) {
+    const effectSight = API.SENSES.find((a: SenseData) => {
+      return isStringEquals(a.id, AtcvEffectSenseFlags.SEE_INVISIBILITY);
+    });
+    if (!effectSight) {
+      debug(
+        `Cannot find for system '${game.system.id}' the active effect with id '${AtcvEffectSenseFlags.SEE_INVISIBILITY}'`,
+      );
+      return;
+    }
+    return new Effect({
+      customId: AtcvEffectSenseFlags.SEE_INVISIBILITY,
+      name:
+        number && number > 0
+          ? i18nFormat(`${CONSTANTS.MODULE_NAME}.effects.seeinvisibility.name2`, { number: number })
+          : i18n(`${CONSTANTS.MODULE_NAME}.effects.seeinvisibility.name`),
+      description:
+        number && number > 0
+          ? i18nFormat(`${CONSTANTS.MODULE_NAME}.effects.seeinvisibility.description2`, { number: number })
+          : i18n(`${CONSTANTS.MODULE_NAME}.effects.seeinvisibility.description`),
+      icon: `modules/${CONSTANTS.MODULE_NAME}/icons/ae/???`, // TODO change icon image
+      // seconds: Constants.SECONDS.IN_EIGHT_HOURS,
+      transfer: true,
+      changes: [
+        // {
+        //   key: 'ATCV.conditionPath',
+        //   mode: CONST.ACTIVE_EFFECT_MODES.UPGRADE,
+        //   value: number && number > 0 ? `${number}` : `${effectSight.path}`,
+        //   priority: 5,
+        // },
+      ],
+      atcvChanges: [
+        {
+          key: 'ATCV.' + AtcvEffectSenseFlags.SEE_INVISIBILITY,
+          mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+          value: `${visionLevel}`,
+          priority: 5,
+        },
+        {
+          key: 'ATCV.conditionType',
+          mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+          value: `sense`,
+          priority: 5,
+        },
+      ],
+      isTemporary: false,
+    });
+  }
+
+  static blindsense(number: number, visionLevel) {
+    const effectSight = API.SENSES.find((a: SenseData) => {
+      return isStringEquals(a.id, AtcvEffectSenseFlags.BLIND_SENSE);
+    });
+    if (!effectSight) {
+      debug(
+        `Cannot find for system '${game.system.id}' the active effect with id '${AtcvEffectSenseFlags.BLIND_SENSE}'`,
+      );
+      return;
+    }
+    return new Effect({
+      customId: AtcvEffectSenseFlags.BLIND_SENSE,
+      name:
+        number && number > 0
+          ? i18nFormat(`${CONSTANTS.MODULE_NAME}.effects.blindsense.name2`, { number: number })
+          : i18n(`${CONSTANTS.MODULE_NAME}.effects.blindsense.name`),
+      description:
+        number && number > 0
+          ? i18nFormat(`${CONSTANTS.MODULE_NAME}.effects.blindsense.description2`, { number: number })
+          : i18n(`${CONSTANTS.MODULE_NAME}.effects.blindsense.description`),
+      icon: `modules/${CONSTANTS.MODULE_NAME}/icons/ae/???`, // TODO change icon
+      // seconds: Constants.SECONDS.IN_EIGHT_HOURS,
+      transfer: true,
+      changes: [
+        // {
+        //   key: 'ATCV.conditionPath',
+        //   mode: CONST.ACTIVE_EFFECT_MODES.UPGRADE,
+        //   value: number && number > 0 ? `${number}` : `${effectSight.path}`,
+        //   priority: 5,
+        // },
+      ],
+      atcvChanges: [
+        {
+          key: 'ATCV.' + AtcvEffectSenseFlags.BLIND_SENSE,
+          mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+          value: `${visionLevel}`,
+          priority: 5,
+        },
+        {
+          key: 'ATCV.conditionType',
+          mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+          value: `sense`,
+          priority: 5,
+        },
+        {
+          key: 'ATCV.conditionBlindedOverride',
+          mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+          value: `true`,
+          priority: 5,
+        },
+      ],
+      isTemporary: false,
+    });
+  }
+
+  static scent(number, visionLevel) {
+    const effectSight = API.SENSES.find((a: SenseData) => {
+      return isStringEquals(a.id, AtcvEffectSenseFlags.SCENT);
+    });
+    if (!effectSight) {
+      debug(
+        `Cannot find for system '${game.system.id}' the active effect with id '${AtcvEffectSenseFlags.SCENT}'`,
+      );
+      return;
+    }
+    return new Effect({
+      customId: AtcvEffectSenseFlags.SCENT,
+      name:
+        number && number > 0
+          ? i18nFormat(`${CONSTANTS.MODULE_NAME}.effects.scent.name2`, { number: number })
+          : i18n(`${CONSTANTS.MODULE_NAME}.effects.scent.name`),
+      description:
+        number && number > 0
+          ? i18nFormat(`${CONSTANTS.MODULE_NAME}.effects.scent.description2`, { number: number })
+          : i18n(`${CONSTANTS.MODULE_NAME}.effects.scent.description`),
+      icon: `modules/${CONSTANTS.MODULE_NAME}/icons/ae/???`, // TODO CHANge icon
+      // seconds: Constants.SECONDS.IN_EIGHT_HOURS,
+      transfer: true,
+      changes: [
+        // {
+        //   key: 'ATCV.conditionPath',
+        //   mode: CONST.ACTIVE_EFFECT_MODES.UPGRADE,
+        //   value: number && number > 0 ? `${number}` : `${effectSight.path}`,
+        //   priority: 5,
+        // },
+      ],
+      atcvChanges: [
+        {
+          key: 'ATCV.' + AtcvEffectSenseFlags.SCENT,
+          mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+          value: `${visionLevel}`,
+          priority: 5,
+        },
+        {
+          key: 'ATCV.conditionType',
+          mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+          value: `sense`,
+          priority: 5,
+        },
+      ],
+      isTemporary: false,
+    });
+  }
+
+  static seeindarkness(number, visionLevel) {
+    const effectSight = API.SENSES.find((a: SenseData) => {
+      return isStringEquals(a.id, AtcvEffectSenseFlags.SEE_IN_DARKNESS);
+    });
+    if (!effectSight) {
+      debug(
+        `Cannot find for system '${game.system.id}' the active effect with id '${AtcvEffectSenseFlags.SEE_IN_DARKNESS}'`,
+      );
+      return;
+    }
+    return new Effect({
+      customId: AtcvEffectSenseFlags.SEE_INVISIBILITY,
+      name:
+        number && number > 0
+          ? i18nFormat(`${CONSTANTS.MODULE_NAME}.effects.seeindarkness.name2`, { number: number })
+          : i18n(`${CONSTANTS.MODULE_NAME}.effects.seeindarkness.name`),
+      description:
+        number && number > 0
+          ? i18nFormat(`${CONSTANTS.MODULE_NAME}.effects.seeindarkness.description2`, { number: number })
+          : i18n(`${CONSTANTS.MODULE_NAME}.effects.seeindarkness.description`),
+      icon: `modules/${CONSTANTS.MODULE_NAME}/icons/ae/???`, // TODO change icon image
+      // seconds: Constants.SECONDS.IN_EIGHT_HOURS,
+      transfer: true,
+      changes: [
+        // {
+        //   key: 'ATCV.conditionPath',
+        //   mode: CONST.ACTIVE_EFFECT_MODES.UPGRADE,
+        //   value: number && number > 0 ? `${number}` : `${effectSight.path}`,
+        //   priority: 5,
+        // },
+      ],
+      atcvChanges: [
+        {
+          key: 'ATCV.' + AtcvEffectSenseFlags.SEE_IN_DARKNESS,
           mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
           value: `${visionLevel}`,
           priority: 5,

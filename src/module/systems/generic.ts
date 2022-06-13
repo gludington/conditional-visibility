@@ -1,4 +1,3 @@
-import { ConditionalVisibilityEffectDefinitions } from '../conditional-visibility-effect-definition';
 import {
   AtcvEffectConditionFlags,
   AtcvEffectSenseFlags,
@@ -8,6 +7,15 @@ import {
 import CONSTANTS from '../constants';
 import type Effect from '../effects/effect';
 
+/**
+Data path to 'HP':
+Data path to 'Perception':
+Data path to 'Passive perception':
+Data path to 'Stealth':
+Data path to 'Stealth active':
+Data path to 'Stealth passive':
+Data path to 'Senses':
+ */
 export default {
   VISION_LEVEL: {},
   PERCEPTION_PASSIVE_SKILL: ``,

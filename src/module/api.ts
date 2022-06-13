@@ -937,7 +937,7 @@ const API = {
       return false;
     }
     const targetVisionLevels = getConditionsFromTokenFast(token.document, true) ?? [];
-    if(targetVisionLevels.length > 0){
+    if (targetVisionLevels.length > 0) {
       return true;
     }
     return false;

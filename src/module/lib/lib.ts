@@ -824,10 +824,10 @@ export function _getCVFromTokenFast(
   if (filterIsDisabled) {
     atcvEffects = atcvEffects.filter((entity) => {
       const isDisabled = <any>entity.data.disabled;
-      if(is_real_number(isDisabled)){
+      if (is_real_number(isDisabled)) {
         //@ts-ignore
         return entity.data.disabled <= 0;
-      }else{
+      } else {
         return !entity.data.disabled;
       }
     });
@@ -875,7 +875,7 @@ export function _getCVFromTokenFast(
     const atcvEffectsObject = getProperty(<Actor>tokenDocument?.actor, `data.flags.${CONSTANTS.MODULE_NAME}`);
     for (const key in atcvEffectsObject) {
       const senseOrConditionIdKey = key;
-      if (!senseOrConditionIdKey || senseOrConditionIdKey.startsWith('data')){
+      if (!senseOrConditionIdKey || senseOrConditionIdKey.startsWith('data')) {
         continue;
       }
       const senseValue = <AtcvEffect>atcvEffectsObject[senseOrConditionIdKey];
@@ -1913,7 +1913,9 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): C
   // 1.1) Check if target token is with the 'Force Visible' flag for Midi Qol integration
   // if (targetToken.actor.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE)) {
   if (targetToken.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE)) {
-    debug(`(1.1) Is true target is force to be visible, '${sourceToken.data.name}', can see '${targetToken.data.name}'`);
+    debug(
+      `(1.1) Is true target is force to be visible, '${sourceToken.data.name}', can see '${targetToken.data.name}'`,
+    );
     // return true;
     return {
       sourceTokenId: sourceToken.id,
@@ -2017,12 +2019,17 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): C
   const perceptionPassiveValue =
     getProperty(<Actor>sourceToken?.document?.actor, `data.${API.PERCEPTION_PASSIVE_SKILL}`) || 0;
 
-  const currentUseStealthPassiveFlag = targetToken.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.USE_STEALTH_PASSIVE);
+  const currentUseStealthPassiveFlag = targetToken.actor?.getFlag(
+    CONSTANTS.MODULE_NAME,
+    ConditionalVisibilityFlags.USE_STEALTH_PASSIVE,
+  );
 
   const isStealthPassive =
-    (currentUseStealthPassiveFlag != null && currentUseStealthPassiveFlag != undefined)
-    ? (String(currentUseStealthPassiveFlag) === 'true' ? true : false)
-    : false;
+    currentUseStealthPassiveFlag != null && currentUseStealthPassiveFlag != undefined
+      ? String(currentUseStealthPassiveFlag) === 'true'
+        ? true
+        : false
+      : false;
 
   // 4) If the flag 'USe Stealth Passive' on the token is enabled, check by default if
   // _Perception Passive of the system_ is `>` of the _Stealth Passive of the System_,
@@ -2085,7 +2092,9 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): C
   if (sourceVisionLevels.length === 0) {
     // 5.1) If at least a condition is present on target it should be false else with no 'sense' on source e no ' condition' on target is true
     if (targetVisionLevels.length === 0) {
-      debug(`(5.1) Is true no sourceVisionLevels and targetVisionLevels, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
+      debug(
+        `(5.1) Is true no sourceVisionLevels and targetVisionLevels, '${sourceToken.data.name}' can see '${targetToken.data.name}'`,
+      );
       // return true;
       return {
         sourceTokenId: sourceToken.id,
@@ -2166,9 +2175,9 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): C
   if (!hasStealthed && isStealthPassive) {
     const stealthed: AtcvEffect = new AtcvEffect();
     // stealthed.visionId = AtcvEffectConditionFlags.STEALTHED;
-    if(API.STEALTH_PASSIVE_EFFECTS.length <= 0){
+    if (API.STEALTH_PASSIVE_EFFECTS.length <= 0) {
       warn(`No 'Stealth Passive Effect' is been set for this system this cannot be happening`, true);
-    }else{
+    } else {
       stealthed.visionId = <string>API.STEALTH_PASSIVE_EFFECTS[0];
       stealthed.visionLevelValue = stealthedPassiveValue;
       targetVisionLevels.push(stealthed);
@@ -2197,7 +2206,7 @@ export function shouldIncludeVisionV2(sourceToken: Token, targetToken: Token): C
   if (targetVisionLevels.length == 1) {
     if (isStealthPassive) {
       // if (targetVisionLevels[0]?.visionId == AtcvEffectConditionFlags.STEALTHED) {
-      if(API.STEALTH_PASSIVE_EFFECTS.includes(<string>targetVisionLevels[0]?.visionId)){
+      if (API.STEALTH_PASSIVE_EFFECTS.includes(<string>targetVisionLevels[0]?.visionId)) {
         if (perceptionPassiveValue >= (<number>targetVisionLevels[0]?.visionLevelValue ?? 0)) {
           debug(`(7) Is true, '${sourceToken.data.name}' can see '${targetToken.data.name}'`);
           // return true;

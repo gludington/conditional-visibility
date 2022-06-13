@@ -158,7 +158,7 @@ export const registerSettings = function (): void {
     config: true,
     type: String,
     default: '',
-    choices: <any>retrieveSettingAutoSkillList()
+    choices: <any>retrieveSettingAutoSkillList(),
   });
 
   game.settings.register(CONSTANTS.MODULE_NAME, 'enableRefreshSightCVHandler', {
@@ -569,7 +569,7 @@ function otherSettings(apply = false) {
       config: true,
       type: String,
       default: '',
-      choices: <any>retrieveSettingAutoSkillList()
+      choices: <any>retrieveSettingAutoSkillList(),
     },
 
     enableRefreshSightCVHandler: {
@@ -633,10 +633,10 @@ export async function checkSystem() {
   return applyDefaultSettings();
 }
 
-function retrieveSettingAutoSkillList():Record<string,string>{
+function retrieveSettingAutoSkillList(): Record<string, string> {
   const cvSkillsData = <CVSkillData[]>SYSTEMS.DATA?.SKILLS || [];
   // https://themuuj.com/blog/2021/04/typescript-array-to-object/
-  const cvSkillsDataEnabled: Record<string, string> = { };
+  const cvSkillsDataEnabled: Record<string, string> = {};
   for (const cvSkillData of cvSkillsData) {
     if (!cvSkillData.enable) {
       continue;

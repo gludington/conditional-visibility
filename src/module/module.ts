@@ -224,11 +224,12 @@ export const readyHooks = (): void => {
       //.attr('type', 'color')
       .attr('data-edit', name)
       .val(value)
-      .insertAfter($(`input[name="${name}"]`, html)
-        //@ts-ignore
-        .SumoSelect({
-          placeholder: 'Select auto skills...',
-        })
+      .insertAfter(
+        $(`input[name="${name}"]`, html)
+          //@ts-ignore
+          .SumoSelect({
+            placeholder: 'Select auto skills...',
+          }),
       );
   });
 };
@@ -277,21 +278,21 @@ const module = {
       a.visionName.localeCompare(b.visionName),
     );
 
-    const currentForceVisibleFlag = tokenConfig.actor.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE);
+    const currentForceVisibleFlag = tokenConfig.actor.getFlag(
+      CONSTANTS.MODULE_NAME,
+      ConditionalVisibilityFlags.FORCE_VISIBLE,
+    );
     let forceVisible = false;
-    if (
-      currentForceVisibleFlag != null &&
-      currentForceVisibleFlag != undefined
-    ) {
+    if (currentForceVisibleFlag != null && currentForceVisibleFlag != undefined) {
       forceVisible = String(currentForceVisibleFlag) == 'true' ? true : false;
     }
 
-    const currentUseStealthPassiveFlag =  tokenConfig.actor.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.USE_STEALTH_PASSIVE);
+    const currentUseStealthPassiveFlag = tokenConfig.actor.getFlag(
+      CONSTANTS.MODULE_NAME,
+      ConditionalVisibilityFlags.USE_STEALTH_PASSIVE,
+    );
     let useStealthPassive = false; // game.settings.get(CONSTANTS.MODULE_NAME, 'autoPassivePerception') ? true : false;
-    if (
-      currentUseStealthPassiveFlag != null &&
-      currentUseStealthPassiveFlag != undefined
-    ) {
+    if (currentUseStealthPassiveFlag != null && currentUseStealthPassiveFlag != undefined) {
       useStealthPassive = String(currentUseStealthPassiveFlag) == 'true' ? true : false;
     }
 
@@ -327,7 +328,7 @@ const module = {
           s2.visionName = i18n(s2.visionName) + ' (CV)';
         }
         // if (s.visionId === AtcvEffectConditionFlags.STEALTHED) {
-        if(API.STEALTH_PASSIVE_EFFECTS.includes(s.visionId)){
+        if (API.STEALTH_PASSIVE_EFFECTS.includes(s.visionId)) {
           if (useStealthPassive) {
             s2.isReadOnly = true;
           } else {
@@ -696,17 +697,20 @@ const module = {
       }
     }
 
-    const currentForceVisibleFlag = getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`);
+    const currentForceVisibleFlag = getProperty(
+      change,
+      `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`,
+    );
 
     if (
       // change.actor &&
       // change.actor.data &&
       // change.actor.data.flags[CONSTANTS.MODULE_NAME] &&
       hasCVFlagOnChange &&
-      currentForceVisibleFlag!= null &&
+      currentForceVisibleFlag != null &&
       currentForceVisibleFlag != undefined
     ) {
-      const forceVisible = String(currentForceVisibleFlag)==='true' ? true : false;
+      const forceVisible = String(currentForceVisibleFlag) === 'true' ? true : false;
       if (forceVisible != sourceToken.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE)) {
         if (String(forceVisible) === 'true' || String(forceVisible) === 'false') {
           await sourceToken.actor?.setFlag(
@@ -720,7 +724,10 @@ const module = {
       }
     }
 
-    const currentUseStealthPassiveFlag = getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.USE_STEALTH_PASSIVE}`);
+    const currentUseStealthPassiveFlag = getProperty(
+      change,
+      `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.USE_STEALTH_PASSIVE}`,
+    );
 
     if (
       // change.actor &&
@@ -730,7 +737,7 @@ const module = {
       currentUseStealthPassiveFlag != null &&
       currentUseStealthPassiveFlag != undefined
     ) {
-      const useStealthPassive = String(currentUseStealthPassiveFlag)==='true' ? true : false;
+      const useStealthPassive = String(currentUseStealthPassiveFlag) === 'true' ? true : false;
       if (
         useStealthPassive !=
         sourceToken.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.USE_STEALTH_PASSIVE)
@@ -739,7 +746,7 @@ const module = {
         // Make sure to remove anything with value 0
         for (const senseData of await getAllDefaultSensesAndConditions(null)) {
           // if (senseData.visionId === AtcvEffectConditionFlags.STEALTHED) {
-          if(API.STEALTH_PASSIVE_EFFECTS.includes(senseData.visionId)){
+          if (API.STEALTH_PASSIVE_EFFECTS.includes(senseData.visionId)) {
             atcvEffectStealthed = <AtcvEffect>senseData;
             break;
           }
@@ -1112,7 +1119,7 @@ const module = {
         for (const effect of effects) {
           // Ignore the stealthed effect
           // if (effect.customId === AtcvEffectConditionFlags.STEALTHED) {
-          if(API.STEALTH_PASSIVE_EFFECTS.includes(effect.customId)){
+          if (API.STEALTH_PASSIVE_EFFECTS.includes(effect.customId)) {
             continue;
           }
           // I also added this for specifically checking for custom effects.

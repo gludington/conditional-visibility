@@ -48,6 +48,11 @@ export class ConditionalVisibilityEffectDefinitions {
       blindsight.atcvChanges = AtcvEffect.retrieveAtcvChangesFromEffect(blindsight);
       effects.push(blindsight);
     }
+    const greaterdarkvision = ConditionalVisibilityEffectDefinitions.greaterdarkvision(distance, visionLevel);
+    if (greaterdarkvision) {
+      greaterdarkvision.atcvChanges = AtcvEffect.retrieveAtcvChangesFromEffect(greaterdarkvision);
+      effects.push(greaterdarkvision);
+    }
     const darkvision = ConditionalVisibilityEffectDefinitions.darkvision(distance, visionLevel);
     if (darkvision) {
       darkvision.atcvChanges = AtcvEffect.retrieveAtcvChangesFromEffect(darkvision);
@@ -78,6 +83,29 @@ export class ConditionalVisibilityEffectDefinitions {
       truesight.atcvChanges = AtcvEffect.retrieveAtcvChangesFromEffect(truesight);
       effects.push(truesight);
     }
+
+    // additional pfe1
+    const seeinvisibility = ConditionalVisibilityEffectDefinitions.seeinvisibility(distance, visionLevel);
+    if (seeinvisibility) {
+      seeinvisibility.atcvChanges = AtcvEffect.retrieveAtcvChangesFromEffect(seeinvisibility);
+      effects.push(seeinvisibility);
+    }
+    const blindsense = ConditionalVisibilityEffectDefinitions.blindsense(distance, visionLevel);
+    if (blindsense) {
+      blindsense.atcvChanges = AtcvEffect.retrieveAtcvChangesFromEffect(blindsense);
+      effects.push(blindsense);
+    }
+    const scent = ConditionalVisibilityEffectDefinitions.scent(distance, visionLevel);
+    if (scent) {
+      scent.atcvChanges = AtcvEffect.retrieveAtcvChangesFromEffect(scent);
+      effects.push(scent);
+    }
+    const seeindarkness = ConditionalVisibilityEffectDefinitions.seeindarkness(distance, visionLevel);
+    if (seeindarkness) {
+      seeindarkness.atcvChanges = AtcvEffect.retrieveAtcvChangesFromEffect(seeindarkness);
+      effects.push(seeindarkness);
+    }
+
     // CONDITIONS
     const stealthed = ConditionalVisibilityEffectDefinitions.stealthed(visionLevel);
     if (stealthed) {
@@ -149,9 +177,7 @@ export class ConditionalVisibilityEffectDefinitions {
       return isStringEquals(a.id, AtcvEffectSenseFlags.NORMAL);
     });
     if (!effectSight) {
-      debug(
-        `Cannot find for system '${game.system.id}' the active effect with id '${AtcvEffectSenseFlags.NORMAL}'`,
-      );
+      debug(`Cannot find for system '${game.system.id}' the active effect with id '${AtcvEffectSenseFlags.NORMAL}'`);
       return;
     }
     return new Effect({
@@ -164,7 +190,7 @@ export class ConditionalVisibilityEffectDefinitions {
         number && number > 0
           ? i18nFormat(`${CONSTANTS.MODULE_NAME}.effects.normal.description2`, { number: number })
           : i18n(`${CONSTANTS.MODULE_NAME}.effects.normal.description`),
-      icon:`modules/${CONSTANTS.MODULE_NAME}/icons/ae/light_02.jpg`,
+      icon: `modules/${CONSTANTS.MODULE_NAME}/icons/ae/normal.jpg`,
       // seconds: Constants.SECONDS.IN_EIGHT_HOURS,
       transfer: true,
       changes: [
@@ -213,7 +239,7 @@ export class ConditionalVisibilityEffectDefinitions {
         number && number > 0
           ? i18nFormat(`${CONSTANTS.MODULE_NAME}.effects.darkvision.description2`, { number: number })
           : i18n(`${CONSTANTS.MODULE_NAME}.effects.darkvision.description`),
-      icon: `modules/${CONSTANTS.MODULE_NAME}/icons/ae/evil-eye-red-1.jpg`,
+      icon: `modules/${CONSTANTS.MODULE_NAME}/icons/ae/darkvision.jpg`,
       // seconds: Constants.SECONDS.IN_EIGHT_HOURS,
       transfer: true,
       changes: [
@@ -250,6 +276,63 @@ export class ConditionalVisibilityEffectDefinitions {
     });
   }
 
+  static greaterdarkvision(number: number, visionLevel) {
+    const effectSight = API.SENSES.find((a: SenseData) => {
+      return isStringEquals(a.id, AtcvEffectSenseFlags.GREATER_DARKVISION);
+    });
+    if (!effectSight) {
+      debug(
+        `Cannot find for system '${game.system.id}' the active effect with id '${AtcvEffectSenseFlags.GREATER_DARKVISION}'`,
+      );
+      return;
+    }
+    return new Effect({
+      customId: AtcvEffectSenseFlags.GREATER_DARKVISION,
+      name:
+        number && number > 0
+          ? i18nFormat(`${CONSTANTS.MODULE_NAME}.effects.greaterdarkvision.name2`, { number: number })
+          : i18n(`${CONSTANTS.MODULE_NAME}.effects.greaterdarkvision.name`),
+      description:
+        number && number > 0
+          ? i18nFormat(`${CONSTANTS.MODULE_NAME}.effects.greaterdarkvision.description2`, { number: number })
+          : i18n(`${CONSTANTS.MODULE_NAME}.effects.greaterdarkvision.description`),
+      icon: `modules/${CONSTANTS.MODULE_NAME}/icons/ae/greaterdarkvision.jpg`,
+      // seconds: Constants.SECONDS.IN_EIGHT_HOURS,
+      transfer: true,
+      changes: [
+        // {
+        //   key: 'ATCV.conditionPath',
+        //   mode: CONST.ACTIVE_EFFECT_MODES.UPGRADE,
+        //   value: number && number > 0 ? `${number}` : `${effectSight.path}`,
+        //   priority: 5,
+        // },
+      ],
+      atlChanges: [
+        {
+          key: ConditionalVisibilityEffectDefinitions._createAtlEffectKey('ATL.light.dim'),
+          mode: CONST.ACTIVE_EFFECT_MODES.UPGRADE,
+          value: `${number}`,
+          priority: 5,
+        },
+      ],
+      atcvChanges: [
+        {
+          key: 'ATCV.' + AtcvEffectSenseFlags.GREATER_DARKVISION,
+          mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+          value: `${visionLevel}`,
+          priority: 5,
+        },
+        {
+          key: 'ATCV.conditionType',
+          mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
+          value: `sense`,
+          priority: 5,
+        },
+      ],
+      isTemporary: false,
+    });
+  }
+
   static blindsight(number: number, visionLevel) {
     const effectSight = API.SENSES.find((a: SenseData) => {
       return isStringEquals(a.id, AtcvEffectSenseFlags.BLIND_SIGHT);
@@ -270,7 +353,7 @@ export class ConditionalVisibilityEffectDefinitions {
         number && number > 0
           ? i18nFormat(`${CONSTANTS.MODULE_NAME}.effects.blindsight.description2`, { number: number })
           : i18n(`${CONSTANTS.MODULE_NAME}.effects.blindsight.description`),
-      icon: `modules/${CONSTANTS.MODULE_NAME}/icons/ae/green_18.jpg`,
+      icon: `modules/${CONSTANTS.MODULE_NAME}/icons/ae/blindsight.jpg`,
       // seconds: Constants.SECONDS.IN_EIGHT_HOURS,
       transfer: true,
       changes: [
@@ -325,7 +408,7 @@ export class ConditionalVisibilityEffectDefinitions {
         number && number > 0
           ? i18nFormat(`${CONSTANTS.MODULE_NAME}.effects.tremorsense.description2`, { number: number })
           : i18n(`${CONSTANTS.MODULE_NAME}.effects.tremorsense.description`),
-      icon: `modules/${CONSTANTS.MODULE_NAME}/icons/ae/ice_15.jpg`,
+      icon: `modules/${CONSTANTS.MODULE_NAME}/icons/ae/tremorsense.jpg`,
       // seconds: Constants.SECONDS.IN_EIGHT_HOURS,
       transfer: true,
       changes: [
@@ -380,7 +463,7 @@ export class ConditionalVisibilityEffectDefinitions {
         number && number > 0
           ? i18nFormat(`${CONSTANTS.MODULE_NAME}.effects.truesight.description2`, { number: number })
           : i18n(`${CONSTANTS.MODULE_NAME}.effects.truesight.description`),
-      icon: `modules/${CONSTANTS.MODULE_NAME}/icons/ae/emerald_11.jpg`,
+      icon: `modules/${CONSTANTS.MODULE_NAME}/icons/ae/truesight.jpg`,
       // seconds: Constants.SECONDS.IN_EIGHT_HOURS,
       transfer: true,
       changes: [
@@ -429,7 +512,7 @@ export class ConditionalVisibilityEffectDefinitions {
         number && number > 0
           ? i18nFormat(`${CONSTANTS.MODULE_NAME}.effects.seeinvisible.description2`, { number: number })
           : i18n(`${CONSTANTS.MODULE_NAME}.effects.seeinvisible.description`),
-      icon: `modules/${CONSTANTS.MODULE_NAME}/icons/ae/shadow_11.jpg`,
+      icon: `modules/${CONSTANTS.MODULE_NAME}/icons/ae/seeinvisible.jpg`,
       // seconds: Constants.SECONDS.IN_EIGHT_HOURS,
       transfer: true,
       changes: [
@@ -478,7 +561,7 @@ export class ConditionalVisibilityEffectDefinitions {
         number && number > 0
           ? i18nFormat(`${CONSTANTS.MODULE_NAME}.effects.devilssight.description2`, { number: number })
           : i18n(`${CONSTANTS.MODULE_NAME}.effects.devilssight.description`),
-      icon: `modules/${CONSTANTS.MODULE_NAME}/icons/ae/blue_17.jpg`,
+      icon: `modules/${CONSTANTS.MODULE_NAME}/icons/ae/devilssight.jpg`,
       // seconds: Constants.SECONDS.IN_EIGHT_HOURS,
       transfer: true,
       changes: [
@@ -527,7 +610,7 @@ export class ConditionalVisibilityEffectDefinitions {
         number && number > 0
           ? i18nFormat(`${CONSTANTS.MODULE_NAME}.effects.lowlightvision.description2`, { number: number })
           : i18n(`${CONSTANTS.MODULE_NAME}.effects.lowlightvision.description`),
-      icon: `modules/${CONSTANTS.MODULE_NAME}/icons/ae/violet_09.jpg`,
+      icon: `modules/${CONSTANTS.MODULE_NAME}/icons/ae/lowlightvision.jpg`,
       // seconds: Constants.SECONDS.IN_EIGHT_HOURS,
       transfer: true,
       changes: [
@@ -588,7 +671,7 @@ export class ConditionalVisibilityEffectDefinitions {
         number && number > 0
           ? i18nFormat(`${CONSTANTS.MODULE_NAME}.effects.blinded.description2`, { number: number })
           : i18n(`${CONSTANTS.MODULE_NAME}.effects.blinded.description`),
-      icon: `modules/${CONSTANTS.MODULE_NAME}/icons/ae/affliction_24.jpg`,
+      icon: `modules/${CONSTANTS.MODULE_NAME}/icons/ae/blinded.jpg`,
       // seconds: Constants.SECONDS.IN_EIGHT_HOURS,
       transfer: true,
       changes: [],
@@ -656,7 +739,7 @@ export class ConditionalVisibilityEffectDefinitions {
         number && number > 0
           ? i18nFormat(`${CONSTANTS.MODULE_NAME}.effects.seeinvisibility.description2`, { number: number })
           : i18n(`${CONSTANTS.MODULE_NAME}.effects.seeinvisibility.description`),
-      icon: `modules/${CONSTANTS.MODULE_NAME}/icons/ae/???`, // TODO change icon image
+      icon: `modules/${CONSTANTS.MODULE_NAME}/icons/ae/seeinvisibility.jpg`,
       // seconds: Constants.SECONDS.IN_EIGHT_HOURS,
       transfer: true,
       changes: [
@@ -705,7 +788,7 @@ export class ConditionalVisibilityEffectDefinitions {
         number && number > 0
           ? i18nFormat(`${CONSTANTS.MODULE_NAME}.effects.blindsense.description2`, { number: number })
           : i18n(`${CONSTANTS.MODULE_NAME}.effects.blindsense.description`),
-      icon: `modules/${CONSTANTS.MODULE_NAME}/icons/ae/???`, // TODO change icon
+      icon: `modules/${CONSTANTS.MODULE_NAME}/icons/ae/blindsense.jpg`,
       // seconds: Constants.SECONDS.IN_EIGHT_HOURS,
       transfer: true,
       changes: [
@@ -745,9 +828,7 @@ export class ConditionalVisibilityEffectDefinitions {
       return isStringEquals(a.id, AtcvEffectSenseFlags.SCENT);
     });
     if (!effectSight) {
-      debug(
-        `Cannot find for system '${game.system.id}' the active effect with id '${AtcvEffectSenseFlags.SCENT}'`,
-      );
+      debug(`Cannot find for system '${game.system.id}' the active effect with id '${AtcvEffectSenseFlags.SCENT}'`);
       return;
     }
     return new Effect({
@@ -760,7 +841,7 @@ export class ConditionalVisibilityEffectDefinitions {
         number && number > 0
           ? i18nFormat(`${CONSTANTS.MODULE_NAME}.effects.scent.description2`, { number: number })
           : i18n(`${CONSTANTS.MODULE_NAME}.effects.scent.description`),
-      icon: `modules/${CONSTANTS.MODULE_NAME}/icons/ae/???`, // TODO CHANge icon
+      icon: `modules/${CONSTANTS.MODULE_NAME}/icons/ae/scent.jpg`,
       // seconds: Constants.SECONDS.IN_EIGHT_HOURS,
       transfer: true,
       changes: [
@@ -809,7 +890,7 @@ export class ConditionalVisibilityEffectDefinitions {
         number && number > 0
           ? i18nFormat(`${CONSTANTS.MODULE_NAME}.effects.seeindarkness.description2`, { number: number })
           : i18n(`${CONSTANTS.MODULE_NAME}.effects.seeindarkness.description`),
-      icon: `modules/${CONSTANTS.MODULE_NAME}/icons/ae/???`, // TODO change icon image
+      icon: `modules/${CONSTANTS.MODULE_NAME}/icons/ae/seeindarkness.jpg`,
       // seconds: Constants.SECONDS.IN_EIGHT_HOURS,
       transfer: true,
       changes: [
@@ -987,7 +1068,7 @@ export class ConditionalVisibilityEffectDefinitions {
       customId: AtcvEffectConditionFlags.STEALTHED,
       name: i18n(`${CONSTANTS.MODULE_NAME}.effects.stealthed.name`),
       description: i18n(`${CONSTANTS.MODULE_NAME}.effects.stealthed.description`),
-      icon: `modules/${CONSTANTS.MODULE_NAME}/icons/ae/blue_35.jpg`,
+      icon: `modules/${CONSTANTS.MODULE_NAME}/icons/ae/stealthed.jpg`,
       // seconds: Constants.SECONDS.IN_EIGHT_HOURS,
       changes: [],
       atlChanges: [],

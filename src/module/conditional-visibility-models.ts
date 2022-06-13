@@ -614,7 +614,7 @@ export enum AtcvEffectSenseFlags {
   SEE_INVISIBILITY = 'seeinvisibility',
   BLIND_SENSE = 'blindsense',
   SCENT = 'scent',
-  SEE_IN_DARKNESS = 'seeindarkness'
+  SEE_IN_DARKNESS = 'seeindarkness',
 }
 
 export enum AtcvEffectConditionFlags {

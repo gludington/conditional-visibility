@@ -125,12 +125,17 @@
   "conditional-visibility.blinded": "Blinded (CV)",
   "conditional-visibility.darkvision": "Darkvision (CV)",
   "conditional-visibility.tremorsense": "Tremor Sense (CV)",
-  "conditional-visibility.seeinvisible": "See invisible (CV)",
+  "conditional-visibility.seeinvisible": "See Invisible (CV)",
   "conditional-visibility.blindsight": "Blind Sight (CV)",
   "conditional-visibility.truesight": "True Sight (CV)",
   "conditional-visibility.devilssight": "Devil's sight (CV)",
   "conditional-visibility.lowlightvision": "Low-Light Vision (CV)",
   "conditional-visibility.greaterdarkvision": "Greater Darkvision (CV)",
+
+  "conditional-visibility.seeinvisibility": "See Invisibility (CV)",
+  "conditional-visibility.blindsense": "Blind Sense (CV)",
+  "conditional-visibility.scent": "Scent (CV)",
+  "conditional-visibility.seeindarkness": "See in Darkness (CV)",
 
   "conditional-visibility.effects.default.name": "No vision Level (CV)",
   "conditional-visibility.effects.default.name2": "No vision Level ({number}) (CV)",
@@ -180,6 +185,26 @@
   "conditional-visibility.effects.greaterdarkvision.name2": "Greater Darkvision ({number}) (CV)",
   "conditional-visibility.effects.greaterdarkvision.description": "A creature with darkvision or greater darkvision can see perfectly well in areas of darkness and dim light, though such vision is in black and white only. Some forms of magical darkness, such as a 4th-level darkness spell, block normal darkvision. A creature with greater darkvision, however, can see through even these forms of magical darkness.",
   "conditional-visibility.effects.greaterdarkvision.description2": "Within a radius of {number} a creature with darkvision or greater darkvision can see perfectly well in areas of darkness and dim light, though such vision is in black and white only. Some forms of magical darkness, such as a 4th-level darkness spell, block normal darkvision. A creature with greater darkvision, however, can see through even these forms of magical darkness.",
+
+  "conditional-visibility.effects.seeinvisibility.name": "See Invisibility (CV)",
+  "conditional-visibility.effects.seeinvisibility.name2": "See Invisibility ({number}) (CV)",
+  "conditional-visibility.effects.seeinvisibility.description": "You can see any objects or beings that are invisible within your range of vision, as well as any that are ethereal, as if they were normally visible. Such creatures are visible to you as translucent shapes, allowing you easily to discern the difference between visible, invisible, and ethereal creatures. The spell does not reveal the method used to obtain invisibility. It does not reveal illusions or enable you to see through opaque objects. It does not reveal creatures who are simply hiding, concealed, or otherwise hard to see.",
+  "conditional-visibility.effects.seeinvisibility.description2": "Within a radius of {number} you can see any objects or beings that are invisible within your range of vision, as well as any that are ethereal, as if they were normally visible. Such creatures are visible to you as translucent shapes, allowing you easily to discern the difference between visible, invisible, and ethereal creatures. The spell does not reveal the method used to obtain invisibility. It does not reveal illusions or enable you to see through opaque objects. It does not reveal creatures who are simply hiding, concealed, or otherwise hard to see.",
+
+  "conditional-visibility.effects.blindsense.name": "Blind Sense (CV)",
+  "conditional-visibility.effects.blindsense.name2": "Blind Sense ({number}) (CV)",
+  "conditional-visibility.effects.blindsense.description": "A creature with blindsense notices things it cannot see. The creature usually does not need to succeed at Perception checks to pinpoint the location of a creature within range of its blindsense ability, provided that it has line of effect to that creature. Any opponent the creature with blindsense cannot see still has total concealment from the creature, and the creature still has the normal miss chance when attacking foes that have concealment. Visibility still affects the movement of a creature with blindsense. A creature with blindsense is still denied its Dexterity bonus to Armor Class against attacks from creatures it cannot see.",
+  "conditional-visibility.effects.blindsense.description2": "Within a radius of {number} a creature with blindsense notices things it cannot see. The creature usually does not need to succeed at Perception checks to pinpoint the location of a creature within range of its blindsense ability, provided that it has line of effect to that creature. Any opponent the creature with blindsense cannot see still has total concealment from the creature, and the creature still has the normal miss chance when attacking foes that have concealment. Visibility still affects the movement of a creature with blindsense. A creature with blindsense is still denied its Dexterity bonus to Armor Class against attacks from creatures it cannot see.",
+
+  "conditional-visibility.effects.scent.name": "Scent (CV)",
+  "conditional-visibility.effects.scent.name2": "Scent ({number}) (CV)",
+  "conditional-visibility.effects.scent.description": "This special sense allows a creature to detect approaching enemies, sniff out hidden foes, and track by sense of smell. Creatures with the scent ability can identify familiar odors just as humans do familiar sights. The creature can detect opponents within 30 feet by sense of smell. If the opponent is upwind, the range increases to 60 feet; if downwind, it drops to 15 feet. Strong scents, such as smoke or rotting garbage, can be detected at twice the ranges noted above. Overpowering scents, such as skunk musk or troglodyte stench, can be detected at triple the normal range. When a creature detects a scent, the exact location of the source is not revealed—only its presence somewhere within range. The creature can take a move action to note the direction of the scent. When the creature is within 5 feet of the source, it pinpoints the source’s location.",
+  "conditional-visibility.effects.scent.description2": "Within a radius of {number} a this special sense allows a creature to detect approaching enemies, sniff out hidden foes, and track by sense of smell. Creatures with the scent ability can identify familiar odors just as humans do familiar sights. The creature can detect opponents within 30 feet by sense of smell. If the opponent is upwind, the range increases to 60 feet; if downwind, it drops to 15 feet. Strong scents, such as smoke or rotting garbage, can be detected at twice the ranges noted above. Overpowering scents, such as skunk musk or troglodyte stench, can be detected at triple the normal range. When a creature detects a scent, the exact location of the source is not revealed—only its presence somewhere within range. The creature can take a move action to note the direction of the scent. When the creature is within 5 feet of the source, it pinpoints the source’s location.",
+
+  "conditional-visibility.effects.seeindarkness.name": "See in Darkness (CV)",
+  "conditional-visibility.effects.seeindarkness.name2": "See in Darkness ({number}) (CV)",
+  "conditional-visibility.effects.seeindarkness.description": "The creature can see perfectly in darkness of any kind, including that created by deeper darkness.",
+  "conditional-visibility.effects.seeindarkness.description2": "Within a radius of {number} the creature can see perfectly in darkness of any kind, including that created by deeper darkness.",
 
   "conditional-visibility.effects.invisible.name": "Invisible (CV)",
   "conditional-visibility.effects.invisible.description": "This sense is used from the module 'Conditional Visibility'",

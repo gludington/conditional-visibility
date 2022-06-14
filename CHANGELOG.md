@@ -1,6 +1,7 @@
 ### 0.6.13
 
 - Made the code a little more dynamic, added the 'STEALTH_PASSIVE_EFFECTS' setting for each system
+- Add beta support for pf1
 
 ### 0.6.12
 

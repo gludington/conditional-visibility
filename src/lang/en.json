@@ -64,7 +64,7 @@
   "conditional-visibility.setting.doNotUseSocketLibFeature.name": "Disable the socketLib feature integration",
   "conditional-visibility.setting.doNotUseSocketLibFeature.hint": "This is usually useful only for avoid a socket collision with other modules",
   "conditional-visibility.setting.setUpCustomAutoSkillListCVHandler.name": "Set up custom auto skill list",
-  "conditional-visibility.setting.setUpCustomAutoSkillListCVHandler.hint": "You can specify for what skill enabled the auto skill feature",
+  "conditional-visibility.setting.setUpCustomAutoSkillListCVHandler.hint": "You can specify for what skill enabled the auto skill feature. ATTENTION: Only combination of stealth and perception han been tested for Dnd5e, Pf2e, Pf1.",
 
   "conditional-visibility.token.config.senses.title": "Senses",
   "conditional-visibility.token.config.conditions.title": "Conditions",

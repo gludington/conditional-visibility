@@ -591,6 +591,7 @@ export enum ConditionalVisibilityFlags {
   // MAX_SIGHT_DISTANCE = 'maxsightdistance'
   USE_STEALTH_PASSIVE = 'datausestealthpassive',
   ORIGINAL_IMAGE = 'dataoriginalimage',
+  AUTO_SKILLS_TOKEN = 'dataautoskillstoken',
 }
 
 export enum AtcvEffectSenseFlags {

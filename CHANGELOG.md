@@ -1,3 +1,7 @@
+### 0.6.15
+
+- NEW FEATURE: Added customization of the auto skill roll on token configuration, so every toker cna be setted like you want
+
 ### 0.6.13-14
 
 - Made the code a little more dynamic, added the 'STEALTH_PASSIVE_EFFECTS' setting for each system

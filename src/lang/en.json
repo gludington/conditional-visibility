@@ -63,13 +63,15 @@
   "conditional-visibility.setting.forceLimitSightToMaxSightOnConfig.hint": "Takes the maximum distance between the atl effects and the token view values to \"sharply truncate any token at a distance not close enough\"",
   "conditional-visibility.setting.doNotUseSocketLibFeature.name": "Disable the socketLib feature integration",
   "conditional-visibility.setting.doNotUseSocketLibFeature.hint": "This is usually useful only for avoid a socket collision with other modules",
-  "conditional-visibility.setting.setUpCustomAutoSkillListCVHandler.name": "Set up custom auto skill list",
+  "conditional-visibility.setting.setUpCustomAutoSkillListCVHandler.name": "[Experimental] Set up custom auto skill list",
   "conditional-visibility.setting.setUpCustomAutoSkillListCVHandler.hint": "You can specify for what skill enabled the auto skill feature. ATTENTION: Only combination of stealth and perception han been tested for Dnd5e, Pf2e, Pf1.",
 
   "conditional-visibility.token.config.senses.title": "Senses",
   "conditional-visibility.token.config.conditions.title": "Conditions",
+  "conditional-visibility.token.config.skills.title": "[Experimental] Manage Auto Skills",
   "conditional-visibility.token.config.extraSenseInstructions": "Additional senses that may enhance vision, for unlimited range use <= -1, for disable/remove use 0",
   "conditional-visibility.token.config.extraConditionInstructions": "Additional conditions that may enhance vision, for unlimited range use <= -1, for disable/remove use 0",
+  "conditional-visibility.token.config.extraSkillInstructions": "Manage the auto skill customization. By default this will show up only the skills setted with the module setting 'Set up custom auto skill list'",
   "conditional-visibility.token.config.dataforcevisible.title": "Force visible",
   "conditional-visibility.token.config.dataforcevisible.notes": "If checked (true value), this setting will let see this token without any control from CV and applied the standard behavior of foundry. This is useful for case where you want to force a token to be visible, If you want to hidden the token just use the standard hidden toggle hud feature of foundry.",
 

@@ -406,14 +406,81 @@ const module = {
       }
     }
 
+    let currentSkills = <string[]>(
+      tokenConfig.actor.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.AUTO_SKILLS_TOKEN)
+    );
+
+    if (currentSkills == null || currentSkills == undefined) {
+      currentSkills = <string[]>game.settings.get(CONSTANTS.MODULE_NAME, 'setUpCustomAutoSkillListCVHandler');
+    }
+
+    if (currentSkills == null || currentSkills == undefined) {
+      currentSkills = [];
+    }
+
+    const skills = API.SKILLS.filter((s) => {
+      return s.enable;
+    });
+    const skillsTemplateData: any[] = [];
+    for (const s of skills) {
+      const s2: any = duplicateExtended(s);
+      if (!i18n(s2.name).endsWith('(CV)')) {
+        s2.name = i18n(s2.name) + ' (CV)';
+      }
+      if (currentSkills.includes(s2.id)) {
+        s2.isSelected = true;
+      }
+      skillsTemplateData.push(s2);
+    }
+    const autoSkillsToken = currentSkills.join(',');
+
     await renderTemplate(`modules/${CONSTANTS.MODULE_NAME}/templates/extra_senses.hbs`, {
       senses: sensesTemplateData,
       conditions: conditionsTemplateData,
+      skills: skillsTemplateData,
       dataforcevisible: forceVisible,
       datausestealthpassive: useStealthPassive,
+      dataautoskillstoken: autoSkillsToken,
     }).then((extraSenses) => {
       visionTab.append(extraSenses);
+
+      $(<HTMLElement>html.find(`select[name="actor.data.flags.conditional-visibility.dataautoskillstoken"]`)[0])
+        //@ts-ignore
+        .SumoSelect({
+          placeholder: 'Select auto skills...',
+          triggerChangeCombined: true,
+        });
     });
+
+    $(html)
+      .find(`select[name="actor.data.flags.conditional-visibility.dataautoskillstoken"]`)[0]
+      ?.addEventListener('change', async function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        // event.target references the element that actually triggered the event
+        // Check to see if the event was triggered by a DOM element you care to handle
+        // if(event.target.classList.contains("select")){
+        // Access the <p> element that is the previous sibling to the
+        // select that triggered the event and update it
+        //@ts-ignore
+        const selSting = <string>$(this)[0]?.sumo.getSelStr();
+        const sumoSelectS: string[] = selSting ? selSting.split(',') : [];
+        //@ts-ignore
+        const currentValue = event.target.value;
+        $(this)
+          .find('option')
+          .each(function () {
+            const $this = $(this);
+            const val = String($this.val());
+            if (sumoSelectS.includes(val)) {
+              $this.prop('selected', true);
+            } else {
+              $this.removeProp('selected');
+            }
+          });
+        //$(<HTMLElement>html.find(`input[name="actor.data.flags.conditional-visibility.dataautoskillstoken"]`)[0]).val(selSting);
+        // }
+      });
 
     // ADD listener for buttons
     $(html)
@@ -600,12 +667,6 @@ const module = {
     }
     let isEnabledForToken = false;
     let p;
-    // if (
-    //   change.actor &&
-    //   change.actor.data &&
-    //   change.actor.data.flags &&
-    //   change.actor.data.flags[CONSTANTS.MODULE_NAME]
-    // ) {
     if (hasCVFlagOnChange) {
       isEnabledForToken = true;
       p = getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}`);
@@ -769,14 +830,7 @@ const module = {
       `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.FORCE_VISIBLE}`,
     );
 
-    if (
-      // change.actor &&
-      // change.actor.data &&
-      // change.actor.data.flags[CONSTANTS.MODULE_NAME] &&
-      hasCVFlagOnChange &&
-      currentForceVisibleFlag != null &&
-      currentForceVisibleFlag != undefined
-    ) {
+    if (hasCVFlagOnChange && currentForceVisibleFlag != null && currentForceVisibleFlag != undefined) {
       const forceVisible = String(currentForceVisibleFlag) === 'true' ? true : false;
       if (forceVisible != sourceToken.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.FORCE_VISIBLE)) {
         if (String(forceVisible) === 'true' || String(forceVisible) === 'false') {
@@ -791,19 +845,32 @@ const module = {
       }
     }
 
+    const currentAutoSkillsTokenFlag = <string[]>(
+      getProperty(change, `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.AUTO_SKILLS_TOKEN}`)
+    );
+
+    if (hasCVFlagOnChange && currentAutoSkillsTokenFlag != null && currentAutoSkillsTokenFlag != undefined) {
+      const autoSkillsToken = <string[]>currentAutoSkillsTokenFlag;
+      if (
+        autoSkillsToken.join(',') !=
+        (<string[]>(
+          sourceToken.actor?.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.AUTO_SKILLS_TOKEN)
+        ))?.join(',')
+      ) {
+        await sourceToken.actor?.setFlag(
+          CONSTANTS.MODULE_NAME,
+          ConditionalVisibilityFlags.AUTO_SKILLS_TOKEN,
+          autoSkillsToken,
+        );
+      }
+    }
+
     const currentUseStealthPassiveFlag = getProperty(
       change,
       `actor.data.flags.${CONSTANTS.MODULE_NAME}.${ConditionalVisibilityFlags.USE_STEALTH_PASSIVE}`,
     );
 
-    if (
-      // change.actor &&
-      // change.actor.data &&
-      // change.actor.data.flags[CONSTANTS.MODULE_NAME] &&
-      hasCVFlagOnChange &&
-      currentUseStealthPassiveFlag != null &&
-      currentUseStealthPassiveFlag != undefined
-    ) {
+    if (hasCVFlagOnChange && currentUseStealthPassiveFlag != null && currentUseStealthPassiveFlag != undefined) {
       const useStealthPassive = String(currentUseStealthPassiveFlag) === 'true' ? true : false;
       if (
         useStealthPassive !=
@@ -1355,7 +1422,9 @@ const module = {
           ? <string>message.data.flavor
           : <string>message.data.content;
       if (fullTextContent) {
-        enabledSkill = <CVSkillData>checkIfAtLeastAEnabledSkillIsFoundedOnChatMessage(fullTextContent);
+        enabledSkill = <CVSkillData>(
+          checkIfAtLeastAEnabledSkillIsFoundedOnChatMessage(<Actor>sourceToken.actor, fullTextContent)
+        );
       }
 
       if (enabledSkill) {
@@ -1389,114 +1458,5 @@ const module = {
         }
       }
     }
-    /*
-    // This work with Monk TokenBar
-    else if (message.data.flags['monks-tokenbar']) {
-      const rollChatTotal = $(message.data.content).find('.total').html() || '0';
-      //@ts-ignore
-      let valStealthRoll = parseInt(rollChatTotal);
-      if (!is_real_number(valStealthRoll)) {
-        valStealthRoll = 0;
-      }
-      if (valStealthRoll === 0) {
-        return;
-      }
-      const fullTextContent: string = <string>(<any>message.data.flags['monks-tokenbar']).name;
-      if (fullTextContent) {
-        // Clean up the string for multisystem (D&D5, PF2, ecc.)
-        const innerTextTmp = fullTextContent.toLowerCase().trim();
-        const arr1 = innerTextTmp.split(/\r?\n/);
-        for (let i = 0; i < arr1.length; i++) {
-          let text = arr1[i];
-          if (text) {
-            text = text.toLowerCase().trim();
-            // TODO integration multisystem
-            // Keywords to avoid for all the system ?
-            if (text.indexOf('check') !== -1 || text.indexOf('ability') !== -1 || text.indexOf('skill') !== -1) {
-              //
-            } else {
-              continue;
-            }
-            text = text.replace(/\W/g, ' ');
-            text = text.replace('skill', '');
-            text = text.replace('check', '');
-            text = text.replace('ability', '');
-            text = text.replace(/[0-9]/g, '');
-            if (text.trim().indexOf(i18n(API.STEALTH_ID_LANG_SKILL).toLowerCase()) !== -1) {
-              isStealth = true;
-              break;
-            }
-          }
-        }
-      }
-      if (isStealth) {
-        const senseId = AtcvEffectSenseFlags.NONE;
-        const conditionId = AtcvEffectConditionFlags.HIDDEN;
-        const selectedToken = sourceToken;
-        // for (const selectedToken of selectedTokens) {
-        //   if (!selectedToken) {
-        //     continue;
-        //   }
-        const setAeToRemove = new Set<string>();
-        const actorEffects = <EmbeddedCollection<typeof ActiveEffect, ActorData>>selectedToken.actor?.data.effects;
-        if (
-          senseId != AtcvEffectSenseFlags.NONE
-          // 2022-05-30
-          //senseId != AtcvEffectSenseFlags.NORMAL
-        ) {
-          const effect = <Effect>await ConditionalVisibilityEffectDefinitions.effect(senseId);
-          if (effect) {
-            if (valStealthRoll == 0) {
-              // await API.removeEffectOnToken(selectedToken.id, i18n(<string>effect?.name));
-              const effectToRemove = <ActiveEffect>(
-                actorEffects.find((activeEffect) =>
-                  isStringEquals(<string>activeEffect?.data?.label, <string>effect?.name),
-                )
-              );
-              if (effectToRemove) {
-                setAeToRemove.add(<string>effectToRemove.id);
-              }
-              await repairAndUnSetFlag(selectedToken, senseId);
-            } else {
-              const atcvEffectFlagData = AtcvEffect.fromEffect(selectedToken.document, effect);
-              atcvEffectFlagData.visionLevelValue = valStealthRoll;
-              await repairAndSetFlag(selectedToken, senseId, atcvEffectFlagData);
-            }
-          } else {
-            warn(`Can't find effect definition for '${senseId}'`, true);
-          }
-        }
-        //@ts-ignore
-        if (conditionId != AtcvEffectConditionFlags.NONE) {
-          const effect = <Effect>await ConditionalVisibilityEffectDefinitions.effect(conditionId);
-          if (effect) {
-            if (valStealthRoll == 0) {
-              // await API.removeEffectOnToken(selectedToken.id, i18n(<string>effect?.name));
-              const effectToRemove = <ActiveEffect>(
-                actorEffects.find((activeEffect) =>
-                  isStringEquals(<string>activeEffect?.data?.label, <string>effect?.name),
-                )
-              );
-              if (effectToRemove) {
-                setAeToRemove.add(<string>effectToRemove.id);
-              }
-              await repairAndUnSetFlag(selectedToken, conditionId);
-            } else {
-              const atcvEffectFlagData = AtcvEffect.fromEffect(selectedToken.document, effect);
-              atcvEffectFlagData.visionLevelValue = valStealthRoll;
-              await repairAndSetFlag(selectedToken, conditionId, atcvEffectFlagData);
-            }
-          } else {
-            warn(`Can't find effect definition for '${conditionId}'`, true);
-          }
-        }
-        // FINALLY REMVE ALL THE ACTIVE EFFECT
-        if (setAeToRemove.size > 0) {
-          await API.removeEffectFromIdOnTokenMultiple(<string>selectedToken.id, Array.from(setAeToRemove));
-        }
-        // }
-      }
-    }
-    */
   },
 };

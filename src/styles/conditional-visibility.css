@@ -99,3 +99,7 @@
   color: var(--color-text-dark-secondary);
   padding-right: 1rem;
 }
+
+.conditional-visibility.token.config.skills div.SumoSelect {
+  width: 100%;
+}

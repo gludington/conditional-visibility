@@ -3106,8 +3106,23 @@ export function renderAutoSkillsDialog(
  * @param textToCheck
  * @returns
  */
-export function checkIfAtLeastAEnabledSkillIsFoundedOnChatMessage(textToCheck: string): CVSkillData | null {
-  const cvSkillsData = <CVSkillData[]>API.SKILLS;
+export function checkIfAtLeastAEnabledSkillIsFoundedOnChatMessage(
+  actor: Actor,
+  textToCheck: string,
+): CVSkillData | null {
+  let cvSkillsData = duplicateExtended(<CVSkillData[]>API.SKILLS).filter((skill) => {
+    return skill.enable;
+  });
+  if (
+    actor.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.AUTO_SKILLS_TOKEN) != null &&
+    actor.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.AUTO_SKILLS_TOKEN) != undefined
+  ) {
+    const skillsS = <string[]>actor.getFlag(CONSTANTS.MODULE_NAME, ConditionalVisibilityFlags.AUTO_SKILLS_TOKEN);
+    cvSkillsData = cvSkillsData.filter((skill) => {
+      return skillsS.includes(skill.id);
+    });
+  }
+
   const fullTextContent = textToCheck.toLowerCase().trim();
   // TODO special word for integration multisystem and help to identify the chat text
   const check = i18n(`${CONSTANTS.MODULE_NAME}.labels.check`);
@@ -3116,9 +3131,9 @@ export function checkIfAtLeastAEnabledSkillIsFoundedOnChatMessage(textToCheck: s
 
   let currentCVSkillData: CVSkillData | null = null;
   for (const cvSkillData of cvSkillsData) {
-    if (!cvSkillData.enable) {
-      continue;
-    }
+    // if (!cvSkillData.enable) {
+    //   continue;
+    // }
 
     // Clean up the string for multisystem (D&D5, PF2, ecc.)
     const innerTextTmp = fullTextContent.toLowerCase().trim();

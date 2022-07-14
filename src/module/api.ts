@@ -1046,7 +1046,7 @@ const API = {
       }
     }
     // TODO check if we need this ??? ADDED 2022-05-22
-    else if (EffectSupport._handleIntegrations(effect)?.length == 0) {
+    else if (EffectSupport._handleIntegrations(effect)?.length === 0) {
       info(`The use case 'changesTmp.length==0' should not be happening`);
       const effectTmp = AtcvEffect.toEffectFromAtcvEffect(senseDataEffect);
       effect.changes = effectTmp.changes;

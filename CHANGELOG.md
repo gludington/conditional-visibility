@@ -1,3 +1,8 @@
+### 0.6.16
+
+- Add module setting 'autoCheckElevationByDefault'
+- Clean up code
+
 ### 0.6.15
 
 - NEW FEATURE: Added customization of the auto skill roll on token configuration, so every toker cna be setted like you want

@@ -681,7 +681,7 @@ export class VisionCapabilities {
   retrieveSenses() {
     const sensesTmp = new Map<string, AtcvEffect>();
     for (const [key, value] of this.senses.entries()) {
-      if (value.visionLevelValue && value.visionLevelValue != 0) {
+      if (value.visionLevelValue && value.visionLevelValue !== 0) {
         sensesTmp.set(key, value);
       }
     }
@@ -734,7 +734,7 @@ export class VisionCapabilities {
   retrieveConditions() {
     const coditionsTmp = new Map<string, AtcvEffect>();
     for (const [key, value] of this.conditions.entries()) {
-      if (value.visionLevelValue && value.visionLevelValue != 0) {
+      if (value.visionLevelValue && value.visionLevelValue !== 0) {
         coditionsTmp.set(key, value);
       }
     }

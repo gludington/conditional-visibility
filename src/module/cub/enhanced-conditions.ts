@@ -992,7 +992,7 @@ export interface EnhancedConditions {
    * // Get conditions for the currently controlled Token
    * game.cub.getConditions();
    */
-  getConditions(entities: Actor[] | Token[], { warn: boolean }): any[];
+  getConditions(entities: Actor[] | Token[], { warn }): any[];
 
   /**
    * Gets the Active Effect data (if any) for the given condition

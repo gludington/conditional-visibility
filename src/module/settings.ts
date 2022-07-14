@@ -171,6 +171,15 @@ export const registerSettings = function (): void {
     type: Boolean,
   });
 
+  game.settings.register(CONSTANTS.MODULE_NAME, 'autoCheckElevationByDefault', {
+    name: `${CONSTANTS.MODULE_NAME}.setting.autoCheckElevationByDefault.name`,
+    hint: `${CONSTANTS.MODULE_NAME}.setting.autoCheckElevationByDefault.hint`,
+    scope: 'world',
+    config: true,
+    default: false,
+    type: Boolean,
+  });
+
   // game.settings.register(CONSTANTS.MODULE_NAME, 'doNotUseSocketLibFeature', {
   //   name: `${CONSTANTS.MODULE_NAME}.setting.doNotUseSocketLibFeature.name`,
   //   hint: `${CONSTANTS.MODULE_NAME}.setting.doNotUseSocketLibFeature.hint`,
@@ -576,6 +585,15 @@ function otherSettings(apply = false) {
     enableRefreshSightCVHandler: {
       name: `${CONSTANTS.MODULE_NAME}.setting.enableRefreshSightCVHandler.name`,
       hint: `${CONSTANTS.MODULE_NAME}.setting.enableRefreshSightCVHandler.hint`,
+      scope: 'world',
+      config: true,
+      default: false,
+      type: Boolean,
+    },
+
+    autoCheckElevationByDefault: {
+      name: `${CONSTANTS.MODULE_NAME}.setting.autoCheckElevationByDefault.name`,
+      hint: `${CONSTANTS.MODULE_NAME}.setting.autoCheckElevationByDefault.hint`,
       scope: 'world',
       config: true,
       default: false,

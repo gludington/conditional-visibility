@@ -27,7 +27,6 @@ import {
   _registerSenseData,
   _unregisterSenseData,
 } from './lib/lib';
-import EffectInterface from './effects/effect-interface';
 import {
   AtcvEffect,
   AtcvEffectConditionFlags,
@@ -42,9 +41,11 @@ import { ConditionalVisibilityEffectDefinitions } from './conditional-visibility
 import type { EnhancedConditions } from './cub/enhanced-conditions';
 import type { ActiveEffectData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/data.mjs';
 import { EffectSupport } from './effects/effect-support';
+import { aemlApi } from './module';
+import type { EffectInterfaceApi } from './effects/effect-interface-api';
 
 const API = {
-  effectInterface: EffectInterface,
+  effectInterface: <EffectInterfaceApi>{},
 
   get CUB(): EnhancedConditions {
     //@ts-ignore
@@ -280,7 +281,7 @@ const API = {
   // ======================
   // Effect Management
   // ======================
-
+  /*
   async removeEffectArr(...inAttributes: any[]) {
     if (!Array.isArray(inAttributes)) {
       throw error('removeEffectArr | inAttributes must be of type array');
@@ -578,7 +579,7 @@ const API = {
     );
     return result;
   },
-
+  */
   // ======================
   // Effect Actor Management
   // ======================
@@ -638,7 +639,7 @@ const API = {
   // ======================
   // Effect Token Management
   // ======================
-
+  /*
   async addEffectOnToken(tokenId: string, effectName: string, effect: Effect) {
     const result = await (<EffectInterface>this.effectInterface).addEffectOnToken(effectName, <string>tokenId, effect);
     return result;
@@ -765,7 +766,7 @@ const API = {
     );
     return result;
   },
-
+  */
   // OLD API
   // For example, if you want to set all the selected tokens invisible:
   // `ConditionalVisibility.setCondition(canvas.tokens.controlled, 'invisible', true)`
@@ -1089,15 +1090,9 @@ const API = {
       if (!nameToUse.endsWith('(CV)')) {
         nameToUse = nameToUse + ' (CV)';
       }
-      const activeEffectFounded = <ActiveEffect>await API.findEffectByNameOnToken(<string>token.id, nameToUse);
+      const activeEffectFounded = <ActiveEffect>await aemlApi.findEffectByNameOnToken(<string>token.id, nameToUse);
       if (activeEffectFounded) {
-        await (<EffectInterface>this.effectInterface).updateEffectFromIdOnToken(
-          <string>activeEffectFounded.id,
-          <string>token.id,
-          undefined,
-          undefined,
-          effect,
-        );
+        await aemlApi.updateEffectFromIdOnToken(<string>token.id, <string>activeEffectFounded.id, '', false, effect);
       } else {
         if (!nameToUse.endsWith('(CV)')) {
           nameToUse = nameToUse + ' (CV)';
@@ -1105,7 +1100,7 @@ const API = {
         if (!effect.name.endsWith('(CV)')) {
           effect.name = effect.name + ' (CV)';
         }
-        await (<EffectInterface>this.effectInterface).addEffectOnToken(nameToUse, <string>token.id, effect);
+        await aemlApi.addEffectOnToken(<string>token.id, nameToUse, effect);
       }
       effect.atcvChanges = AtcvEffect.retrieveAtcvChangesFromEffect(effect);
       const atcvEffectFlagData = AtcvEffect.fromEffect(token.document, effect);

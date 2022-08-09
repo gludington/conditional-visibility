@@ -55,6 +55,7 @@ export default class Effect {
     transfer = false,
     atcvChanges = <any[]>[],
     dae = {},
+    overlay = false,
   }) {
     this.customId = customId;
     this.name = name;
@@ -74,11 +75,12 @@ export default class Effect {
     this.transfer = transfer;
     // 4535992 ADDED
     this.atcvChanges = atcvChanges;
-    this.dae = {};
+    this.dae = dae || {};
     // This are not effect data
     this.isDisabled = isDisabled;
     this.isTemporary = isTemporary;
     this.isSuppressed = isSuppressed;
+    this.overlay = overlay;
   }
 
   /**
@@ -139,7 +141,7 @@ export default class Effect {
    * @returns {object} the object representation of this effect
    */
   convertToObject() {
-    return deepClone({ ...this });
+    return { ...this };
   }
 
   get _id() {
@@ -281,7 +283,7 @@ export default class Effect {
   _isEmptyObject(obj: any) {
     // because Object.keys(new Date()).length === 0;
     // we have to do some additional check
-    if (obj == null || obj == undefined) {
+    if (obj === null || obj === undefined) {
       return true;
     }
     const result =

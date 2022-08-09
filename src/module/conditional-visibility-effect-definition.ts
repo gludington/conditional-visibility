@@ -252,7 +252,7 @@ export class ConditionalVisibilityEffectDefinitions {
       ],
       atlChanges: [
         {
-          key: ConditionalVisibilityEffectDefinitions._createAtlEffectKey('ATL.light.dim'),
+          key: EffectSupport._createAtlEffectKey('ATL.light.dim'),
           mode: CONST.ACTIVE_EFFECT_MODES.UPGRADE,
           value: `${number}`,
           priority: 5,
@@ -309,7 +309,7 @@ export class ConditionalVisibilityEffectDefinitions {
       ],
       atlChanges: [
         {
-          key: ConditionalVisibilityEffectDefinitions._createAtlEffectKey('ATL.light.dim'),
+          key: EffectSupport._createAtlEffectKey('ATL.light.dim'),
           mode: CONST.ACTIVE_EFFECT_MODES.UPGRADE,
           value: `${number}`,
           priority: 5,
@@ -629,7 +629,7 @@ export class ConditionalVisibilityEffectDefinitions {
         //   priority: 5,
         // },
         {
-          key: ConditionalVisibilityEffectDefinitions._createAtlEffectKey('ATL.light.bright'),
+          key: EffectSupport._createAtlEffectKey('ATL.light.bright'),
           mode: CONST.ACTIVE_EFFECT_MODES.UPGRADE,
           value: `data.token.dimSight`,
           priority: 5,
@@ -677,19 +677,19 @@ export class ConditionalVisibilityEffectDefinitions {
       changes: [],
       atlChanges: [
         {
-          key: ConditionalVisibilityEffectDefinitions._createAtlEffectKey('ATL.light.dim'),
+          key: EffectSupport._createAtlEffectKey('ATL.light.dim'),
           mode: CONST.ACTIVE_EFFECT_MODES.OVERRIDE,
           value: `0`,
           priority: 5,
         },
         {
-          key: ConditionalVisibilityEffectDefinitions._createAtlEffectKey('ATL.light.bright'),
+          key: EffectSupport._createAtlEffectKey('ATL.light.bright'),
           mode: CONST.ACTIVE_EFFECT_MODES.OVERRIDE,
           value: `0`,
           priority: 5,
         },
         {
-          key: ConditionalVisibilityEffectDefinitions._createAtlEffectKey('ATL.light.animation'),
+          key: EffectSupport._createAtlEffectKey('ATL.light.animation'),
           mode: CONST.ACTIVE_EFFECT_MODES.OVERRIDE,
           value: '{ "type":"none"}',
           priority: 5,
@@ -1076,7 +1076,7 @@ export class ConditionalVisibilityEffectDefinitions {
         {
           key: 'ATCV.' + AtcvEffectConditionFlags.STEALTHED,
           mode: CONST.ACTIVE_EFFECT_MODES.CUSTOM,
-          value: visionLevel != 0 ? `${visionLevel}` : API.STEALTH_PASSIVE_SKILL, //`data.skills.ste.passive`,
+          value: visionLevel !== 0 ? `${visionLevel}` : API.STEALTH_PASSIVE_SKILL, //`data.skills.ste.passive`,
           priority: 5,
         },
         {
@@ -1094,55 +1094,55 @@ export class ConditionalVisibilityEffectDefinitions {
   // Utility Effect
   // =============================================
 
-  static _createAtlEffectKey(key) {
-    let result = key;
-    //@ts-ignore
-    const version = (game.version ?? game.data.version).charAt(0);
+  // static _createAtlEffectKey(key) {
+  //   let result = key;
+  //   //@ts-ignore
+  //   const version = (game.version ?? game.data.version).charAt(0);
 
-    if (version == '9') {
-      switch (key) {
-        case 'ATL.preset':
-          break;
-        case 'ATL.brightSight':
-          break;
-        case 'ATL.light.dim':
-          break;
-        case 'ATL.height':
-          break;
-        case 'ATl.img':
-          break;
-        case 'ATL.mirrorX':
-          break;
-        case 'ATL.mirrorY':
-          break;
-        case 'ATL.rotation':
-          break;
-        case 'ATL.scale':
-          break;
-        case 'ATL.width':
-          break;
-        case 'ATL.dimLight':
-          result = 'ATL.light.dim';
-          break;
-        case 'ATL.brightLight':
-          result = 'ATL.light.bright';
-          break;
-        case 'ATL.lightAnimation':
-          result = 'ATL.light.animation';
-          break;
-        case 'ATL.lightColor':
-          result = 'ATL.light.color';
-          break;
-        case 'ATL.lightAlpha':
-          result = 'ATL.light.alpha';
-          break;
-        case 'ATL.lightAngle':
-          result = 'ATL.light.angle';
-          break;
-      }
-    }
-    return result;
-  }
+  //   if (version === '9') {
+  //     switch (key) {
+  //       case 'ATL.preset':
+  //         break;
+  //       case 'ATL.brightSight':
+  //         break;
+  //       case 'ATL.light.dim':
+  //         break;
+  //       case 'ATL.height':
+  //         break;
+  //       case 'ATl.img':
+  //         break;
+  //       case 'ATL.mirrorX':
+  //         break;
+  //       case 'ATL.mirrorY':
+  //         break;
+  //       case 'ATL.rotation':
+  //         break;
+  //       case 'ATL.scale':
+  //         break;
+  //       case 'ATL.width':
+  //         break;
+  //       case 'ATL.dimLight':
+  //         result = 'ATL.light.dim';
+  //         break;
+  //       case 'ATL.brightLight':
+  //         result = 'ATL.light.bright';
+  //         break;
+  //       case 'ATL.lightAnimation':
+  //         result = 'ATL.light.animation';
+  //         break;
+  //       case 'ATL.lightColor':
+  //         result = 'ATL.light.color';
+  //         break;
+  //       case 'ATL.lightAlpha':
+  //         result = 'ATL.light.alpha';
+  //         break;
+  //       case 'ATL.lightAngle':
+  //         result = 'ATL.light.angle';
+  //         break;
+  //     }
+  //   }
+  //   return result;
+  // }
 
   // /**
   //  * This also includes automatic shadow creation for token elevation.

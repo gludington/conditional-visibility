@@ -66,7 +66,7 @@ export function registerSocket() {
    */
 
   // Basic
-
+  /*
   // conditionalVisibilitySocket.register('addActorDataChanges', (...args) => API._actorUpdater.addActorDataChanges(...args));
   // conditionalVisibilitySocket.register('removeActorDataChanges', (...args) => API._actorUpdater.removeActorDataChanges(...args));
   conditionalVisibilitySocket.register('toggleEffect', (...args) => API.toggleEffectArr(...args));
@@ -120,6 +120,7 @@ export function registerSocket() {
   conditionalVisibilitySocket.register('updateActiveEffectFromNameOnToken', (...args) =>
     API.updateActiveEffectFromNameOnTokenArr(...args),
   );
+  */
   setSocket(conditionalVisibilitySocket);
   return conditionalVisibilitySocket;
 }

@@ -20,6 +20,7 @@ import type { EffectChangeData } from '@league-of-foundry-developers/foundry-vtt
 import type Effect from '../effects/effect.js';
 import { ConditionalVisibilityEffectDefinitions } from '../conditional-visibility-effect-definition.js';
 import { EffectSupport } from '../effects/effect-support';
+import { aemlApi } from '../module';
 
 // =============================
 // Module Generic function
@@ -463,9 +464,9 @@ export async function prepareActiveEffectForConditionalVisibility(
     if (!effectNameToCheckOnActor.endsWith('(CV)')) {
       effectNameToCheckOnActor = effectNameToCheckOnActor + ' (CV)';
     }
-    if (await API.hasEffectAppliedOnToken(<string>sourceToken.id, effectNameToCheckOnActor, true)) {
+    if (await aemlApi.hasEffectAppliedOnToken(<string>sourceToken.id, effectNameToCheckOnActor, true)) {
       const activeEffectToRemove = <ActiveEffect>(
-        await API.findEffectByNameOnToken(<string>sourceToken.id, effectNameToCheckOnActor)
+        await aemlApi.findEffectByNameOnToken(<string>sourceToken.id, effectNameToCheckOnActor)
       );
       const atcvEffectFlagData = <AtcvEffect>sourceToken.actor?.getFlag(CONSTANTS.MODULE_NAME, senseData.visionId);
       if (activeEffectToRemove && atcvEffectFlagData?.visionId) {
@@ -492,7 +493,7 @@ export async function prepareActiveEffectForConditionalVisibility(
       effectNameToCheckOnActor = effectNameToCheckOnActor + ' (CV)';
     }
     const activeEffectFounded = <ActiveEffect>(
-      await API.findEffectByNameOnToken(<string>sourceToken.id, effectNameToCheckOnActor)
+      await aemlApi.findEffectByNameOnToken(<string>sourceToken.id, effectNameToCheckOnActor)
     );
     if (sense.visionLevelValue && sense.visionLevelValue !== 0) {
       // TODO why this failed to return ???
@@ -564,11 +565,11 @@ export async function prepareActiveEffectForConditionalVisibility(
           }
         }
         if (thereISADifference && data?.changes.length > 0) {
-          await API.updateActiveEffectFromIdOnToken(
+          await aemlApi.updateActiveEffectFromIdOnToken(
             <string>sourceToken.id,
             <string>activeEffectFounded.id,
-            undefined,
-            undefined,
+            '',
+            false,
             data,
           );
           if (sense) {
@@ -621,7 +622,7 @@ export async function prepareActiveEffectForConditionalVisibility(
       effectNameToCheckOnActor = effectNameToCheckOnActor + ' (CV)';
     }
     const activeEffectFounded = <ActiveEffect>(
-      await API.findEffectByNameOnToken(<string>sourceToken.id, effectNameToCheckOnActor)
+      await aemlApi.findEffectByNameOnToken(<string>sourceToken.id, effectNameToCheckOnActor)
     );
     if (condition.visionLevelValue && condition.visionLevelValue !== 0) {
       // TODO why this failed to return ???
@@ -693,11 +694,11 @@ export async function prepareActiveEffectForConditionalVisibility(
           }
         }
         if (thereISADifference && data?.changes.length > 0) {
-          await API.updateActiveEffectFromIdOnToken(
+          await aemlApi.updateActiveEffectFromIdOnToken(
             <string>sourceToken.id,
             <string>activeEffectFounded.id,
-            undefined,
-            undefined,
+            '',
+            false,
             data,
           );
           if (condition) {
@@ -742,7 +743,7 @@ export async function prepareActiveEffectForConditionalVisibility(
 
   // FINALLY REMVE ALL THE ACTIVE EFFECT
   if (setAeToRemove.size > 0) {
-    await API.removeEffectFromIdOnTokenMultiple(<string>sourceToken.id, Array.from(setAeToRemove));
+    await aemlApi.removeEffectFromIdOnTokenMultiple(<string>sourceToken.id, Array.from(setAeToRemove));
   }
 
   return mapToUpdate;
@@ -1460,7 +1461,7 @@ export async function toggleStealth(event, app) {
             }
             // FINALLY REMVE ALL THE ACTIVE EFFECT
             if (setAeToRemove.size > 0) {
-              await API.removeEffectFromIdOnTokenMultiple(<string>selectedToken.id, Array.from(setAeToRemove));
+              await aemlApi.removeEffectFromIdOnTokenMultiple(<string>selectedToken.id, Array.from(setAeToRemove));
             }
           }
           event.currentTarget.classList.toggle('active', valStealthRoll && valStealthRoll !== 0);
@@ -1588,7 +1589,7 @@ export async function repairAndSetFlag(token: Token, key: string, value: AtcvEff
       effectNameToCheckOnActor = effectNameToCheckOnActor + ' (CV)';
     }
     const activeEffectFounded = <ActiveEffect>(
-      await API.findEffectByNameOnToken(<string>token.id, effectNameToCheckOnActor)
+      await aemlApi.findEffectByNameOnToken(<string>token.id, effectNameToCheckOnActor)
     );
     let thereISADifference = false;
     if (activeEffectFounded) {
@@ -3056,10 +3057,16 @@ export async function manageActiveEffectForAutoSkillsFeature(
         const atcvEffectFlagData = AtcvEffect.fromEffect(selectedToken.document, effect);
         if (atcvEffectFlagData) {
           atcvEffectFlagData.visionLevelValue = valSkillRoll;
-          if (await API.findEffectByNameOnToken(selectedToken.id, effect.name)) {
-            await API.updateEffectFromNameOnToken(selectedToken.id, effect.name, effect.origin, effect.overlay, effect);
+          if (await aemlApi.findEffectByNameOnToken(selectedToken.id, effect.name)) {
+            await aemlApi.updateEffectFromNameOnToken(
+              selectedToken.id,
+              effect.name,
+              effect.origin,
+              effect.overlay,
+              effect,
+            );
           } else {
-            await API.addEffectOnToken(selectedToken.id, effect.name, effect);
+            await aemlApi.addEffectOnToken(selectedToken.id, effect.name, effect);
           }
         }
       }
@@ -3083,10 +3090,16 @@ export async function manageActiveEffectForAutoSkillsFeature(
         if (atcvEffectFlagData) {
           atcvEffectFlagData.visionLevelValue = valSkillRoll;
           //await repairAndSetFlag(selectedToken, conditionId, atcvEffectFlagData);
-          if (await API.findEffectByNameOnToken(selectedToken.id, effect.name)) {
-            await API.updateEffectFromNameOnToken(selectedToken.id, effect.name, effect.origin, effect.overlay, effect);
+          if (await aemlApi.findEffectByNameOnToken(selectedToken.id, effect.name)) {
+            await aemlApi.updateEffectFromNameOnToken(
+              selectedToken.id,
+              effect.name,
+              effect.origin,
+              effect.overlay,
+              effect,
+            );
           } else {
-            await API.addEffectOnToken(selectedToken.id, effect.name, effect);
+            await aemlApi.addEffectOnToken(selectedToken.id, effect.name, effect);
           }
         }
       }
@@ -3096,7 +3109,7 @@ export async function manageActiveEffectForAutoSkillsFeature(
   }
   // FINALLY REMVE ALL THE ACTIVE EFFECT
   if (setAeToRemove.size > 0) {
-    await API.removeEffectFromIdOnTokenMultiple(<string>selectedToken.id, Array.from(setAeToRemove));
+    await aemlApi.removeEffectFromIdOnTokenMultiple(<string>selectedToken.id, Array.from(setAeToRemove));
   }
 }
 

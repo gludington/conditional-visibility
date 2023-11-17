@@ -2,19 +2,49 @@
   "name": "conditional-visibility",
   "title": "Conditional Visibility",
   "description": "Hide tokens from some players, but not others, based on the senses the players have. Uses unknown, newspaper, and foggy icons made by <a href=\"https://www.flaticon.com/authors/freepik\" title=\"Freepik\">Freepik</a>, from <a href=\"https://www.flaticon.com/\" title=\"Flaticon\"> www.flaticon.com</a>. Moon icon made by <a href=\"https://www.flaticon.com/authors/iconixar\" title=\"iconixar\">iconixar</a> from <a href=\"https://www.flaticon.com/\" title=\"Flaticon\"> www.flaticon.com</a>",
-  "version": "@tagVersion@",
-  "author": "Greg Ludington",
-  "scripts": [],
-  "esmodules": ["conditional-visibility.js"],
-  "styles": ["templates/conditional-visibility.css"],
-  "packs": [
+  "version": "0.6.16",
+  "author": "Greg Ludington, p4535992, Szefo09, Teshynil",
+  "authors": [
+    { "name": "Greg Ludington" },
+    { "name": "Szefo09" },
+    { "name": "Teshynil" },
     {
-      "name": "Conditional Visibility",
-      "label": "Conditional Visibility",
-      "path": "./packs/visibility-scripts.db",
-      "module": "world",
-      "entity": "Macro",
-      "lang": []
+      "name": "p4535992",
+      "url": "https://github.com/p4535992",
+      "discord": "",
+      "twitter": "",
+      "patreon": "",
+      "github": "p4535992",
+      "ko-fi": "",
+      "reddit": "",
+      "email": ""
+    }
+  ],
+  "type": "module",
+  "socket": true,
+  "includes": [
+    "./assets/**",
+    "./lang/**",
+    "./scripts/**",
+    "./styles/**",
+    "./templates/**",
+    "./module.json",
+    "./README.md",
+    "./icons/**",
+    "./packs/**"
+  ],
+  "media": [
+    {
+      "type": "icon",
+      "location": ""
+    },
+    {
+      "type": "cover",
+      "location": ""
+    },
+    {
+      "type": "screenshot",
+      "location": ""
     }
   ],
   "languages": [
@@ -29,13 +59,73 @@
       "path": "lang/ko.json"
     }
   ],
-  "minimumCoreVersion": "0.7.6",
-  "compatibleCoreVersion": "0.7.6",
-  "url": "https://github.com/gludington/conditional-visibility/",
-    "manifest": "https://github.com/gludington/conditional-visibility/releases/download/@tagVersion@/module.json",
-    "download": "https://github.com/gludington/conditional-visibility/releases/download/@tagVersion@/conditional-visibility-@tagVersion@.zip",
-    "changelog": "https://github.com/gludington/conditional-visibility/blob/master/CHANGELOG.md",
-    "readme": "https://github.com/gludington/conditional-visibility/blob/master/README.md",
-    "license": "",
-    "bugs": ""
+  "scripts": ["module/lib/dd.min.js", "module/lib/jquery.sumoselect.min.js"],
+  "esmodules": ["conditional-visibility.js"],
+  "styles": ["styles/conditional-visibility.css", "styles/dd.css", "styles/sumoselect.css"],
+  "packs": [
+    {
+      "name": "Conditional Visibility",
+      "label": "Conditional Visibility",
+      "path": "./packs/visibility-scripts.db",
+      "module": "world",
+      "entity": "Macro",
+      "lang": []
+    }
+  ],
+  "minimumCoreVersion": "9",
+  "compatibleCoreVersion": "9",
+  "compatibility": {
+    "minimum": 9,
+    "verified": 9,
+    "maximum": 9
+  },
+  "url": "https://github.com/p4535992/conditional-visibility",
+  "manifest": "https://github.com/p4535992/conditional-visibility/releases/latest/download/module.json",
+  "download": "https://github.com/p4535992/conditional-visibility/releases/latest/download/module.zip",
+  "readme": "https://github.com/p4535992/conditional-visibility/blob/v0.6.16/README.md",
+  "changelog": "https://github.com/p4535992/conditional-visibility/blob/v0.6.16/changelog.md",
+  "bugs": "https://github.com/p4535992/conditional-visibility/issues",
+  "allowBugReporter": true,
+  "manifestPlusVersion": "1.2.0",
+  "dependencies": [
+    {
+      "name": "lib-wrapper"
+    },
+    {
+      "name": "socketlib"
+    },
+    {
+      "name": "active-effect-manager-lib"
+    }
+  ],
+  "relationships": {
+    "requires": [
+      {
+        "id": "lib-wrapper",
+        "manifest": "https://github.com/ruipin/fvtt-lib-wrapper/releases/latest/download/module.json"
+      },
+      {
+        "id": "socketlib",
+        "manifest": "https://raw.githubusercontent.com/manuelVo/foundryvtt-socketlib/develop/module.json"
+      },
+      {
+        "id": "active-effect-manager-lib",
+        "manifest": "https://github.com/p4535992/foundryvtt-active-effect-manager-lib/releases/latest/download/module.json"
+      }
+    ]
+  },
+  "flags": {
+    "manifestPlusVersion": "1.2.0",
+    "allowBugReporter": true,
+    "conflicts": [
+      {
+        "name": "levels",
+        "description": "With levels module enabled and active, **if the scene is with \"Token vision\" set to false (unchecked box)**, after selected a token and click on the canvas with the option \"Release on left click\" enable the hidden token are visible for a small instant this is a incompatibility with the [Levels](https://github.com/theripper93/Levels) module i cannot solve, the simple solution is just enable the token vision on the current scene."
+      },
+      {
+        "name": "less-fog",
+        "description": "With less-fog module enabled and active. The module \"less fog\" breaks the dm view of tokens. The gm still see an invisible token as other tokens, but the players don't so is a minor issue. The solution is just make sure the module 'Less Fog' settings 'Reveal Tokens' and 'Reveal to All Players' are set to false (unchecked box) both."
+      }
+    ]
+  }
 }

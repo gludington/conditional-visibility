@@ -1,0 +1,184 @@
+
+
+<form class="editable flexcol" autocomplete="off">
+    {{!-- <fieldset>
+        <legend>ADD NEW {{#if isSense}} SENSE {{else}} CONDITION {{/if}} </legend>
+        <hr> --}}
+
+        <div class="form-group">
+            <label>{{localize "conditional-visibility.token.config.conditionType"}}*</label>
+            <div class="form-fields">
+                <input readonly type="text" id="conditional-visibility.conditionType" name="conditional-visibility-conditionType"
+                    required value="{{#if isSense}}sense{{else}}condition{{/if}}"/>
+            </div>
+            <p class="notes">{{localize ""}}</p>
+        </div>
+
+        <div class="form-group">
+            <label>{{localize "conditional-visibility.token.config.id"}}*</label>
+            <div class="form-fields">
+                <input type="text" name="conditional-visibility-id"
+                    required value="" placeholder="put some id"/>
+            </div>
+            <p class="notes">{{localize ""}}</p>
+        </div>
+
+        <div class="form-group">
+            <label>{{localize "conditional-visibility.token.config.name"}}*</label>
+            <div class="form-fields">
+                <input type="text" id="conditional-visibility.name" name="conditional-visibility-name"
+                    required value="" placeholder="put some name"/>
+            </div>
+            <p class="notes">{{localize ""}}</p>
+        </div>
+
+        <div class="form-group">
+            <label>{{localize "conditional-visibility.token.config.path"}}</label>
+            <div class="form-fields">
+                <input type="text" id="conditional-visibility.path" name="conditional-visibility-path"
+                    placeholder="e.g. data.skills.prc.passive" value=""/>
+            </div>
+            <p class="notes">{{localize ""}}</p>
+        </div>
+
+        <div class="form-group">
+            <label>{{localize "conditional-visibility.token.config.img"}}</label>
+            <div class="form-fields">
+                {{!-- {{filePicker target="conditional-visibility-img" type="image"}} --}}
+
+                <button type="button" name="file-picker" class="file-picker-conditional-visibility-img" data-type="image" data-target="conditional-visibility-img" title="Select a file" tabindex="-1">
+                    <i class="fas fa-file-import fa-fw"></i>
+                </button>
+
+                <input class="image" type="text" id="conditional-visibility.img" name="conditional-visibility-img"
+                    placeholder="path/image.png" value=""/>
+            </div>
+            <p class="notes">{{localize ""}}</p>
+        </div>
+
+        <div class="form-group">
+            <label>{{localize "conditional-visibility.token.config.conditionElevation"}}</label>
+            <div class="form-fields">
+                <input type="checkbox" id="conditional-visibility.conditionElevation" name="conditional-visibility-conditionElevation"
+                    value="false"
+                    onclick="$(this).attr('value', this.checked ? true : false)" />
+            </div>
+            <p class="notes">{{localize ""}}</p>
+        </div>
+
+        <div class="form-group">
+            <label>{{localize "conditional-visibility.token.config.conditionSources"}}</label>
+            <div class="form-fields">
+                <select multiple class="conditionSources" id="conditional-visibility.conditionSources" name="conditional-visibility-conditionSources" data-dtype="String">
+                    {{#each senses as |sense|}}
+                    <option data-image="{{sense.visionIcon}}"
+                        value="{{sense.visionId}}">{{localize sense.visionName}}</option>
+                    {{/each}}
+                </select>
+            </div>
+            <p class="notes">{{localize ""}}</p>
+        </div>
+
+        <div class="form-group">
+            <label>{{localize "conditional-visibility.token.config.conditionSources-explicit"}}*</label>
+            <div class="form-fields">
+                <input type="text" id="conditional-visibility.conditionSources-explicit" name="conditional-visibility-conditionSources-explicit"
+                    value="" placeholder="sense1,sense2"/>
+            </div>
+            <p class="notes">{{localize ""}}</p>
+        </div>
+
+        <div class="form-group">
+            <label>{{localize "conditional-visibility.token.config.conditionTargets"}}</label>
+            <div class="form-fields">
+                <select multiple class="conditionTargets" id="conditional-visibility.conditionTargets" name="conditional-visibility-conditionTargets" data-dtype="String">
+                    {{#each conditions as |condition|}}
+                        <option data-image="{{condition.visionIcon}}"
+                            value="{{condition.visionId}}">{{localize condition.visionName}}
+                        </option>
+                    {{/each}}
+                </select>
+            </div>
+            <p class="notes">{{localize ""}}</p>
+        </div>
+
+        <div class="form-group">
+            <label>{{localize "conditional-visibility.token.config.conditionTargets-explicit"}}*</label>
+            <div class="form-fields">
+                <input type="text" id="conditional-visibility.conditionTargets-explicit" name="conditional-visibility-conditionTargets-explicit"
+                    value="" placeholder="condition1,condition2"/>
+            </div>
+            <p class="notes">{{localize ""}}</p>
+        </div>
+
+        <div class="form-group">
+            <label>{{localize "conditional-visibility.token.config.conditionDistance"}}</label>
+            <div class="form-fields">
+                <input type="number" id="conditional-visibility.conditionDistance" name="conditional-visibility-conditionDistance"
+                    value=""/>
+            </div>
+            <p class="notes">{{localize ""}}</p>
+        </div>
+
+        <div class="form-group">
+            <label>{{localize "conditional-visibility.token.config.path"}}</label>
+            <div class="form-fields">
+                <input type="text" id="conditional-visibility.path" name="conditional-visibility-path"
+                    value=""/>
+            </div>
+            <p class="notes">{{localize ""}}</p>
+        </div>
+
+        <div class="form-group">
+            <label>{{localize "conditional-visibility.token.config.conditionBlinded"}}</label>
+            <div class="form-fields">
+                <input type="checkbox" id="conditional-visibility.conditionBlinded" name="conditional-visibility-conditionBlinded"
+                    value="false"
+                    onclick="$(this).attr('value', this.checked ? true : false)" />
+            </div>
+            <p class="notes">{{localize ""}}</p>
+        </div>
+
+        <div class="form-group">
+            <label>{{localize "conditional-visibility.token.config.conditionBlindedOverride"}}</label>
+            <div class="form-fields">
+                <input type="checkbox" id="conditional-visibility.conditionBlindedOverride" name="conditional-visibility-conditionBlindedOverride"
+                    value="false"
+                    onclick="$(this).attr('value', this.checked ? true : false)" />
+            </div>
+            <p class="notes">{{localize ""}}</p>
+        </div>
+
+        {{#if isSense}}
+        <div class="form-group">
+            <label>{{localize "conditional-visibility.token.config.conditionTargetImage"}}</label>
+            <div class="form-fields">
+                {{!-- {{filePicker target="conditional-visibility-conditionTargetImage" type="image"}} --}}
+
+                <button type="button" name="file-picker" class="file-picker-conditional-visibility-conditionTargetImage" data-type="image" data-target="conditional-visibility-conditionTargetImage" title="Select a file" tabindex="-1">
+                    <i class="fas fa-file-import fa-fw"></i>
+                </button>
+
+                <input class="image" type="text" id="conditional-visibility.conditionTargetImage" name="conditional-visibility-conditionTargetImage"
+                    placeholder="path/image.png" value=""/>
+            </div>
+            <p class="notes">{{localize ""}}</p>
+        </div>
+        {{else}}
+        <div class="form-group">
+            <label>{{localize "conditional-visibility.token.config.conditionSourceImage"}}</label>
+            <div class="form-fields">
+                {{!-- {{filePicker target="conditional-visibility-conditionSourceImage" type="image"}} --}}
+
+                <button type="button" name="file-picker" class="file-picker-conditional-visibility-conditionSourceImage" data-type="image" data-target="conditional-visibility-conditionSourceImage" title="Select a file" tabindex="-1">
+                    <i class="fas fa-file-import fa-fw"></i>
+                </button>
+
+                <input class="image" type="text" id="conditional-visibility.conditionSourceImage" name="conditional-visibility-conditionSourceImage"
+                    placeholder="path/image.png" value=""/>
+            </div>
+            <p class="notes">{{localize ""}}</p>
+        </div>
+        {{/if}}
+    {{!-- </fieldset> --}}
+</form>

@@ -9,72 +9,113 @@
  * Software License: [your license] Put your desired license here, which
  * 					 determines how others may use and modify your module
  */
-
 // Import TypeScript modules
-import { registerSettings } from './module/settings.js';
-import { preloadTemplates } from './module/preloadTemplates.js';
-import { ConditionalVisibility } from './module/ConditionalVisibility';
-import * as Constants from './module/Constants';
+import { checkSystem, registerSettings } from './module/settings';
+import { preloadTemplates } from './module/preloadTemplates';
+import { registerHotkeys } from './module/hotkeys';
+import CONSTANTS from './module/constants';
+import { dialogWarning, error, log } from './module/lib/lib';
+import { initHooks, readyHooks, setupHooks } from './module/module';
+import type API from './module/api';
 
-declare global {
-    interface Window { Senses: ConditionalVisibility }
-}
 /* ------------------------------------ */
 /* Initialize module					*/
 /* ------------------------------------ */
-Hooks.once('init', async function() {
-	console.log(Constants.MODULE_NAME + ' | init ' + Constants.MODULE_NAME);
-	// Assign custom classes and constants here
-	
-	// Register custom module settings
-	registerSettings();
-	
-	// Preload Handlebars templates
-	await preloadTemplates();
+Hooks.once('init', function () {
+  log(' init ' + CONSTANTS.MODULE_NAME);
+  // Assign custom classes and constants here
 
-	// Register custom sheets (if any)
+  // Register custom module settings
+  registerSettings();
+
+  // Preload Handlebars templates
+  preloadTemplates();
+
+  // Register custom sheets (if any)
+  initHooks();
 });
 
 /* ------------------------------------ */
 /* Setup module							*/
 /* ------------------------------------ */
-Hooks.once('setup', function() {
-
+Hooks.once('setup', function () {
+  setupHooks();
 });
 
 /* ------------------------------------ */
 /* When ready							*/
 /* ------------------------------------ */
-Hooks.once('ready', async function() {
-	// Do anything once the module is ready
-	console.log(Constants.MODULE_NAME + ' | Ready ' + Constants.MODULE_NAME);
-    const sightLayer = canvas.layers.find(layer => {
-        return layer.__proto__.constructor.name === 'SightLayer'
-    });
+Hooks.once('ready', function () {
+  if (!game.modules.get('lib-wrapper')?.active && game.user?.isGM) {
+    let word = 'install and activate';
+    if (game.modules.get('lib-wrapper')) word = 'activate';
+    throw error(`Requires the 'libWrapper' module. Please ${word} it.`);
+  }
+  if (!game.modules.get('socketlib')?.active && game.user?.isGM) {
+    let word = 'install and activate';
+    if (game.modules.get('socketlib')) word = 'activate';
+    throw error(`Requires the 'socketlib' module. Please ${word} it.`);
+  }
+  if (game.modules.get('less-fog')?.active && game.user?.isGM) {
+    dialogWarning(
+      `With less-fog module enabled and active. The module "less fog" breaks the dm view of tokens. The gm still see an invisible token as other tokens, but the players don't so is a minor issue. The solution is just make sure the module 'Less Fog' settings 'Reveal Tokens' and 'Reveal to All Players' are set to false (unchecked box) both.`,
+    );
+  }
+  if (game.modules.get('levels')?.active && game.user?.isGM) {
+    dialogWarning(
+      `With levels module enabled and active, <b>if the scene is with "Token vision" set to false (unchecked box)</b>, after selected a token and click on the canvas with the option "Release on left click" enable the hidden token are visible for a small instant this is a incompatibility with the [Levels](https://github.com/theripper93/Levels) module i cannot solve, the simple solution is just enable the token vision on the current scene.`,
+    );
+  }
 
-    ConditionalVisibility.initialize(sightLayer, canvas.hud.token);	
+  // if (!isGMConnected()) {
+  //   warn(`Requires a GM to be connected for players to be able to loot item piles.`, true);
+  // }
+
+  // Do anything once the module is ready
+  readyHooks();
 });
 
+/* ------------------------------------ */
+/* Other Hooks							*/
+/* ------------------------------------ */
 
-// Add any additional hooks if necessary
-Hooks.on("renderTokenConfig", (tokenConfig, html, data) => {
-    ConditionalVisibility.INSTANCE.onRenderTokenConfig(tokenConfig, html, data);
-});
+export interface ConditionalVisibilityModuleData {
+  api: typeof API;
+  socket: any;
+}
 
-Hooks.on("renderTokenHUD", (app, html, data) => {
-    ConditionalVisibility.INSTANCE.onRenderTokenHUD(app, html, data);
-});
+/**
+ * Initialization helper, to set API.
+ * @param api to set to game module.
+ */
+export function setApi(api: typeof API): void {
+  const data = game.modules.get(CONSTANTS.MODULE_NAME) as unknown as ConditionalVisibilityModuleData;
+  data.api = api;
+}
 
-//synthetic actors go through this
-Hooks.on("preUpdateToken", (scene, token, update, options, userId) => {
-    ConditionalVisibility.INSTANCE.onPreUpdateToken(scene, token, update, options, userId);
-})
+/**
+ * Returns the set API.
+ * @returns Api from games module.
+ */
+export function getApi(): typeof API {
+  const data = game.modules.get(CONSTANTS.MODULE_NAME) as unknown as ConditionalVisibilityModuleData;
+  return data.api;
+}
 
-//real actors go through this
-Hooks.on("preCreateActiveEffect", (actor, effect, options, userId) => {
-    ConditionalVisibility.INSTANCE.onPreCreateActiveEffect(actor, effect, options, userId);
-})
+/**
+ * Initialization helper, to set Socket.
+ * @param socket to set to game module.
+ */
+export function setSocket(socket: any): void {
+  const data = game.modules.get(CONSTANTS.MODULE_NAME) as unknown as ConditionalVisibilityModuleData;
+  data.socket = socket;
+}
 
-Hooks.on("preDeleteActiveEffect", (actor, effect, options, userId) => {
-    ConditionalVisibility.INSTANCE.onPreDeleteActiveEffect(actor, effect, options, userId);
-})
+/*
+ * Returns the set socket.
+ * @returns Socket from games module.
+ */
+export function getSocket() {
+  const data = game.modules.get(CONSTANTS.MODULE_NAME) as unknown as ConditionalVisibilityModuleData;
+  return data.socket;
+}

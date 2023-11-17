@@ -1,16 +1,20 @@
-![https://img.shields.io/badge/Foundry%20VTT-0.7.6%2B-green](https://img.shields.io/badge/Foundry%20VTT-0.7.6%2B-green)
+# Conditional Visibility (Reborn 2022)
 
-# conditional-visibility
-**Author**: Greg Ludington  
+![Latest Release Download Count](https://img.shields.io/github/downloads/p4535992/conditional-visibility/latest/module.zip?color=2b82fc&label=DOWNLOADS&style=for-the-badge) 
 
-## Notes on FoundryVTT 0.75
-This module is unfortunately not compatible with 0.75 at this time, as there have been changes in the rendering system that make the methods used in this module incompatible.  There is an issue both in this module at over on the Foundry tracker discussing this, and I hope to bring this module forward, but at this time, there is no simple path.
+[![Forge Installs](https://img.shields.io/badge/dynamic/json?label=Forge%20Installs&query=package.installs&suffix=%25&url=https%3A%2F%2Fforge-vtt.com%2Fapi%2Fbazaar%2Fpackage%2Fconditional-visibility&colorB=006400&style=for-the-badge)](https://forge-vtt.com/bazaar#package=conditional-visibility) 
 
-[Installation](#Installation)
+![Foundry Core Compatible Version](https://img.shields.io/badge/dynamic/json.svg?url=https%3A%2F%2Fraw.githubusercontent.com%2Fp4535992%2Fconditional-visibility%2Fmaster%2Fsrc%2Fmodule.json&label=Foundry%20Version&query=$.compatibleCoreVersion&colorB=orange&style=for-the-badge)
 
-[Module Manifest](https://github.com/gludington/conditional-visibility/releases/download/v0.1.4/module.json)
+![Latest Version](https://img.shields.io/badge/dynamic/json.svg?url=https%3A%2F%2Fraw.githubusercontent.com%2Fp4535992%2Fconditional-visibility%2Fmaster%2Fsrc%2Fmodule.json&label=Latest%20Release&prefix=v&query=$.version&colorB=red&style=for-the-badge)
 
-[Changelog](https://github.com/gludington/conditional-visibility/blob/master/CHANGELOG.md)
+[![Foundry Hub Endorsements](https://img.shields.io/endpoint?logoColor=white&url=https%3A%2F%2Fwww.foundryvtt-hub.com%2Fwp-json%2Fhubapi%2Fv1%2Fpackage%2Fconditional-visibility%2Fshield%2Fendorsements&style=for-the-badge)](https://www.foundryvtt-hub.com/package/conditional-visibility/)
+
+![GitHub all releases](https://img.shields.io/github/downloads/p4535992/conditional-visibility/total?style=for-the-badge)
+
+## IMPORTANT: This module is beeen discontinued from v10, but you can get the same features by using [Stealthy](https://foundryvtt.com/packages/stealthy) and [Vision 5e](https://foundryvtt.com/packages/vision-5e) togheter.
+
+### If you want to buy me a coffee [![alt-text](https://img.shields.io/badge/-Patreon-%23ff424d?style=for-the-badge)](https://www.patreon.com/p4535992)
 
 Invisible Stalkers should only be seen by players that have cast See Invisibility.  Stealthy Goblins should only be seen by players with high perception.
 And when that Drow casts Darkness, players should need Devil's Sight to see any tokens inside.
@@ -18,105 +22,202 @@ And when that Drow casts Darkness, players should need Devil's Sight to see any 
 Conditional Visibility allows you to set conditions on tokens that will display them only to players whose senses meet the conditions necessary to see
 the token.
 
-## Usage
+**IMPORTANT: This module will work very good with the ligthing setting "Token vision" of scene configuration set to true, otherwise is still work, but is not advisable**
 
-### Conditions
-**Conditional Visibility** works by adding new conditions to the conditions panel, for Invisible, Obscured, In Magical Darkness, and Hidden (currently 5e Only).
-It does not work for game systems that use their own condition systems, though discussion (and pull requests!) are certainly welcomed
-from those more familiar with those systems.  Pathfinder 2e has partial support now, using the system's default Invisible condition.
+## NOTE: If you are a javascript developer and not a typescript developer, you can just use the javascript files under the dist folder
 
-![Conditions Panel](https://raw.githubusercontent.com/gludington/conditional-visibility/master/src/support/conditions.png)
+## Before open any issue 
 
-### Invisible, Obscured, or Magical Darkness
-When a token has one of these conditions, it can only be seen by a token with the proper senses configured in their Vision panel.
-
-![Vision Panel](https://raw.githubusercontent.com/gludington/conditional-visibility/master/src/support/visionControls.png)
-
-Put it together, it looks like this (click to play on YouTube):
-
-[![Watch the video](https://img.youtube.com/vi/IlgjHmSAsww/hqdefault.jpg)](https://youtu.be/IlgjHmSAsww)
-
-### Hidden (currently 5e only)
-When the hidden condition is selected, a stealth roll is automatically made, which can be customized before closing.  The token will only be seen by a token whose passive perception
-exceeds that stealth roll. (click to play on YouTube):
-
-[![Watch the video](https://img.youtube.com/vi/pYay4fRlnu4/hqdefault.jpg)](https://youtu.be/pYay4fRlnu4)
-
-### Other Ways of Applying conditions to a token
-
-#### Scripting
-
-New to version 0.0.8, script entry points are created for macro and script authors.  The following methods are supported:
-
-`ConditionalVisibility.help()`
-
-(GM only) pops up a dialog showing the current system, available conditions, and configuration status.
-
-`ConditionalVisibility.setCondition(tokens, condition, value)`
-
-* tokens - an array of tokens to affect
-* condition - the name of the condition, e.g. invisible or indarkness.  You can check the available names for your system in the `help()` dialog.
-* value true to turn the condition on, false to turn it off
-
-For example, if you want to set all the selected tokens invisible:
-`ConditionalVisibility.setCondition(canvas.tokens.controlled, 'invisible', true)`
-
-The *hidden* condition requires system specific rules, and so uses a different set of methods.  Note this is only available on systems that have these rules developed, currently only D&D 5e.  Issues or contributions for other issues are welcome.
-
-`ConditionalVisibility.hide(tokens, value)`
-* tokens - a list of tokens to affect
-* value - optional; a flat value to apply to all tokens.  If not specified, each token will make system-specific roll.
-
-`ConditionalVisibility.unHide(tokens)`
-* tokens - a list of tokens from which to remove the hidden condition. 
-
-#### Auto-applied from Stealth Rolls
-Conditional Visibility contains an setting to auto-apply the hidden condition based on a stealth roll.  Currently only 5e; again, contributions for other systems are welcomed.
-
-![Vision Panel](https://raw.githubusercontent.com/gludington/conditional-visibility/master/src/support/autoStealth.png)
-
-When this setting is true, then rolling stealth from that token's character sheet will apply the hidden condition based on the value of that roll.
-
-[![Watch the video](https://img.youtube.com/vi/U308ksxblZU/hqdefault.jpg)](https://youtu.be/U308ksxblZU)
+1) Enable the module setting _"Enable debugging"_
+2) Click F12 go to the _console_ tab 
+3) make the test you want and replicate the error
+4) Go to the tab console open on point 2) and just right click and click 'Save as' and 'Save'.
+5) attach the text file on the github issue
+6) Wait for a response
 
 ## Installation
 
-1. Navigate to the Foundry Setup screen and click on the Modules tab
-2. Click Install Module and paste the module.json link from the latest release into the box.  (Currently, https://github.com/gludington/conditional-visibility/releases/download/v0.0.6/module.json )
-3. Once the **conditional-visibility** module is installed, open your desired world and navigate to the `Game Settings` > `Configure Settings` > `Module Settings` and enable the module
+It's always easiest to install modules from the in game add-on browser.
 
-## Note for Combat Utility Belt Users
-If you use Combat Utility Belt and check "Remove Default Status Effects," it will remove those Status Effects necessary for this module to function.  They can be re-added using Combat Utility Belt's Condition Lab:
+To install this module manually:
+1.  Inside the Foundry "Configuration and Setup" screen, click "Add-on Modules"
+2.  Click "Install Module"
+3.  In the "Manifest URL" field, paste the following url:
+`https://raw.githubusercontent.com/p4535992/conditional-visibility/master/src/module.json`
+4.  Click 'Install' and wait for installation to complete
+5.  Don't forget to enable the module in game using the "Manage Module" button
 
-![Example: Adding Unknown](https://user-images.githubusercontent.com/87745/95407444-06d6a880-08eb-11eb-9478-6401fc1d02f8.png)
+### libWrapper
+
+This module uses the [libWrapper](https://github.com/ruipin/fvtt-lib-wrapper) library for wrapping core methods. It is a hard dependency and it is recommended for the best experience and compatibility with other modules.
+
+### socketlib
+
+This module uses the [socketlib](https://github.com/manuelVo/foundryvtt-socketlib) library for wrapping core methods. It is a hard dependency and it is recommended for the best experience and compatibility with other modules.
+
+### ATE (old ATL)
+
+This module uses the [ATE](https://github.com/kandashi/Active-Token-Lighting) library for wrapping methods. It is a hard dependency and it is recommended for the best experience and compatibility with other modules.
+
+## Known Issue\Limitation
+
+- **HELP WANTED FOR PF2E INTEGRATION**, it's seems from my last visit to the PF2E sytem to many things are chnaged, i need some PF2E developer for help me with the intgration (the problem is always the time...)
+- **HELP WANTED FOR BETTER PANEL INTEGRATION** This is just a "fast to make" module maybe someone a little more expert than me with form application and hud layer can do a better form for a better user experience.
+- **[FUTURE FEATURE MAYBE]** This module used many feature of the [Dfred convenient effects](https://github.com/DFreds/dfreds-convenient-effects/) module, but is not multisystem (yet) i invite you to support Dfred for is marvelous work and beg him to make that module multisystem.
+- **[WORKING IN PROGRESS]** With levels module enabled and active, **if the scene is with "Token vision" set to false (unchecked box)**, after selected a token and click on the canvas with the option "Release on left click" enable the hidden token are visible for a small instant this is a incompatibility with the [Levels](https://github.com/theripper93/Levels) module i cannot solve, the simple solution is just enable the token vision on the current scene.
+- **[NOT SOLVED]** There is a small incompatibility with the Dfred convenient effects module, for some strange reason the passive effect are applied has temporary effect here the issue related https://github.com/DFreds/dfreds-convenient-effects/issues/137, it's seem Dfred manage only temporary effect so we leave this issue _not resolved_
+- **[PATCHED]** The module "less fog" breaks the dm view of tokens. The gm still see an invisible token as other tokens, but the players don't so is a minor issue. The solution is just make sure the module 'Less Fog' settings 'Reveal Tokens' and 'Reveal to All Players' are set to false (uncheked box) both.
+- **[TODO]** Better integration with [ATE](https://github.com/kandashi/Active-Token-Lighting) for now yu 
+must do some manual settings... hoope for the future to do a better automatize.
+- **[TODO]** Minor issue with Token factions module
+
+
+## Usage
+
+A usage documentation on how the active effect are managed is reachable 
+
+## &#8595;&#8595;&#8595;&#8595;&#8595;
+
+## [Details on active effects](./wiki/tutorial.md)
+
+## &#8593;&#8593;&#8593;&#8593;&#8593;
+
+before anything give it a look there and let me know howmuch bad is the documentation.
+
+These modules are suggested for a better user experience with this one :
+
+- [DFreds Convenient Effects](https://github.com/DFreds/dfreds-convenient-effects)
+- [Combat Utility Belt or CUB](https://github.com/death-save/combat-utility-belt)
+- [Times up](https://gitlab.com/tposney/times-up)
+- [Dae](https://gitlab.com/tposney/dae)
+
+## Conditions and sense combination by system default
+
+#### [System Dnd5e](./wiki/table_dnd5e.md)
+#### [System Pathfinder 2e](./wiki/table_pf2e.md) (work in progress)
+#### Did you want ot help with your system prepare some table like the one i do it for Dnd5e for help me to define some rule for your system
+
+## Features
+
+### Module compatibility
+
+- **Integration with [Shared vision](https://github.com/CDeenen/SharedVision/):** The module just wrap on `wrapper` mode this two method `SightLayer.prototype.testVisibility` and `SightLayer.prototype.tokenVision` so it should be no conflict with this module.
+
+- **Integration with [Perfect Vision](https://github.com/dev7355608/perfect-vision):** The module just wrap on `wrapper` mode this two method `SightLayer.prototype.testVisibility` and `SightLayer.prototype.tokenVision` so it should be no conflict with this module.
+
+![img](./wiki/video/feature_integration_pv.gif)
+
+- **[Small incompatibility] Integration with [Levels](https://github.com/theripper93/Levels):** The module just wrap on `wrapper` mode this two method `SightLayer.prototype.testVisibility` and `SightLayer.prototype.tokenVision` so it should be no conflict this module.
+
+- **Integration with [DFreds Convenient Effects](https://github.com/DFreds/dfreds-convenient-effects):** documentation work in progress, but is basically all automatic so it should work for all senses and conditions are present on the graphic ui of this module.
+
+All the sense and condition are automatically imported, you can disavle this on the module settings if you want.
+
+![df](./wiki/images/feature_dfred_conv_effects_1.png)
+
+- **Integration with [Combat Utility Belt or CUB](https://github.com/death-save/combat-utility-belt):** If you use Combat Utility Belt you can use the new active effect management for sync with this module.
+
+![Example: Adding Unknown](./wiki/images/95407444-06d6a880-08eb-11eb-9478-6401fc1d02f8.png)
 
 If each condition is added to the CUB set, Conditional Visibility will again function, even if CUB has removed the default set.  The pairs would be:
 
-Invisible
+| image | effectId | image path | 
+| --- | --- | --- |
+| <img src="https://raw.githubusercontent.com/p4535992/conditional-visibility/master/src/icons/hidden.jpg" alt="" style="height: 50px; width:50px;"></img> | Hidden | modules/conditional-visibility/icons/hidden.jpg | 
+| <img src="https://raw.githubusercontent.com/p4535992/conditional-visibility/master/src/icons/invisible.jpg" alt="" style="height: 50px; width:50px;"></img> | Invisible | modules/conditional-visibility/icons/invisible.jpg | 
+| <img src="https://raw.githubusercontent.com/p4535992/conditional-visibility/master/src/icons/obscured.jpg" alt="" style="height: 50px; width:50px;"></img> | Obscured | modules/conditional-visibility/icons/obscured.jpg | 
+| <img src="https://raw.githubusercontent.com/p4535992/conditional-visibility/master/src/icons/indarkness.jpg" alt="" style="height: 50px; width:50px;"></img> | In Darkness | modules/conditional-visibility/icons/indarkness.jpg | 
 
-* modules/conditional-visibility/icons/unknown.svg
+### Apply sense and condition from Token Config
 
-Obscured
+Every sense and condtion can be setted on the token config vision tab, remember the `0` value is the deactivate/default/nullable value, the value `<=-1`  (a negative number) is the infinite, for tell to the module to avoid any check because i won anyway. 
+Depends on the value you set the module will automatically create, updated and remove the active effect on the current token, you can anyway go to edit the active effect manually and change the value and these settings are updated either way.
 
-* modules/conditional-visibility/icons/foggy.svg
+![token_config](./wiki/video/feature_token_config_1_cut.gif)
 
-In Darkness
+**NOTE:** Limitation do not use multiple active effects with the same key on the change values `ATCV.<sense or condtion id>`, checkout the [Active effect paragraph on the tutorial](./wiki/tutorial.md)
 
-* modules/conditional-visibility/icons/moon.svg
+### Auto-applied the 'hidden' condition from Stealth Rolls like the old "auto appplied hidden"
 
-Hidden (5e only)
+**IMPORTANT:** to manage the multisystem and the other three thousand modules from which you can roll the stealth I apply the value of the stealth that appears in the chat, so make sure that each player who launches the stealth roll can see their own chat.
 
-* modules/conditional-visibility/icons/newspaper.svg
+**NOTE:** The 'auto stealth' is a token only feature, so if you roll from a 'actor' on the sidebar is not applied .
 
-## Issues/Feedback
+This is been tested with these modules:
 
-You can create an issue here: [Issue Log](https://github.com/gludington/conditional-visibility/issues)
+- [TAH](https://foundryvtt.com/packages/token-action-hud)
+- [LMRTFY](https://foundryvtt.com/packages/lmrtfy)
+- [MTB](https://foundryvtt.com/packages/monks-tokenbar)
+- [DAE](https://foundryvtt.com/packages/dae) + [Item Macro](https://foundryvtt.com/packages/itemacro)
 
-# Known Issues
-* Pathfinder 2e supports only the "Invisible" condition.
-* Will not work if the hide regular conditions options of Combat Utility Belt is checked, as it hides the required Conditional Visibility conditions
+![autostealth](./wiki/video/feature_autostealth_2_cut.gif)
 
-## Attributions
-**Icons by**
-* unknown.svg, newspaper.svg, and foggy.svg icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a>, from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>
-* moon.svg icon made by <a href="https://www.flaticon.com/authors/iconixar" title="iconixar">iconixar</a> from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>
+### Apply sense and condition from Token HUD
+
+**Stop immediately! Thinking of doing a stealth roll right? Well you can't do it from here! this is a generic tool for applying active 'sense' and 'condition' effects on tokens. Stealth shooting can be done in many ways from the character sheet, with [TAH](https://foundryvtt.com/packages/token-action-hud), with [LMRTFY](https://foundryvtt.com/packages/lmrtfy), with [MTB](https://foundryvtt.com/packages/monks-tokenbar), with [DAE](https://foundryvtt.com/packages/dae) + [Item Macro](https://foundryvtt.com/packages/itemacro), but not with this form. The form uses the stealth values as a basis for applying a value for the AE you select in the dropdown the end does nothing else ,stop thinking that what you shoot here is a stealth roll**
+
+Conditional Visibility contains an setting to auto-apply the hidden condition based on a stealth roll. The reuslt can be differnete depends on the current game system ,contributions for other systems are welcomed.
+
+When this setting is true, then rolling stealth form the HUD config of that token's character sheet will apply the hidden condition based on the value of that roll.
+
+![feature_hud](./wiki/video/feature_token_hud_1_cut.gif)
+
+**NOTE:** if the system no have the property set on the module setting or the system no support a stealth enviroment it's just roll classic 1d20, you can still manually insert the desired value
+
+### Set up a distance checking for see hidden tokens like for _lantern of revealing_
+
+Add new active effect change `ATCV.conditionDistance` for a distance check to add to the active effect.
+Just edit the active effect data and apply the `ATCV.conditionDistance` change with a numeric value that value is used like unit distance for the distance checking.
+
+![feature_distance](./wiki/video/feature_distance.gif)
+
+### [On developing or maybe never...] Integration with [Combat utility belt](https://github.com/death-save/combat-utility-belt)
+
+CUB already manage the connection with active effect and a management with the [DFreds Convenient Effects](https://github.com/DFreds/dfreds-convenient-effects) add a third module is just redundancy, but if anyone has some suggestion just open a issue or better a PR.
+
+![cub](./wiki/video/feature_cub_cv_1.gif)
+
+### Customize you own sense or condition
+
+![img6](./wiki/video/feature_your_own_effect.gif)
+
+### Customize for each token specific image for specific token
+
+**NOTE:** You must enable the module setting "[EXPERIMENTAL] Enable draw CV Handler" for activated this.
+
+![img6](./wiki/video/feature_image_1.gif)
+
+## Api
+
+The API documentation is reachable here [API](./wiki/api.md)
+
+## [Changelog](./CHANGELOG.md)
+
+## Issues
+
+Any issues, bugs, or feature requests are always welcome to be reported directly to the [Issue Tracker](https://github.com/p4535992/conditional-visibility/issues ), or using the [Bug Reporter Module](https://foundryvtt.com/packages/bug-reporter/).
+
+## License
+
+- Some icons are retrieve from : * unknown.svg, newspaper.svg, and foggy.svg icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a>, from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>
+- Some icons are retrieve from :  * moon.svg icon made by <a href="https://www.flaticon.com/authors/iconixar" title="iconixar">iconixar</a> from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>
+- [Image dropdown](https://github.com/marghoobsuleman/ms-Dropdown) with [MIT](https://github.com/marghoobsuleman/ms-Dropdown/blob/master/MIT-LICENSE.txt)
+- Some icons are retrieve from the [Dnd5e system](https://gitlab.com/foundrynet/dnd5e) with [MIT](https://gitlab.com/foundrynet/dnd5e/-/blob/master/LICENSE.txt)
+- Some icons are retrieve from the [Pf2 system](https://gitlab.com/hooking/foundry-vtt---pathfinder-2e/) with [GPLv2](https://gitlab.com/hooking/foundry-vtt---pathfinder-2e/-/blob/master/LICENSE)
+- [jquery.sumoselect](https://github.com/HemantNegi/jquery.sumoselect/i) with [???](https://github.com/HemantNegi/jquery.sumoselect/i/LICENSE)
+
+This package is under an [MIT license](LICENSE) and the [Foundry Virtual Tabletop Limited License Agreement for module development](https://foundryvtt.com/article/license/).
+
+## Acknowledgements
+
+Bootstrapped with League of Extraordinary FoundryVTT Developers  [foundry-vtt-types](https://github.com/League-of-Foundry-Developers/foundry-vtt-types).
+
+## Credit
+
+Thanks to anyone who helps me with this code! I appreciate the user community's feedback on this project!
+
+Very special ty to [Szefo09](https://github.com/szefo09) for make a full operational patch for Dnd5e with FoundryVtt 0.8.6 and 9
+
+Very special ty to [Teshynil](https://github.com/Teshynil) for make many and many test with bug fix
+
+Very special ty to [Haxxer](https://github.com/fantasycalendar) for inspired the design pattern for the multisystem integration with the module [Item Piles](https://github.com/fantasycalendar/FoundryVTT-ItemPiles)

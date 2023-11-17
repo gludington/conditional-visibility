@@ -1,5 +1,53 @@
 <div class="form-group">
-    <label>{{localize "CONVIS.stealthroll"}}</label>
-    <input id="CONVIS.stealth" value="{{initialValue}}"/>
+  <p class="notes">
+    <span style="font-size: 14px">
+      <strong> {{{localize "conditional-visibility.dialogs.title.warning"}}} </strong>
+    </span>
+  </p>
 </div>
-<p class="notes">{{localize "CONVIS.stealthrolldescription"}}</p>
+<div class="form-group">
+  <label>{{localize "conditional-visibility.dialogs.passivestealth"}}</label>
+  <input readonly="true" id="conditional-visibility.passivestealth" value="{{passivestealth}}" />
+  <p class="notes">{{localize "conditional-visibility.dialogs.passivestealthdescription"}}</p>
+</div>
+<div class="form-group">
+  <label>{{localize "conditional-visibility.dialogs.currentstealth"}}</label>
+  <input readonly="true" id="conditional-visibility.currentstealth" value="{{currentstealth}}" />
+  <p class="notes">{{localize "conditional-visibility.dialogs.currentstealthdescription"}}</p>
+</div>
+<div class="form-group">
+  <label>{{localize "conditional-visibility.dialogs.stealthroll"}}</label>
+  <input id="conditional-visibility.stealthroll" type="number" min=-1 step=1 {{#if stealthroll}} value="{{stealthroll}}"
+  {{else}} value="0" {{/if}} />
+  <p class="notes">{{localize "conditional-visibility.dialogs.stealthrolldescription"}}</p>
+</div>
+<div class="form-group">
+  <label>{{localize "conditional-visibility.dialogs.disablepassiverecovery"}}</label>
+  <input
+    id="conditional-visibility.disablepassiverecovery"
+    type="checkbox"
+    value="false"
+    onclick="$(this).attr('value', this.checked ? true : false)"
+  />
+  <p class="notes">{{localize "conditional-visibility.dialogs.disablepassiverecoverydescription"}}</p>
+</div>
+<div class="form-group">
+  <legend><label>{{localize "conditional-visibility.token.config.senses.title"}}</label></legend>
+  <select id="conditional-visibility.senses" name="senses" data-dtype="String" is="ms-dropdown-cv">
+    {{#each senses as |sense|}}
+    <option data-image="{{sense.visionIcon}}" value="{{sense.visionId}}">{{localize sense.visionName}}</option>
+    {{/each}}
+  </select>
+  <p class="notes">{{localize "conditional-visibility.token.config.extraSenseInstructions"}}</p>
+</div>
+<div class="form-group">
+  <legend><label>{{localize "conditional-visibility.token.config.conditions.title"}}</label></legend>
+  <select id="conditional-visibility.conditions" name="conditions" data-dtype="String" is="ms-dropdown-cv">
+    {{#each conditions as |condition|}}
+    <option data-image="{{condition.visionIcon}}" value="{{condition.visionId}}">
+      {{localize condition.visionName}}
+    </option>
+    {{/each}}
+  </select>
+  <p class="notes">{{localize "conditional-visibility.token.config.extraConditionInstructions"}}</p>
+</div>

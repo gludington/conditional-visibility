@@ -1,0 +1,86 @@
+<hr/>
+<fieldset class="conditional-visibility-senses">
+    <legend>{{localize "conditional-visibility.token.config.senses.title"}}</legend>
+    <p class="notes">{{localize "conditional-visibility.token.config.extraSenseInstructions"}}</p>
+    {{#each senses as |sense|}}
+        <div class="form-group">
+            <label style="display:flex"><img src="{{sense.visionIcon}}" style="height:25px; width:25px; margin: 3px;"/>{{localize sense.visionName}}</label>
+            <input type="number" min=-1 step=1 {{#if sense.isReadOnly}} readonly {{/if}} {{#if sense.visionLevelValue}} 
+                value="{{sense.visionLevelValue}}" {{else}} value="0" {{/if}} 
+                name="actor.data.flags.conditional-visibility.{{sense.visionId}}.visionLevelValue"/>
+        </div>
+    {{/each}}
+    
+    <p class="notes">{{localize "conditional-visibility.token.config.noeditmessage"}}</p>
+    <div class="form-group">
+        <button type="button" class="conditional-visibility-add-new-sense">{{localize "conditional-visibility.token.config.addnewsense"}}</button>
+    </div>
+    <div class="form-group">
+        <button type="button" class="conditional-visibility-delete-sense">{{localize "conditional-visibility.token.config.deletesense"}}</button>
+    </div>
+</fieldset>
+<hr/>
+<fieldset class="conditional-visibility-conditions">
+    <legend>{{localize "conditional-visibility.token.config.conditions.title"}}</legend>
+    <div class="form-group">
+        <label>{{localize "conditional-visibility.token.config.dataforcevisible.title"}}</label>
+        <input
+            id="actor.data.flags.conditional-visibility.dataforcevisible"
+            name="actor.data.flags.conditional-visibility.dataforcevisible"
+            type="checkbox"
+            value="{{dataforcevisible}}"
+            {{#if dataforcevisible}} checked {{else}}  {{/if}}
+            onclick="$(this).attr('value', this.checked ? true : false)"
+        />
+        <p class="notes">{{localize "conditional-visibility.token.config.dataforcevisible.notes"}}</p>
+    </div>
+    <div class="form-group">
+        <label>{{localize "conditional-visibility.token.config.datausestealthpassive.title"}}</label>
+        <input
+            id="actor.data.flags.conditional-visibility.datausestealthpassive"
+            name="actor.data.flags.conditional-visibility.datausestealthpassive"
+            type="checkbox"
+            value="{{datausestealthpassive}}"
+            {{#if datausestealthpassive}} checked {{else}}  {{/if}}
+            onclick="$(this).attr('value', this.checked ? true : false)"
+        />
+        <p class="notes">{{localize "conditional-visibility.token.config.datausestealthpassive.notes"}}</p>
+        <p class="notes">{{localize "conditional-visibility.token.config.datausestealthpassive.notes2"}}</p>
+        <p class="notes">{{localize "conditional-visibility.token.config.datausestealthpassive.notes3"}}</p>
+    </div>
+    <p class="notes">{{localize "conditional-visibility.token.config.extraConditionInstructions"}}</p>
+    {{#each conditions as |condition|}}
+        <div class="form-group">
+            <label style="display:flex"><img src="{{condition.visionIcon}}" style="height:25px; width:25px; margin: 3px; background: #454545"/>{{localize condition.visionName}}</label>
+            <input type="number" min=-1 step=1 {{#if condition.isReadOnly}} readonly {{/if}} 
+                {{#if condition.visionLevelValue}} value="{{condition.visionLevelValue}}" {{else}} value="0" {{/if}} 
+                name="actor.data.flags.conditional-visibility.{{condition.visionId}}.visionLevelValue"/>
+        </div>
+    {{/each}}
+
+    <p class="notes">{{localize "conditional-visibility.token.config.noeditmessage"}}</p>
+    <div class="form-group">
+        <button type="button" class="conditional-visibility-add-new-condition">{{localize "conditional-visibility.token.config.addnewcondition"}}</button>
+    </div>
+    <div class="form-group">
+        <button type="button" class="conditional-visibility-delete-condition">{{localize "conditional-visibility.token.config.deletecondition"}}</button>
+    </div>
+</fieldset>
+<hr/>
+<fieldset class="conditional-visibility.token.config.skills">
+    <legend>{{localize "conditional-visibility.token.config.skills.title"}}</legend>
+    <p class="notes">{{localize "conditional-visibility.token.config.extraSkillInstructions"}}</p>
+    <div class="form-group">
+        <select
+            id="actor.data.flags.conditional-visibility.dataautoskillstoken"
+            name="actor.data.flags.conditional-visibility.dataautoskillstoken" data-dtype="String" 
+            multiple>
+            {{#each skills as |skill|}}
+            <option data-image="{{skill.icon}}" value="{{skill.id}}" {{#if skill.isSelected}} selected {{/if}}>
+                {{localize skill.name}}
+            </option>
+            {{/each}}
+        </select>
+    </div>
+</fieldset>
+<hr/>

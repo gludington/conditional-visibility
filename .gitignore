@@ -1,9 +1,8 @@
 node_modules
-foundryconfig.json
-dist
-package
-.vscode
-.DS_Store
-**/.DS_Store
-coverage
-*.code-workspace
+.idea
+/package-lock.json
+/dist
+/package
+/wiki/video/customize_your_own_effect.mp4
+/wiki/video/feature_your_own_effect.mp4
+/wiki/video/feature_image_1.mp4

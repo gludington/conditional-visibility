@@ -1,12 +1,17 @@
 {
-	"compilerOptions": {
-		"target": "ES2017",
-		"lib": [
-			"DOM",
-			"ES6",
-			"ES2017"
-		],
-		"moduleResolution": "node",
-		"types": ["foundry-pc-types", "jest"]
-	}
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "noEmit": false,
+    "strict": false,
+    "target": "ES2021",
+    "lib": ["ES2021", "DOM"],
+    "types": ["@league-of-foundry-developers/foundry-vtt-types/index-lenient"],
+    "strictNullChecks": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "noUncheckedIndexedAccess": true,
+    "resolveJsonModule": true,
+    "importsNotUsedAsValues": "error"
+  },
+  "include": ["src"]
 }

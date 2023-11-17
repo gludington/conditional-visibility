@@ -12,6 +12,8 @@
 
 ![GitHub all releases](https://img.shields.io/github/downloads/p4535992/conditional-visibility/total?style=for-the-badge)
 
+## IMPORTANT: This module is beeen discontinued from v10, but you can get the same features by using [Stealthy](https://foundryvtt.com/packages/stealthy) and [Vision 5e](https://foundryvtt.com/packages/vision-5e) togheter.
+
 ### If you want to buy me a coffee [![alt-text](https://img.shields.io/badge/-Patreon-%23ff424d?style=for-the-badge)](https://www.patreon.com/p4535992)
 
 Invisible Stalkers should only be seen by players that have cast See Invisibility.  Stealthy Goblins should only be seen by players with high perception.
